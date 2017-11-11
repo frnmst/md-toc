@@ -8,7 +8,7 @@ import sys
 ITERATION_TESTS = 1024
 RANDOM_STRING_LENGTH = 512
 
-class TestArgumentParser(unittest.TestCase):
+class TestApi(unittest.TestCase):
 
     def test_m_get_md_header(self):
         test_text = '# #ciao # bau'
@@ -55,10 +55,51 @@ class TestArgumentParser(unittest.TestCase):
 {'type':3,'text_original':test_text.strip(),'text_slugified':slugify(test_text)})
 
             # Test h whith h > h3
-            self.assertEqual(api.get_md_heading('####'+slugify(test_text)),None)
-            self.assertEqual(api.get_md_heading('#### '+slugify(test_text)),None)
+            self.assertEqual(api.get_md_heading('####'+test_text),None)
+            self.assertEqual(api.get_md_heading('#### '+test_text),None)
 
             i+=1
+
+    def test_build_toc_line(self):
+            test_text = ''.join([random.choice(string.printable) for n in range(RANDOM_STRING_LENGTH)])
+            # Remove any leading '#' character that might pollute the tests.
+            test_text = test_text.lstrip('#')
+
+            # Test an empty header (originated from a non-title line).
+            self.assertEqual(api.build_toc_line(None),None)
+
+            h = {'type':1,
+                  'text_original':test_text.strip(),
+                  'text_slugified':slugify(test_text)}
+            md_substring = '[' + test_text.strip() + '](' + slugify(test_text) + ')'
+            # Test both numeric and non numeric markdown toc.
+            md_non_num_substring = '- ' + md_substring
+            md_num_substring = '1. ' + md_substring
+
+            # Test h1
+            h['type'] = 1
+            indentation_space = 0*' '
+            self.assertEqual(api.build_toc_line(h),
+indentation_space + md_non_num_substring)
+            self.assertEqual(api.build_toc_line(h,1),
+indentation_space + md_num_substring)
+
+            # Test h2
+            h['type'] = 2
+            indentation_space = 4*' '
+            self.assertEqual(api.build_toc_line(h),
+indentation_space + md_non_num_substring)
+            self.assertEqual(api.build_toc_line(h,1),
+indentation_space + md_num_substring)
+
+
+            # Test h3
+            h['type'] = 3
+            indentation_space = 8*' '
+            self.assertEqual(api.build_toc_line(h),
+indentation_space + md_non_num_substring)
+            self.assertEqual(api.build_toc_line(h,1),
+indentation_space + md_num_substring)
 
 if __name__ == '__main__':
     unitttest.main()

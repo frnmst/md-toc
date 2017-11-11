@@ -4,10 +4,23 @@
 
 from slugify import slugify
 
-def build_toc_line(header):
+# Parse file by line.
+# def
+
+# Index must be incremented by knowing
+# the previous and current header type
+# def increment_index_numeric_list(header_type_prev,header_type_curr):
+#   return index
+
+def build_toc_line(header,ordered=False,index=1):
     """ Return a string which corresponds to a list element
-        in the markdown syntax.
+        in the markdown syntax. If ordered is true then the rendered list
+        will use numbers instead of bullets. For this reason the index
+        variable must be passed to the method.
     """
+
+    if header is None:
+        return header
 
     assert isinstance(header, dict)
     assert 'type' in header
@@ -16,12 +29,37 @@ def build_toc_line(header):
     assert isinstance(header['type'],int)
     assert isinstance(header['text_original'],str)
     assert isinstance(header['text_slugified'],str)
+    assert header['type'] >= 1 and header['type']<= 3
+
+    # 1. Get the list symbol.
+    if ordered:
+        list_symbol = str(index) + '.'
+    else:
+        list_symbol = '-'
+
+    # 2. Compute the indentation spaces.
+    #    ordered list require 4-level indentation,
+    #    while unordered either 2 or 4. To simplify the code we
+    #    will keep only the common case. To implement
+    #    2-level indentation it is sufficient to do:
+    #    2**(header['type']-1) as a separate case.
+    if header['type'] == 1:
+        no_of_indentation_spaces = 0
+    else:
+        no_of_indentation_spaces = 2**header['type']
+    indentation_spaces = no_of_indentation_spaces * ' '
+
+    # 3. Build the link.
+    link = '[' + header['text_original'] + ']' + '(' + header['text_slugified'] + ')'
+
+    # 4. String concatenation.
+    toc_line = indentation_spaces + list_symbol + ' ' + link
 
     return toc_line
 
-
 def get_md_heading(line):
     """ Given a line extract the title type and its text.
+        Return the three variable components needed to create a line.
     """
 
     assert isinstance(line, str)
