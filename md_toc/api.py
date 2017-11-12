@@ -35,7 +35,7 @@ def build_toc(filename, ordered = False):
 
                 # 1.2.2. Get the current index if necessary.
                 if ordered:
-                    increment_index_numeric_list(ht,ht_prev,ht_curr)
+                    increment_index_ordered_list(ht,ht_prev,ht_curr)
 
                 # 1.2.3. Get the table of contents line and append it to the
                 #        final string.
@@ -47,7 +47,7 @@ def build_toc(filename, ordered = False):
 
     return toc_line
 
-def increment_index_numeric_list(header_type_count,header_type_prev,header_type_curr):
+def increment_index_ordered_list(header_type_count,header_type_prev,header_type_curr):
     """ Compute current index for ordered list table of contents.
     """
 

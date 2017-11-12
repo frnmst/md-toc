@@ -10,17 +10,17 @@ ITERATION_TESTS = 256
 RANDOM_STRING_LENGTH = 256
 
 def generate_fake_markdown_file_as_string():
-    data_to_be_read = '''# One'''
+    data_to_be_read = '''# One\n'''
 
     return data_to_be_read
 
-def generate_fake_toc_non_numeric():
+def generate_fake_toc_non_ordered():
 
     fake_toc = '''- [One](one)\n'''
 
     return fake_toc
 
-def generate_fake_toc_numeric():
+def generate_fake_toc_ordered():
 
     fake_toc = '''1. [One](one)\n'''
 
@@ -71,7 +71,7 @@ class TestApi(unittest.TestCase):
 
     def _test_build_toc_line_common(self,text,header,indentation_space):
         md_substring = '[' + text.strip() + '](' + slugify(text) + ')'
-        # Test both numeric and non numeric markdown toc.
+        # Test both ordered and non ordered markdown toc.
         md_non_num_substring = '- ' + md_substring
         md_num_substring = '1. ' + md_substring
         self.assertEqual(api.build_toc_line(header),indentation_space + md_non_num_substring)
@@ -109,7 +109,7 @@ class TestApi(unittest.TestCase):
 
             i += 1
 
-    def test_increment_index_numeric_list(self):
+    def test_increment_index_ordered_list(self):
         ht = {
             '1': 0,
             '2': 0,
@@ -121,14 +121,14 @@ class TestApi(unittest.TestCase):
         # Test the base case
         ht_prev=None
         ht_curr=1
-        api.increment_index_numeric_list(ht,ht_prev,ht_curr)
+        api.increment_index_ordered_list(ht,ht_prev,ht_curr)
         self.assertEqual(ht['1'],1)
 
         # Test two equal header types.
         ht['1'] = 1
         ht_curr = 1
         ht_prev = 1
-        api.increment_index_numeric_list(ht,ht_prev,ht_curr)
+        api.increment_index_ordered_list(ht,ht_prev,ht_curr)
         self.assertEqual(ht['1'],2)
 
         # Test two different header types.
@@ -137,14 +137,19 @@ class TestApi(unittest.TestCase):
         ht['3'] = 2
         ht_curr = 2
         ht_prev = 3
-        api.increment_index_numeric_list(ht,ht_prev,ht_curr)
+        api.increment_index_ordered_list(ht,ht_prev,ht_curr)
         self.assertEqual(ht['2'],2)
 
-    @patch('builtins.open', new_callable=mock_open, read_data=generate_fake_markdown_file_as_string())
-    def test_build_toc_non_numeric(self,m):
+    def test_build_toc_non_ordered(self):
+        # Test non-ordered lists.
+        with patch('builtins.open', mock_open(read_data=generate_fake_markdown_file_as_string())) as m:
+            toc = api.build_toc('foo.md')
+        self.assertEqual(toc,generate_fake_toc_non_ordered())
 
-        toc = api.build_toc('foo.md')
-        self.assertEqual(toc,generate_fake_toc_non_numeric())
+        # Test ordered lists.
+        with patch('builtins.open', mock_open(read_data=generate_fake_markdown_file_as_string())) as m:
+            toc = api.build_toc('foo.md',ordered=True)
+        self.assertEqual(toc,generate_fake_toc_ordered())
 
 
 if __name__ == '__main__':
