@@ -5,19 +5,10 @@ import random
 import unittest
 import sys
 
-ITERATION_TESTS = 1024
-RANDOM_STRING_LENGTH = 512
+ITERATION_TESTS = 256
+RANDOM_STRING_LENGTH = 256
 
 class TestApi(unittest.TestCase):
-
-    def test_m_get_md_header(self):
-        test_text = '# #ciao # bau'
-        test_text = test_text.lstrip('#')
-#        test_text = test_text.strip()
-        print(test_text)
-
-        self.assertEqual(api.get_md_heading('#' + test_text),
-           {'type':1,'text_original':test_text.strip(),'text_slugified':slugify(test_text)})
 
     def test_get_md_header(self):
         i = 0
@@ -99,6 +90,38 @@ class TestApi(unittest.TestCase):
             self._test_build_toc_line_common(test_text,h,indentation_space)
 
             i += 1
+
+    def test_increment_index_numeric_list(self):
+
+        ht = {
+            '1': 0,
+            '2': 0,
+            '3': 0,
+        }
+        ht_prev=None
+        ht_curr=None
+
+        # Test the base case
+        ht_curr=1
+        api.increment_index_numeric_list(ht,ht_prev,ht_curr)
+        self.assertEqual(ht['1'],1)
+
+        # Test two equal header types.
+        ht['1'] = 1
+        ht_curr = 1
+        ht_prev = 1
+        api.increment_index_numeric_list(ht,ht_prev,ht_curr)
+        self.assertEqual(ht['1'],2)
+
+        # Test two different header types.
+        ht['1'] = 1
+        ht['2'] = 1
+        ht['3'] = 2
+        ht_curr = 2
+        ht_prev = 3
+        api.increment_index_numeric_list(ht,ht_prev,ht_curr)
+        self.assertEqual(ht['2'],2)
+
 
 if __name__ == '__main__':
     unitttest.main()

@@ -4,13 +4,64 @@
 
 from slugify import slugify
 
-# Parse file by line.
-# def
+def build_toc(filename, ordered = False):
+    """ Parse file by line and build the table of contents.
+    """
 
-# Index must be incremented by knowing
-# the previous and current header type
-# def increment_index_numeric_list(header_type_prev,header_type_curr):
-#   return index
+    assert isinstance(filename, str)
+    assert isinstance(ordered, boolean)
+
+    index = 0
+    toc_line = ''
+    # Header type counter.
+    ht = {
+        '1': 0,
+        '2': 0,
+        '3': 0,
+    }
+    ht_prev=None
+    ht_curr=None
+
+    # 1. Get file content by line
+    with open(filename, 'r') as f:
+        for line in f:
+            header = get_md_heading(line)
+            # 1.1. Consider valid lines only.
+            if header is not None:
+                # 1.1.1. Increase the header type counter.
+                ht[str(header['type'])] += 1
+                # 1.1.2. Get the current header type.
+                ht_curr = header['type']
+
+                # 1.1.3. Get the current index if necessary.
+                if ordered:
+                    increment_index_numeric_list(ht,ht_prev,ht_curr)
+                # 1.1.4. Get the table of contents line and append it to the
+                #        final string.
+                toc_line += build_toc_line(header,ordered,ht[str(ht_curr)]) + '\n'
+
+                ht_prev = ht_curr
+
+    return toc_line
+
+def increment_index_numeric_list(header_type_count,header_type_prev,header_type_curr):
+    """ Compute current index for ordered list table of contents.
+    """
+
+    assert isinstance(header_type_count, dict)
+    assert '1' in header_type_count
+    assert '2' in header_type_count
+    assert '3' in header_type_count
+    # header_type_prev might be None while header_type_curr can't.
+    assert header_type_curr is not None
+
+    # 1. Base case: header_type_prev is set to None since
+    #    it corresponds to a new table of contents.
+    if header_type_prev is None:
+        header_type_prev = header_type_curr
+
+    # 2. Incerement the current index.
+    header_type_count[str(header_type_curr)] += 1
 
 def build_toc_line(header,ordered=False,index=1):
     """ Return a string which corresponds to a list element
