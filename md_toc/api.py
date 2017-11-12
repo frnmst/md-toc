@@ -9,11 +9,11 @@ def build_toc(filename, ordered = False):
     """
 
     assert isinstance(filename, str)
-    assert isinstance(ordered, boolean)
+    assert isinstance(ordered, bool)
 
     index = 0
     toc_line = ''
-    # Header type counter.
+    # Header type counter. Useful for ordered lists.
     ht = {
         '1': 0,
         '2': 0,
@@ -28,15 +28,13 @@ def build_toc(filename, ordered = False):
             header = get_md_heading(line)
             # 1.1. Consider valid lines only.
             if header is not None:
-                # 1.1.1. Increase the header type counter.
-                ht[str(header['type'])] += 1
-                # 1.1.2. Get the current header type.
+                # 1.1.1. Get the current header type.
                 ht_curr = header['type']
 
-                # 1.1.3. Get the current index if necessary.
+                # 1.1.2. Get the current index if necessary.
                 if ordered:
                     increment_index_numeric_list(ht,ht_prev,ht_curr)
-                # 1.1.4. Get the table of contents line and append it to the
+                # 1.1.3. Get the table of contents line and append it to the
                 #        final string.
                 toc_line += build_toc_line(header,ordered,ht[str(ht_curr)]) + '\n'
 
@@ -60,7 +58,7 @@ def increment_index_numeric_list(header_type_count,header_type_prev,header_type_
     if header_type_prev is None:
         header_type_prev = header_type_curr
 
-    # 2. Incerement the current index.
+    # 2. Increment the current index.
     header_type_count[str(header_type_curr)] += 1
 
 def build_toc_line(header,ordered=False,index=1):
