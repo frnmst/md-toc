@@ -3,10 +3,28 @@ from slugify import slugify
 import string
 import random
 import unittest
+from unittest.mock import patch, mock_open
 import sys
 
 ITERATION_TESTS = 256
 RANDOM_STRING_LENGTH = 256
+
+def generate_fake_markdown_file_as_string():
+    data_to_be_read = '''# One'''
+
+    return data_to_be_read
+
+def generate_fake_toc_non_numeric():
+
+    fake_toc = '''- [One](one)\n'''
+
+    return fake_toc
+
+def generate_fake_toc_numeric():
+
+    fake_toc = '''1. [One](one)\n'''
+
+    return fake_toc
 
 class TestApi(unittest.TestCase):
 
@@ -122,8 +140,11 @@ class TestApi(unittest.TestCase):
         api.increment_index_numeric_list(ht,ht_prev,ht_curr)
         self.assertEqual(ht['2'],2)
 
-    def test_build_toc(self):
-        pass
+    @patch('builtins.open', new_callable=mock_open, read_data=generate_fake_markdown_file_as_string())
+    def test_build_toc_non_numeric(self,m):
+
+        toc = api.build_toc('foo.md')
+        self.assertEqual(toc,generate_fake_toc_non_numeric())
 
 
 if __name__ == '__main__':

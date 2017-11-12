@@ -2,6 +2,8 @@
 
 from slugify import slugify
 
+#def write_toc(input_filename, output_filename):
+#
 
 def build_toc(filename, ordered = False):
     """ Parse file by line and build the table of contents.
@@ -22,7 +24,8 @@ def build_toc(filename, ordered = False):
 
     # 1. Get file content by line
     with open(filename, 'r') as f:
-        for line in f:
+        line = f.readline()
+        while line:
             # 1.1. Get the basic information.
             header = get_md_heading(line)
             # 1.2. Consider valid lines only.
@@ -33,11 +36,14 @@ def build_toc(filename, ordered = False):
                 # 1.2.2. Get the current index if necessary.
                 if ordered:
                     increment_index_numeric_list(ht,ht_prev,ht_curr)
+
                 # 1.2.3. Get the table of contents line and append it to the
                 #        final string.
                 toc_line += build_toc_line(header,ordered,ht[str(ht_curr)]) + '\n'
 
                 ht_prev = ht_curr
+
+                line = f.readline()
 
     return toc_line
 
