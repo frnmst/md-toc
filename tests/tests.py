@@ -92,7 +92,6 @@ class TestApi(unittest.TestCase):
             i += 1
 
     def test_increment_index_numeric_list(self):
-
         ht = {
             '1': 0,
             '2': 0,
@@ -102,6 +101,7 @@ class TestApi(unittest.TestCase):
         ht_curr=None
 
         # Test the base case
+        ht_prev=None
         ht_curr=1
         api.increment_index_numeric_list(ht,ht_prev,ht_curr)
         self.assertEqual(ht['1'],1)
@@ -121,6 +121,9 @@ class TestApi(unittest.TestCase):
         ht_prev = 3
         api.increment_index_numeric_list(ht,ht_prev,ht_curr)
         self.assertEqual(ht['2'],2)
+
+    def test_build_toc(self):
+        pass
 
 
 if __name__ == '__main__':

@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
-# Table of contents.
-
 from slugify import slugify
+
 
 def build_toc(filename, ordered = False):
     """ Parse file by line and build the table of contents.
@@ -11,7 +10,6 @@ def build_toc(filename, ordered = False):
     assert isinstance(filename, str)
     assert isinstance(ordered, bool)
 
-    index = 0
     toc_line = ''
     # Header type counter. Useful for ordered lists.
     ht = {
@@ -25,16 +23,17 @@ def build_toc(filename, ordered = False):
     # 1. Get file content by line
     with open(filename, 'r') as f:
         for line in f:
+            # 1.1. Get the basic information.
             header = get_md_heading(line)
-            # 1.1. Consider valid lines only.
+            # 1.2. Consider valid lines only.
             if header is not None:
-                # 1.1.1. Get the current header type.
+                # 1.2.1. Get the current header type.
                 ht_curr = header['type']
 
-                # 1.1.2. Get the current index if necessary.
+                # 1.2.2. Get the current index if necessary.
                 if ordered:
                     increment_index_numeric_list(ht,ht_prev,ht_curr)
-                # 1.1.3. Get the table of contents line and append it to the
+                # 1.2.3. Get the table of contents line and append it to the
                 #        final string.
                 toc_line += build_toc_line(header,ordered,ht[str(ht_curr)]) + '\n'
 
