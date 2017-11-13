@@ -74,8 +74,9 @@ def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
     # Preliminary operations.
     # Remove trailing new line(s).
     toc = toc.rstrip()
-    # Create the string that needs to be written.
-    final_string = toc_marker + '\n\n' + toc + '\n' + toc_marker + '\n\n'
+    # Create the string that needs to be written. Note that if this string
+    # is written, the first toc will already be present in the markdown file.
+    final_string =  toc + '\n' + toc_marker + '\n\n'
 
     # There are three cases.
     # In doing case 2 and 3 we need that this functions writes the
@@ -87,8 +88,7 @@ def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
     # 2. 1 toc marker: Insert the toc in that position.
     elif toc_marker_lines['first'] is not None:
         # + compute_string_lines(final_string)
-        # insert_toc(final_string,toc_marker_lines['first'])
-        pass
+        insert_toc_at_line(filename, final_string,toc_marker_lines['first'])
     # 3. 2 toc markers: replace old toc with new one.
     else:
         pass
@@ -134,7 +134,7 @@ def build_toc(filename, ordered = False):
 
                 ht_prev = ht_curr
 
-                line = f.readline()
+            line = f.readline()
 
     return toc_line
 
