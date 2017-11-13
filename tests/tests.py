@@ -10,19 +10,19 @@ ITERATION_TESTS = 256
 RANDOM_STRING_LENGTH = 256
 
 def generate_fake_markdown_file_as_string():
-    data_to_be_read = '''# One\n'''
+    data_to_be_read = '''# One\n## One.Two\n'''
 
     return data_to_be_read
 
 def generate_fake_toc_non_ordered():
 
-    fake_toc = '''- [One](one)\n'''
+    fake_toc = '''- [One](one)\n    - [One.Two](one-two)\n'''
 
     return fake_toc
 
 def generate_fake_toc_ordered():
 
-    fake_toc = '''1. [One](one)\n'''
+    fake_toc = '''1. [One](one)\n    1. [One.Two](one-two)\n'''
 
     return fake_toc
 
