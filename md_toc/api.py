@@ -2,8 +2,99 @@
 
 from slugify import slugify
 
-#def write_toc(input_filename, output_filename):
-#
+def insert_toc_at_line(filename, toc, line_id):
+    """ Put the table of contents on the specified line number.
+    """
+
+    assert isinstance(filename, str)
+    assert isinstance(toc, str)
+    assert isinstance(line_id, int)
+
+    # 1. Read the whole file.
+    with open(filename, 'r') as f:
+        lines = f.readlines()
+
+    line_number = 1
+    # 2. Rewrite the file with the toc.
+    with open(filename, 'w') as f:
+        for line in lines:
+            if line_number == line_id:
+                # A very simple append operation: if the original line ends
+                # with a '\n' character, the toc will be added on the next
+                # line.
+                line += toc
+            f.write(line)
+            line_number += 1
+
+def compute_string_lines(input_string):
+    """ Compute the number of new line characters.
+    """
+
+    assert isinstance(input_string, str)
+
+    return input_string.count('\n')
+
+def get_toc_markers_line_positions(filename,toc_marker='[](TOC)'):
+    """ Get the line numbers for the toc markers.
+        The toc marker is '[](TOC)' by default since this string is invisible
+        after being interpreted.
+    """
+
+    assert isinstance(filename, str)
+
+    toc_marker_counter = 0
+    toc_marker_lines = {
+        'first': None,
+        'second': None,
+    }
+    line_number = 1
+
+    with open(filename,'r') as f:
+        line = f.readline()
+        while line:
+            # Check if line corresponds to the TOC marker.
+            if line.strip() == toc_marker:
+                toc_marker_counter += 1
+                if toc_marker_counter == 1:
+                    toc_marker_lines['first'] = line_number
+                elif toc_marker_counter == 2:
+                    toc_marker_lines['second'] = line_number
+            line = f.readline()
+            line_number += 1
+
+    return toc_marker_lines
+
+def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
+    """ Write the table of contents.
+    """
+
+    assert isinstance(filename, str)
+    assert isinstance(toc, str)
+
+    # Preliminary operations.
+    # Remove trailing new line(s).
+    toc = toc.rstrip()
+    # Create the string that needs to be written.
+    final_string = toc_marker + '\n\n' + toc + '\n' + toc_marker + '\n\n'
+
+    # There are three cases.
+    # In doing case 2 and 3 we need that this functions writes the
+    # 2 [](TOC) markers in the correct position on the file.
+    toc_marker_lines = get_toc_markers_line_positions(filename, toc_marker)
+    # 1. No toc marker in file: nothing to do.
+    if toc_marker_lines['first'] is None and toc_marker_lines['second'] is None:
+        pass
+    # 2. 1 toc marker: Insert the toc in that position.
+    elif toc_marker_lines['first'] is not None:
+        # + compute_string_lines(final_string)
+        # insert_toc(final_string,toc_marker_lines['first'])
+        pass
+    # 3. 2 toc markers: replace old toc with new one.
+    else:
+        pass
+        # Remove lines (from, to).
+        # remove(toc_marker_lines['first'],toc_marker_lines['last'])
+        # insert_toc(final_string,toc_marker_lines['first'])
 
 def build_toc(filename, ordered = False):
     """ Parse file by line and build the table of contents.
