@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 
 from slugify import slugify
+from .api_exceptions import (LineOutOfFileBoundsError)
 
+# Since we are doing a rw operation, it is possbile that
+# input and output are done on different files.
 def insert_toc_at_line(filename, toc, line_id):
     """ Put the table of contents on the specified line number.
+        This is a generic function that works with any string.
     """
 
     assert isinstance(filename, str)
@@ -14,8 +18,12 @@ def insert_toc_at_line(filename, toc, line_id):
     with open(filename, 'r') as f:
         lines = f.readlines()
 
+    # 2. Raise an exception if we are trying to write on a non-existing line.
+    if line_id > len(lines) or line_id <= 0:
+        raise LineOutOfFileBoundsError
+
     line_number = 1
-    # 2. Rewrite the file with the toc.
+    # 3. Rewrite the file with the toc.
     with open(filename, 'w') as f:
         for line in lines:
             if line_number == line_id:
@@ -25,14 +33,6 @@ def insert_toc_at_line(filename, toc, line_id):
                 line += toc
             f.write(line)
             line_number += 1
-
-def compute_string_lines(input_string):
-    """ Compute the number of new line characters.
-    """
-
-    assert isinstance(input_string, str)
-
-    return input_string.count('\n')
 
 def get_toc_markers_line_positions(filename,toc_marker='[](TOC)'):
     """ Get the line numbers for the toc markers.
@@ -55,8 +55,10 @@ def get_toc_markers_line_positions(filename,toc_marker='[](TOC)'):
             # Check if line corresponds to the TOC marker.
             if line.strip() == toc_marker:
                 toc_marker_counter += 1
+                # Get the first toc marker line.
                 if toc_marker_counter == 1:
                     toc_marker_lines['first'] = line_number
+                # Get the second toc marker line.
                 elif toc_marker_counter == 2:
                     toc_marker_lines['second'] = line_number
             line = f.readline()
@@ -87,7 +89,8 @@ def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
         pass
     # 2. 1 toc marker: Insert the toc in that position.
     elif toc_marker_lines['first'] is not None:
-        # + compute_string_lines(final_string)
+        # Compute the number of new line characters:
+        # input_string.count('\n')
         insert_toc_at_line(filename, final_string,toc_marker_lines['first'])
     # 3. 2 toc markers: replace old toc with new one.
     else:
@@ -205,6 +208,8 @@ def build_toc_line(header,ordered=False,index=1):
 def get_md_heading(line):
     """ Given a line extract the title type and its text.
         Return the three variable components needed to create a line.
+        Return None if the input line does not correspond to one of
+        designated cases.
     """
 
     assert isinstance(line, str)

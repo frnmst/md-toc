@@ -1,4 +1,4 @@
-from md_toc import api
+from md_toc import api, api_exceptions
 from slugify import slugify
 import string
 import random
@@ -9,25 +9,27 @@ import sys
 ITERATION_TESTS = 256
 RANDOM_STRING_LENGTH = 256
 
+# Note:
+# To preserve the success of the tests,
+# these generate_* functions are
+# not to be modified.
 def generate_fake_markdown_file_as_string():
-    data_to_be_read = '''# One\n## One.Two\n'''
+    DATA_TO_BE_READ = '''# One\n## One.Two\n'''
 
-    return data_to_be_read
+    return DATA_TO_BE_READ
 
 def generate_fake_toc_non_ordered():
+    FAKE_TOC = '''- [One](one)\n    - [One.Two](one-two)\n'''
 
-    fake_toc = '''- [One](one)\n    - [One.Two](one-two)\n'''
-
-    return fake_toc
+    return FAKE_TOC
 
 def generate_fake_toc_ordered():
+    FAKE_TOC = '''1. [One](one)\n    1. [One.Two](one-two)\n'''
 
-    fake_toc = '''1. [One](one)\n    1. [One.Two](one-two)\n'''
-
-    return fake_toc
+    return FAKE_TOC
 
 def generate_fake_markdown_file_with_one_toc_marker_as_string():
-    data_to_be_read = '''\
+    DATA_TO_BE_READ = '''\
 # One\n\
 ## One.Two\n\
 Hello, this is some content\n\
@@ -35,10 +37,10 @@ Hello, this is some content\n\
 This is some more content\n\
 Bye\n\
 '''
-    return data_to_be_read
+    return DATA_TO_BE_READ
 
 def generate_fake_markdown_file_with_two_toc_markers_as_string():
-    data_to_be_read = '''\
+    DATA_TO_BE_READ = '''\
 # One\n\
 ## One.Two\n\
 Hello, this is some content\n\
@@ -51,7 +53,7 @@ content.\n\
 [](TOC)\n\
 End of toc\n\
 '''
-    return data_to_be_read
+    return DATA_TO_BE_READ
 
 
 class TestApi(unittest.TestCase):
@@ -186,16 +188,64 @@ class TestApi(unittest.TestCase):
         self.assertEqual(markers,{'first':None , 'second':None })
 
         # Test one marker.
-        with patch('builtins.open', mock_open(read_data=generate_fake_markdown_file_with_one_toc_marker_as_string())) as m: 
+        with patch('builtins.open', mock_open(read_data=generate_fake_markdown_file_with_one_toc_marker_as_string())) as m:
            markers = api.get_toc_markers_line_positions('foo.md',toc_marker='[](TOC)')
         self.assertEqual(markers,{'first':4 , 'second':None })
 
         # Test two (or more) markers.
-        with patch('builtins.open', mock_open(read_data=generate_fake_markdown_file_with_two_toc_markers_as_string())) as m: 
+        with patch('builtins.open', mock_open(read_data=generate_fake_markdown_file_with_two_toc_markers_as_string())) as m:
            markers = api.get_toc_markers_line_positions('foo.md',toc_marker='[](TOC)')
         self.assertEqual(markers,{'first':4 , 'second':10 })
 
+    def test_insert_toc_at_line(self):
+        toc = "Some toc"
 
+        # Insert toc in an existing line.
+        line_no=2
+        buff = generate_fake_markdown_file_as_string()
+
+        with patch('builtins.open', mock_open(read_data=buff)) as m:
+            api.insert_toc_at_line('foo.md', toc, line_no)
+
+        # Get a similar representation of what the readline function returns:
+        # separate each line and place it into a list.
+        lines = buff.split('\n')
+
+        # Strip the last list element which would result in an extra newline
+        # character. This exsists because the resul of separating an empty 
+        # string. See https://docs.python.org/3.6/library/stdtypes.html#str.split
+        lines = lines[0:-1]
+
+        # Ge the mock.
+        handle = m()
+
+        line_counter = 1
+        for line in lines:
+
+            # Put the newline character at the end of the line.
+            line = line + '\n'
+
+            if line_counter == line_no:
+                # At most one write operation must be done in this manner.
+                handle.write.assert_any_call(line + toc)
+            else:
+                handle.write.assert_any_call(line)
+            line_counter += 1
+
+        # Insert toc in a non-existing line. We simply have to check if the
+        # correct exception is raised.
+        line_no=2**32
+
+        with self.assertRaises(api_exceptions.LineOutOfFileBoundsError):
+            with patch('builtins.open', mock_open(read_data=generate_fake_markdown_file_as_string())) as m:
+                api.insert_toc_at_line('foo.md', toc, line_no)
+
+        # Same as prevous case but this is an always-true condition.
+        line_no=0
+
+        with self.assertRaises(api_exceptions.LineOutOfFileBoundsError):
+            with patch('builtins.open', mock_open(read_data=generate_fake_markdown_file_as_string())) as m:
+                api.insert_toc_at_line('foo.md', toc, line_no)
 
 if __name__ == '__main__':
     unitttest.main()
