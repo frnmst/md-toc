@@ -26,6 +26,34 @@ def generate_fake_toc_ordered():
 
     return fake_toc
 
+def generate_fake_markdown_file_with_one_toc_marker_as_string():
+    data_to_be_read = '''\
+# One\n\
+## One.Two\n\
+Hello, this is some content\n\
+[](TOC)\n\
+This is some more content\n\
+Bye\n\
+'''
+    return data_to_be_read
+
+def generate_fake_markdown_file_with_two_toc_markers_as_string():
+    data_to_be_read = '''\
+# One\n\
+## One.Two\n\
+Hello, this is some content\n\
+[](TOC)\n\
+This is some more content\n\
+Bye\n\
+And again let there be\n\
+more\n\
+content.\n\
+[](TOC)\n\
+End of toc\n\
+'''
+    return data_to_be_read
+
+
 class TestApi(unittest.TestCase):
 
     def test_get_md_header(self):
@@ -150,6 +178,23 @@ class TestApi(unittest.TestCase):
         with patch('builtins.open', mock_open(read_data=generate_fake_markdown_file_as_string())) as m:
             toc = api.build_toc('foo.md',ordered=True)
         self.assertEqual(toc,generate_fake_toc_ordered())
+
+    def test_get_toc_markers_line_positions(self):
+        # Test zero markers.
+        with patch('builtins.open', mock_open(read_data=generate_fake_markdown_file_as_string())) as m:
+           markers = api.get_toc_markers_line_positions('foo.md',toc_marker='[](TOC)')
+        self.assertEqual(markers,{'first':None , 'second':None })
+
+        # Test one marker.
+        with patch('builtins.open', mock_open(read_data=generate_fake_markdown_file_with_one_toc_marker_as_string())) as m: 
+           markers = api.get_toc_markers_line_positions('foo.md',toc_marker='[](TOC)')
+        self.assertEqual(markers,{'first':4 , 'second':None })
+
+        # Test two (or more) markers.
+        with patch('builtins.open', mock_open(read_data=generate_fake_markdown_file_with_two_toc_markers_as_string())) as m: 
+           markers = api.get_toc_markers_line_positions('foo.md',toc_marker='[](TOC)')
+        self.assertEqual(markers,{'first':4 , 'second':10 })
+
 
 
 if __name__ == '__main__':

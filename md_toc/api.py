@@ -76,7 +76,7 @@ def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
     toc = toc.rstrip()
     # Create the string that needs to be written. Note that if this string
     # is written, the first toc will already be present in the markdown file.
-    final_string =  toc + '\n' + toc_marker + '\n\n'
+    final_string = '\n' + toc + '\n' + toc_marker + '\n\n'
 
     # There are three cases.
     # In doing case 2 and 3 we need that this functions writes the
