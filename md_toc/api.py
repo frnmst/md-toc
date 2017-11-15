@@ -3,19 +3,20 @@
 from slugify import slugify
 from .api_exceptions import (LineOutOfFileBoundsError)
 
-# Since we are doing a rw operation, it is possbile that
-# input and output are done on different files.
-def insert_toc_at_line(filename, toc, line_id):
+def insert_toc(input_file, toc, line_id, output_file):
     """ Put the table of contents on the specified line number.
         This is a generic function that works with any string.
+        Since we are doing a rw operation, it is possbile that
+        input and output are done on different files.
     """
 
-    assert isinstance(filename, str)
+    assert isinstance(input_file, str)
     assert isinstance(toc, str)
     assert isinstance(line_id, int)
+    assert isinstance(output_file, str)
 
     # 1. Read the whole file.
-    with open(filename, 'r') as f:
+    with open(input_file, 'r') as f:
         lines = f.readlines()
 
     # 2. Raise an exception if we are trying to write on a non-existing line.
@@ -24,7 +25,7 @@ def insert_toc_at_line(filename, toc, line_id):
 
     line_number = 1
     # 3. Rewrite the file with the toc.
-    with open(filename, 'w') as f:
+    with open(output_file, 'w') as f:
         for line in lines:
             if line_number == line_id:
                 # A very simple append operation: if the original line ends
@@ -66,6 +67,45 @@ def get_toc_markers_line_positions(filename,toc_marker='[](TOC)'):
 
     return toc_marker_lines
 
+def remove_toc(input_file, line_from, line_to, output_file):
+    """ Remove the specified line interval from input_file and write the result
+        to output_file.
+    """
+
+    assert isinstance(input_file, str)
+    assert isinstance(line_from, int)
+    assert isinstance(output_file, str)
+    assert isinstance(line_to, int)
+
+    # 1. Read the whole file.
+    with open(input_file, 'r') as f:
+        lines = f.readlines()
+
+    # 2. Save the total lines.
+    total_lines = len(lines)
+
+    # 3. Raise an exception if we are trying to delete an invalid line
+    #    or we are dealing with wrong input.
+    if (line_from > line_to
+        or line_from > total_lines
+        or line_to > total_lines
+        or line_from == line_to
+        or line_from <= 0
+        or line_to <= 0):
+        raise LineOutOfFileBoundsError
+
+    line_number = 1
+    # 3. Rewrite the file without the toc.
+    with open(output_file, 'w') as f:
+        for line in lines:
+            # Ignore the line interval where the toc lies.
+            if line_number >= line_from and line_number <= line_to:
+                pass
+            # Write the rest of the file.
+            else:
+                f.write(line)
+            line_number += 1
+
 def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
     """ Write the table of contents.
     """
@@ -73,31 +113,35 @@ def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
     assert isinstance(filename, str)
     assert isinstance(toc, str)
 
-    # Preliminary operations.
-    # Remove trailing new line(s).
+    # 1. Remove trailing new line(s).
     toc = toc.rstrip()
-    # Create the string that needs to be written. Note that if this string
-    # is written, the first toc will already be present in the markdown file.
-    final_string = '\n' + toc + '\n' + toc_marker + '\n\n'
+
+    # 2. Create the string that needs to be written. Note that if this string
+    #    is written, the first toc will already be present in the markdown
+    #    file.
+    final_string = '\n' + toc + '\n\n' + toc_marker + '\n'
 
     # There are three cases.
-    # In doing case 2 and 3 we need that this functions writes the
-    # 2 [](TOC) markers in the correct position on the file.
+    # In doing case 2 and 3 this function must write the
+    # two toc markers in the correct position on the file.
+
+    # 3. Get the toc markers line positions.
     toc_marker_lines = get_toc_markers_line_positions(filename, toc_marker)
-    # 1. No toc marker in file: nothing to do.
+
+    # 4.1 No toc marker in file: nothing to do.
     if toc_marker_lines['first'] is None and toc_marker_lines['second'] is None:
         pass
-    # 2. 1 toc marker: Insert the toc in that position.
-    elif toc_marker_lines['first'] is not None:
-        # Compute the number of new line characters:
-        # input_string.count('\n')
-        insert_toc_at_line(filename, final_string,toc_marker_lines['first'])
-    # 3. 2 toc markers: replace old toc with new one.
+
+    # 4.2. 1 toc marker: Insert the toc in that position.
+    elif toc_marker_lines['first'] is not None and toc_marker_lines['second'] is None:
+        insert_toc(filename, final_string, toc_marker_lines['first'], filename)
+
+    # 4.3. 2 toc markers: replace old toc with new one.
     else:
-        pass
-        # Remove lines (from, to).
-        # remove(toc_marker_lines['first'],toc_marker_lines['last'])
-        # insert_toc(final_string,toc_marker_lines['first'])
+        # Remove the old toc but preserve the first toc marker: that's why the
+        # +1 is there.
+        remove_toc(filename, toc_marker_lines['first']+1,toc_marker_lines['second'], filename)
+        insert_toc(filename, final_string, toc_marker_lines['first'], filename)
 
 def build_toc(filename, ordered = False):
     """ Parse file by line and build the table of contents.

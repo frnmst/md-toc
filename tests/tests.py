@@ -197,7 +197,7 @@ class TestApi(unittest.TestCase):
            markers = api.get_toc_markers_line_positions('foo.md',toc_marker='[](TOC)')
         self.assertEqual(markers,{'first':4 , 'second':10 })
 
-    def test_insert_toc_at_line(self):
+    def test_insert_toc(self):
         toc = "Some toc"
 
         # Insert toc in an existing line.
@@ -205,7 +205,7 @@ class TestApi(unittest.TestCase):
         buff = generate_fake_markdown_file_as_string()
 
         with patch('builtins.open', mock_open(read_data=buff)) as m:
-            api.insert_toc_at_line('foo.md', toc, line_no)
+            api.insert_toc('foo.md', toc, line_no, 'foo_two.md')
 
         # Get a similar representation of what the readline function returns:
         # separate each line and place it into a list.
@@ -238,14 +238,14 @@ class TestApi(unittest.TestCase):
 
         with self.assertRaises(api_exceptions.LineOutOfFileBoundsError):
             with patch('builtins.open', mock_open(read_data=generate_fake_markdown_file_as_string())) as m:
-                api.insert_toc_at_line('foo.md', toc, line_no)
+                api.insert_toc('foo.md', toc, line_no, 'foo.md')
 
         # Same as prevous case but this is an always-true condition.
         line_no=0
 
         with self.assertRaises(api_exceptions.LineOutOfFileBoundsError):
             with patch('builtins.open', mock_open(read_data=generate_fake_markdown_file_as_string())) as m:
-                api.insert_toc_at_line('foo.md', toc, line_no)
+                api.insert_toc('foo.md', toc, line_no, 'foo.md')
 
 if __name__ == '__main__':
     unitttest.main()
