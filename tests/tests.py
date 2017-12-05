@@ -14,48 +14,38 @@ RANDOM_STRING_LENGTH = 256
 # To preserve the success of the tests,
 # these generate_* functions are
 # not to be modified.
-def generate_fake_markdown_file_as_string():
-    DATA_TO_BE_READ = '''# One\n## One.Two\n'''
+def generate_fake_markdown_file_with_no_toc_markers():
+    DATA_TO_BE_READ = '''\
+# One\n\
+## One.Two\n\
+'''
 
     return DATA_TO_BE_READ
-
-
-def generate_fake_toc_non_ordered():
-    FAKE_TOC = '''- [One](one)\n    - [One.Two](one-two)\n'''
-
-    return FAKE_TOC
-
-
-def generate_fake_toc_ordered():
-    FAKE_TOC = '''1. [One](one)\n    1. [One.Two](one-two)\n'''
-
-    return FAKE_TOC
 
 
 def generate_fake_markdown_file_with_one_toc_marker_as_string():
     DATA_TO_BE_READ = '''\
 # One\n\
-## One.Two\n\
 Hello, this is some content\n\
 [](TOC)\n\
 This is some more content\n\
 Bye\n\
+## One.Two\n\
 '''
     return DATA_TO_BE_READ
 
 
 def generate_fake_markdown_file_with_two_toc_markers_as_string():
     DATA_TO_BE_READ = '''\
-# One\n\
-## One.Two\n\
+# Toc\n\
 Hello, this is some content\n\
 [](TOC)\n\
-This is some more content\n\
-Bye\n\
-And again let there be\n\
-more\n\
-content.\n\
+- [Toc](toc)
+- [One](one)
+    - [One.Two](one-two)
 [](TOC)\n\
+# One\n\
+## One.Two\n\
 End of toc\n\
 '''
     return DATA_TO_BE_READ
