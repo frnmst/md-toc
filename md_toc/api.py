@@ -4,110 +4,6 @@ from slugify import slugify
 from .exceptions import (LineOutOfFileBoundsError)
 import fpyutils
 
-def insert_toc(input_file, toc, line_id, output_file):
-    """ Put the table of contents on the specified line number.
-        This is a generic function that works with any string.
-        Since we are doing a rw operation, it is possbile that
-        input and output are done on different files.
-    """
-
-    assert isinstance(input_file, str)
-    assert isinstance(toc, str)
-    assert isinstance(line_id, int)
-    assert isinstance(output_file, str)
-
-    # 1. Read the whole file.
-    with open(input_file, 'r') as f:
-        lines = f.readlines()
-
-    # 2. Raise an exception if we are trying to write on a non-existing line.
-    if line_id > len(lines) or line_id <= 0:
-        raise LineOutOfFileBoundsError
-
-    line_number = 1
-    # 3. Rewrite the file with the toc.
-    with open(output_file, 'w') as f:
-        for line in lines:
-            if line_number == line_id:
-                # A very simple append operation: if the original line ends
-                # with a '\n' character, the toc will be added on the next
-                # line.
-                line += toc
-            f.write(line)
-            line_number += 1
-
-# no_of_occurrencies argument
-def get_toc_markers_line_positions(filename,toc_marker='[](TOC)'):
-    """ Get the line numbers for the toc markers.
-        The toc marker is '[](TOC)' by default since this string is invisible
-        after being interpreted.
-    """
-
-    assert isinstance(filename, str)
-
-    toc_marker_counter = 0
-    toc_marker_lines = {
-        'first': None,
-        'second': None,
-    }
-    line_number = 1
-
-    with open(filename,'r') as f:
-        line = f.readline()
-        while line:
-            # Check if line corresponds to the TOC marker.
-            if line.strip() == toc_marker:
-                toc_marker_counter += 1
-                # Get the first toc marker line.
-                if toc_marker_counter == 1:
-                    toc_marker_lines['first'] = line_number
-                # Get the second toc marker line.
-                elif toc_marker_counter == 2:
-                    toc_marker_lines['second'] = line_number
-            line = f.readline()
-            line_number += 1
-
-    return toc_marker_lines
-
-def remove_toc(input_file, line_from, line_to, output_file):
-    """ Remove the specified line interval from input_file and write the result
-        to output_file.
-    """
-
-    assert isinstance(input_file, str)
-    assert isinstance(line_from, int)
-    assert isinstance(output_file, str)
-    assert isinstance(line_to, int)
-
-    # 1. Read the whole file.
-    with open(input_file, 'r') as f:
-        lines = f.readlines()
-
-    # 2. Save the total lines.
-    total_lines = len(lines)
-
-    # 3. Raise an exception if we are trying to delete an invalid line
-    #    or we are dealing with wrong input.
-    if (line_from > line_to
-        or line_from > total_lines
-        or line_to > total_lines
-        or line_from == line_to
-        or line_from <= 0
-        or line_to <= 0):
-        raise LineOutOfFileBoundsError
-
-    line_number = 1
-    # 3. Rewrite the file without the toc.
-    with open(output_file, 'w') as f:
-        for line in lines:
-            # Ignore the line interval where the toc lies.
-            if line_number >= line_from and line_number <= line_to:
-                pass
-                # Write the rest of the file.
-            else:
-                f.write(line)
-            line_number += 1
-
 def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
     """ Write the table of contents.
     """
@@ -128,23 +24,22 @@ def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
     # two toc markers in the correct position on the file.
 
     # 3. Get the toc markers line positions.
-    toc_marker_lines = get_toc_markers_line_positions(filename, toc_marker)
+    toc_marker_lines = fpyutils.get_line_matches(filename, toc_marker, 2, loose_matching=True)
 
     # 4.1 No toc marker in file: nothing to do.
-#    if toc_marker_lines['first'] is None and toc_marker_lines['second'] is None:
-    if 'first' not in toc_marker_lines and 'second' not in toc_marker_lines:
+    if 1 not in toc_marker_lines and 2 not in toc_marker_lines:
         pass
 
     # 4.2. 1 toc marker: Insert the toc in that position.
-    elif toc_marker_lines['first'] is not None and toc_marker_lines['second'] is None:
-        insert_toc(filename, final_string, toc_marker_lines['first'], filename)
+    elif 1 in toc_marker_lines and 2 not in toc_marker_lines:
+        fpyutils.insert_string_at_line(filename, final_string, toc_marker_lines[1], filename)
 
     # 4.3. 2 toc markers: replace old toc with new one.
     else:
         # Remove the old toc but preserve the first toc marker: that's why the
         # +1 is there.
-        remove_toc(filename, toc_marker_lines['first']+1,toc_marker_lines['second'], filename)
-        insert_toc(filename, final_string, toc_marker_lines['first'], filename)
+        fpyutils.remove_line_interval(filename, toc_marker_lines[1]+1,toc_marker_lines[2], filename)
+        fpyutils.insert_string_at_line(filename, final_string, toc_marker_lines[1], filename)
 
 def build_toc(filename, ordered = False):
     """ Parse file by line and build the table of contents.
