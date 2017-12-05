@@ -1,4 +1,4 @@
-from md_toc import api, api_exceptions
+from md_toc import api, exceptions
 from slugify import slugify
 import string
 import random
@@ -236,16 +236,20 @@ class TestApi(unittest.TestCase):
         # correct exception is raised.
         line_no=2**32
 
-        with self.assertRaises(api_exceptions.LineOutOfFileBoundsError):
+        with self.assertRaises(exceptions.LineOutOfFileBoundsError):
             with patch('builtins.open', mock_open(read_data=generate_fake_markdown_file_as_string())) as m:
                 api.insert_toc('foo.md', toc, line_no, 'foo.md')
 
         # Same as prevous case but this is an always-true condition.
         line_no=0
 
-        with self.assertRaises(api_exceptions.LineOutOfFileBoundsError):
+        with self.assertRaises(exceptions.LineOutOfFileBoundsError):
             with patch('builtins.open', mock_open(read_data=generate_fake_markdown_file_as_string())) as m:
                 api.insert_toc('foo.md', toc, line_no, 'foo.md')
+
+    def test_remove_toc(self):
+        pass
+
 
 if __name__ == '__main__':
     unitttest.main()

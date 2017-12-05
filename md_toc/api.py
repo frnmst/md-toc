@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 from slugify import slugify
-from .api_exceptions import (LineOutOfFileBoundsError)
+from .exceptions import (LineOutOfFileBoundsError)
+import fpyutils
 
 def insert_toc(input_file, toc, line_id, output_file):
     """ Put the table of contents on the specified line number.
@@ -35,6 +36,7 @@ def insert_toc(input_file, toc, line_id, output_file):
             f.write(line)
             line_number += 1
 
+# no_of_occurrencies argument
 def get_toc_markers_line_positions(filename,toc_marker='[](TOC)'):
     """ Get the line numbers for the toc markers.
         The toc marker is '[](TOC)' by default since this string is invisible
@@ -101,7 +103,7 @@ def remove_toc(input_file, line_from, line_to, output_file):
             # Ignore the line interval where the toc lies.
             if line_number >= line_from and line_number <= line_to:
                 pass
-            # Write the rest of the file.
+                # Write the rest of the file.
             else:
                 f.write(line)
             line_number += 1
@@ -129,7 +131,8 @@ def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
     toc_marker_lines = get_toc_markers_line_positions(filename, toc_marker)
 
     # 4.1 No toc marker in file: nothing to do.
-    if toc_marker_lines['first'] is None and toc_marker_lines['second'] is None:
+#    if toc_marker_lines['first'] is None and toc_marker_lines['second'] is None:
+    if 'first' not in toc_marker_lines and 'second' not in toc_marker_lines:
         pass
 
     # 4.2. 1 toc marker: Insert the toc in that position.
