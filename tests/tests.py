@@ -22,6 +22,23 @@ def generate_fake_markdown_file_with_no_toc_markers():
 
     return DATA_TO_BE_READ
 
+def generate_fake_toc_non_ordered():
+    """This refers to the non-toc marker version."""
+    TOC = '''\
+- [One](one)\n\
+    - [One.Two](one-two)\n\
+'''
+
+    return TOC
+
+def generate_fake_toc_ordered():
+    """This refers to the non-toc marker version."""
+    TOC = '''\
+1. [One](one)\n\
+    1. [One.Two](one-two)\n\
+'''
+
+    return TOC
 
 def generate_fake_markdown_file_with_one_toc_marker_as_string():
     DATA_TO_BE_READ = '''\
@@ -204,27 +221,34 @@ class TestApi(unittest.TestCase):
         # Test non-ordered lists.
         with patch(
                 'builtins.open',
-                mock_open(read_data=generate_fake_markdown_file_as_string())):
+                mock_open(read_data=generate_fake_markdown_file_with_no_toc_markers())):
             toc = api.build_toc('foo.md')
         self.assertEqual(toc, generate_fake_toc_non_ordered())
 
         # Test ordered lists.
         with patch(
                 'builtins.open',
-                mock_open(read_data=generate_fake_markdown_file_as_string())):
+                mock_open(read_data=generate_fake_markdown_file_with_no_toc_markers())):
             toc = api.build_toc('foo.md', ordered=True)
         self.assertEqual(toc, generate_fake_toc_ordered())
 
     def test_write_toc_on_md_file(self):
 
-        pass
         # Case 1: No toc marker in file: nothing to do.
+        with patch(
+                'builtins.open',
+                mock_open(read_data=generate_fake_markdown_file_with_no_toc_markers())):
+            toc = None
+        #    write_toc_on_md_file('foo.md',None)
+        #    assert not called write (insert nor delete).
 
         # Case 2: 1 toc marker: Insert the toc in that position.
+        #    assert not called write (insert).
 
         # Case 3: 2 toc markers: replace old toc with new one.
         # Remove the old toc but preserve the first toc marker: that's why the
         # +1 is there.
+        # assert called write (insert and delete)
 
 
 if __name__ == '__main__':
