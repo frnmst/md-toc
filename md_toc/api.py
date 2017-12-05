@@ -4,8 +4,9 @@ from slugify import slugify
 from .exceptions import (LineOutOfFileBoundsError)
 import fpyutils
 
-def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
-    """ Write the table of contents.
+
+def write_toc_on_md_file(input_file, toc, output_file, toc_marker='[](TOC)'):
+    r"""Write the table of contents.
     """
 
     assert isinstance(filename, str)
@@ -24,7 +25,8 @@ def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
     # two toc markers in the correct position on the file.
 
     # 3. Get the toc markers line positions.
-    toc_marker_lines = fpyutils.get_line_matches(filename, toc_marker, 2, loose_matching=True)
+    toc_marker_lines = fpyutils.get_line_matches(
+        input_file, toc_marker, 2, loose_matching=True)
 
     # 4.1 No toc marker in file: nothing to do.
     if 1 not in toc_marker_lines and 2 not in toc_marker_lines:
@@ -32,31 +34,35 @@ def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
 
     # 4.2. 1 toc marker: Insert the toc in that position.
     elif 1 in toc_marker_lines and 2 not in toc_marker_lines:
-        fpyutils.insert_string_at_line(filename, final_string, toc_marker_lines[1], filename)
+        fpyutils.insert_string_at_line(input_file, final_string,
+                                       toc_marker_lines[1], output_file)
 
     # 4.3. 2 toc markers: replace old toc with new one.
     else:
         # Remove the old toc but preserve the first toc marker: that's why the
         # +1 is there.
-        fpyutils.remove_line_interval(filename, toc_marker_lines[1]+1,toc_marker_lines[2], filename)
-        fpyutils.insert_string_at_line(filename, final_string, toc_marker_lines[1], filename)
+        fpyutils.remove_line_interval(input_file, toc_marker_lines[1] + 1,
+                                      toc_marker_lines[2], output_file)
+        fpyutils.insert_string_at_line(input_file, final_string,
+                                       toc_marker_lines[1], output_file)
 
-def build_toc(filename, ordered = False):
-    """ Parse file by line and build the table of contents.
+
+def build_toc(filename, ordered=False):
+    r"""Parse file by line and build the table of contents.
     """
 
     assert isinstance(filename, str)
     assert isinstance(ordered, bool)
 
-    toc_line = ''
+    toc = ''
     # Header type counter. Useful for ordered lists.
     ht = {
         '1': 0,
         '2': 0,
         '3': 0,
     }
-    ht_prev=None
-    ht_curr=None
+    ht_prev = None
+    ht_curr = None
 
     # 1. Get file content by line
     with open(filename, 'r') as f:
@@ -69,22 +75,24 @@ def build_toc(filename, ordered = False):
                 # 1.2.1. Get the current header type.
                 ht_curr = header['type']
 
-                # 1.2.2. Get the current index if necessary.
-                if ordered:
-                    increment_index_ordered_list(ht,ht_prev,ht_curr)
+                # 1.2.2. Get the current index. This makes sense only for
+                #        ordered tocs.
+                increment_index_ordered_list(ht, ht_prev, ht_curr)
 
                 # 1.2.3. Get the table of contents line and append it to the
                 #        final string.
-                toc_line += build_toc_line(header,ordered,ht[str(ht_curr)]) + '\n'
+                toc += build_toc_line(header, ordered, ht[str(ht_curr)]) + '\n'
 
                 ht_prev = ht_curr
 
             line = f.readline()
 
-    return toc_line
+    return toc
 
-def increment_index_ordered_list(header_type_count,header_type_prev,header_type_curr):
-    """ Compute current index for ordered list table of contents.
+
+def increment_index_ordered_list(header_type_count, header_type_prev,
+                                 header_type_curr):
+    r"""Compute current index for ordered list table of contents.
     """
 
     assert isinstance(header_type_count, dict)
@@ -102,8 +110,9 @@ def increment_index_ordered_list(header_type_count,header_type_prev,header_type_
     # 2. Increment the current index.
     header_type_count[str(header_type_curr)] += 1
 
-def build_toc_line(header,ordered=False,index=1):
-    """ Return a string which corresponds to a list element
+
+def build_toc_line(header, ordered=False, index=1):
+    r"""Return a string which corresponds to a list element
         in the markdown syntax. If ordered is true then the rendered list
         will use numbers instead of bullets. For this reason the index
         variable must be passed to the method.
@@ -116,10 +125,10 @@ def build_toc_line(header,ordered=False,index=1):
     assert 'type' in header
     assert 'text_original' in header
     assert 'text_slugified' in header
-    assert isinstance(header['type'],int)
-    assert isinstance(header['text_original'],str)
-    assert isinstance(header['text_slugified'],str)
-    assert header['type'] >= 1 and header['type']<= 3
+    assert isinstance(header['type'], int)
+    assert isinstance(header['text_original'], str)
+    assert isinstance(header['text_slugified'], str)
+    assert header['type'] >= 1 and header['type'] <= 3
 
     # 1. Get the list symbol.
     if ordered:
@@ -147,8 +156,9 @@ def build_toc_line(header,ordered=False,index=1):
 
     return toc_line
 
+
 def get_md_heading(line):
-    """ Given a line extract the title type and its text.
+    r"""Given a line extract the title type and its text.
         Return the three variable components needed to create a line.
         Return None if the input line does not correspond to one of
         designated cases.
@@ -175,7 +185,7 @@ def get_md_heading(line):
     #    Waring: This is computationally unconvenient: O(n) where n =
     #    len(line). It is however more elegant than iterating on the line
     #    itself.
-    header_type = len(line)-len(header_text)
+    header_type = len(line) - len(header_text)
 
     # 5. If it's a 4 (or more) title level we will ignore it.
     if header_type > 3:
@@ -187,11 +197,12 @@ def get_md_heading(line):
     # 7. Return a dict with the three data sets we need. Note that we need the
     # title text to be slugified so it can be used as link.
     header = {
-               'type': header_type,
-               'text_original': header_text,
-               'text_slugified': slugify(header_text)
-             }
+        'type': header_type,
+        'text_original': header_text,
+        'text_slugified': slugify(header_text)
+    }
     return header
+
 
 if __name__ == '__main__':
     pass
