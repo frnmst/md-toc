@@ -9,8 +9,9 @@ def write_toc_on_md_file(input_file, toc, output_file, toc_marker='[](TOC)'):
     r"""Write the table of contents.
     """
 
-    assert isinstance(filename, str)
+    assert isinstance(input_file, str)
     assert isinstance(toc, str)
+    assert isinstance(output_file, str)
 
     # 1. Remove trailing new line(s).
     toc = toc.rstrip()
