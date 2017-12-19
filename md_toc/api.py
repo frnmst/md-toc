@@ -34,7 +34,7 @@ def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
         # 4.2. 1 toc marker: Insert the toc in that position.
         elif 1 in toc_marker_lines and 2 not in toc_marker_lines:
             fpyutils.insert_string_at_line(input_file, final_string,
-                                       toc_marker_lines[1], input_file)
+                                           toc_marker_lines[1], input_file)
 
         # 4.3. 2 toc markers: replace old toc with new one.
         else:
