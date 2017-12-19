@@ -5,13 +5,14 @@ from .exceptions import (LineOutOfFileBoundsError)
 import fpyutils
 
 
-def write_toc_on_md_file(input_file, toc, output_file, toc_marker='[](TOC)'):
+def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
     r"""Write the table of contents.
     """
 
     assert isinstance(input_file, str)
     assert isinstance(toc, str)
-    assert isinstance(output_file, str)
+    assert isinstance(in_place, bool)
+    assert isinstance(toc_marker, str)
 
     # 1. Remove trailing new line(s).
     toc = toc.rstrip()
@@ -21,31 +22,31 @@ def write_toc_on_md_file(input_file, toc, output_file, toc_marker='[](TOC)'):
     #    file.
     final_string = '\n' + toc + '\n\n' + toc_marker + '\n'
 
-    # There are three cases.
-    # In doing case 2 and 3 this function must write the
-    # two toc markers in the correct position on the file.
+    if in_place:
+        # 3. Get the toc markers line positions.
+        toc_marker_lines = fpyutils.get_line_matches(
+            input_file, toc_marker, 2, loose_matching=True)
 
-    # 3. Get the toc markers line positions.
-    toc_marker_lines = fpyutils.get_line_matches(
-        input_file, toc_marker, 2, loose_matching=True)
+        # 4.1 No toc marker in file: nothing to do.
+        if 1 not in toc_marker_lines and 2 not in toc_marker_lines:
+            pass
 
-    # 4.1 No toc marker in file: nothing to do.
-    if 1 not in toc_marker_lines and 2 not in toc_marker_lines:
-        pass
+        # 4.2. 1 toc marker: Insert the toc in that position.
+        elif 1 in toc_marker_lines and 2 not in toc_marker_lines:
+            fpyutils.insert_string_at_line(input_file, final_string,
+                                       toc_marker_lines[1], input_file)
 
-    # 4.2. 1 toc marker: Insert the toc in that position.
-    elif 1 in toc_marker_lines and 2 not in toc_marker_lines:
-        fpyutils.insert_string_at_line(input_file, final_string,
-                                       toc_marker_lines[1], output_file)
-
-    # 4.3. 2 toc markers: replace old toc with new one.
+        # 4.3. 2 toc markers: replace old toc with new one.
+        else:
+            # Remove the old toc but preserve the first toc marker: that's why the
+            # +1 is there.
+            fpyutils.remove_line_interval(input_file, toc_marker_lines[1] + 1,
+                                          toc_marker_lines[2], input_file)
+            fpyutils.insert_string_at_line(input_file, final_string,
+                                           toc_marker_lines[1], input_file)
     else:
-        # Remove the old toc but preserve the first toc marker: that's why the
-        # +1 is there.
-        fpyutils.remove_line_interval(input_file, toc_marker_lines[1] + 1,
-                                      toc_marker_lines[2], output_file)
-        fpyutils.insert_string_at_line(input_file, final_string,
-                                       toc_marker_lines[1], output_file)
+        final_string = toc_marker + final_string
+        return final_string
 
 
 def build_toc(filename, ordered=False):

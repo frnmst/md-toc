@@ -19,28 +19,28 @@ def generate_fake_markdown_file_with_no_toc_markers():
 # One\n\
 ## One.Two\n\
 '''
-
     return DATA_TO_BE_READ
 
-def generate_fake_toc_non_ordered():
+
+def generate_fake_toc_non_ordered_no_toc_markers():
     """This refers to the non-toc marker version."""
     TOC = '''\
 - [One](one)\n\
     - [One.Two](one-two)\n\
 '''
-
     return TOC
 
-def generate_fake_toc_ordered():
+
+def generate_fake_toc_ordered_no_toc_markers():
     """This refers to the non-toc marker version."""
     TOC = '''\
 1. [One](one)\n\
     1. [One.Two](one-two)\n\
 '''
-
     return TOC
 
-def generate_fake_markdown_file_with_one_toc_marker_as_string():
+
+def generate_fake_markdown_file_with_one_toc_marker():
     DATA_TO_BE_READ = '''\
 # One\n\
 Hello, this is some content\n\
@@ -52,10 +52,19 @@ Bye\n\
     return DATA_TO_BE_READ
 
 
-def generate_fake_markdown_file_with_two_toc_markers_as_string():
+def generate_fake_toc_non_ordered_one_toc_marker():
+    """This refers to the one marker version."""
+    TOC = '''\
+- [One](one)\n\
+    - [One.Two](one-two)\n\
+'''
+    return TOC
+
+
+def generate_fake_markdown_file_with_two_toc_markers():
     DATA_TO_BE_READ = '''\
 # Toc\n\
-Hello, this is some content\n\
+Hello, this is some content for the two markers version\n\
 [](TOC)\n\
 - [Toc](toc)
 - [One](one)
@@ -66,6 +75,16 @@ Hello, this is some content\n\
 End of toc\n\
 '''
     return DATA_TO_BE_READ
+
+
+def generate_fake_toc_non_ordered_two_toc_markers():
+    """This refers to the two marker version."""
+    TOC = '''\
+- [Toc](tocddddddddddddddddddddd)\n\
+- [One](one)\n\
+    - [One.Two](one-two)\n\
+'''
+    return TOC
 
 
 class TestApi(unittest.TestCase):
@@ -221,35 +240,73 @@ class TestApi(unittest.TestCase):
         # Test non-ordered lists.
         with patch(
                 'builtins.open',
-                mock_open(read_data=generate_fake_markdown_file_with_no_toc_markers())):
+                mock_open(
+                    read_data=generate_fake_markdown_file_with_no_toc_markers(
+                    ))):
             toc = api.build_toc('foo.md')
-        self.assertEqual(toc, generate_fake_toc_non_ordered())
+        self.assertEqual(toc, generate_fake_toc_non_ordered_no_toc_markers())
 
         # Test ordered lists.
         with patch(
                 'builtins.open',
-                mock_open(read_data=generate_fake_markdown_file_with_no_toc_markers())):
+                mock_open(
+                    read_data=generate_fake_markdown_file_with_no_toc_markers(
+                    ))):
             toc = api.build_toc('foo.md', ordered=True)
-        self.assertEqual(toc, generate_fake_toc_ordered())
+        self.assertEqual(toc, generate_fake_toc_ordered_no_toc_markers())
 
     def test_write_toc_on_md_file(self):
 
         # Case 1: No toc marker in file: nothing to do.
         with patch(
                 'builtins.open',
-                mock_open(read_data=generate_fake_markdown_file_with_no_toc_markers())):
-            toc = None
-        #    write_toc_on_md_file('foo.md',None)
+                mock_open(
+                    read_data=generate_fake_markdown_file_with_no_toc_markers(
+                    ))) as k:
+            toc = generate_fake_toc_non_ordered_no_toc_markers()
+            api.write_toc_on_md_file('foo.md', toc, in_place=True)
         #    assert not called write (insert nor delete).
+        assert 'call().readline()' not in k.mock_calls
 
         # Case 2: 1 toc marker: Insert the toc in that position.
-        #    assert not called write (insert).
+        #         assert not called write (delete): assert not called write with toc
+        #         as argument
+        with patch(
+                'builtins.open',
+                mock_open(
+                    read_data=generate_fake_markdown_file_with_one_toc_marker(
+                    ))) as l:
+            toc = generate_fake_toc_non_ordered_one_toc_marker()
+            api.write_toc_on_md_file('foo.md', toc, in_place=True)
+        assert "call().write('" + toc + "')" not in l.mock_calls
 
         # Case 3: 2 toc markers: replace old toc with new one.
-        # Remove the old toc but preserve the first toc marker: that's why the
-        # +1 is there.
         # assert called write (insert and delete)
+        with patch(
+                'builtins.open',
+                mock_open(
+                    read_data=generate_fake_markdown_file_with_two_toc_markers(
+                    ))) as m:
+            toc = generate_fake_toc_non_ordered_two_toc_markers()
+            api.write_toc_on_md_file('foo.md', toc, in_place=True)
 
+#        assert "call().write('" + toc + "')" in m.mock_calls
+#        print('call().write(\"' + toc + '\")' == str(m.mock_calls[32]))
+#        print(str(m.mock_calls[32]))
+#        print(str('call().write(\"' + toc + '\")'))
+
+#        print("call.write[](TOC)\n\n" + toc + "\n[](TOC)\n"))
+        print(r"call().write([](TOC)\n\n" + toc + "\n[](TOC)\n)")
+
+
+#        print(toc)
+#        print(generate_fake_markdown_file_with_two_toc_markers())
+
+#        print(m.mock_calls[32])
+#        print()
+#        print()
+#        print()
+#        print(m.mock_calls)
 
 if __name__ == '__main__':
     unittest.main()
