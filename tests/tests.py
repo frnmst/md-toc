@@ -282,6 +282,7 @@ class TestApi(unittest.TestCase):
 
         # Case 3: 2 toc markers: replace old toc with new one.
         # assert called write (insert and delete)
+        mock_write_call_index=32
         with patch(
                 'builtins.open',
                 mock_open(
@@ -289,24 +290,11 @@ class TestApi(unittest.TestCase):
                     ))) as m:
             toc = generate_fake_toc_non_ordered_two_toc_markers()
             api.write_toc_on_md_file('foo.md', toc, in_place=True)
+        expected_string=r"call().write('[](TOC)\n\n" + repr(toc) + r"\n[](TOC)\n')"
+        treated_expected_string=repr(expected_string).replace("'","")
+        treated_result=repr(str(m.mock_calls[mock_write_call_index])).replace("'","")
+        self.assertEqual(treated_expected_string,treated_result)
 
-#        assert "call().write('" + toc + "')" in m.mock_calls
-#        print('call().write(\"' + toc + '\")' == str(m.mock_calls[32]))
-#        print(str(m.mock_calls[32]))
-#        print(str('call().write(\"' + toc + '\")'))
-
-#        print("call.write[](TOC)\n\n" + toc + "\n[](TOC)\n"))
-        print(r"call().write([](TOC)\n\n" + toc + "\n[](TOC)\n)")
-
-
-#        print(toc)
-#        print(generate_fake_markdown_file_with_two_toc_markers())
-
-#        print(m.mock_calls[32])
-#        print()
-#        print()
-#        print()
-#        print(m.mock_calls)
 
 if __name__ == '__main__':
     unittest.main()
