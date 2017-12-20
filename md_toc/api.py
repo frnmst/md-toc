@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+# LICENSE and copyright.
+"""The main file."""
 
 from slugify import slugify
 from .exceptions import (LineOutOfFileBoundsError)
@@ -7,8 +8,26 @@ import fpyutils
 
 def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
     r"""Write the table of contents.
-    """
 
+    :parameter input_file: the file that needs to be read or modified.
+    :parameter toc: the table of contents.
+    :parameter in_place: decides whether to overwrite the input
+      file or return the table of contents. Defaults to ``True``.
+    :parameter toc_marker: a marker that will identify the start
+      and the end of the table of contents. Defaults to ``[](TOC)``.
+    :type input_file: str
+    :type toc: str
+    :type in_place : bool
+    :type toc_marker: str
+    :returns: None if ``in_place`` is ``True`` or the table of contents with
+      the markers in between, otherwise.
+    :rtype: str
+    :raises: one of the fpyutils exceptions or one of the built-in exceptions.
+
+    :Example:
+
+    >>> TODO
+    """
     assert isinstance(input_file, str)
     assert isinstance(toc, str)
     assert isinstance(in_place, bool)
@@ -50,9 +69,7 @@ def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
 
 
 def build_toc(filename, ordered=False):
-    r"""Parse file by line and build the table of contents.
-    """
-
+    r"""Parse file by line and build the table of contents."""
     assert isinstance(filename, str)
     assert isinstance(ordered, bool)
 
@@ -94,9 +111,7 @@ def build_toc(filename, ordered=False):
 
 def increment_index_ordered_list(header_type_count, header_type_prev,
                                  header_type_curr):
-    r"""Compute current index for ordered list table of contents.
-    """
-
+    r"""Compute current index for ordered list table of contents."""
     assert isinstance(header_type_count, dict)
     assert '1' in header_type_count
     assert '2' in header_type_count
@@ -119,7 +134,6 @@ def build_toc_line(header, ordered=False, index=1):
         will use numbers instead of bullets. For this reason the index
         variable must be passed to the method.
     """
-
     if header is None:
         return header
 
@@ -165,7 +179,6 @@ def get_md_heading(line):
         Return None if the input line does not correspond to one of
         designated cases.
     """
-
     assert isinstance(line, str)
 
     # 1. Remove leading and trailing whitespace from line.

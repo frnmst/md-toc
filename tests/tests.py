@@ -6,8 +6,8 @@ import unittest
 from unittest.mock import patch, mock_open
 import sys
 
+RANDOM_STRING_LENGTH = 32
 
-RANDOM_STRING_LENGTH=32
 
 # Note:
 # To preserve the success of the tests,
@@ -99,8 +99,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(api.get_md_heading(''), None)
 
         # Test for a string without headers
-        self.assertEqual(
-            api.get_md_heading(test_text.replace('#', '')), None)
+        self.assertEqual(api.get_md_heading(test_text.replace('#', '')), None)
         # Note that we need to compare the test_text as input with
         # test_text.strip() as output, since the string is stripped inside
         # the method
@@ -119,7 +118,7 @@ class TestApi(unittest.TestCase):
                 'text_slugified': slugify(test_text)
             })
 
-         # Test h2
+        # Test h2
         self.assertEqual(
             api.get_md_heading('##' + test_text), {
                 'type': 2,
@@ -150,7 +149,6 @@ class TestApi(unittest.TestCase):
         # Test h whith h > h3
         self.assertEqual(api.get_md_heading('####' + test_text), None)
         self.assertEqual(api.get_md_heading('#### ' + test_text), None)
-
 
     def _test_build_toc_line_common(self, text, header, indentation_space):
         md_substring = '[' + text.strip() + '](' + slugify(text) + ')'
@@ -253,11 +251,11 @@ class TestApi(unittest.TestCase):
                 'builtins.open',
                 mock_open(
                     read_data=generate_fake_markdown_file_with_no_toc_markers(
-                    ))) as k:
+                    ))) as m0:
             toc = generate_fake_toc_non_ordered_no_toc_markers()
             api.write_toc_on_md_file('foo.md', toc, in_place=True)
         #    assert not called write (insert nor delete).
-        assert 'call().readline()' not in k.mock_calls
+        assert 'call().readline()' not in m0.mock_calls
 
         # Case 2: 1 toc marker: Insert the toc in that position.
         #         assert not called write (delete): assert not called write with toc
@@ -266,10 +264,10 @@ class TestApi(unittest.TestCase):
                 'builtins.open',
                 mock_open(
                     read_data=generate_fake_markdown_file_with_one_toc_marker(
-                    ))) as l:
+                    ))) as m1:
             toc = generate_fake_toc_non_ordered_one_toc_marker()
             api.write_toc_on_md_file('foo.md', toc, in_place=True)
-        assert "call().write('" + toc + "')" not in l.mock_calls
+        assert "call().write('" + toc + "')" not in m1.mock_calls
 
         # Case 3: 2 toc markers: replace old toc with new one.
         # assert called write (insert and delete)
@@ -278,18 +276,19 @@ class TestApi(unittest.TestCase):
                 'builtins.open',
                 mock_open(
                     read_data=generate_fake_markdown_file_with_two_toc_markers(
-                    ))) as m:
+                    ))) as m2:
             toc = generate_fake_toc_non_ordered_two_toc_markers()
             api.write_toc_on_md_file('foo.md', toc, in_place=True)
         expected_string = r"call().write('[](TOC)\n\n" + repr(
             toc) + r"\n[](TOC)\n')"
         treated_expected_string = repr(expected_string).replace("'", "")
         treated_result = repr(str(
-            m.mock_calls[mock_write_call_index])).replace("'", "")
+            m2.mock_calls[mock_write_call_index])).replace("'", "")
         self.assertEqual(treated_expected_string, treated_result)
 
         # Note: we don't need to test the non-inplace flow since it only
         # concatenates two strings
+
 
 if __name__ == '__main__':
     unittest.main()
