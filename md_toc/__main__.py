@@ -1,8 +1,5 @@
-import requests
-import json
 import sys
-from .api_exceptions import (AudioFileError, AudioFileFormatError)
-from .cli_exceptions import ConfigurationParsingError
+#from .exceptions import ()
 from .cli import CliInterface
 
 
