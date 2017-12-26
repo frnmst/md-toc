@@ -7,7 +7,10 @@ from .api import (write_toc_on_md_file, build_toc)
 
 
 class CliToApi():
+    """An interface between the CLI and API functions."""
+
     def write_toc_on_md_file(self, args):
+        """Write the table of contents on the markown file."""
         if args.toc_marker is None:
             args.toc_marker = '[](TOC)'
         result = write_toc_on_md_file(
@@ -20,10 +23,14 @@ class CliToApi():
 
 
 class CliInterface():
+    """The interface exposed to the final user."""
+
     def __init__(self):
+        """Set the parser variable that will be used instead of using create_parser."""
         self.parser = self.create_parser()
 
     def create_parser(self):
+        """Create the CLI parser."""
         parser = argparse.ArgumentParser(
             description='Markdown Table Of Contents',
             epilog="Return values: 0 OK, 1 \
@@ -33,12 +40,22 @@ class CliInterface():
         write_toc_prs = subparsers.add_parser(
             'wtoc', help='write the table of contents')
         write_toc_prs.add_argument(
-            'filename', metavar='FILE_NAME', help='the file name')
+            'filename', metavar='FILE_NAME', help='the i/o file name')
         write_toc_prs.add_argument(
-            '-i', '--in-place', help='in place', action='store_true')
+            '-i',
+            '--in-place',
+            help='overwrite the input file',
+            action='store_true')
         write_toc_prs.add_argument(
-            '-o', '--ordered', help='ordered', action='store_true')
-        write_toc_prs.add_argument('-t', '--toc-marker', help='toc marker')
+            '-o',
+            '--ordered',
+            help='write as an ordered list',
+            action='store_true')
+        write_toc_prs.add_argument(
+            '-t',
+            '--toc-marker',
+            help='set the string to be used as the marker \
+                  for positioning the table of contents')
         parser.add_argument(
             '-v',
             '--version',
