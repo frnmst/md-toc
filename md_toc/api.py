@@ -2,7 +2,6 @@
 """The main file."""
 
 from slugify import slugify
-from .exceptions import (LineOutOfFileBoundsError)
 import fpyutils
 
 
