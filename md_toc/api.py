@@ -27,6 +27,11 @@ def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
     :Example:
 
     >>> TODO
+    >>> import md_toc
+    >>> print(md_toc.api.write_toc_on_md_file('foo.md',md_toc.api.build_toc('foo.md'),in_place=True),end='')
+    >>> TODO
+    >>> print(md_toc.api.write_toc_on_md_file('foo.md',md_toc.api.build_toc('foo.md'),in_place=False),end='')
+    >>> TODO
     """
     assert isinstance(input_file, str)
     assert isinstance(toc, str)
@@ -64,12 +69,24 @@ def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
             fpyutils.insert_string_at_line(input_file, final_string,
                                            toc_marker_lines[1], input_file)
     else:
-        final_string = toc_marker + final_string
+        final_string = toc_marker + '\n' + final_string
         return final_string
 
 
 def build_toc(filename, ordered=False):
-    r"""Parse file by line and build the table of contents."""
+    r"""Parse file by line and build the table of contents.
+
+    :parameter filename: the file that needs to be read.
+    :parameter ordered: decides whether to build an ordered list or not.
+    :type filename: str
+    :type ordered: bool
+    :returns: the table of contents.
+    :rtype: str
+    :raises: one of the built-in exceptions.
+
+    :Example:
+    TODO
+    """
     assert isinstance(filename, str)
     assert isinstance(ordered, bool)
 
@@ -111,7 +128,21 @@ def build_toc(filename, ordered=False):
 
 def increment_index_ordered_list(header_type_count, header_type_prev,
                                  header_type_curr):
-    r"""Compute current index for ordered list table of contents."""
+    r"""Compute current index for ordered list table of contents.
+
+    :parameter: header_type_count: the index numbers for all headers.
+    :parameter: header_type_prev: the previous type of header (h1, h2 or h3).
+    :parameter: header_type_curr: the current type of header (h1, h2 or h3).
+    :type header_type_count: dict
+    :type header_type_prev: int
+    :type header_type_curr: int
+    :returns: None
+    :rtype: None
+    :raises: one of the built in exceptions
+
+    :Example:
+    TODO
+    """
     assert isinstance(header_type_count, dict)
     assert '1' in header_type_count
     assert '2' in header_type_count
@@ -129,10 +160,24 @@ def increment_index_ordered_list(header_type_count, header_type_prev,
 
 
 def build_toc_line(header, ordered=False, index=1):
-    r"""Return a string which corresponds to a list element
-        in the markdown syntax. If ordered is true then the rendered list
-        will use numbers instead of bullets. For this reason the index
-        variable must be passed to the method.
+    r"""Return a list element of the table of contents.
+
+    :parameter header: a data structure that contains the original
+    text, the slugified text and the type of header.
+    :parameter ordered: if set to ``True``, numbers will be used
+    as list ids or otherwise a dash character, otherwise. Defaults
+    to ``False``.
+    :parameter index: a number that will be used as list id in case of an
+    ordered table of contents. Defaults to ``1``.
+    :type header: dict
+    :type ordered: bool
+    :type index: int
+    :returns: a single line of the table of contents.
+    :rtype: str
+    :raises: one of the built-in exceptions.
+
+    :Example:
+    TODO
     """
     if header is None:
         return header
@@ -175,9 +220,17 @@ def build_toc_line(header, ordered=False, index=1):
 
 def get_md_heading(line):
     r"""Given a line extract the title type and its text.
-        Return the three variable components needed to create a line.
-        Return None if the input line does not correspond to one of
-        designated cases.
+
+    :parameter: line
+    :type line: str
+    :returns: None if the input line does not correspond to one of the
+    designated cases or a data structure containing the necessary components to
+    create a table of contents line, otherwise.
+    :rtype: dict
+    :raises: one of the built-in exceptions.
+
+    :Example:
+    TODO
     """
     assert isinstance(line, str)
 
