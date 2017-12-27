@@ -1,3 +1,6 @@
+# L+C
+"""The tests module."""
+
 from md_toc import api, exceptions
 from slugify import slugify
 import string
@@ -14,6 +17,7 @@ RANDOM_STRING_LENGTH = 32
 # these generate_* functions are
 # not to be modified.
 def generate_fake_markdown_file_with_no_toc_markers():
+    """Refer to the non-toc marker version."""
     DATA_TO_BE_READ = '''\
 # One\n\
 ## One.Two\n\
@@ -22,7 +26,7 @@ def generate_fake_markdown_file_with_no_toc_markers():
 
 
 def generate_fake_toc_non_ordered_no_toc_markers():
-    """This refers to the non-toc marker version."""
+    """Refer to the non-toc marker version."""
     TOC = '''\
 - [One](one)\n\
     - [One.Two](one-two)\n\
@@ -31,7 +35,7 @@ def generate_fake_toc_non_ordered_no_toc_markers():
 
 
 def generate_fake_toc_ordered_no_toc_markers():
-    """This refers to the non-toc marker version."""
+    """Refer to the non-toc marker version."""
     TOC = '''\
 1. [One](one)\n\
     1. [One.Two](one-two)\n\
@@ -40,6 +44,7 @@ def generate_fake_toc_ordered_no_toc_markers():
 
 
 def generate_fake_markdown_file_with_one_toc_marker():
+    """Refer to the one marker non-ordered version."""
     DATA_TO_BE_READ = '''\
 # One\n\
 Hello, this is some content\n\
@@ -52,7 +57,7 @@ Bye\n\
 
 
 def generate_fake_toc_non_ordered_one_toc_marker():
-    """This refers to the one marker version."""
+    """Refer to the one marker ordered version."""
     TOC = '''\
 - [One](one)\n\
     - [One.Two](one-two)\n\
@@ -61,6 +66,7 @@ def generate_fake_toc_non_ordered_one_toc_marker():
 
 
 def generate_fake_markdown_file_with_two_toc_markers():
+    """Refer to the two marker ordered version."""
     DATA_TO_BE_READ = '''\
 # Toc\n\
 Hello, this is some content for the two markers version\n\
@@ -77,7 +83,7 @@ End of toc\n\
 
 
 def generate_fake_toc_non_ordered_two_toc_markers():
-    """This refers to the two marker version."""
+    """Refer to the two marker version."""
     TOC = '''\
 - [Toc](tocddddddddddddddddddddd)\n\
 - [One](one)\n\
@@ -87,7 +93,10 @@ def generate_fake_toc_non_ordered_two_toc_markers():
 
 
 class TestApi(unittest.TestCase):
+    """Pass."""
+
     def test_get_md_header(self):
+        """Pass."""
         test_text = ''.join([
             random.choice(string.printable)
             for n in range(RANDOM_STRING_LENGTH)
@@ -163,6 +172,7 @@ class TestApi(unittest.TestCase):
             indentation_space + md_num_substring)
 
     def test_build_toc_line(self):
+        """Pass."""
         test_text = ''.join([
             random.choice(string.printable)
             for n in range(RANDOM_STRING_LENGTH)
@@ -195,6 +205,7 @@ class TestApi(unittest.TestCase):
         self._test_build_toc_line_common(test_text, h, indentation_space)
 
     def test_increment_index_ordered_list(self):
+        """Pass."""
         ht = {
             '1': 0,
             '2': 0,
@@ -226,6 +237,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(ht['2'], 2)
 
     def test_build_toc_non_ordered(self):
+        """Pass."""
         # Test non-ordered lists.
         with patch(
                 'builtins.open',
@@ -245,7 +257,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(toc, generate_fake_toc_ordered_no_toc_markers())
 
     def test_write_toc_on_md_file(self):
-
+        """Pass."""
         # Case 1: No toc marker in file: nothing to do.
         with patch(
                 'builtins.open',
