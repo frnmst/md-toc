@@ -40,5 +40,14 @@ test:
 uninstall:
 	pip uninstall md_toc
 
-.PHONY: test install
+dist:
+	python setup.py sdist
+	python setup.py bdist_wheel
 
+upload:
+	twine upload dist/*
+
+clean:
+	rm -rf build dist *.egg-info
+
+.PHONY: default pep doc install test uninstall dist upload clean
