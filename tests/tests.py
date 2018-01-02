@@ -115,7 +115,7 @@ def generate_fake_toc_non_ordered_two_toc_markers():
 class TestApi(unittest.TestCase):
     """Pass."""
 
-    def test_get_md_header(self):
+    def test_get_md_heading(self):
         """Pass."""
         test_text = ''.join([
             random.choice(string.printable)
