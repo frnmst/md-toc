@@ -47,6 +47,9 @@ setup(
     test_suite='tests',
     classifiers=[
         'Development Status :: 3 - Alpha',
+        'Topic :: Utilities',
+        'Intended Audience :: End Users/Desktop',
+        'Environment :: Console',
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Programming Language :: Python :: 3',
     ],
