@@ -31,15 +31,15 @@ def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
     :parameter input_file: the file that needs to be read or modified.
     :parameter toc: the table of contents.
     :parameter in_place: decides whether to overwrite the input
-      file or return the table of contents. Defaults to ``True``.
+         file or return the table of contents. Defaults to ``True``.
     :parameter toc_marker: a marker that will identify the start
-      and the end of the table of contents. Defaults to ``[](TOC)``.
+         and the end of the table of contents. Defaults to ``[](TOC)``.
     :type input_file: str
     :type toc: str
-    :type in_place : bool
+    :type in_place: bool
     :type toc_marker: str
     :returns: None if ``in_place`` is ``True`` or the table of contents with
-      the markers in between, otherwise.
+         the markers in between, otherwise.
     :rtype: str
     :raises: one of the fpyutils exceptions or one of the built-in exceptions.
 
@@ -104,7 +104,7 @@ def build_toc(filename, ordered=False):
     :raises: one of the built-in exceptions.
 
     :Example:
-    TODO
+         TODO
     """
     assert isinstance(filename, str)
     assert isinstance(ordered, bool)
@@ -160,7 +160,7 @@ def increment_index_ordered_list(header_type_count, header_type_prev,
     :raises: one of the built in exceptions
 
     :Example:
-    TODO
+         TODO
     """
     assert isinstance(header_type_count, dict)
     assert '1' in header_type_count
@@ -182,12 +182,12 @@ def build_toc_line(header, ordered=False, index=1):
     r"""Return a list element of the table of contents.
 
     :parameter header: a data structure that contains the original
-    text, the slugified text and the type of header.
+         text, the slugified text and the type of header.
     :parameter ordered: if set to ``True``, numbers will be used
-    as list ids or otherwise a dash character, otherwise. Defaults
-    to ``False``.
+         as list ids or otherwise a dash character, otherwise. Defaults
+         to ``False``.
     :parameter index: a number that will be used as list id in case of an
-    ordered table of contents. Defaults to ``1``.
+         ordered table of contents. Defaults to ``1``.
     :type header: dict
     :type ordered: bool
     :type index: int
@@ -196,7 +196,7 @@ def build_toc_line(header, ordered=False, index=1):
     :raises: one of the built-in exceptions.
 
     :Example:
-    TODO
+         TODO
     """
     if header is None:
         return header
@@ -243,13 +243,13 @@ def get_md_heading(line):
     :parameter: line
     :type line: str
     :returns: None if the input line does not correspond to one of the
-    designated cases or a data structure containing the necessary components to
-    create a table of contents line, otherwise.
+         designated cases or a data structure containing the necessary
+         components to create a table of contents line, otherwise.
     :rtype: dict
     :raises: one of the built-in exceptions.
 
     :Example:
-    TODO
+         TODO
     """
     assert isinstance(line, str)
 
