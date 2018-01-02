@@ -45,12 +45,49 @@ def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
 
     :Example:
 
-    >>> TODO
     >>> import md_toc
-    >>> print(md_toc.api.write_toc_on_md_file('foo.md',md_toc.api.build_toc('foo.md'),in_place=True),end='')
-    >>> TODO
+    >>> f = open('foo.md')
+    >>> print(f.read(),end='')
+    # The main title
+
+    ## Hello there!
+
+    [](TOC)
+
+    Here (up) will lie the toc
+
+    # Some other content ;,.-_ # bye
+
+    a
+    b
+    c
+
+    ### zzz
+
+    # Again
+
+    ## qwerty
+
+    ## uiop
+
+    vbnm
+
+    ### asdf
+
+    zxc
     >>> print(md_toc.api.write_toc_on_md_file('foo.md',md_toc.api.build_toc('foo.md'),in_place=False),end='')
-    >>> TODO
+    [](TOC)
+
+    - [The main title](the-main-title)
+        - [Hello there!](hello-there)
+    - [Some other content ;,.-_ # bye](some-other-content-bye)
+            - [zzz](zzz)
+    - [Again](again)
+        - [qwerty](qwerty)
+        - [uiop](uiop)
+            - [asdf](asdf)
+
+    [](TOC)
     """
     assert isinstance(input_file, str)
     assert isinstance(toc, str)
@@ -104,7 +141,47 @@ def build_toc(filename, ordered=False):
     :raises: one of the built-in exceptions.
 
     :Example:
-         TODO
+
+    >>> import md_toc
+    >>> f = open('foo.md')
+    >>> print(f.read(),end='')
+    # The main title
+
+    ## Hello there!
+
+    [](TOC)
+
+    Here (up) will lie the toc
+
+    # Some other content ;,.-_ # bye
+
+    a
+    b
+    c
+
+    ### zzz
+
+    # Again
+
+    ## qwerty
+
+    ## uiop
+
+    vbnm
+
+    ### asdf
+
+    zxc
+
+    >>> print(md_toc.api.build_toc('foo.md',ordered=True),end='')
+    1. [The main title](the-main-title)
+        1. [Hello there!](hello-there)
+    2. [Some other content ;,.-_ # bye](some-other-content-bye)
+            1. [zzz](zzz)
+    3. [Again](again)
+        2. [qwerty](qwerty)
+        3. [uiop](uiop)
+            2. [asdf](asdf)
     """
     assert isinstance(filename, str)
     assert isinstance(ordered, bool)
@@ -160,7 +237,11 @@ def increment_index_ordered_list(header_type_count, header_type_prev,
     :raises: one of the built in exceptions
 
     :Example:
-         TODO
+
+    >>> ht = {'1':0, '2':0, '3':0}
+    >>> md_toc.api.increment_index_ordered_list(ht,3,3)
+    >>> ht
+    {'1': 0, '2': 0, '3': 1}
     """
     assert isinstance(header_type_count, dict)
     assert '1' in header_type_count
@@ -196,7 +277,10 @@ def build_toc_line(header, ordered=False, index=1):
     :raises: one of the built-in exceptions.
 
     :Example:
-         TODO
+
+    >>> header =  {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_slugified': 'hi-how-are-you'}
+    >>> print(md_toc.api.build_toc_line(header,ordered=True,index=3))
+        3. [hi hOw Are YOu!!? ? #](hi-how-are-you)
     """
     if header is None:
         return header
@@ -249,7 +333,9 @@ def get_md_heading(line):
     :raises: one of the built-in exceptions.
 
     :Example:
-         TODO
+
+    >>> print(md_toc.api.get_md_heading(' ## hi hOw Are YOu!!? ? #'))
+    {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_slugified': 'hi-how-are-you'}
     """
     assert isinstance(line, str)
 
