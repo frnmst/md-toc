@@ -21,7 +21,7 @@ paragraph in the page.
 Video
 -----
 
-[link to asciinema](asciinema)
+[![asciicast](https://asciinema.org/a/ZofyuF5xzNSuiu0XtzXdZcHaE.png)](https://asciinema.org/a/ZofyuF5xzNSuiu0XtzXdZcHaE)
 
 Documentation
 -------------
