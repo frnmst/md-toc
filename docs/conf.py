@@ -93,7 +93,7 @@ html_theme = 'alabaster'
 #
 html_theme_options = {
     'github_user': 'frnmst',
-    'github_repo': 'md_toc',
+    'github_repo': 'md-toc',
     'github_banner': True,
 }
 

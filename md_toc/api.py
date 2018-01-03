@@ -45,49 +45,51 @@ def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
 
     :Example:
 
-    >>> import md_toc
-    >>> f = open('foo.md')
-    >>> print(f.read(),end='')
-    # The main title
+    ::
 
-    ## Hello there!
+        >>> import md_toc
+        >>> f = open('foo.md')
+        >>> print(f.read(),end='')
+        # The main title
 
-    [](TOC)
+        ## Hello there!sdfc
 
-    Here (up) will lie the toc
+        [](TOC)
 
-    # Some other content ;,.-_ # bye
+        Here (up) will lie the toc
 
-    a
-    b
-    c
+        # Some other content ;,.-_ # bye
 
-    ### zzz
+        a
+        b
+        c
 
-    # Again
+        ### zzz
 
-    ## qwerty
+        # Again
 
-    ## uiop
+        ## qwerty
 
-    vbnm
+        ## uiop
 
-    ### asdf
+        vbnm
 
-    zxc
-    >>> print(md_toc.api.write_toc_on_md_file('foo.md',md_toc.api.build_toc('foo.md'),in_place=False),end='')
-    [](TOC)
+        ### asdf
 
-    - [The main title](the-main-title)
-        - [Hello there!](hello-there)
-    - [Some other content ;,.-_ # bye](some-other-content-bye)
-            - [zzz](zzz)
-    - [Again](again)
-        - [qwerty](qwerty)
-        - [uiop](uiop)
-            - [asdf](asdf)
+        zxc
+        >>> print(md_toc.api.write_toc_on_md_file('foo.md',md_toc.api.build_toc('foo.md'),in_place=False),end='')
+            [](TOC)
 
-    [](TOC)
+            - [The main title](the-main-title)
+                - [Hello there!](hello-there)
+            - [Some other content ;,.-_ # bye](some-other-content-bye)
+                    - [zzz](zzz)
+            - [Again](again)
+                - [qwerty](qwerty)
+                - [uiop](uiop)
+                    - [asdf](asdf)
+
+            [](TOC)
     """
     assert isinstance(input_file, str)
     assert isinstance(toc, str)
@@ -142,46 +144,48 @@ def build_toc(filename, ordered=False):
 
     :Example:
 
-    >>> import md_toc
-    >>> f = open('foo.md')
-    >>> print(f.read(),end='')
-    # The main title
+    ::
 
-    ## Hello there!
+        >>> import md_toc
+        >>> f = open('foo.md')
+        >>> print(f.read(),end='')
+        # The main title
 
-    [](TOC)
+        ## Hello there!
 
-    Here (up) will lie the toc
+        [](TOC)
 
-    # Some other content ;,.-_ # bye
+        Here (up) will lie the toc
 
-    a
-    b
-    c
+        # Some other content ;,.-_ # bye
 
-    ### zzz
+        a
+        b
+        c
 
-    # Again
+        ### zzz
 
-    ## qwerty
+        # Again
 
-    ## uiop
+        ## qwerty
 
-    vbnm
+        ## uiop
 
-    ### asdf
+        vbnm
 
-    zxc
+        ### asdf
 
-    >>> print(md_toc.api.build_toc('foo.md',ordered=True),end='')
-    1. [The main title](the-main-title)
-        1. [Hello there!](hello-there)
-    2. [Some other content ;,.-_ # bye](some-other-content-bye)
-            1. [zzz](zzz)
-    3. [Again](again)
-        2. [qwerty](qwerty)
-        3. [uiop](uiop)
-            2. [asdf](asdf)
+        zxc
+
+        >>> print(md_toc.api.build_toc('foo.md',ordered=True),end='')
+        1. [The main title](the-main-title)
+            1. [Hello there!](hello-there)
+        2. [Some other content ;,.-_ # bye](some-other-content-bye)
+                1. [zzz](zzz)
+        3. [Again](again)
+            2. [qwerty](qwerty)
+            3. [uiop](uiop)
+                2. [asdf](asdf)
     """
     assert isinstance(filename, str)
     assert isinstance(ordered, bool)
