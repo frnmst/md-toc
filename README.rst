@@ -21,9 +21,9 @@ paragraph in the page.
 Video
 -----
 
-.. raw:: html
-
-   <a href="https://asciinema.org/a/ZofyuF5xzNSuiu0XtzXdZcHaE"><img src="https://asciinema.org/a/ZofyuF5xzNSuiu0XtzXdZcHaE.png"></a>
+.. image:: https://asciinema.org/a/155223.png
+     :target: https://asciinema.org/a/155223
+     :align: center
 
 Documentation
 -------------
@@ -39,21 +39,23 @@ Conventions
 Help
 ----
 
+
 ::
 
-usage: md_toc [-h] [-v] {wtoc} ...
+    usage: md_toc [-h] [-v] {wtoc} ...
 
-Markdown Table Of Contents
+    Markdown Table Of Contents
 
-positional arguments:
-  {wtoc}
-    wtoc         write the table of contents
+    positional arguments:
+      {wtoc}
+        wtoc         write the table of contents
 
-  optional arguments:
-    -h, --help     show this help message and exit
-    -v, --version  show program's version number and exit
+      optional arguments:
+        -h, --help     show this help message and exit
+        -v, --version  show program's version number and exit
 
-  Return values: 0 OK, 1 Error, 2 Invalid command
+      Return values: 0 OK, 1 Error, 2 Invalid command
+
 
 License
 -------
