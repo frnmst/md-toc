@@ -317,7 +317,7 @@ def build_toc_line(header, ordered=False, index=1):
     indentation_spaces = no_of_indentation_spaces * ' '
 
     # 3. Build the link.
-    link = '[' + header['text_original'] + ']' + '(' + header['text_slugified'] + ')'
+    link = '[' + header['text_original'] + ']' + '(#' + header['text_slugified'] + ')'
 
     # 4. String concatenation.
     toc_line = indentation_spaces + list_symbol + ' ' + link

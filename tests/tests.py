@@ -48,8 +48,8 @@ def generate_fake_markdown_file_with_no_toc_markers():
 def generate_fake_toc_non_ordered_no_toc_markers():
     """Refer to the non-toc marker version."""
     TOC = '''\
-- [One](one)\n\
-    - [One.Two](one-two)\n\
+- [One](#one)\n\
+    - [One.Two](#one-two)\n\
 '''
     return TOC
 
@@ -57,8 +57,8 @@ def generate_fake_toc_non_ordered_no_toc_markers():
 def generate_fake_toc_ordered_no_toc_markers():
     """Refer to the non-toc marker version."""
     TOC = '''\
-1. [One](one)\n\
-    1. [One.Two](one-two)\n\
+1. [One](#one)\n\
+    1. [One.Two](#one-two)\n\
 '''
     return TOC
 
@@ -80,7 +80,7 @@ def generate_fake_toc_non_ordered_one_toc_marker():
     """Refer to the one marker ordered version."""
     TOC = '''\
 - [One](one)\n\
-    - [One.Two](one-two)\n\
+    - [One.Two](#one-two)\n\
 '''
     return TOC
 
@@ -91,9 +91,9 @@ def generate_fake_markdown_file_with_two_toc_markers():
 # Toc\n\
 Hello, this is some content for the two markers version\n\
 [](TOC)\n\
-- [Toc](toc)
-- [One](one)
-    - [One.Two](one-two)
+- [Toc](#toc)
+- [One](#one)
+    - [One.Two](#one-two)
 [](TOC)\n\
 # One\n\
 ## One.Two\n\
@@ -105,8 +105,8 @@ End of toc\n\
 def generate_fake_toc_non_ordered_two_toc_markers():
     """Refer to the two marker version."""
     TOC = '''\
-- [Toc](tocddddddddddddddddddddd)\n\
-- [One](one)\n\
+- [Toc](#tocddddddddddddddddddddd)\n\
+- [One](#one)\n\
     - [One.Two](one-two)\n\
 '''
     return TOC
@@ -180,7 +180,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(api.get_md_heading('#### ' + test_text), None)
 
     def _test_build_toc_line_common(self, text, header, indentation_space):
-        md_substring = '[' + text.strip() + '](' + slugify(text) + ')'
+        md_substring = '[' + text.strip() + '](#' + slugify(text) + ')'
         # Test both ordered and non ordered markdown toc.
         md_non_num_substring = '- ' + md_substring
         md_num_substring = '1. ' + md_substring
