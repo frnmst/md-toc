@@ -80,14 +80,14 @@ def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
         >>> print(md_toc.api.write_toc_on_md_file('foo.md',md_toc.api.build_toc('foo.md'),in_place=False),end='')
             [](TOC)
 
-            - [The main title](the-main-title)
-                - [Hello there!](hello-there)
-            - [Some other content ;,.-_ # bye](some-other-content-bye)
-                    - [zzz](zzz)
-            - [Again](again)
-                - [qwerty](qwerty)
-                - [uiop](uiop)
-                    - [asdf](asdf)
+            - [The main title](#the-main-title)
+                - [Hello there!](#hello-there)
+            - [Some other content ;,.-_ # bye](#some-other-content-bye)
+                    - [zzz](#zzz)
+            - [Again](#again)
+                - [qwerty](#qwerty)
+                - [uiop](#uiop)
+                    - [asdf](#asdf)
 
             [](TOC)
     """
@@ -178,14 +178,14 @@ def build_toc(filename, ordered=False):
         zxc
 
         >>> print(md_toc.api.build_toc('foo.md',ordered=True),end='')
-        1. [The main title](the-main-title)
-            1. [Hello there!](hello-there)
-        2. [Some other content ;,.-_ # bye](some-other-content-bye)
-                1. [zzz](zzz)
-        3. [Again](again)
-            2. [qwerty](qwerty)
-            3. [uiop](uiop)
-                2. [asdf](asdf)
+        1. [The main title](#the-main-title)
+            1. [Hello there!](#hello-there)
+        2. [Some other content ;,.-_ # bye](#some-other-content-bye)
+                1. [zzz](#zzz)
+        3. [Again](#again)
+            2. [qwerty](#qwerty)
+            3. [uiop](#uiop)
+                2. [asdf](#asdf)
     """
     assert isinstance(filename, str)
     assert isinstance(ordered, bool)
@@ -284,7 +284,7 @@ def build_toc_line(header, ordered=False, index=1):
 
     >>> header =  {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_slugified': 'hi-how-are-you'}
     >>> print(md_toc.api.build_toc_line(header,ordered=True,index=3))
-        3. [hi hOw Are YOu!!? ? #](hi-how-are-you)
+        3. [hi hOw Are YOu!!? ? #](#hi-how-are-you)
     """
     if header is None:
         return header
