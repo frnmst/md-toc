@@ -104,21 +104,22 @@ def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
     #    file.
     final_string = '\n' + toc + '\n\n' + toc_marker + '\n'
 
+    # 3.1. Write on the file.
     if in_place:
-        # 3. Get the toc markers line positions.
+        # 3.1.1. Get the toc markers line positions.
         toc_marker_lines = fpyutils.get_line_matches(
             input_file, toc_marker, 2, loose_matching=True)
 
-        # 4.1 No toc marker in file: nothing to do.
+        # 3.1.2.1. No toc marker in file: nothing to do.
         if 1 not in toc_marker_lines and 2 not in toc_marker_lines:
             pass
 
-        # 4.2. 1 toc marker: Insert the toc in that position.
+        # 3.1.2.2. 1 toc marker: Insert the toc in that position.
         elif 1 in toc_marker_lines and 2 not in toc_marker_lines:
             fpyutils.insert_string_at_line(input_file, final_string,
                                            toc_marker_lines[1], input_file)
 
-        # 4.3. 2 toc markers: replace old toc with new one.
+        # 3.1.2.3. 2 toc markers: replace old toc with new one.
         else:
             # Remove the old toc but preserve the first toc marker: that's why the
             # +1 is there.
@@ -126,18 +127,26 @@ def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
                                           toc_marker_lines[2], input_file)
             fpyutils.insert_string_at_line(input_file, final_string,
                                            toc_marker_lines[1], input_file)
+    # 3.2. Return the TOC.
     else:
-        final_string = toc_marker + '\n' + final_string
+        # 3.2.1. If the toc is an empty string, return the empty string.
+        if toc == '':
+            final_string = toc
+        # 3.2.2. Return the toc with the toc markers.
+        else:
+            final_string = toc_marker + '\n' + final_string
         return final_string
 
 
-def build_toc(filename, ordered=False):
+def build_toc(filename, ordered=False, no_links=False):
     r"""Parse file by line and build the table of contents.
 
     :parameter filename: the file that needs to be read.
     :parameter ordered: decides whether to build an ordered list or not.
+    :parameter no_links: disables the use of links.
     :type filename: str
     :type ordered: bool
+    :type no_links: bool
     :returns: the table of contents.
     :rtype: str
     :raises: one of the built-in exceptions.
@@ -189,6 +198,7 @@ def build_toc(filename, ordered=False):
     """
     assert isinstance(filename, str)
     assert isinstance(ordered, bool)
+    assert isinstance(no_links, bool)
 
     toc = ''
     # Header type counter. Useful for ordered lists.
@@ -217,7 +227,8 @@ def build_toc(filename, ordered=False):
 
                 # 1.2.3. Get the table of contents line and append it to the
                 #        final string.
-                toc += build_toc_line(header, ordered, ht[str(ht_curr)]) + '\n'
+                toc += build_toc_line(header, ordered, no_links,
+                                      ht[str(ht_curr)]) + '\n'
 
                 ht_prev = ht_curr
 
@@ -263,7 +274,7 @@ def increment_index_ordered_list(header_type_count, header_type_prev,
     header_type_count[str(header_type_curr)] += 1
 
 
-def build_toc_line(header, ordered=False, index=1):
+def build_toc_line(header, ordered=False, no_links=False, index=1):
     r"""Return a list element of the table of contents.
 
     :parameter header: a data structure that contains the original
@@ -271,10 +282,12 @@ def build_toc_line(header, ordered=False, index=1):
     :parameter ordered: if set to ``True``, numbers will be used
          as list ids or otherwise a dash character, otherwise. Defaults
          to ``False``.
+    :parameter no_links: disables the use of links.
     :parameter index: a number that will be used as list id in case of an
          ordered table of contents. Defaults to ``1``.
     :type header: dict
     :type ordered: bool
+    :type no_links: bool
     :type index: int
     :returns: a single line of the table of contents.
     :rtype: str
@@ -297,6 +310,9 @@ def build_toc_line(header, ordered=False, index=1):
     assert isinstance(header['text_original'], str)
     assert isinstance(header['text_slugified'], str)
     assert header['type'] >= 1 and header['type'] <= 3
+    assert isinstance(ordered, bool)
+    assert isinstance(no_links, bool)
+    assert isinstance(index, int)
 
     # 1. Get the list symbol.
     if ordered:
@@ -316,11 +332,15 @@ def build_toc_line(header, ordered=False, index=1):
         no_of_indentation_spaces = 2**header['type']
     indentation_spaces = no_of_indentation_spaces * ' '
 
-    # 3. Build the link.
-    link = '[' + header['text_original'] + ']' + '(#' + header['text_slugified'] + ')'
+    if no_links:
+        # 3.1. Build the plain line.
+        line = header['text_original']
+    else:
+        # 3.2. Build the line as a link.
+        line = '[' + header['text_original'] + ']' + '(#' + header['text_slugified'] + ')'
 
     # 4. String concatenation.
-    toc_line = indentation_spaces + list_symbol + ' ' + link
+    toc_line = indentation_spaces + list_symbol + ' ' + line
 
     return toc_line
 

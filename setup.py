@@ -37,8 +37,6 @@ setup(
     keywords='markdown toc',
     url='https://github.com/frnmst/md-toc',
     python_requires='>=3',
-    # This part was inspired by:
-    # https://chriswarrick.com/blog/2014/09/15/python-apps-the-right-way-entry_points-and-script$
     entry_points={
         'console_scripts': [
             'md_toc=md_toc.__main__:main',

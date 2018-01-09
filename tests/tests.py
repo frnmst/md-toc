@@ -188,7 +188,7 @@ class TestApi(unittest.TestCase):
             api.build_toc_line(header),
             indentation_space + md_non_num_substring)
         self.assertEqual(
-            api.build_toc_line(header, 1),
+            api.build_toc_line(header, True, False, 1),
             indentation_space + md_num_substring)
 
     def test_build_toc_line(self):

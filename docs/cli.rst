@@ -21,7 +21,7 @@ Main help
 wtoc sub-command
 ----------------
 
-    usage: md_toc wtoc [-h] [-i] [-o] [-t TOC_MARKER] FILE_NAME
+    usage: __main__.py wtoc [-h] [-i] [-n] [-o] [-t TOC_MARKER] FILE_NAME
 
     positional arguments:
       FILE_NAME             the i/o file name
@@ -29,6 +29,7 @@ wtoc sub-command
     optional arguments:
       -h, --help            show this help message and exit
       -i, --in-place        overwrite the input file
+      -n, --no-links        avoids adding links to corresponding content
       -o, --ordered         write as an ordered list
       -t TOC_MARKER, --toc-marker TOC_MARKER
                             set the string to be used as the marker for

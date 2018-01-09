@@ -13,6 +13,7 @@ Welcome to md-toc's documentation!
    install
    cli
    api
+   markdown_specification
    pep
    test
    copyright_license

@@ -35,7 +35,7 @@ class CliToApi():
             args.toc_marker = '[](TOC)'
         result = write_toc_on_md_file(
             args.filename,
-            toc=build_toc(args.filename, args.ordered),
+            toc=build_toc(filename=args.filename, ordered=args.ordered, no_links=args.no_links),
             in_place=args.in_place,
             toc_marker=args.toc_marker)
         if result is not None:
@@ -65,6 +65,11 @@ class CliInterface():
             '-i',
             '--in-place',
             help='overwrite the input file',
+            action='store_true')
+        write_toc_prs.add_argument(
+            '-n',
+            '--no-links',
+            help='avoids adding links to corresponding content',
             action='store_true')
         write_toc_prs.add_argument(
             '-o',
