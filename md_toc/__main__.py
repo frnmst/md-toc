@@ -37,7 +37,7 @@ def main(args=None):
         retcode = 0
     except Exception as e:
         retcode = 1
-        print(e)
+        sys.stderr.write(str(e))
     sys.exit(retcode)
 
 
