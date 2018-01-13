@@ -23,7 +23,8 @@
 
 from slugify import slugify
 import fpyutils
-
+import re
+import curses.ascii
 
 def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
     r"""Write the table of contents.
@@ -138,7 +139,7 @@ def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
         return final_string
 
 
-def build_toc(filename, ordered=False, no_links=False):
+def build_toc(filename, ordered=False, no_links=False, anchor_type='github'):
     r"""Parse file by line and build the table of contents.
 
     :parameter filename: the file that needs to be read.
@@ -210,12 +211,14 @@ def build_toc(filename, ordered=False, no_links=False):
     ht_prev = None
     ht_curr = None
 
+    header_duplicate_counter = dict()
+
     # 1. Get file content by line
     with open(filename, 'r') as f:
         line = f.readline()
         while line:
             # 1.1. Get the basic information.
-            header = get_md_heading(line)
+            header = get_md_heading(line, header_duplicate_counter, anchor_type)
             # 1.2. Consider valid lines only.
             if header is not None:
                 # 1.2.1. Get the current header type.
@@ -272,6 +275,170 @@ def increment_index_ordered_list(header_type_count, header_type_prev,
 
     # 2. Increment the current index.
     header_type_count[str(header_type_curr)] += 1
+
+
+def build_anchor_link(header_text,header_duplicate_counter,anchor_type='standard'):
+    r"""Apply the specified slug rule to build the anchor link.
+
+    :parameter anchor_type: supported anchor types are: 'standard', 'github',
+         'gitlab', 'gogs', 'notabug'.
+
+    :note: the 'standard' anchor types does not handle duplicate entries.
+    """
+    assert isinstance(header_text, str)
+    assert isinstance(header_duplicate_counter, dict)
+    assert isinstance(anchor_type, str)
+
+    # 1. Return the same text as-is.
+    # TODO
+    if anchor_type == 'standard':
+        return slugify(header_text)
+
+    # 2. Return the header text with the applied rules for GitHub.
+    # Link to the Ruby algorithm:
+    # https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb
+    elif anchor_type == 'github':
+        """
+        Copyright (c) 2012 GitHub Inc. and Jerry Cheung
+        Copyright (c) 2018, Franco Masotti <franco.masotti@student.unife.it>
+
+        MIT License
+
+        Permission is hereby granted, free of charge, to any person obtaining
+        a copy of this software and associated documentation files (the
+        "Software"), to deal in the Software without restriction, including
+        without limitation the rights to use, copy, modify, merge, publish,
+        distribute, sublicense, and/or sell copies of the Software, and to
+        permit persons to whom the Software is furnished to do so, subject to
+        the following conditions:
+
+        The above copyright notice and this permission notice shall be
+        included in all copies or substantial portions of the Software.
+
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+        EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+        MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+        NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+        LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+        OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+        WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+        """
+        # 2.1. Lowercase.
+        header_text = header_text.lower()
+        # 2.2. Remove punctuation: Keep spaces, hypens and "word characters"
+        #      only.
+        #      See https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb#L26
+        header_text = re.sub(r'[^\w\s\- ]','',header_text)
+        # 2.3. Replace spaces with dashes.
+        header_text = header_text.replace(' ','-')
+
+        # 2.4. Check for duplicates.
+        ht = header_text
+        # Set the initial value if we are examining the first occurrency
+        if header_text not in header_duplicate_counter:
+            header_duplicate_counter[header_text] = 0
+        if header_duplicate_counter[header_text] > 0:
+            header_text = header_text + '-' + str(header_duplicate_counter[header_text])
+        header_duplicate_counter[ht] += 1
+
+        return header_text
+
+    # 3. Return the header text with the applied rules for GitLab.
+    # https://gitlab.com/help/user/markdown.md#header-ids-and-links
+    # https://gitlab.com/help/user/markdown.md#gitlab-flavored-markdown-gfm
+    # https://github.com/vmg/redcarpet/blob/26c80f05e774b31cd01255b0fa62e883ac185bf3/ext/redcarpet/html.c#L274
+    # https://github.com/vmg/redcarpet/blob/26c80f05e774b31cd01255b0fa62e883ac185bf3/ext/redcarpet/html.c#L674
+    elif anchor_type == 'gitlab':
+        """
+        /*
+         * Copyright (c) 2009, Natacha Porté
+         * Copyright (c) 2015, Vicent Marti
+         * Copyright (c) 2018, Franco Masotti <franco.masotti@student.unife.it>
+         *
+         * Permission is hereby granted, free of charge, to any person obtaining a copy
+         * of this software and associated documentation files (the "Software"), to deal
+         * in the Software without restriction, including without limitation the rights
+         * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+         * copies of the Software, and to permit persons to whom the Software is
+         * furnished to do so, subject to the following conditions:
+         *
+         * The above copyright notice and this permission notice shall be included in
+         * all copies or substantial portions of the Software.
+         *
+         * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+         * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+         * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+         * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+         * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM,
+         * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER  DEALINGS IN
+         * THE SOFTWARE.
+         */
+        """
+        # To ensure full compatibility what follows is a direct translation
+        # of the rndr_header_anchor C function used in redcarpet.
+        STRIPPED = " -&+$,/:;=?@\"#{}|^~[]`\\*()%.!'"
+        header_text_len = len(header_text)
+        inserted = 0
+        stripped = 0
+        header_text_intermediate_stage = ''
+        for i in range(0,header_text_len):
+            if header_text[i] == '<':
+                while i < header_text_len and a[i] != '>':
+                    i+=1
+            elif header_text[i] == '&':
+                while i < header_text_len and header_text[i] != ';':
+                    i+=1
+            # str.find() == -1 if character is not found in str.
+            # https://docs.python.org/3.6/library/stdtypes.html?highlight=find#str.find
+            elif not curses.ascii.isascii(header_text[i]) or STRIPPED.find(header_text[i]) != -1:
+                if inserted and  not stripped:
+                    header_text_intermediate_stage += '-'
+                stripped = 1
+            else:
+                header_text_intermediate_stage += header_text[i].lower()
+                stripped = 0
+                inserted += 1
+
+        if stripped > 0 and inserted > 0:
+            header_text_intermediate_stage = header_text_intermediate_stage[0:-1]
+
+        if inserted == 0 and header_text_len > 0:
+            hash = 5381
+            for i in range(0,header_text_len):
+                # Get the unicode representation with ord.
+                # Unicode should be equal to ASCII in ASCII's range of
+                # characters.
+                hash = ((hash << 5) + hash) + ord(header_text[i])
+
+            # This is equivalent to %x in C. In Python we don't have
+            # the length problem so %x is equal to %lx in this case.
+            # Apparently there is no %l in Python...
+            header_text_intermediate_stage = 'part-' + '{0:x}'.format(hash)
+
+        # 3.2. Check for duplicates.
+        ht = header_text_intermediate_stage
+        # Set the initial value if we are examining the first occurrency
+        if header_text_intermediate_stage not in header_duplicate_counter:
+            header_duplicate_counter[header_text_intermediate_stage] = 0
+        if header_duplicate_counter[header_text_intermediate_stage] > 0:
+            header_text_intermediate_stage = header_text_intermediate_stage + '-' + str(header_duplicate_counter[header_text_intermediate_stage])
+        header_duplicate_counter[ht] += 1
+
+        return header_text_intermediate_stage
+
+    # 4. Situation of using anchor links with Gogs seems unclear at the moment.
+    # https://gogs.io/docs
+    # https://github.com/chjj/marked
+    # https://github.com/chjj/marked/issues/981
+    # https://github.com/chjj/marked/search?q=anchor&type=Issues&utf8=%E2%9C%93
+    # https://notabug.org/hp/gogs/
+    elif anchor_type == 'gogs' or anchor_type == 'notabug':
+        # Needs to be implemented
+        return slugify(header_text)
+
+    # 5. Same as 1.
+    else:
+        return slugify(header_text)
 
 
 def build_toc_line(header, ordered=False, no_links=False, index=1):
@@ -344,8 +511,7 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
 
     return toc_line
 
-
-def get_md_heading(line):
+def get_md_heading(line,header_duplicate_counter=dict(),anchor_type='standard'):
     r"""Given a line extract the title type and its text.
 
     :parameter: line
@@ -396,7 +562,7 @@ def get_md_heading(line):
     header = {
         'type': header_type,
         'text_original': header_text,
-        'text_slugified': slugify(header_text)
+        'text_slugified': build_anchor_link(header_text,header_duplicate_counter,anchor_type)
     }
     return header
 
