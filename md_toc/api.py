@@ -414,6 +414,8 @@ def build_anchor_link(header_text,header_duplicate_counter,anchor_type='standard
             header_text_intermediate_stage = 'part-' + '{0:x}'.format(hash)
 
         # 3.2. Check for duplicates.
+
+        # TODO TODO: Check where this is done in the original code.
         ht = header_text_intermediate_stage
         # Set the initial value if we are examining the first occurrency
         if header_text_intermediate_stage not in header_duplicate_counter:
@@ -431,12 +433,12 @@ def build_anchor_link(header_text,header_duplicate_counter,anchor_type='standard
     # https://github.com/chjj/marked/search?q=anchor&type=Issues&utf8=%E2%9C%93
     # https://notabug.org/hp/gogs/
     elif anchor_type == 'gogs' or anchor_type == 'notabug':
-        # Needs to be implemented
-        return slugify(header_text)
+        # Needs to be implemented.
+        return header_text
 
     # 5. Same as 1.
     else:
-        return slugify(header_text)
+        return header_text
 
 
 def build_toc_line(header, ordered=False, no_links=False, index=1):
