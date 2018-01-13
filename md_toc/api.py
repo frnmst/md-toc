@@ -21,7 +21,6 @@
 #
 """The main file."""
 
-from slugify import slugify
 import fpyutils
 import re
 import curses.ascii
@@ -139,7 +138,7 @@ def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
         return final_string
 
 
-def build_toc(filename, ordered=False, no_links=False, anchor_type='github'):
+def build_toc(filename, ordered=False, no_links=False, anchor_type='standard'):
     r"""Parse file by line and build the table of contents.
 
     :parameter filename: the file that needs to be read.
@@ -290,9 +289,8 @@ def build_anchor_link(header_text,header_duplicate_counter,anchor_type='standard
     assert isinstance(anchor_type, str)
 
     # 1. Return the same text as-is.
-    # TODO
     if anchor_type == 'standard':
-        return slugify(header_text)
+        return header_text
 
     # 2. Return the header text with the applied rules for GitHub.
     # Link to the Ruby algorithm:
@@ -462,7 +460,7 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
 
     :Example:
 
-    >>> header =  {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_slugified': 'hi-how-are-you'}
+    >>> header =  {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi-how-are-you'}
     >>> print(md_toc.api.build_toc_line(header,ordered=True,index=3))
         3. [hi hOw Are YOu!!? ? #](#hi-how-are-you)
     """
@@ -472,10 +470,10 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
     assert isinstance(header, dict)
     assert 'type' in header
     assert 'text_original' in header
-    assert 'text_slugified' in header
+    assert 'text_anchor_link' in header
     assert isinstance(header['type'], int)
     assert isinstance(header['text_original'], str)
-    assert isinstance(header['text_slugified'], str)
+    assert isinstance(header['text_anchor_link'], str)
     assert header['type'] >= 1 and header['type'] <= 3
     assert isinstance(ordered, bool)
     assert isinstance(no_links, bool)
@@ -504,7 +502,7 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
         line = header['text_original']
     else:
         # 3.2. Build the line as a link.
-        line = '[' + header['text_original'] + ']' + '(#' + header['text_slugified'] + ')'
+        line = '[' + header['text_original'] + ']' + '(#' + header['text_anchor_link'] + ')'
 
     # 4. String concatenation.
     toc_line = indentation_spaces + list_symbol + ' ' + line
@@ -525,7 +523,7 @@ def get_md_heading(line,header_duplicate_counter=dict(),anchor_type='standard'):
     :Example:
 
     >>> print(md_toc.api.get_md_heading(' ## hi hOw Are YOu!!? ? #'))
-    {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_slugified': 'hi-how-are-you'}
+    {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi-how-are-you'}
     """
     assert isinstance(line, str)
 
@@ -562,7 +560,7 @@ def get_md_heading(line,header_duplicate_counter=dict(),anchor_type='standard'):
     header = {
         'type': header_type,
         'text_original': header_text,
-        'text_slugified': build_anchor_link(header_text,header_duplicate_counter,anchor_type)
+        'text_anchor_link': build_anchor_link(header_text,header_duplicate_counter,anchor_type)
     }
     return header
 
