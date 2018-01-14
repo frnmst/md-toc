@@ -25,6 +25,7 @@ import fpyutils
 import re
 import curses.ascii
 
+
 def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
     r"""Write the table of contents.
 
@@ -217,7 +218,8 @@ def build_toc(filename, ordered=False, no_links=False, anchor_type='standard'):
         line = f.readline()
         while line:
             # 1.1. Get the basic information.
-            header = get_md_heading(line, header_duplicate_counter, anchor_type)
+            header = get_md_heading(line, header_duplicate_counter,
+                                    anchor_type)
             # 1.2. Consider valid lines only.
             if header is not None:
                 # 1.2.1. Get the current header type.
@@ -276,11 +278,13 @@ def increment_index_ordered_list(header_type_count, header_type_prev,
     header_type_count[str(header_type_curr)] += 1
 
 
-def build_anchor_link(header_text,header_duplicate_counter,anchor_type='standard'):
+def build_anchor_link(header_text,
+                      header_duplicate_counter,
+                      anchor_type='standard'):
     r"""Apply the specified slug rule to build the anchor link.
 
     :parameter anchor_type: supported anchor types are: 'standard', 'github',
-         'gitlab', 'gogs', 'notabug'.
+         'gitlab', 'redcarpet', 'gogs', 'notabug', 'kramdown'.
 
     :note: the 'standard' anchor types does not handle duplicate entries.
     """
@@ -293,9 +297,8 @@ def build_anchor_link(header_text,header_duplicate_counter,anchor_type='standard
         return header_text
 
     # 2. Return the header text with the applied rules for GitHub.
-    # Link to the Ruby algorithm:
-    # https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb
     elif anchor_type == 'github':
+        # This is based on the ruby algorithm. See md_toc's documentation.
         """
         Copyright (c) 2012 GitHub Inc. and Jerry Cheung
         Copyright (c) 2018, Franco Masotti <franco.masotti@student.unife.it>
@@ -326,9 +329,9 @@ def build_anchor_link(header_text,header_duplicate_counter,anchor_type='standard
         # 2.2. Remove punctuation: Keep spaces, hypens and "word characters"
         #      only.
         #      See https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb#L26
-        header_text = re.sub(r'[^\w\s\- ]','',header_text)
+        header_text = re.sub(r'[^\w\s\- ]', '', header_text)
         # 2.3. Replace spaces with dashes.
-        header_text = header_text.replace(' ','-')
+        header_text = header_text.replace(' ', '-')
 
         # 2.4. Check for duplicates.
         ht = header_text
@@ -336,17 +339,15 @@ def build_anchor_link(header_text,header_duplicate_counter,anchor_type='standard
         if header_text not in header_duplicate_counter:
             header_duplicate_counter[header_text] = 0
         if header_duplicate_counter[header_text] > 0:
-            header_text = header_text + '-' + str(header_duplicate_counter[header_text])
+            header_text = header_text + '-' + str(
+                header_duplicate_counter[header_text])
         header_duplicate_counter[ht] += 1
 
         return header_text
 
-    # 3. Return the header text with the applied rules for GitLab.
-    # https://gitlab.com/help/user/markdown.md#header-ids-and-links
-    # https://gitlab.com/help/user/markdown.md#gitlab-flavored-markdown-gfm
+    # 3. Return the header text with the applied rules for GitLab and RedCarpet.
     # https://github.com/vmg/redcarpet/blob/26c80f05e774b31cd01255b0fa62e883ac185bf3/ext/redcarpet/html.c#L274
-    # https://github.com/vmg/redcarpet/blob/26c80f05e774b31cd01255b0fa62e883ac185bf3/ext/redcarpet/html.c#L674
-    elif anchor_type == 'gitlab':
+    elif anchor_type == 'gitlab' or anchor_type == 'redcarpet':
         """
         /*
          * Copyright (c) 2009, Natacha Porté
@@ -372,37 +373,38 @@ def build_anchor_link(header_text,header_duplicate_counter,anchor_type='standard
          * THE SOFTWARE.
          */
         """
-        # To ensure full compatibility what follows is a direct translation
-        # of the rndr_header_anchor C function used in redcarpet.
+        # 3.1. To ensure full compatibility what follows is a direct translation
+        #      of the rndr_header_anchor C function used in redcarpet.
         STRIPPED = " -&+$,/:;=?@\"#{}|^~[]`\\*()%.!'"
         header_text_len = len(header_text)
         inserted = 0
         stripped = 0
-        header_text_intermediate_stage = ''
-        for i in range(0,header_text_len):
+        header_text_middle_stage = ''
+        for i in range(0, header_text_len):
             if header_text[i] == '<':
-                while i < header_text_len and a[i] != '>':
-                    i+=1
+                while i < header_text_len and header_text[i] != '>':
+                    i += 1
             elif header_text[i] == '&':
                 while i < header_text_len and header_text[i] != ';':
-                    i+=1
+                    i += 1
             # str.find() == -1 if character is not found in str.
             # https://docs.python.org/3.6/library/stdtypes.html?highlight=find#str.find
-            elif not curses.ascii.isascii(header_text[i]) or STRIPPED.find(header_text[i]) != -1:
-                if inserted and  not stripped:
-                    header_text_intermediate_stage += '-'
+            elif not curses.ascii.isascii(
+                    header_text[i]) or STRIPPED.find(header_text[i]) != -1:
+                if inserted and not stripped:
+                    header_text_middle_stage += '-'
                 stripped = 1
             else:
-                header_text_intermediate_stage += header_text[i].lower()
+                header_text_middle_stage += header_text[i].lower()
                 stripped = 0
                 inserted += 1
 
         if stripped > 0 and inserted > 0:
-            header_text_intermediate_stage = header_text_intermediate_stage[0:-1]
+            header_text_middle_stage = header_text_middle_stage[0:-1]
 
         if inserted == 0 and header_text_len > 0:
             hash = 5381
-            for i in range(0,header_text_len):
+            for i in range(0, header_text_len):
                 # Get the unicode representation with ord.
                 # Unicode should be equal to ASCII in ASCII's range of
                 # characters.
@@ -411,32 +413,35 @@ def build_anchor_link(header_text,header_duplicate_counter,anchor_type='standard
             # This is equivalent to %x in C. In Python we don't have
             # the length problem so %x is equal to %lx in this case.
             # Apparently there is no %l in Python...
-            header_text_intermediate_stage = 'part-' + '{0:x}'.format(hash)
+            header_text_middle_stage = 'part-' + '{0:x}'.format(hash)
 
-        # 3.2. Check for duplicates.
+        # 3.2. Check for duplicates (this is working in github only).
+        #      https://gitlab.com/help/user/markdown.md#header-ids-and-links
+        if anchor_type == 'gitlab':
+            # Apparently redcarpet does not handle duplicate entries, but
+            # Gitlab does, although I cannot find the code responsable for it.
+            ht = header_text_middle_stage
+            # Set the initial value if we are examining the first occurrency
+            if header_text_middle_stage not in header_duplicate_counter:
+                header_duplicate_counter[header_text_middle_stage] = 0
+            if header_duplicate_counter[header_text_middle_stage] > 0:
+                header_text_middle_stage = header_text_middle_stage + '-' + str(
+                    header_duplicate_counter[header_text_middle_stage])
+            header_duplicate_counter[ht] += 1
 
-        # TODO TODO: Check where this is done in the original code.
-        ht = header_text_intermediate_stage
-        # Set the initial value if we are examining the first occurrency
-        if header_text_intermediate_stage not in header_duplicate_counter:
-            header_duplicate_counter[header_text_intermediate_stage] = 0
-        if header_duplicate_counter[header_text_intermediate_stage] > 0:
-            header_text_intermediate_stage = header_text_intermediate_stage + '-' + str(header_duplicate_counter[header_text_intermediate_stage])
-        header_duplicate_counter[ht] += 1
+        return header_text_middle_stage
 
-        return header_text_intermediate_stage
-
-    # 4. Situation of using anchor links with Gogs seems unclear at the moment.
-    # https://gogs.io/docs
-    # https://github.com/chjj/marked
-    # https://github.com/chjj/marked/issues/981
-    # https://github.com/chjj/marked/search?q=anchor&type=Issues&utf8=%E2%9C%93
-    # https://notabug.org/hp/gogs/
-    elif anchor_type == 'gogs' or anchor_type == 'notabug':
+    # 4. Situation of seems unclear.
+    elif anchor_type == 'gogs' or anchor_type == 'marked' or anchor_type == 'notabug':
         # Needs to be implemented.
         return header_text
 
-    # 5. Same as 1.
+    # 5. Unclear if there is this feature.
+    elif anchor_type == 'kramdown':
+        # Needs to be implemented.
+        return header_text
+
+    # 6. Same as 1.
     else:
         return header_text
 
@@ -511,7 +516,10 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
 
     return toc_line
 
-def get_md_heading(line,header_duplicate_counter=dict(),anchor_type='standard'):
+
+def get_md_heading(line,
+                   header_duplicate_counter=dict(),
+                   anchor_type='standard'):
     r"""Given a line extract the title type and its text.
 
     :parameter: line
@@ -560,9 +568,12 @@ def get_md_heading(line,header_duplicate_counter=dict(),anchor_type='standard'):
     # 7. Return a dict with the three data sets we need. Note that we need the
     # title text to be slugified so it can be used as link.
     header = {
-        'type': header_type,
-        'text_original': header_text,
-        'text_anchor_link': build_anchor_link(header_text,header_duplicate_counter,anchor_type)
+        'type':
+        header_type,
+        'text_original':
+        header_text,
+        'text_anchor_link':
+        build_anchor_link(header_text, header_duplicate_counter, anchor_type)
     }
     return header
 

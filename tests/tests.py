@@ -35,7 +35,8 @@ RANDOM_STRING_LENGTH = 32
 # To preserve the success of the tests,
 # these generate_* functions are
 # not to be modified.
-def generate_fake_markdown_file_with_no_toc_markers_with_standard_anchor_type():
+def generate_fake_markdown_file_with_no_toc_markers_with_standard_anchor_type(
+):
     """Refer to the non-toc marker version."""
     DATA_TO_BE_READ = '''\
 # One\n\
@@ -62,7 +63,8 @@ def generate_fake_toc_ordered_no_toc_markers_with_standard_anchor_type():
     return TOC
 
 
-def generate_fake_markdown_file_with_one_toc_marker_with_standard_anchor_type():
+def generate_fake_markdown_file_with_one_toc_marker_with_standard_anchor_type(
+):
     """Refer to the one marker non-ordered version."""
     DATA_TO_BE_READ = '''\
 # One\n\
@@ -84,7 +86,8 @@ def generate_fake_toc_non_ordered_one_toc_marker_with_standard_anchor_type():
     return TOC
 
 
-def generate_fake_markdown_file_with_two_toc_markers_with_standard_anchor_type():
+def generate_fake_markdown_file_with_two_toc_markers_with_standard_anchor_type(
+):
     """Refer to the two marker ordered version."""
     DATA_TO_BE_READ = '''\
 # Toc\n\
@@ -261,19 +264,27 @@ class TestApi(unittest.TestCase):
         with patch(
                 'builtins.open',
                 mock_open(
-                    read_data=generate_fake_markdown_file_with_no_toc_markers_with_standard_anchor_type(
+                    read_data=
+                    generate_fake_markdown_file_with_no_toc_markers_with_standard_anchor_type(
                     ))):
             toc = api.build_toc('foo.md')
-        self.assertEqual(toc, generate_fake_toc_non_ordered_no_toc_markers_with_standard_anchor_type())
+        self.assertEqual(
+            toc,
+            generate_fake_toc_non_ordered_no_toc_markers_with_standard_anchor_type(
+            ))
 
         # Test ordered lists.
         with patch(
                 'builtins.open',
                 mock_open(
-                    read_data=generate_fake_markdown_file_with_no_toc_markers_with_standard_anchor_type(
+                    read_data=
+                    generate_fake_markdown_file_with_no_toc_markers_with_standard_anchor_type(
                     ))):
             toc = api.build_toc('foo.md', ordered=True)
-        self.assertEqual(toc, generate_fake_toc_ordered_no_toc_markers_with_standard_anchor_type())
+        self.assertEqual(
+            toc,
+            generate_fake_toc_ordered_no_toc_markers_with_standard_anchor_type(
+            ))
 
     def test_write_toc_on_md_file(self):
         """Pass."""
@@ -281,9 +292,11 @@ class TestApi(unittest.TestCase):
         with patch(
                 'builtins.open',
                 mock_open(
-                    read_data=generate_fake_markdown_file_with_no_toc_markers_with_standard_anchor_type(
+                    read_data=
+                    generate_fake_markdown_file_with_no_toc_markers_with_standard_anchor_type(
                     ))) as m0:
-            toc = generate_fake_toc_non_ordered_no_toc_markers_with_standard_anchor_type()
+            toc = generate_fake_toc_non_ordered_no_toc_markers_with_standard_anchor_type(
+            )
             api.write_toc_on_md_file('foo.md', toc, in_place=True)
         #    assert not called write (insert nor delete).
         assert 'call().readline()' not in m0.mock_calls
@@ -294,9 +307,11 @@ class TestApi(unittest.TestCase):
         with patch(
                 'builtins.open',
                 mock_open(
-                    read_data=generate_fake_markdown_file_with_one_toc_marker_with_standard_anchor_type(
+                    read_data=
+                    generate_fake_markdown_file_with_one_toc_marker_with_standard_anchor_type(
                     ))) as m1:
-            toc = generate_fake_toc_non_ordered_one_toc_marker_with_standard_anchor_type()
+            toc = generate_fake_toc_non_ordered_one_toc_marker_with_standard_anchor_type(
+            )
             api.write_toc_on_md_file('foo.md', toc, in_place=True)
         assert "call().write('" + toc + "')" not in m1.mock_calls
 
@@ -306,9 +321,11 @@ class TestApi(unittest.TestCase):
         with patch(
                 'builtins.open',
                 mock_open(
-                    read_data=generate_fake_markdown_file_with_two_toc_markers_with_standard_anchor_type(
+                    read_data=
+                    generate_fake_markdown_file_with_two_toc_markers_with_standard_anchor_type(
                     ))) as m2:
-            toc = generate_fake_toc_non_ordered_two_toc_markers_with_standard_anchor_type()
+            toc = generate_fake_toc_non_ordered_two_toc_markers_with_standard_anchor_type(
+            )
             api.write_toc_on_md_file('foo.md', toc, in_place=True)
         expected_string = r"call().write('[](TOC)\n\n" + repr(
             toc) + r"\n[](TOC)\n')"

@@ -35,7 +35,10 @@ class CliToApi():
             args.toc_marker = '[](TOC)'
         result = write_toc_on_md_file(
             args.filename,
-            toc=build_toc(filename=args.filename, ordered=args.ordered, no_links=args.no_links),
+            toc=build_toc(
+                filename=args.filename,
+                ordered=args.ordered,
+                no_links=args.no_links),
             in_place=args.in_place,
             toc_marker=args.toc_marker)
         if result is not None:

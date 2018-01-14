@@ -22,6 +22,6 @@
 """Python discovery file."""
 
 from .api import (get_md_heading, build_toc_line, increment_index_ordered_list,
-                  build_toc, write_toc_on_md_file)
+                  build_anchor_link, build_toc, write_toc_on_md_file)
 from .cli import (CliInterface)
 # from .exceptions import ()
