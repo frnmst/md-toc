@@ -18,37 +18,57 @@ and so on...
 Anchor types and behaviours
 ---------------------------
 
+What follows is a list of parameters and rules used by md_toc to decide 
+how to render anchor links.
+
 - ``standard``: no transformation is done.
 
 - ``github``: a translated version of the Ruby algorithm is used in md_toc. 
-              The original one is repored here: 
-              https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb
-              GitHub uses cmark-gfm: https://github.com/github/cmark . I could 
-              not dind the code directly responsable for the anchor link generation.
-              See also: https://github.github.com/gfm/ https://githubengineering.com/a-formal-spec-for-github-markdown/
-              https://github.com/github/cmark/issues/65#issuecomment-343433978
+  The original one is repored here: 
+  
+  - https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb
+
+  GitHub uses cmark-gfm:
+
+  - https://github.com/github/cmark
+
+  I could not dind the code directly responsable for the anchor link generation.
+  See also:
+
+  - https://github.github.com/gfm/
+  - https://githubengineering.com/a-formal-spec-for-github-markdown/
+  - https://github.com/github/cmark/issues/65#issuecomment-343433978
 
 - ``redcarpet``: Treats consecutive dash characters by tranforming them into a 
   single dash character. A translated version of the C algorithm 
   is used in md_toc. The original version is here:
-  https://github.com/vmg/redcarpet/blob/26c80f05e774b31cd01255b0fa62e883ac185bf3/ext/redcarpet/html.c#L274
-  See also https://github.com/vmg/redcarpet/issues/618#issuecomment-306476184
-  and https://github.com/vmg/redcarpet/issues/307#issuecomment-261793668
 
-- ``gitlab``: GitLab uses the Redcarpet parsers with some modifications, such 
-  as duplicate anchor link detection. A very generic pseudocode is
-  available here: https://gitlab.com/help/user/markdown.md#header-ids-and-links
+  - https://github.com/vmg/redcarpet/blob/26c80f05e774b31cd01255b0fa62e883ac185bf3/ext/redcarpet/html.c#L274
+
+  See also:
+
+  - https://github.com/vmg/redcarpet/issues/618#issuecomment-306476184
+  - https://github.com/vmg/redcarpet/issues/307#issuecomment-261793668
+
+- ``gitlab``: GitLab uses the Redcarpet parser with some modifications, such 
+  as duplicate anchor link detection. A generic pseudocode is
+  available here:
+
+  - https://gitlab.com/help/user/markdown.md#header-ids-and-links
               
-- ``gogs``, ``marked``, ``notabug``: Situation seems unclear. Here are some 
-  links:
-                                     https://gogs.io/docs
-                                     https://github.com/chjj/marked
-                                     https://github.com/chjj/marked/issues/981
-                                     https://github.com/chjj/marked/search?q=anchor&type=Issues&utf8=%E2%9C%93
-                                     https://notabug.org/hp/gogs/
-                                     For this reason no implementation is 
-                                     available for the moment.
+- ``gogs``, ``marked``, ``notabug``: Gogs uses marked as the markdown 
+  parser while *NotABug.org is powered by a liberated version of gogs*. 
+  Situation seems unclear. Here are some links:
+
+  - https://gogs.io/docs
+  - https://github.com/chjj/marked
+  - https://github.com/chjj/marked/issues/981
+  - https://github.com/chjj/marked/search?q=anchor&type=Issues&utf8=%E2%9C%93
+  - https://notabug.org/hp/gogs/
+
+  For this reason no implementation is available for the moment.
 
 - ``kramdown``: It is unclear if this feature is available. See:
-                https://github.com/gettalong/kramdown/search?q=anchor&type=Issues&utf8=%E2%9C%93
+
+  - https://github.com/gettalong/kramdown/search?q=anchor&type=Issues&utf8=%E2%9C%93
 
