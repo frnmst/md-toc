@@ -145,9 +145,12 @@ def build_toc(filename, ordered=False, no_links=False, anchor_type='standard'):
     :parameter filename: the file that needs to be read.
     :parameter ordered: decides whether to build an ordered list or not.
     :parameter no_links: disables the use of links.
+    :parameter anchor_type: decides rules on how to generate anchor links.
+         Defaults to ``standard``.
     :type filename: str
     :type ordered: bool
     :type no_links: bool
+    :type anchor_type: str
     :returns: the table of contents.
     :rtype: str
     :raises: one of the built-in exceptions.
@@ -200,6 +203,7 @@ def build_toc(filename, ordered=False, no_links=False, anchor_type='standard'):
     assert isinstance(filename, str)
     assert isinstance(ordered, bool)
     assert isinstance(no_links, bool)
+    assert isinstance(anchor_type, str)
 
     toc = ''
     # Header type counter. Useful for ordered lists.
@@ -283,10 +287,24 @@ def build_anchor_link(header_text,
                       anchor_type='standard'):
     r"""Apply the specified slug rule to build the anchor link.
 
-    :parameter anchor_type: supported anchor types are: 'standard', 'github',
-         'gitlab', 'redcarpet', 'gogs', 'notabug', 'kramdown'.
+    :parameter header_text: the text that needs to be transformed in a link
+    :parameter header_duplicate_counter: a data structure that keeps track of
+         possible duplicate header links in order to avoid them.
+    :parameter anchor_type: decides rules on how to generate anchor links.
+         Defaults to ``standard``. Supported anchor types are: ``standard``,
+         ``github``, ``gitlab``, ``redcarpet``, ``gogs``, ``notabug``,
+         ``kramdown``.
+    :type header_text: str
+    :type header_duplicate_counter: dict
+    :type anchor_type: str
+    :returns: the anchor link.
+    :rtype: str
+    :raises: one of the built-in exceptions.
 
-    :note: the 'standard' anchor types does not handle duplicate entries.
+    :note: For a detailed description of the behaviour of each anchor type
+        please refer to the 'Markdown spec' documentation page.
+
+    -p --parser="github" or whatever...
     """
     assert isinstance(header_text, str)
     assert isinstance(header_duplicate_counter, dict)

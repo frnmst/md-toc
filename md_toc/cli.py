@@ -38,7 +38,8 @@ class CliToApi():
             toc=build_toc(
                 filename=args.filename,
                 ordered=args.ordered,
-                no_links=args.no_links),
+                no_links=args.no_links,
+                anchor_type=args.anchor_type),
             in_place=args.in_place,
             toc_marker=args.toc_marker)
         if result is not None:
@@ -80,10 +81,21 @@ class CliInterface():
             help='write as an ordered list',
             action='store_true')
         write_toc_prs.add_argument(
+            '-p',
+            '--parser',
+            choices=[
+                'standard', 'github', 'redcarpet', 'gitlab', 'gogs', 'marked',
+                'notabug', 'kramdown'
+            ],
+            help='decide what markdown parser will be used \
+                  to generate the links')
+        write_toc_prs.add_argument(
             '-t',
             '--toc-marker',
+            metavar='TOC_MARKER',
             help='set the string to be used as the marker \
-                  for positioning the table of contents')
+                  for positioning the table of contents',
+        )
         parser.add_argument(
             '-v',
             '--version',
