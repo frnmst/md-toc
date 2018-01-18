@@ -22,6 +22,7 @@
 """Call the CLI parser."""
 
 import sys
+import traceback
 from .cli import CliInterface
 
 
@@ -37,7 +38,7 @@ def main(args=None):
         retcode = 0
     except Exception as e:
         retcode = 1
-        sys.stderr.write(str(e))
+        traceback.print_exc()
     sys.exit(retcode)
 
 

@@ -33,13 +33,15 @@ class CliToApi():
         """Write the table of contents on the markown file."""
         if args.toc_marker is None:
             args.toc_marker = '[](TOC)'
+        if args.parser is None:
+            args.parser = 'standard'
         result = write_toc_on_md_file(
             args.filename,
             toc=build_toc(
                 filename=args.filename,
                 ordered=args.ordered,
                 no_links=args.no_links,
-                anchor_type=args.anchor_type),
+                anchor_type=args.parser),
             in_place=args.in_place,
             toc_marker=args.toc_marker)
         if result is not None:
@@ -87,8 +89,9 @@ class CliInterface():
                 'standard', 'github', 'redcarpet', 'gitlab', 'gogs', 'marked',
                 'notabug', 'kramdown'
             ],
+            default='standard',
             help='decide what markdown parser will be used \
-                  to generate the links')
+                  to generate the links. Defaults to standard')
         write_toc_prs.add_argument(
             '-t',
             '--toc-marker',
@@ -101,6 +104,7 @@ class CliInterface():
             '--version',
             action='version',
             version=pkg_resources.get_distribution('md_toc').version)
+
         write_toc_prs.set_defaults(func=CliToApi().write_toc_on_md_file)
 
         return parser
