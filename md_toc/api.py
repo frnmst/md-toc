@@ -289,7 +289,8 @@ def build_anchor_link(header_text,
 
     :parameter header_text: the text that needs to be transformed in a link
     :parameter header_duplicate_counter: a data structure that keeps track of
-         possible duplicate header links in order to avoid them.
+         possible duplicate header links in order to avoid them. This is
+         meaningful only for certain values of anchor_type.
     :parameter anchor_type: decides rules on how to generate anchor links.
          Defaults to ``standard``. Supported anchor types are: ``standard``,
          ``github``, ``gitlab``, ``redcarpet``, ``gogs``, ``notabug``,
@@ -303,8 +304,6 @@ def build_anchor_link(header_text,
 
     :note: For a detailed description of the behaviour of each anchor type
         please refer to the 'Markdown spec' documentation page.
-
-    -p --parser="github" or whatever...
     """
     assert isinstance(header_text, str)
     assert isinstance(header_duplicate_counter, dict)
@@ -353,7 +352,9 @@ def build_anchor_link(header_text,
 
         # 2.4. Check for duplicates.
         ht = header_text
-        # Set the initial value if we are examining the first occurrency
+        # Set the initial value if we are examining the first occurrency.
+        # The state of header_duplicate_counter is available to the caller
+        # functions.
         if header_text not in header_duplicate_counter:
             header_duplicate_counter[header_text] = 0
         if header_duplicate_counter[header_text] > 0:
@@ -540,8 +541,16 @@ def get_md_heading(line,
                    anchor_type='standard'):
     r"""Given a line extract the title type and its text.
 
-    :parameter: line
+    :parameter line: the line to be examined.
+    :parameter header_duplicate_counter: a data structure that contains the
+         number of occurrencies of each header anchor link. This is used to
+         avoid duplicate anchor links and it is meaningful only for certain
+         values of anchor_type.
+    :parameter anchor_type: decides rules on how to generate anchor links.
+         Defaults to ``standard``.
     :type line: str
+    :type header_duplicate_counter: dict
+    :type anchor_type: str
     :returns: None if the input line does not correspond to one of the
          designated cases or a data structure containing the necessary
          components to create a table of contents line, otherwise.
@@ -554,8 +563,11 @@ def get_md_heading(line,
     {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi-how-are-you'}
     """
     assert isinstance(line, str)
+    assert isinstance(header_duplicate_counter, dict)
+    assert isinstance(anchor_type, str)
 
-    # 1. Remove leading and trailing whitespace from line.
+    # 1. Remove leading and trailing whitespace from line to engage a lax
+    #    parsing.
     line = line.strip()
 
     # 2. If first char of line is not '#' return None. This means
