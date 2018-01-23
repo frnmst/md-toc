@@ -222,7 +222,8 @@ def build_toc(filename, ordered=False, no_links=False, anchor_type='standard'):
         line = f.readline()
         while line:
             # 1.1. Get the basic information.
-            header = get_md_heading(line, header_duplicate_counter,
+            line = get_md_header_type(line)
+            header = get_md_header(line, header_duplicate_counter,
                                     anchor_type)
             # 1.2. Consider valid lines only.
             if header is not None:
@@ -536,12 +537,38 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
     return toc_line
 
 
-def get_md_heading(line,
-                   header_duplicate_counter=dict(),
-                   anchor_type='standard'):
-    r"""Given a line extract the title type and its text.
+def get_md_header_type(line, max_header_levels=3):
+    r"""Given a line extract the title type.
 
     :parameter line: the line to be examined.
+    :parameter max_header_levels: the maximum levels.... TODO.
+    """
+    assert isinstance(line, str)
+    assert isinstance(max_header_levels, int)
+    assert max_header_levels > 0
+
+    # 1. Remove leading and trailing whitespace from line to engage a lax
+    #    parsing.
+    line = line.strip()
+
+    # 2. Determine the header type by counting the number of the
+    #    first consecutive '#' characters in the line.
+    header_type = 0
+    line_length = len(line)
+    while header_type < line_length and line[header_type] == '#' and header_type <= max_header_levels:
+        header_type += 1
+    if header_type == 0 or header_type > max_header_levels:
+        return None
+    else:
+        return header_type
+
+
+def get_md_header(header_text,
+                  header_type,
+                  header_duplicate_counter,
+                  anchor_type='standard'):
+    r"""Build a data structure with the elements needed to create a TOC line.
+
     :parameter header_duplicate_counter: a data structure that contains the
          number of occurrencies of each header anchor link. This is used to
          avoid duplicate anchor links and it is meaningful only for certain
@@ -559,44 +586,24 @@ def get_md_heading(line,
 
     :Example:
 
-    >>> print(md_toc.api.get_md_heading(' ## hi hOw Are YOu!!? ? #'))
+    >>> print(md_toc.api.get_md_header(' ## hi hOw Are YOu!!? ? #'))
     {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi-how-are-you'}
     """
-    assert isinstance(line, str)
+    assert isinstance(header_text, str)
+    assert isinstance(header_type, int)
     assert isinstance(header_duplicate_counter, dict)
     assert isinstance(anchor_type, str)
 
-    # 1. Remove leading and trailing whitespace from line to engage a lax
-    #    parsing.
-    line = line.strip()
+    # 1. Remove the leading and trailing whitespace
+    header_text = header_text.lstrip()
 
-    # 2. If first char of line is not '#' return None. This means
-    # we don't care about this line. Check also if it's an empty string.
-    if len(line) == 0:
-        return None
-    if line[0] != '#':
-        return None
+    # 2. Remove the leading '#'s.
+    header_text = header_text.lstrip('#')
 
-    # 3. Remove the leading '#'s.
-    header_text = line.lstrip('#')
+    # 3. Remove possible whitespace after removing the '#'s.
+    header_text = header_text.lstrip()
 
-    # 4. Count the number of leading '#' character to determine what kind of
-    # title it is.
-    #
-    #    Waring: This is computationally unconvenient: O(n) where n =
-    #    len(line). It is however more elegant than iterating on the line
-    #    itself.
-    header_type = len(line) - len(header_text)
-
-    # 5. If it's a 4 (or more) title level we will ignore it.
-    if header_type > 3:
-        return None
-
-    # 6. Remove possible whitespace after removing the '#'s.
-    header_text = header_text.strip()
-
-    # 7. Return a dict with the three data sets we need. Note that we need the
-    # title text to be slugified so it can be used as link.
+    # 4. Return a dict with the three data sets we need.
     header = {
         'type':
         header_type,

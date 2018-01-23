@@ -11,10 +11,10 @@ When used with the in-place option this script will write the table of
 contents at the first occurrency of a marker. The default marker is ``[](TOC)`` 
 which will result as invisible when reading the parsed markdown file.
 
-Titles up to three indentation levels (in HTML: ``h1``, ``h2``, ``h3``) will be 
-included in the table of contents.
+By default, titles up to three indentation levels (in HTML: ``h1``, ``h2``, 
+``h3``) will be included in the table of contents.
 
-Supports anchor links for GitHub, GitLab and simple slugify.
+Supports anchor links for several markdown parsers.
 
 As a final remark, it is possible to generate an ordered and an unordered table 
 of contents. In both cases, each element of the toc is a clickable link to a 
