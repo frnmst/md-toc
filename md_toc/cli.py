@@ -99,6 +99,13 @@ class CliInterface():
             help='set the string to be used as the marker \
                   for positioning the table of contents',
         )
+        write_toc_prs.add_argument(
+            '-l',
+            '--header-levels',
+            default=3,
+            help='set the maximum level of headers to \
+                  be considered as part of the TOC',
+        )
         parser.add_argument(
             '-v',
             '--version',

@@ -201,12 +201,11 @@ def build_toc(filename, ordered=False, no_links=False, anchor_type='standard'):
                 2. [asdf](#asdf)
     """
     assert isinstance(filename, str)
-    assert isinstance(ordered, bool)
-    assert isinstance(no_links, bool)
-    assert isinstance(anchor_type, str)
 
     toc = ''
     # Header type counter. Useful for ordered lists.
+    # TODO This needs to be changed for a generic number of indentation levels.
+    # TODO Change the dict to ints only.
     ht = {
         '1': 0,
         '2': 0,
@@ -222,9 +221,8 @@ def build_toc(filename, ordered=False, no_links=False, anchor_type='standard'):
         line = f.readline()
         while line:
             # 1.1. Get the basic information.
-            line = get_md_header_type(line)
             header = get_md_header(line, header_duplicate_counter,
-                                    anchor_type)
+                                   anchor_type)
             # 1.2. Consider valid lines only.
             if header is not None:
                 # 1.2.1. Get the current header type.
@@ -246,6 +244,7 @@ def build_toc(filename, ordered=False, no_links=False, anchor_type='standard'):
     return toc
 
 
+# TODO: FIXME so that we have e.g.: 1.1.x. 1.2.x. 1.x. 1.
 def increment_index_ordered_list(header_type_count, header_type_prev,
                                  header_type_curr):
     r"""Compute current index for ordered list table of contents.
@@ -282,190 +281,6 @@ def increment_index_ordered_list(header_type_count, header_type_prev,
     # 2. Increment the current index.
     header_type_count[str(header_type_curr)] += 1
 
-
-def build_anchor_link(header_text,
-                      header_duplicate_counter,
-                      anchor_type='standard'):
-    r"""Apply the specified slug rule to build the anchor link.
-
-    :parameter header_text: the text that needs to be transformed in a link
-    :parameter header_duplicate_counter: a data structure that keeps track of
-         possible duplicate header links in order to avoid them. This is
-         meaningful only for certain values of anchor_type.
-    :parameter anchor_type: decides rules on how to generate anchor links.
-         Defaults to ``standard``. Supported anchor types are: ``standard``,
-         ``github``, ``gitlab``, ``redcarpet``, ``gogs``, ``notabug``,
-         ``kramdown``.
-    :type header_text: str
-    :type header_duplicate_counter: dict
-    :type anchor_type: str
-    :returns: the anchor link.
-    :rtype: str
-    :raises: one of the built-in exceptions.
-
-    :note: For a detailed description of the behaviour of each anchor type
-        please refer to the 'Markdown spec' documentation page.
-    """
-    assert isinstance(header_text, str)
-    assert isinstance(header_duplicate_counter, dict)
-    assert isinstance(anchor_type, str)
-
-    # 1. Return the same text as-is.
-    if anchor_type == 'standard':
-        return header_text
-
-    # 2. Return the header text with the applied rules for GitHub.
-    elif anchor_type == 'github':
-        # This is based on the ruby algorithm. See md_toc's documentation.
-        """
-        Copyright (c) 2012 GitHub Inc. and Jerry Cheung
-        Copyright (c) 2018, Franco Masotti <franco.masotti@student.unife.it>
-
-        MIT License
-
-        Permission is hereby granted, free of charge, to any person obtaining
-        a copy of this software and associated documentation files (the
-        "Software"), to deal in the Software without restriction, including
-        without limitation the rights to use, copy, modify, merge, publish,
-        distribute, sublicense, and/or sell copies of the Software, and to
-        permit persons to whom the Software is furnished to do so, subject to
-        the following conditions:
-
-        The above copyright notice and this permission notice shall be
-        included in all copies or substantial portions of the Software.
-
-        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-        EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-        MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-        NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-        LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-        OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-        WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-        """
-        # 2.1. Lowercase.
-        header_text = header_text.lower()
-        # 2.2. Remove punctuation: Keep spaces, hypens and "word characters"
-        #      only.
-        #      See https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb#L26
-        header_text = re.sub(r'[^\w\s\- ]', '', header_text)
-        # 2.3. Replace spaces with dashes.
-        header_text = header_text.replace(' ', '-')
-
-        # 2.4. Check for duplicates.
-        ht = header_text
-        # Set the initial value if we are examining the first occurrency.
-        # The state of header_duplicate_counter is available to the caller
-        # functions.
-        if header_text not in header_duplicate_counter:
-            header_duplicate_counter[header_text] = 0
-        if header_duplicate_counter[header_text] > 0:
-            header_text = header_text + '-' + str(
-                header_duplicate_counter[header_text])
-        header_duplicate_counter[ht] += 1
-
-        return header_text
-
-    # 3. Return the header text with the applied rules for GitLab and RedCarpet.
-    # https://github.com/vmg/redcarpet/blob/26c80f05e774b31cd01255b0fa62e883ac185bf3/ext/redcarpet/html.c#L274
-    elif anchor_type == 'gitlab' or anchor_type == 'redcarpet':
-        """
-        /*
-         * Copyright (c) 2009, Natacha Porté
-         * Copyright (c) 2015, Vicent Marti
-         * Copyright (c) 2018, Franco Masotti <franco.masotti@student.unife.it>
-         *
-         * Permission is hereby granted, free of charge, to any person obtaining a copy
-         * of this software and associated documentation files (the "Software"), to deal
-         * in the Software without restriction, including without limitation the rights
-         * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-         * copies of the Software, and to permit persons to whom the Software is
-         * furnished to do so, subject to the following conditions:
-         *
-         * The above copyright notice and this permission notice shall be included in
-         * all copies or substantial portions of the Software.
-         *
-         * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-         * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-         * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-         * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-         * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM,
-         * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER  DEALINGS IN
-         * THE SOFTWARE.
-         */
-        """
-        # 3.1. To ensure full compatibility what follows is a direct translation
-        #      of the rndr_header_anchor C function used in redcarpet.
-        STRIPPED = " -&+$,/:;=?@\"#{}|^~[]`\\*()%.!'"
-        header_text_len = len(header_text)
-        inserted = 0
-        stripped = 0
-        header_text_middle_stage = ''
-        for i in range(0, header_text_len):
-            if header_text[i] == '<':
-                while i < header_text_len and header_text[i] != '>':
-                    i += 1
-            elif header_text[i] == '&':
-                while i < header_text_len and header_text[i] != ';':
-                    i += 1
-            # str.find() == -1 if character is not found in str.
-            # https://docs.python.org/3.6/library/stdtypes.html?highlight=find#str.find
-            elif not curses.ascii.isascii(
-                    header_text[i]) or STRIPPED.find(header_text[i]) != -1:
-                if inserted and not stripped:
-                    header_text_middle_stage += '-'
-                stripped = 1
-            else:
-                header_text_middle_stage += header_text[i].lower()
-                stripped = 0
-                inserted += 1
-
-        if stripped > 0 and inserted > 0:
-            header_text_middle_stage = header_text_middle_stage[0:-1]
-
-        if inserted == 0 and header_text_len > 0:
-            hash = 5381
-            for i in range(0, header_text_len):
-                # Get the unicode representation with ord.
-                # Unicode should be equal to ASCII in ASCII's range of
-                # characters.
-                hash = ((hash << 5) + hash) + ord(header_text[i])
-
-            # This is equivalent to %x in C. In Python we don't have
-            # the length problem so %x is equal to %lx in this case.
-            # Apparently there is no %l in Python...
-            header_text_middle_stage = 'part-' + '{0:x}'.format(hash)
-
-        # 3.2. Check for duplicates (this is working in github only).
-        #      https://gitlab.com/help/user/markdown.md#header-ids-and-links
-        if anchor_type == 'gitlab':
-            # Apparently redcarpet does not handle duplicate entries, but
-            # Gitlab does, although I cannot find the code responsable for it.
-            ht = header_text_middle_stage
-            # Set the initial value if we are examining the first occurrency
-            if header_text_middle_stage not in header_duplicate_counter:
-                header_duplicate_counter[header_text_middle_stage] = 0
-            if header_duplicate_counter[header_text_middle_stage] > 0:
-                header_text_middle_stage = header_text_middle_stage + '-' + str(
-                    header_duplicate_counter[header_text_middle_stage])
-            header_duplicate_counter[ht] += 1
-
-        return header_text_middle_stage
-
-    # 4. Situation of seems unclear.
-    elif anchor_type == 'gogs' or anchor_type == 'marked' or anchor_type == 'notabug':
-        # Needs to be implemented.
-        return header_text
-
-    # 5. Unclear if there is this feature.
-    elif anchor_type == 'kramdown':
-        # Needs to be implemented.
-        return header_text
-
-    # 6. Same as 1.
-    else:
-        return header_text
-
-
 def build_toc_line(header, ordered=False, no_links=False, index=1):
     r"""Return a list element of the table of contents.
 
@@ -501,7 +316,7 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
     assert isinstance(header['type'], int)
     assert isinstance(header['text_original'], str)
     assert isinstance(header['text_anchor_link'], str)
-    assert header['type'] >= 1 and header['type'] <= 3
+    assert header['type'] >= 1
     assert isinstance(ordered, bool)
     assert isinstance(no_links, bool)
     assert isinstance(index, int)
@@ -517,24 +332,201 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
     #    while unordered either 2 or 4. To simplify the code we
     #    will keep only the common case. To implement
     #    2-level indentation it is sufficient to do:
-    #    2**(header['type']-1) as a separate case.
-    if header['type'] == 1:
-        no_of_indentation_spaces = 0
-    else:
-        no_of_indentation_spaces = 2**header['type']
+    #    2*(header['type']-1) as a separate case.
+    no_of_indentation_spaces = 4 * (header['type'] - 1)
     indentation_spaces = no_of_indentation_spaces * ' '
 
+    # 3.1. Build the plain line with or without link.
     if no_links:
-        # 3.1. Build the plain line.
         line = header['text_original']
     else:
-        # 3.2. Build the line as a link.
         line = '[' + header['text_original'] + ']' + '(#' + header['text_anchor_link'] + ')'
 
     # 4. String concatenation.
     toc_line = indentation_spaces + list_symbol + ' ' + line
 
     return toc_line
+
+
+def build_anchor_link(header_text_trimmed,
+                      header_duplicate_counter,
+                      anchor_type='standard'):
+    r"""Apply the specified slug rule to build the anchor link.
+
+    :parameter header_text_trimmed: the text that needs to be transformed in a link
+    :parameter header_duplicate_counter: a data structure that keeps track of
+         possible duplicate header links in order to avoid them. This is
+         meaningful only for certain values of anchor_type.
+    :parameter anchor_type: decides rules on how to generate anchor links.
+         Defaults to ``standard``. Supported anchor types are: ``standard``,
+         ``github``, ``gitlab``, ``redcarpet``, ``gogs``, ``notabug``,
+         ``kramdown``.
+    :type header_text_trimmed: str
+    :type header_duplicate_counter: dict
+    :type anchor_type: str
+    :returns: the anchor link.
+    :rtype: str
+    :raises: one of the built-in exceptions.
+
+    :note: For a detailed description of the behaviour of each anchor type
+        please refer to the 'Markdown spec' documentation page.
+    """
+    assert isinstance(header_text_trimmed, str)
+    assert isinstance(header_duplicate_counter, dict)
+    assert isinstance(anchor_type, str)
+
+    # 1. Return the same text as-is.
+    if anchor_type == 'standard':
+        return header_text_trimmed
+
+    # 2. Return the header text with the applied rules for GitHub.
+    elif anchor_type == 'github':
+        # This is based on the ruby algorithm. See md_toc's documentation.
+        """
+        Copyright (c) 2012 GitHub Inc. and Jerry Cheung
+        Copyright (c) 2018, Franco Masotti <franco.masotti@student.unife.it>
+
+        MIT License
+
+        Permission is hereby granted, free of charge, to any person obtaining
+        a copy of this software and associated documentation files (the
+        "Software"), to deal in the Software without restriction, including
+        without limitation the rights to use, copy, modify, merge, publish,
+        distribute, sublicense, and/or sell copies of the Software, and to
+        permit persons to whom the Software is furnished to do so, subject to
+        the following conditions:
+
+        The above copyright notice and this permission notice shall be
+        included in all copies or substantial portions of the Software.
+
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+        EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+        MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+        NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+        LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+        OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+        WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+        """
+        # 2.1. Lowercase.
+        header_text_trimmed = header_text_trimmed.lower()
+        # 2.2. Remove punctuation: Keep spaces, hypens and "word characters"
+        #      only.
+        #      See https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb#L26
+        header_text_trimmed = re.sub(r'[^\w\s\- ]', '', header_text_trimmed)
+        # 2.3. Replace spaces with dashes.
+        header_text_trimmed = header_text_trimmed.replace(' ', '-')
+
+        # 2.4. Check for duplicates.
+        ht = header_text_trimmed
+        # Set the initial value if we are examining the first occurrency.
+        # The state of header_duplicate_counter is available to the caller
+        # functions.
+        if header_text_trimmed not in header_duplicate_counter:
+            header_duplicate_counter[header_text_trimmed] = 0
+        if header_duplicate_counter[header_text_trimmed] > 0:
+            header_text_trimmed = header_text_trimmed + '-' + str(
+                header_duplicate_counter[header_text_trimmed])
+        header_duplicate_counter[ht] += 1
+
+        return header_text_trimmed
+
+    # 3. Return the header text with the applied rules for GitLab and RedCarpet.
+    # https://github.com/vmg/redcarpet/blob/26c80f05e774b31cd01255b0fa62e883ac185bf3/ext/redcarpet/html.c#L274
+    elif anchor_type == 'gitlab' or anchor_type == 'redcarpet':
+        """
+        /*
+         * Copyright (c) 2009, Natacha Porté
+         * Copyright (c) 2015, Vicent Marti
+         * Copyright (c) 2018, Franco Masotti <franco.masotti@student.unife.it>
+         *
+         * Permission is hereby granted, free of charge, to any person obtaining a copy
+         * of this software and associated documentation files (the "Software"), to deal
+         * in the Software without restriction, including without limitation the rights
+         * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+         * copies of the Software, and to permit persons to whom the Software is
+         * furnished to do so, subject to the following conditions:
+         *
+         * The above copyright notice and this permission notice shall be included in
+         * all copies or substantial portions of the Software.
+         *
+         * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+         * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+         * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+         * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+         * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM,
+         * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER  DEALINGS IN
+         * THE SOFTWARE.
+         */
+        """
+        # 3.1. To ensure full compatibility what follows is a direct translation
+        #      of the rndr_header_anchor C function used in redcarpet.
+        STRIPPED = " -&+$,/:;=?@\"#{}|^~[]`\\*()%.!'"
+        header_text_trimmed_len = len(header_text_trimmed)
+        inserted = 0
+        stripped = 0
+        header_text_trimmed_middle_stage = ''
+        for i in range(0, header_text_trimmed_len):
+            if header_text_trimmed[i] == '<':
+                while i < header_text_trimmed_len and header_text_trimmed[i] != '>':
+                    i += 1
+            elif header_text_trimmed[i] == '&':
+                while i < header_text_trimmed_len and header_text_trimmed[i] != ';':
+                    i += 1
+            # str.find() == -1 if character is not found in str.
+            # https://docs.python.org/3.6/library/stdtypes.html?highlight=find#str.find
+            elif not curses.ascii.isascii(
+                    header_text_trimmed[i]) or STRIPPED.find(header_text_trimmed[i]) != -1:
+                if inserted and not stripped:
+                    header_text_trimmed_middle_stage += '-'
+                stripped = 1
+            else:
+                header_text_trimmed_middle_stage += header_text_trimmed[i].lower()
+                stripped = 0
+                inserted += 1
+
+        if stripped > 0 and inserted > 0:
+            header_text_trimmed_middle_stage = header_text_trimmed_middle_stage[0:-1]
+
+        if inserted == 0 and header_text_trimmed_len > 0:
+            hash = 5381
+            for i in range(0, header_text_trimmed_len):
+                # Get the unicode representation with ord.
+                # Unicode should be equal to ASCII in ASCII's range of
+                # characters.
+                hash = ((hash << 5) + hash) + ord(header_text_trimmed[i])
+
+            # This is equivalent to %x in C. In Python we don't have
+            # the length problem so %x is equal to %lx in this case.
+            # Apparently there is no %l in Python...
+            header_text_trimmed_middle_stage = 'part-' + '{0:x}'.format(hash)
+
+        # 3.2. Check for duplicates (this is working in github only).
+        #      https://gitlab.com/help/user/markdown.md#header-ids-and-links
+        if anchor_type == 'gitlab':
+            # Apparently redcarpet does not handle duplicate entries, but
+            # Gitlab does, although I cannot find the code responsable for it.
+            ht = header_text_trimmed_middle_stage
+            # Set the initial value if we are examining the first occurrency
+            if header_text_trimmed_middle_stage not in header_duplicate_counter:
+                header_duplicate_counter[header_text_trimmed_middle_stage] = 0
+            if header_duplicate_counter[header_text_trimmed_middle_stage] > 0:
+                header_text_trimmed_middle_stage = header_text_trimmed_middle_stage + '-' + str(
+                    header_duplicate_counter[header_text_trimmed_middle_stage])
+            header_duplicate_counter[ht] += 1
+
+        return header_text_trimmed_middle_stage
+
+    # 4. Situation of seems unclear. Needs to be implemented.
+    elif anchor_type == 'gogs' or anchor_type == 'marked' or anchor_type == 'notabug':
+        return header_text_trimmed
+
+    # 5. Unclear if there is this feature. Needs to be implemented.
+    elif anchor_type == 'kramdown':
+        return header_text_trimmed
+
+    # 6. Same as 1.
+    else:
+        return header_text_trimmed
 
 
 def get_md_header_type(line, max_header_levels=3):
@@ -547,12 +539,12 @@ def get_md_header_type(line, max_header_levels=3):
     assert isinstance(max_header_levels, int)
     assert max_header_levels > 0
 
-    # 1. Remove leading and trailing whitespace from line to engage a lax
-    #    parsing.
-    line = line.strip()
+    # 1. Remove leading and whitespace from line to engage a lax parsing.
+    line = line.lstrip()
 
     # 2. Determine the header type by counting the number of the
     #    first consecutive '#' characters in the line.
+    #    Count until we are in the range of max_header_levels.
     header_type = 0
     line_length = len(line)
     while header_type < line_length and line[header_type] == '#' and header_type <= max_header_levels:
@@ -563,9 +555,24 @@ def get_md_header_type(line, max_header_levels=3):
         return header_type
 
 
+def remove_md_header_syntax(header_text):
+    r"""Return a trimmed version of the input line without the markdown header syntax."""
+    assert isinstance(header_text, str)
+    # 1. Remove the leading and trailing whitespace
+    header_text = header_text.lstrip()
+
+    # 2. Remove the leading '#' consecutive characters.
+    header_text = header_text.lstrip('#')
+
+    # 3. Remove possible whitespace after removing the '#'s.
+    trimmed_text =  header_text.lstrip()
+
+    return trimmed_text
+
+
 def get_md_header(header_text,
-                  header_type,
                   header_duplicate_counter,
+                  max_header_levels=3,
                   anchor_type='standard'):
     r"""Build a data structure with the elements needed to create a TOC line.
 
@@ -589,28 +596,14 @@ def get_md_header(header_text,
     >>> print(md_toc.api.get_md_header(' ## hi hOw Are YOu!!? ? #'))
     {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi-how-are-you'}
     """
-    assert isinstance(header_text, str)
-    assert isinstance(header_type, int)
-    assert isinstance(header_duplicate_counter, dict)
-    assert isinstance(anchor_type, str)
-
-    # 1. Remove the leading and trailing whitespace
-    header_text = header_text.lstrip()
-
-    # 2. Remove the leading '#'s.
-    header_text = header_text.lstrip('#')
-
-    # 3. Remove possible whitespace after removing the '#'s.
-    header_text = header_text.lstrip()
-
-    # 4. Return a dict with the three data sets we need.
+    header_text_trimmed = remove_md_header_syntax(header_text)
     header = {
         'type':
-        header_type,
+        get_md_header_type(header_text,max_header_levels),
         'text_original':
-        header_text,
+        header_text_trimmed,
         'text_anchor_link':
-        build_anchor_link(header_text, header_duplicate_counter, anchor_type)
+        build_anchor_link(header_text_trimmed, header_duplicate_counter, anchor_type)
     }
     return header
 
