@@ -97,49 +97,34 @@ def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
     assert isinstance(in_place, bool)
     assert isinstance(toc_marker, str)
 
-    # 1. Remove trailing new line(s).
     toc = toc.rstrip()
+    final_string = toc_marker + '\n\n' + toc + '\n\n' + toc_marker + '\n'
 
-    # 2. Create the string that needs to be written. Note that if this string
-    #    is written, the first toc will already be present in the markdown
-    #    file.
-    final_string = '\n' + toc + '\n\n' + toc_marker + '\n'
-
-    # 3.1. Write on the file.
     if in_place:
-        # 3.1.1. Get the toc markers line positions.
-        toc_marker_lines = fpyutils.get_line_matches(
+        toc_marker_line_positions = fpyutils.get_line_matches(
             input_file, toc_marker, 2, loose_matching=True)
 
-        # 3.1.2.1. No toc marker in file: nothing to do.
-        if 1 not in toc_marker_lines and 2 not in toc_marker_lines:
+        if 1 not in toc_marker_line_positions and 2 not in toc_marker_line_positions:
             pass
 
-        # 3.1.2.2. 1 toc marker: Insert the toc in that position.
-        elif 1 in toc_marker_lines and 2 not in toc_marker_lines:
+        elif 1 in toc_marker_line_positions:
+            if 2 in toc_marker_line_positions:
+                fpyutils.remove_line_interval(input_file, toc_marker_line_positions[1],
+                                              toc_marker_line_positions[2], input_file)
+            else:
+                fpyutils.remove_line_interval(input_file, toc_marker_line_positions[1],
+                                              toc_marker_line_positions[1], input_file)
+            # See fpyutils for the reason of the -1 here.
             fpyutils.insert_string_at_line(input_file, final_string,
-                                           toc_marker_lines[1], input_file)
-
-        # 3.1.2.3. 2 toc markers: replace old toc with new one.
-        else:
-            # Remove the old toc but preserve the first toc marker: that's why the
-            # +1 is there.
-            fpyutils.remove_line_interval(input_file, toc_marker_lines[1] + 1,
-                                          toc_marker_lines[2], input_file)
-            fpyutils.insert_string_at_line(input_file, final_string,
-                                           toc_marker_lines[1], input_file)
-    # 3.2. Return the TOC.
+                                           toc_marker_line_positions[1]-1, input_file)
     else:
-        # 3.2.1. If the toc is an empty string, return the empty string.
         if toc == '':
             final_string = toc
-        # 3.2.2. Return the toc with the toc markers.
-        else:
-            final_string = toc_marker + '\n' + final_string
         return final_string
 
 
-def build_toc(filename, ordered=False, no_links=False, anchor_type='standard'):
+def build_toc(filename, ordered=False, no_links=False,
+              max_header_levels=3, anchor_type='standard'):
     r"""Parse file by line and build the table of contents.
 
     :parameter filename: the file that needs to be read.
@@ -203,7 +188,7 @@ def build_toc(filename, ordered=False, no_links=False, anchor_type='standard'):
     assert isinstance(filename, str)
 
     toc = ''
-    # Header type counter. Useful for ordered lists.
+    # Header type counter. Useful for ordered lists only.
     # TODO This needs to be changed for a generic number of indentation levels.
     # TODO Change the dict to ints only.
     ht = {
@@ -216,27 +201,16 @@ def build_toc(filename, ordered=False, no_links=False, anchor_type='standard'):
 
     header_duplicate_counter = dict()
 
-    # 1. Get file content by line
     with open(filename, 'r') as f:
         line = f.readline()
         while line:
-            # 1.1. Get the basic information.
             header = get_md_header(line, header_duplicate_counter,
-                                   anchor_type)
-            # 1.2. Consider valid lines only.
+                                   max_header_levels, anchor_type)
             if header is not None:
-                # 1.2.1. Get the current header type.
                 ht_curr = header['type']
-
-                # 1.2.2. Get the current index. This makes sense only for
-                #        ordered tocs.
                 increment_index_ordered_list(ht, ht_prev, ht_curr)
-
-                # 1.2.3. Get the table of contents line and append it to the
-                #        final string.
                 toc += build_toc_line(header, ordered, no_links,
                                       ht[str(ht_curr)]) + '\n'
-
                 ht_prev = ht_curr
 
             line = f.readline()
@@ -321,28 +295,24 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
     assert isinstance(no_links, bool)
     assert isinstance(index, int)
 
-    # 1. Get the list symbol.
     if ordered:
         list_symbol = str(index) + '.'
     else:
         list_symbol = '-'
 
-    # 2. Compute the indentation spaces.
-    #    ordered list require 4-level indentation,
-    #    while unordered either 2 or 4. To simplify the code we
-    #    will keep only the common case. To implement
-    #    2-level indentation it is sufficient to do:
-    #    2*(header['type']-1) as a separate case.
+    # Ordered list require 4-level indentation,
+    # while unordered either 2 or 4. To simplify the code we
+    # will keep only the common case. To implement
+    # 2-level indentation it is sufficient to do:
+    # 2*(header['type']-1) as a separate case.
     no_of_indentation_spaces = 4 * (header['type'] - 1)
     indentation_spaces = no_of_indentation_spaces * ' '
 
-    # 3.1. Build the plain line with or without link.
     if no_links:
         line = header['text_original']
     else:
         line = '[' + header['text_original'] + ']' + '(#' + header['text_anchor_link'] + ')'
 
-    # 4. String concatenation.
     toc_line = indentation_spaces + list_symbol + ' ' + line
 
     return toc_line
@@ -558,8 +528,8 @@ def get_md_header_type(line, max_header_levels=3):
 def remove_md_header_syntax(header_text):
     r"""Return a trimmed version of the input line without the markdown header syntax."""
     assert isinstance(header_text, str)
-    # 1. Remove the leading and trailing whitespace
-    header_text = header_text.lstrip()
+    # 1. Remove the leading and trailing whitespaces.
+    header_text = header_text.strip()
 
     # 2. Remove the leading '#' consecutive characters.
     header_text = header_text.lstrip('#')
@@ -597,15 +567,19 @@ def get_md_header(header_text,
     {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi-how-are-you'}
     """
     header_text_trimmed = remove_md_header_syntax(header_text)
-    header = {
-        'type':
-        get_md_header_type(header_text,max_header_levels),
-        'text_original':
-        header_text_trimmed,
-        'text_anchor_link':
-        build_anchor_link(header_text_trimmed, header_duplicate_counter, anchor_type)
-    }
-    return header
+    header_type = get_md_header_type(header_text,max_header_levels)
+    if header_type is None:
+        return header_type
+    else:
+        header = {
+            'type':
+            header_type,
+            'text_original':
+            header_text_trimmed,
+            'text_anchor_link':
+            build_anchor_link(header_text_trimmed, header_duplicate_counter, anchor_type)
+        }
+        return header
 
 
 if __name__ == '__main__':
