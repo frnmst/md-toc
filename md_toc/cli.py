@@ -61,28 +61,24 @@ class CliInterface():
             description='Markdown Table Of Contents',
             epilog="Return values: 0 OK, 1 \
                                          Error, 2 Invalid command")
-        subparsers = parser.add_subparsers(dest='command')
-        subparsers.required = True
-        write_toc_prs = subparsers.add_parser(
-            'wtoc', help='write the table of contents')
-        write_toc_prs.add_argument(
+        parser.add_argument(
             'filename', metavar='FILE_NAME', help='the i/o file name')
-        write_toc_prs.add_argument(
+        parser.add_argument(
             '-i',
             '--in-place',
             help='overwrite the input file',
             action='store_true')
-        write_toc_prs.add_argument(
+        parser.add_argument(
             '-n',
             '--no-links',
             help='avoids adding links to corresponding content',
             action='store_true')
-        write_toc_prs.add_argument(
+        parser.add_argument(
             '-o',
             '--ordered',
             help='write as an ordered list',
             action='store_true')
-        write_toc_prs.add_argument(
+        parser.add_argument(
             '-p',
             '--parser',
             choices=[
@@ -92,14 +88,14 @@ class CliInterface():
             default='standard',
             help='decide what markdown parser will be used \
                   to generate the links. Defaults to standard')
-        write_toc_prs.add_argument(
+        parser.add_argument(
             '-t',
             '--toc-marker',
             metavar='TOC_MARKER',
             help='set the string to be used as the marker \
                   for positioning the table of contents',
         )
-        write_toc_prs.add_argument(
+        parser.add_argument(
             '-l',
             '--header-levels',
             default=3,
@@ -112,6 +108,6 @@ class CliInterface():
             action='version',
             version=pkg_resources.get_distribution('md_toc').version)
 
-        write_toc_prs.set_defaults(func=CliToApi().write_toc_on_md_file)
+        parser.set_defaults(func=CliToApi().write_toc_on_md_file)
 
         return parser
