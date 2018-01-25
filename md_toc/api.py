@@ -26,19 +26,18 @@ import re
 import curses.ascii
 
 
-def write_toc_on_md_file(input_file, toc, toc_marker='[](TOC)'):
+def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
     r"""Write the table of contents.
 
-    :parameter input_file: the file that needs to be read or modified.
+    :parameter filename: the file that needs to be read or modified.
     :parameter toc: the table of contents.
     :parameter toc_marker: a marker that will identify the start
          and the end of the table of contents. Defaults to ``[](TOC)``.
-    :type input_file: str
+    :type filename: str
     :type toc: str
     :type toc_marker: str
-    :returns: None if ``in_place`` is ``True`` or the table of contents with
-         the markers in between, otherwise.
-    :rtype: str
+    :returns: None
+    :rtype: None
     :raises: one of the fpyutils exceptions or one of the built-in exceptions.
 
     :Example:
@@ -48,44 +47,49 @@ def write_toc_on_md_file(input_file, toc, toc_marker='[](TOC)'):
         >>> import md_toc
         >>> f = open('foo.md')
         >>> print(f.read(),end='')
+        TODO
     """
-    assert isinstance(input_file, str)
     assert isinstance(toc, str)
     assert isinstance(toc_marker, str)
 
-    toc = toc.rstrip()
-    final_string = toc_marker + '\n\n' + toc + '\n\n' + toc_marker + '\n'
-    toc_marker_line_positions = fpyutils.get_line_matches(input_file,
-        toc_marker, 2, loose_matching=True)
+    final_string = toc_marker + '\n\n' + toc.rstrip() + '\n\n' + toc_marker + '\n'
+    toc_marker_line_positions = fpyutils.get_line_matches(
+        filename, toc_marker, 2, loose_matching=True)
 
-    if 1 not in toc_marker_line_positions and 2 not in toc_marker_line_positions:
-        pass
-    elif 1 in toc_marker_line_positions:
+    if 1 in toc_marker_line_positions:
         if 2 in toc_marker_line_positions:
-            fpyutils.remove_line_interval(input_file, toc_marker_line_positions[1],
-                                          toc_marker_line_positions[2], input_file)
+            fpyutils.remove_line_interval(
+                filename, toc_marker_line_positions[1],
+                toc_marker_line_positions[2], filename)
         else:
-            fpyutils.remove_line_interval(input_file, toc_marker_line_positions[1],
-                                          toc_marker_line_positions[1], input_file)
+            fpyutils.remove_line_interval(
+                filename, toc_marker_line_positions[1],
+                toc_marker_line_positions[1], filename)
         # See fpyutils for the reason of the -1 here.
-        fpyutils.insert_string_at_line(input_file, final_string,
-                                       toc_marker_line_positions[1]-1, input_file)
+        fpyutils.insert_string_at_line(filename, final_string,
+                                       toc_marker_line_positions[1] - 1,
+                                       filename)
 
 
-def build_toc(filename, ordered=False, no_links=False,
-              max_header_levels=3, anchor_type='standard'):
+def build_toc(filename,
+              ordered=False,
+              no_links=False,
+              max_header_levels=3,
+              anchor_type='standard'):
     r"""Parse file by line and build the table of contents.
 
     :parameter filename: the file that needs to be read.
     :parameter ordered: decides whether to build an ordered list or not.
     :parameter no_links: disables the use of links.
+    :parameter max_header_levels: TODO
     :parameter anchor_type: decides rules on how to generate anchor links.
          Defaults to ``standard``.
     :type filename: str
     :type ordered: bool
     :type no_links: bool
+    :type max_header_levels: int
     :type anchor_type: str
-    :returns: the table of contents.
+    :returns: the corresponding table of contents.
     :rtype: str
     :raises: one of the built-in exceptions.
 
@@ -96,15 +100,17 @@ def build_toc(filename, ordered=False, no_links=False,
         >>> import md_toc
         >>> f = open('foo.md')
         >>> print(f.read(),end='')
+        TODO
     """
     assert isinstance(filename, str)
 
     toc = ''
-    # Header type counter. Useful for ordered lists only.
-    header_type = dict()
+    header_duplicate_counter = dict()
+
+    # Useful for ordered lists only.
+    header_type_counter = dict()
     header_type_curr = 0
     header_type_prev = 0
-    header_duplicate_counter = dict()
 
     with open(filename, 'r') as f:
         line = f.readline()
@@ -113,20 +119,20 @@ def build_toc(filename, ordered=False, no_links=False,
                                    max_header_levels, anchor_type)
             if header is not None:
                 header_type_curr = header['type']
-                increment_index_ordered_list(header_type,
-                    header_type_prev, header_type_curr)
-                toc += build_toc_line(header, ordered, no_links,
-                                      header_type[header_type_curr]) + '\n'
+                increase_index_ordered_list(
+                    header_type_counter, header_type_prev, header_type_curr)
+                toc += build_toc_line(
+                    header, ordered, no_links,
+                    index=header_type_counter[header_type_curr]) + '\n'
                 header_type_prev = header_type_curr
-
             line = f.readline()
 
     return toc
 
 
-def increment_index_ordered_list(header_type_count, header_type_prev,
-                                 header_type_curr):
-    r"""Compute current index for ordered list table of contents.
+def increase_index_ordered_list(header_type_count, header_type_prev,
+                                header_type_curr):
+    r"""Compute the current index for ordered list table of contents.
 
     :parameter: header_type_count: the index numbers for all headers.
     :parameter: header_type_prev: the previous type of header (h1, h2 or h3).
@@ -140,10 +146,11 @@ def increment_index_ordered_list(header_type_count, header_type_prev,
 
     :Example:
 
-    >>> ht = {1:0, 2:0, 3:0}
-    >>> md_toc.api.increment_index_ordered_list(ht,3,3)
+    >>> ht = {1: 0, 2: 0, 3: 0}
+    >>> md_toc.api.increase_index_ordered_list(ht,3,3)
     >>> ht
     {1: 0, 2: 0, 3: 1}
+    TODO
     """
     assert isinstance(header_type_count, dict)
     assert isinstance(header_type_prev, int)
@@ -151,13 +158,14 @@ def increment_index_ordered_list(header_type_count, header_type_prev,
     # header_type_prev might be 0 while header_type_curr can't.
     assert header_type_curr > 0
 
-    # Base cases for a new table of contents.
+    # Base cases for a new table of contents or a new index type.
     if header_type_prev is 0:
         header_type_prev = header_type_curr
     if header_type_curr not in header_type_count:
         header_type_count[header_type_curr] = 0
 
     header_type_count[header_type_curr] += 1
+
 
 def build_toc_line(header, ordered=False, no_links=False, index=1):
     r"""Return a list element of the table of contents.
@@ -183,10 +191,8 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
     >>> header =  {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi-how-are-you'}
     >>> print(md_toc.api.build_toc_line(header,ordered=True,index=3))
         3. [hi hOw Are YOu!!? ? #](#hi-how-are-you)
+    TODO
     """
-    if header is None:
-        return header
-
     assert isinstance(header, dict)
     assert 'type' in header
     assert 'text_original' in header
@@ -194,7 +200,7 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
     assert isinstance(header['type'], int)
     assert isinstance(header['text_original'], str)
     assert isinstance(header['text_anchor_link'], str)
-    assert header['type'] >= 1
+    assert header['type'] > 0
     assert isinstance(ordered, bool)
     assert isinstance(no_links, bool)
     assert isinstance(index, int)
@@ -242,6 +248,8 @@ def build_anchor_link(header_text_trimmed,
     :note: For a detailed description of the behaviour of each anchor type
         and for the licenses of each markdown parser algorithm, please refer to
         the 'Markdown spec' documentation page.
+
+    :Example: TODO
     """
     assert isinstance(header_text_trimmed, str)
     assert isinstance(header_duplicate_counter, dict)
@@ -289,17 +297,20 @@ def build_anchor_link(header_text_trimmed,
             # str.find() == -1 if character is not found in str.
             # https://docs.python.org/3.6/library/stdtypes.html?highlight=find#str.find
             elif not curses.ascii.isascii(
-                    header_text_trimmed[i]) or STRIPPED.find(header_text_trimmed[i]) != -1:
+                    header_text_trimmed[i]) or STRIPPED.find(
+                        header_text_trimmed[i]) != -1:
                 if inserted and not stripped:
                     header_text_trimmed_middle_stage += '-'
                 stripped = 1
             else:
-                header_text_trimmed_middle_stage += header_text_trimmed[i].lower()
+                header_text_trimmed_middle_stage += header_text_trimmed[
+                    i].lower()
                 stripped = 0
                 inserted += 1
 
         if stripped > 0 and inserted > 0:
-            header_text_trimmed_middle_stage = header_text_trimmed_middle_stage[0:-1]
+            header_text_trimmed_middle_stage = header_text_trimmed_middle_stage[
+                0:-1]
 
         if inserted == 0 and header_text_trimmed_len > 0:
             hash = 5381
@@ -346,6 +357,14 @@ def get_md_header_type(line, max_header_levels=3):
 
     :parameter line: the line to be examined.
     :parameter max_header_levels: the maximum levels.... TODO.
+    :type line: str
+    :type max_header_levels: int
+    :returns: TODO
+    :rtype: TODO
+
+    :warning: TODO
+
+    :Example: TODO
     """
     assert isinstance(line, str)
     assert isinstance(max_header_levels, int)
@@ -367,30 +386,34 @@ def get_md_header_type(line, max_header_levels=3):
         return header_type
 
 
-def remove_md_header_syntax(header_text):
+def remove_md_header_syntax(header_text_line):
     r"""Return a trimmed version of the input line without the markdown header syntax.
 
-    This function removes the leading and trailing whitespaces, the first
-    consecutive # characters and any space left behind after removing those.
+    :parameter header_text_line: TODO
+    :note: this function removes the leading and trailing whitespaces, the first
+        consecutive '#' characters and any space left behind after removing those.
+
+    :Example: TODO
     """
-    assert isinstance(header_text, str)
+    assert isinstance(header_text_line, str)
 
-    return header_text.strip().lstrip('#').lstrip()
+    return header_text_line.strip().lstrip('#').lstrip()
 
 
-def get_md_header(header_text,
+def get_md_header(header_text_line,
                   header_duplicate_counter,
                   max_header_levels=3,
                   anchor_type='standard'):
     r"""Build a data structure with the elements needed to create a TOC line.
 
+    :parameter header_text_line: TODO
     :parameter header_duplicate_counter: a data structure that contains the
          number of occurrencies of each header anchor link. This is used to
          avoid duplicate anchor links and it is meaningful only for certain
          values of anchor_type.
     :parameter anchor_type: decides rules on how to generate anchor links.
          Defaults to ``standard``.
-    :type line: str
+    :type header_text_line: str
     :type header_duplicate_counter: dict
     :type anchor_type: str
     :returns: None if the input line does not correspond to one of the
@@ -399,23 +422,26 @@ def get_md_header(header_text,
     :rtype: dict
     :raises: one of the built-in exceptions.
 
+    :note: this works like a wrapper to other functions.
+
     :Example:
 
     >>> print(md_toc.api.get_md_header(' ## hi hOw Are YOu!!? ? #'))
     {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi-how-are-you'}
     """
-    header_text_trimmed = remove_md_header_syntax(header_text)
-    header_type = get_md_header_type(header_text,max_header_levels)
+    header_type = get_md_header_type(header_text_line, max_header_levels)
     if header_type is None:
         return header_type
     else:
+        header_text_trimmed = remove_md_header_syntax(header_text_line)
         header = {
             'type':
             header_type,
             'text_original':
             header_text_trimmed,
             'text_anchor_link':
-            build_anchor_link(header_text_trimmed, header_duplicate_counter, anchor_type)
+            build_anchor_link(header_text_trimmed, header_duplicate_counter,
+                              anchor_type)
         }
         return header
 

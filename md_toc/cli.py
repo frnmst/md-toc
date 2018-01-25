@@ -35,16 +35,14 @@ class CliToApi():
             args.toc_marker = '[](TOC)'
         if args.parser is None:
             args.parser = 'standard'
-        toc=build_toc(
-                filename=args.filename,
-                ordered=args.ordered,
-                no_links=args.no_links,
-                anchor_type=args.parser)
+        toc = build_toc(
+            filename=args.filename,
+            ordered=args.ordered,
+            no_links=args.no_links,
+            anchor_type=args.parser)
         if args.in_place:
             write_toc_on_md_file(
-                args.filename,
-                toc=toc,
-                toc_marker=args.toc_marker)
+                args.filename, toc=toc, toc_marker=args.toc_marker)
         else:
             print(toc, end='')
 
