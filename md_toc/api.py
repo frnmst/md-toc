@@ -55,13 +55,11 @@ def write_toc_on_md_file(input_file, toc, toc_marker='[](TOC)'):
 
     toc = toc.rstrip()
     final_string = toc_marker + '\n\n' + toc + '\n\n' + toc_marker + '\n'
-
     toc_marker_line_positions = fpyutils.get_line_matches(input_file,
         toc_marker, 2, loose_matching=True)
 
     if 1 not in toc_marker_line_positions and 2 not in toc_marker_line_positions:
         pass
-
     elif 1 in toc_marker_line_positions:
         if 2 in toc_marker_line_positions:
             fpyutils.remove_line_interval(input_file, toc_marker_line_positions[1],
@@ -148,16 +146,17 @@ def increment_index_ordered_list(header_type_count, header_type_prev,
     {1: 0, 2: 0, 3: 1}
     """
     assert isinstance(header_type_count, dict)
+    assert isinstance(header_type_prev, int)
+    assert isinstance(header_type_curr, int)
     # header_type_prev might be 0 while header_type_curr can't.
     assert header_type_curr > 0
 
-    # 1. Base cases for new table of contents.
+    # Base cases for a new table of contents.
     if header_type_prev is 0:
         header_type_prev = header_type_curr
     if header_type_curr not in header_type_count:
         header_type_count[header_type_curr] = 0
 
-    # 2. Increment the current index.
     header_type_count[header_type_curr] += 1
 
 def build_toc_line(header, ordered=False, no_links=False, index=1):
@@ -241,7 +240,8 @@ def build_anchor_link(header_text_trimmed,
     :raises: one of the built-in exceptions.
 
     :note: For a detailed description of the behaviour of each anchor type
-        please refer to the 'Markdown spec' documentation page.
+        and for the licenses of each markdown parser algorithm, please refer to
+        the 'Markdown spec' documentation page.
     """
     assert isinstance(header_text_trimmed, str)
     assert isinstance(header_duplicate_counter, dict)
@@ -251,32 +251,6 @@ def build_anchor_link(header_text_trimmed,
         return header_text_trimmed
 
     elif anchor_type == 'github':
-        # This is based on the ruby algorithm. See md_toc's documentation.
-        """
-        Copyright (c) 2012 GitHub Inc. and Jerry Cheung
-        Copyright (c) 2018, Franco Masotti <franco.masotti@student.unife.it>
-
-        MIT License
-
-        Permission is hereby granted, free of charge, to any person obtaining
-        a copy of this software and associated documentation files (the
-        "Software"), to deal in the Software without restriction, including
-        without limitation the rights to use, copy, modify, merge, publish,
-        distribute, sublicense, and/or sell copies of the Software, and to
-        permit persons to whom the Software is furnished to do so, subject to
-        the following conditions:
-
-        The above copyright notice and this permission notice shall be
-        included in all copies or substantial portions of the Software.
-
-        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-        EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-        MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-        NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-        LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-        OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-        WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-        """
         header_text_trimmed = header_text_trimmed.lower()
         # Remove punctuation: Keep spaces, hypens and "word characters"
         # only.
@@ -298,33 +272,8 @@ def build_anchor_link(header_text_trimmed,
         return header_text_trimmed
 
     elif anchor_type == 'gitlab' or anchor_type == 'redcarpet':
-        """
-        /*
-         * Copyright (c) 2009, Natacha Porté
-         * Copyright (c) 2015, Vicent Marti
-         * Copyright (c) 2018, Franco Masotti <franco.masotti@student.unife.it>
-         *
-         * Permission is hereby granted, free of charge, to any person obtaining a copy
-         * of this software and associated documentation files (the "Software"), to deal
-         * in the Software without restriction, including without limitation the rights
-         * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-         * copies of the Software, and to permit persons to whom the Software is
-         * furnished to do so, subject to the following conditions:
-         *
-         * The above copyright notice and this permission notice shall be included in
-         * all copies or substantial portions of the Software.
-         *
-         * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-         * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-         * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-         * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-         * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM,
-         * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER  DEALINGS IN
-         * THE SOFTWARE.
-         */
-        """
-        # 3.1. To ensure full compatibility what follows is a direct translation
-        #      of the rndr_header_anchor C function used in redcarpet.
+        # To ensure full compatibility what follows is a direct translation
+        # of the rndr_header_anchor C function used in redcarpet.
         STRIPPED = " -&+$,/:;=?@\"#{}|^~[]`\\*()%.!'"
         header_text_trimmed_len = len(header_text_trimmed)
         inserted = 0
@@ -365,8 +314,8 @@ def build_anchor_link(header_text_trimmed,
             # Apparently there is no %l in Python...
             header_text_trimmed_middle_stage = 'part-' + '{0:x}'.format(hash)
 
-        # 3.2. Check for duplicates (this is working in github only).
-        #      https://gitlab.com/help/user/markdown.md#header-ids-and-links
+        # Check for duplicates (this is working in github only).
+        # https://gitlab.com/help/user/markdown.md#header-ids-and-links
         if anchor_type == 'gitlab':
             # Apparently redcarpet does not handle duplicate entries, but
             # Gitlab does, although I cannot find the code responsable for it.
@@ -407,7 +356,7 @@ def get_md_header_type(line, max_header_levels=3):
 
     # Determine the header type by counting the number of the
     # first consecutive '#' characters in the line.
-    # Count until we are in the range of max_header_levels.
+    # Count until we are in range of max_header_levels.
     header_type = 0
     line_length = len(line)
     while header_type < line_length and line[header_type] == '#' and header_type <= max_header_levels:
@@ -419,18 +368,14 @@ def get_md_header_type(line, max_header_levels=3):
 
 
 def remove_md_header_syntax(header_text):
-    r"""Return a trimmed version of the input line without the markdown header syntax."""
+    r"""Return a trimmed version of the input line without the markdown header syntax.
+
+    This function removes the leading and trailing whitespaces, the first
+    consecutive # characters and any space left behind after removing those.
+    """
     assert isinstance(header_text, str)
-    # Remove the leading and trailing whitespaces.
-    header_text = header_text.strip()
 
-    # Remove the leading '#' consecutive characters.
-    header_text = header_text.lstrip('#')
-
-    # Remove possible whitespace after removing the '#'s.
-    trimmed_text =  header_text.lstrip()
-
-    return trimmed_text
+    return header_text.strip().lstrip('#').lstrip()
 
 
 def get_md_header(header_text,

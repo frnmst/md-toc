@@ -40,7 +40,6 @@ class CliToApi():
                 ordered=args.ordered,
                 no_links=args.no_links,
                 anchor_type=args.parser)
-
         if args.in_place:
             write_toc_on_md_file(
                 args.filename,
