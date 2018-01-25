@@ -26,18 +26,15 @@ import re
 import curses.ascii
 
 
-def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
+def write_toc_on_md_file(input_file, toc, toc_marker='[](TOC)'):
     r"""Write the table of contents.
 
     :parameter input_file: the file that needs to be read or modified.
     :parameter toc: the table of contents.
-    :parameter in_place: decides whether to overwrite the input
-         file or return the table of contents. Defaults to ``True``.
     :parameter toc_marker: a marker that will identify the start
          and the end of the table of contents. Defaults to ``[](TOC)``.
     :type input_file: str
     :type toc: str
-    :type in_place: bool
     :type toc_marker: str
     :returns: None if ``in_place`` is ``True`` or the table of contents with
          the markers in between, otherwise.
@@ -51,76 +48,30 @@ def write_toc_on_md_file(input_file, toc, in_place=True, toc_marker='[](TOC)'):
         >>> import md_toc
         >>> f = open('foo.md')
         >>> print(f.read(),end='')
-        # The main title
-
-        ## Hello there!sdfc
-
-        [](TOC)
-
-        Here (up) will lie the toc
-
-        # Some other content ;,.-_ # bye
-
-        a
-        b
-        c
-
-        ### zzz
-
-        # Again
-
-        ## qwerty
-
-        ## uiop
-
-        vbnm
-
-        ### asdf
-
-        zxc
-        >>> print(md_toc.api.write_toc_on_md_file('foo.md',md_toc.api.build_toc('foo.md'),in_place=False),end='')
-            [](TOC)
-
-            - [The main title](#the-main-title)
-                - [Hello there!](#hello-there)
-            - [Some other content ;,.-_ # bye](#some-other-content-bye)
-                    - [zzz](#zzz)
-            - [Again](#again)
-                - [qwerty](#qwerty)
-                - [uiop](#uiop)
-                    - [asdf](#asdf)
-
-            [](TOC)
     """
     assert isinstance(input_file, str)
     assert isinstance(toc, str)
-    assert isinstance(in_place, bool)
     assert isinstance(toc_marker, str)
 
     toc = toc.rstrip()
     final_string = toc_marker + '\n\n' + toc + '\n\n' + toc_marker + '\n'
 
-    if in_place:
-        toc_marker_line_positions = fpyutils.get_line_matches(
-            input_file, toc_marker, 2, loose_matching=True)
+    toc_marker_line_positions = fpyutils.get_line_matches(input_file,
+        toc_marker, 2, loose_matching=True)
 
-        if 1 not in toc_marker_line_positions and 2 not in toc_marker_line_positions:
-            pass
+    if 1 not in toc_marker_line_positions and 2 not in toc_marker_line_positions:
+        pass
 
-        elif 1 in toc_marker_line_positions:
-            if 2 in toc_marker_line_positions:
-                fpyutils.remove_line_interval(input_file, toc_marker_line_positions[1],
-                                              toc_marker_line_positions[2], input_file)
-            else:
-                fpyutils.remove_line_interval(input_file, toc_marker_line_positions[1],
-                                              toc_marker_line_positions[1], input_file)
-            # See fpyutils for the reason of the -1 here.
-            fpyutils.insert_string_at_line(input_file, final_string,
-                                           toc_marker_line_positions[1]-1, input_file)
-    else:
-        if toc == '':
-            final_string = toc
-        return final_string
+    elif 1 in toc_marker_line_positions:
+        if 2 in toc_marker_line_positions:
+            fpyutils.remove_line_interval(input_file, toc_marker_line_positions[1],
+                                          toc_marker_line_positions[2], input_file)
+        else:
+            fpyutils.remove_line_interval(input_file, toc_marker_line_positions[1],
+                                          toc_marker_line_positions[1], input_file)
+        # See fpyutils for the reason of the -1 here.
+        fpyutils.insert_string_at_line(input_file, final_string,
+                                       toc_marker_line_positions[1]-1, input_file)
 
 
 def build_toc(filename, ordered=False, no_links=False,
@@ -147,58 +98,14 @@ def build_toc(filename, ordered=False, no_links=False,
         >>> import md_toc
         >>> f = open('foo.md')
         >>> print(f.read(),end='')
-        # The main title
-
-        ## Hello there!
-
-        [](TOC)
-
-        Here (up) will lie the toc
-
-        # Some other content ;,.-_ # bye
-
-        a
-        b
-        c
-
-        ### zzz
-
-        # Again
-
-        ## qwerty
-
-        ## uiop
-
-        vbnm
-
-        ### asdf
-
-        zxc
-
-        >>> print(md_toc.api.build_toc('foo.md',ordered=True),end='')
-        1. [The main title](#the-main-title)
-            1. [Hello there!](#hello-there)
-        2. [Some other content ;,.-_ # bye](#some-other-content-bye)
-                1. [zzz](#zzz)
-        3. [Again](#again)
-            2. [qwerty](#qwerty)
-            3. [uiop](#uiop)
-                2. [asdf](#asdf)
     """
     assert isinstance(filename, str)
 
     toc = ''
     # Header type counter. Useful for ordered lists only.
-    # TODO This needs to be changed for a generic number of indentation levels.
-    # TODO Change the dict to ints only.
-    ht = {
-        '1': 0,
-        '2': 0,
-        '3': 0,
-    }
-    ht_prev = None
-    ht_curr = None
-
+    header_type = dict()
+    header_type_curr = 0
+    header_type_prev = 0
     header_duplicate_counter = dict()
 
     with open(filename, 'r') as f:
@@ -207,18 +114,18 @@ def build_toc(filename, ordered=False, no_links=False,
             header = get_md_header(line, header_duplicate_counter,
                                    max_header_levels, anchor_type)
             if header is not None:
-                ht_curr = header['type']
-                increment_index_ordered_list(ht, ht_prev, ht_curr)
+                header_type_curr = header['type']
+                increment_index_ordered_list(header_type,
+                    header_type_prev, header_type_curr)
                 toc += build_toc_line(header, ordered, no_links,
-                                      ht[str(ht_curr)]) + '\n'
-                ht_prev = ht_curr
+                                      header_type[header_type_curr]) + '\n'
+                header_type_prev = header_type_curr
 
             line = f.readline()
 
     return toc
 
 
-# TODO: FIXME so that we have e.g.: 1.1.x. 1.2.x. 1.x. 1.
 def increment_index_ordered_list(header_type_count, header_type_prev,
                                  header_type_curr):
     r"""Compute current index for ordered list table of contents.
@@ -235,25 +142,23 @@ def increment_index_ordered_list(header_type_count, header_type_prev,
 
     :Example:
 
-    >>> ht = {'1':0, '2':0, '3':0}
+    >>> ht = {1:0, 2:0, 3:0}
     >>> md_toc.api.increment_index_ordered_list(ht,3,3)
     >>> ht
-    {'1': 0, '2': 0, '3': 1}
+    {1: 0, 2: 0, 3: 1}
     """
     assert isinstance(header_type_count, dict)
-    assert '1' in header_type_count
-    assert '2' in header_type_count
-    assert '3' in header_type_count
-    # header_type_prev might be None while header_type_curr can't.
-    assert header_type_curr is not None
+    # header_type_prev might be 0 while header_type_curr can't.
+    assert header_type_curr > 0
 
-    # 1. Base case: header_type_prev is set to None since
-    #    it corresponds to a new table of contents.
-    if header_type_prev is None:
+    # 1. Base cases for new table of contents.
+    if header_type_prev is 0:
         header_type_prev = header_type_curr
+    if header_type_curr not in header_type_count:
+        header_type_count[header_type_curr] = 0
 
     # 2. Increment the current index.
-    header_type_count[str(header_type_curr)] += 1
+    header_type_count[header_type_curr] += 1
 
 def build_toc_line(header, ordered=False, no_links=False, index=1):
     r"""Return a list element of the table of contents.
@@ -301,10 +206,7 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
         list_symbol = '-'
 
     # Ordered list require 4-level indentation,
-    # while unordered either 2 or 4. To simplify the code we
-    # will keep only the common case. To implement
-    # 2-level indentation it is sufficient to do:
-    # 2*(header['type']-1) as a separate case.
+    # while unordered either 2 or 4. Common case is 4.
     no_of_indentation_spaces = 4 * (header['type'] - 1)
     indentation_spaces = no_of_indentation_spaces * ' '
 
@@ -345,11 +247,9 @@ def build_anchor_link(header_text_trimmed,
     assert isinstance(header_duplicate_counter, dict)
     assert isinstance(anchor_type, str)
 
-    # 1. Return the same text as-is.
     if anchor_type == 'standard':
         return header_text_trimmed
 
-    # 2. Return the header text with the applied rules for GitHub.
     elif anchor_type == 'github':
         # This is based on the ruby algorithm. See md_toc's documentation.
         """
@@ -377,16 +277,13 @@ def build_anchor_link(header_text_trimmed,
         OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
         WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         """
-        # 2.1. Lowercase.
         header_text_trimmed = header_text_trimmed.lower()
-        # 2.2. Remove punctuation: Keep spaces, hypens and "word characters"
-        #      only.
-        #      See https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb#L26
+        # Remove punctuation: Keep spaces, hypens and "word characters"
+        # only.
         header_text_trimmed = re.sub(r'[^\w\s\- ]', '', header_text_trimmed)
-        # 2.3. Replace spaces with dashes.
         header_text_trimmed = header_text_trimmed.replace(' ', '-')
 
-        # 2.4. Check for duplicates.
+        # Check for duplicates.
         ht = header_text_trimmed
         # Set the initial value if we are examining the first occurrency.
         # The state of header_duplicate_counter is available to the caller
@@ -400,8 +297,6 @@ def build_anchor_link(header_text_trimmed,
 
         return header_text_trimmed
 
-    # 3. Return the header text with the applied rules for GitLab and RedCarpet.
-    # https://github.com/vmg/redcarpet/blob/26c80f05e774b31cd01255b0fa62e883ac185bf3/ext/redcarpet/html.c#L274
     elif anchor_type == 'gitlab' or anchor_type == 'redcarpet':
         """
         /*
@@ -476,7 +371,6 @@ def build_anchor_link(header_text_trimmed,
             # Apparently redcarpet does not handle duplicate entries, but
             # Gitlab does, although I cannot find the code responsable for it.
             ht = header_text_trimmed_middle_stage
-            # Set the initial value if we are examining the first occurrency
             if header_text_trimmed_middle_stage not in header_duplicate_counter:
                 header_duplicate_counter[header_text_trimmed_middle_stage] = 0
             if header_duplicate_counter[header_text_trimmed_middle_stage] > 0:
@@ -486,15 +380,14 @@ def build_anchor_link(header_text_trimmed,
 
         return header_text_trimmed_middle_stage
 
-    # 4. Situation of seems unclear. Needs to be implemented.
+    # Situation of seems unclear. Needs to be implemented.
     elif anchor_type == 'gogs' or anchor_type == 'marked' or anchor_type == 'notabug':
         return header_text_trimmed
 
-    # 5. Unclear if there is this feature. Needs to be implemented.
+    # Unclear if there is this feature. Needs to be implemented.
     elif anchor_type == 'kramdown':
         return header_text_trimmed
 
-    # 6. Same as 1.
     else:
         return header_text_trimmed
 
@@ -509,12 +402,12 @@ def get_md_header_type(line, max_header_levels=3):
     assert isinstance(max_header_levels, int)
     assert max_header_levels > 0
 
-    # 1. Remove leading and whitespace from line to engage a lax parsing.
+    # Remove leading and whitespace from line to engage a lax parsing.
     line = line.lstrip()
 
-    # 2. Determine the header type by counting the number of the
-    #    first consecutive '#' characters in the line.
-    #    Count until we are in the range of max_header_levels.
+    # Determine the header type by counting the number of the
+    # first consecutive '#' characters in the line.
+    # Count until we are in the range of max_header_levels.
     header_type = 0
     line_length = len(line)
     while header_type < line_length and line[header_type] == '#' and header_type <= max_header_levels:
@@ -528,13 +421,13 @@ def get_md_header_type(line, max_header_levels=3):
 def remove_md_header_syntax(header_text):
     r"""Return a trimmed version of the input line without the markdown header syntax."""
     assert isinstance(header_text, str)
-    # 1. Remove the leading and trailing whitespaces.
+    # Remove the leading and trailing whitespaces.
     header_text = header_text.strip()
 
-    # 2. Remove the leading '#' consecutive characters.
+    # Remove the leading '#' consecutive characters.
     header_text = header_text.lstrip('#')
 
-    # 3. Remove possible whitespace after removing the '#'s.
+    # Remove possible whitespace after removing the '#'s.
     trimmed_text =  header_text.lstrip()
 
     return trimmed_text

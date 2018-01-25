@@ -29,23 +29,25 @@ from .api import (write_toc_on_md_file, build_toc)
 class CliToApi():
     """An interface between the CLI and API functions."""
 
-    def write_toc_on_md_file(self, args):
-        """Write the table of contents on the markown file."""
+    def write_toc(self, args):
+        """Write the table of contents."""
         if args.toc_marker is None:
             args.toc_marker = '[](TOC)'
         if args.parser is None:
             args.parser = 'standard'
-        result = write_toc_on_md_file(
-            args.filename,
-            toc=build_toc(
+        toc=build_toc(
                 filename=args.filename,
                 ordered=args.ordered,
                 no_links=args.no_links,
-                anchor_type=args.parser),
-            in_place=args.in_place,
-            toc_marker=args.toc_marker)
-        if result is not None:
-            print(result, end='')
+                anchor_type=args.parser)
+
+        if args.in_place:
+            write_toc_on_md_file(
+                args.filename,
+                toc=toc,
+                toc_marker=args.toc_marker)
+        else:
+            print(toc, end='')
 
 
 class CliInterface():
@@ -62,7 +64,7 @@ class CliInterface():
             epilog="Return values: 0 OK, 1 \
                                          Error, 2 Invalid command")
         parser.add_argument(
-            'filename', metavar='FILE_NAME', help='the i/o file name')
+            'filename', metavar='FILE_NAME', help='the I/O file name')
         parser.add_argument(
             '-i',
             '--in-place',
@@ -108,6 +110,6 @@ class CliInterface():
             action='version',
             version=pkg_resources.get_distribution('md_toc').version)
 
-        parser.set_defaults(func=CliToApi().write_toc_on_md_file)
+        parser.set_defaults(func=CliToApi().write_toc)
 
         return parser
