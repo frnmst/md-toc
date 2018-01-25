@@ -23,8 +23,6 @@
 
 from md_toc import api, exceptions
 import unittest
-from unittest.mock import patch, mock_open
-import sys
 
 # Some static variables.
 STATIC_LINE = 'This is a static line'
@@ -123,7 +121,7 @@ class TestApi(unittest.TestCase):
         r"""Test h{1,2,3} and h{4,Inf} headers and non-headers.
 
         Use the max_header variable set to the default value 3.
-        Test 5 possible line configurations.
+        Test several possible line configurations.
         """
         self.assertEqual(api.get_md_header_type(H1 + STATIC_LINE), 1)
         self.assertEqual(api.get_md_header_type(H2 + STATIC_LINE), 2)
@@ -165,6 +163,12 @@ class TestApi(unittest.TestCase):
             None)
 
         self.assertEqual(api.get_md_header_type(STATIC_LINE), None)
+
+        self.assertEqual(api.get_md_header_type(''), None)
+
+        # TODO self.assertEqual(api.get_md_header_type(H1), None)
+        # TODO instead of self.assertEqual(api.get_md_header_type(H1), 1)
+        # TODO Which version is correct?
 
     def test_remove_md_header_syntax(self):
         r"""Test line trimming with 5 possible configurations."""
