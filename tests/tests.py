@@ -166,9 +166,7 @@ class TestApi(unittest.TestCase):
 
         self.assertEqual(api.get_md_header_type(''), None)
 
-        # TODO self.assertEqual(api.get_md_header_type(H1), None)
-        # TODO instead of self.assertEqual(api.get_md_header_type(H1), 1)
-        # TODO Which version is correct?
+        self.assertEqual(api.get_md_header_type(H1), None)
 
     def test_remove_md_header_syntax(self):
         r"""Test line trimming with 5 possible configurations."""

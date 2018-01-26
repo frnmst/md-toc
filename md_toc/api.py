@@ -236,12 +236,11 @@ def build_anchor_link(header_text_trimmed,
          meaningful only for certain values of anchor_type.
     :parameter anchor_type: decides rules on how to generate anchor links.
          Defaults to ``standard``. Supported anchor types are: ``standard``,
-         ``github``, ``gitlab``, ``redcarpet``, ``gogs``, ``notabug``,
-         ``kramdown``.
+         ``github``, ``gitlab``, ``redcarpet``.
     :type header_text_trimmed: str
     :type header_duplicate_counter: dict
     :type anchor_type: str
-    :returns: the anchor link.
+    :returns: the anchor link or None. TODO
     :rtype: str
     :raises: one of the built-in exceptions.
 
@@ -340,16 +339,8 @@ def build_anchor_link(header_text_trimmed,
 
         return header_text_trimmed_middle_stage
 
-    # Situation of seems unclear. Needs to be implemented.
-    elif anchor_type == 'gogs' or anchor_type == 'marked' or anchor_type == 'notabug':
-        return header_text_trimmed
-
-    # Unclear if there is this feature. Needs to be implemented.
-    elif anchor_type == 'kramdown':
-        return header_text_trimmed
-
     else:
-        return header_text_trimmed
+        return None
 
 
 def get_md_header_type(line, max_header_levels=3):
@@ -380,7 +371,8 @@ def get_md_header_type(line, max_header_levels=3):
     line_length = len(line)
     while header_type < line_length and line[header_type] == '#' and header_type <= max_header_levels:
         header_type += 1
-    if header_type == 0 or header_type > max_header_levels:
+    # Ignore not valid or empty headers.
+    if header_type == 0 or header_type > max_header_levels or line.lstrip('#') == '':
         return None
     else:
         return header_type

@@ -82,8 +82,7 @@ class CliInterface():
             '-p',
             '--parser',
             choices=[
-                'standard', 'github', 'redcarpet', 'gitlab', 'gogs', 'marked',
-                'notabug', 'kramdown'
+                'standard', 'github', 'redcarpet', 'gitlab'
             ],
             default='standard',
             help='decide what markdown parser will be used \

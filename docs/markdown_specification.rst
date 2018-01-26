@@ -1,11 +1,8 @@
 Markdown spec
 =============
 
-Since for the moment there is no universal markdown specification,
-md-toc is quite flexible during the interpretation step.
-
-Anchor links
-------------
+Anchor link types and behaviours
+--------------------------------
 
 Since anchor links are a prominent feature of md_toc so some research was 
 necessary to make sure that they work under all conditions.
@@ -15,11 +12,9 @@ implement them while others don't; some act on the duplicate entry problem
 while others don't; some strip consecutive dash characters while others don't; 
 and so on...
 
-Anchor types and behaviours
----------------------------
-
 What follows is a list of parameters and rules used by md_toc to decide 
-how to render anchor links.
+how to render anchor links. Note that some of them have not been implemented 
+yet.
 
 - ``standard``: no transformation is done.
 
@@ -28,11 +23,11 @@ how to render anchor links.
   
   - https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb
 
-  GitHub uses cmark-gfm:
+  GitHub uses a forked version of cmark-gfm:
 
   - https://github.com/github/cmark
 
-  I could not dind the code directly responsable for the anchor link generation.
+  I could not find the code directly responsable for the anchor link generation.
   See also:
 
   - https://github.github.com/gfm/
@@ -127,3 +122,36 @@ how to render anchor links.
 
   - https://github.com/gettalong/kramdown/search?q=anchor&type=Issues&utf8=%E2%9C%93
 
+
+What are headers and what are not
+---------------------------------
+
+According to the GFM, there can be no more than 6 types of headings,``h1`` to 
+``h6`` in HTML terms, and there shall be from 0 to a 3 space indentation 
+(optionally) for a text to be a header
+
+  - https://github.github.com/gfm/#atx-heading
+
+To avoid unexpected behaviours empty headers are ignored while building the 
+table of contents. The GFM, however, allows empty headers:
+
+  - https://github.github.com/gfm/#example-49
+
+There are a lot of other special cases described on the GFM document.
+
+Anyway, md_toc simplifies all this. A line is a header when:
+
+  - it starts with a consecutive series of ``#`` characters which may go from 
+    1 to infinite,
+  - and, there shall be an unlimited number of indentation spaces between the 
+    start of the line and the first ``#`` character,
+  - and, there shall be an unlimited number of spaces between the 
+    last ``#`` character and the header text,
+  - and NOT, when there are whitespace characters only after the series of
+    ``#`` characters.
+
+md_toc's definition of header/heading is certainly not conformat with GFM and 
+probably with the other markdown parsers as well (which may be also behave 
+differrently compared to GitHub's cmark in this matter). Knowing what are 
+headers and what are not requires going through the specific parts of the code 
+of all the parsers.
