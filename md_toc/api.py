@@ -52,7 +52,8 @@ def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
     assert isinstance(toc, str)
     assert isinstance(toc_marker, str)
 
-    final_string = toc_marker + '\n\n' + toc.rstrip() + '\n\n' + toc_marker + '\n'
+    final_string = toc_marker + '\n\n' + toc.rstrip(
+    ) + '\n\n' + toc_marker + '\n'
     toc_marker_line_positions = fpyutils.get_line_matches(
         filename, toc_marker, 2, loose_matching=True)
 
@@ -66,9 +67,8 @@ def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
                 filename, toc_marker_line_positions[1],
                 toc_marker_line_positions[1], filename)
         # See fpyutils for the reason of the -1 here.
-        fpyutils.insert_string_at_line(filename, final_string,
-                                       toc_marker_line_positions[1] - 1,
-                                       filename)
+        fpyutils.insert_string_at_line(
+            filename, final_string, toc_marker_line_positions[1] - 1, filename)
 
 
 def build_toc(filename,
@@ -119,10 +119,12 @@ def build_toc(filename,
                                    max_header_levels, anchor_type)
             if header is not None:
                 header_type_curr = header['type']
-                increase_index_ordered_list(
-                    header_type_counter, header_type_prev, header_type_curr)
+                increase_index_ordered_list(header_type_counter,
+                                            header_type_prev, header_type_curr)
                 toc += build_toc_line(
-                    header, ordered, no_links,
+                    header,
+                    ordered,
+                    no_links,
                     index=header_type_counter[header_type_curr]) + '\n'
                 header_type_prev = header_type_curr
             line = f.readline()
@@ -372,7 +374,8 @@ def get_md_header_type(line, max_header_levels=3):
     while header_type < line_length and line[header_type] == '#' and header_type <= max_header_levels:
         header_type += 1
     # Ignore not valid or empty headers.
-    if header_type == 0 or header_type > max_header_levels or line.lstrip('#') == '':
+    if header_type == 0 or header_type > max_header_levels or line.lstrip(
+            '#') == '':
         return None
     else:
         return header_type

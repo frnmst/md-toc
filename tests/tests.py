@@ -65,11 +65,10 @@ class TestApi(unittest.TestCase):
         increases.
         """
         ht = dict()
-        api.increase_index_ordered_list(ht,0,HEADER_TYPE_1)
-        self.assertEqual(ht[HEADER_TYPE_1],1)
-        api.increase_index_ordered_list(ht,HEADER_TYPE_1,HEADER_TYPE_1)
-        self.assertEqual(ht[HEADER_TYPE_1],2)
-
+        api.increase_index_ordered_list(ht, 0, HEADER_TYPE_1)
+        self.assertEqual(ht[HEADER_TYPE_1], 1)
+        api.increase_index_ordered_list(ht, HEADER_TYPE_1, HEADER_TYPE_1)
+        self.assertEqual(ht[HEADER_TYPE_1], 2)
 
     def test_build_toc_line(self):
         r"""Test toc line building for different types of inputs.
@@ -81,19 +80,21 @@ class TestApi(unittest.TestCase):
         Ordered and non-ordered lists generate the same kind of
         strings, so there is no point in testing both cases.
         """
-        header = {'type': HEADER_TYPE_3,
-                  'text_original': STATIC_LINE,
-                  'text_anchor_link': STATIC_LINE
+        header = {
+            'type': HEADER_TYPE_3,
+            'text_original': STATIC_LINE,
+            'text_anchor_link': STATIC_LINE
         }
-        self.assertEqual(api.build_toc_line(header,
-                                            ordered=False,
-                                            no_links=True),
-          (LIST_INDENTATION * (HEADER_TYPE_3 - 1)) + UNORDERED_LIST_SYMBOL + LEADING_WHITESPACE_1 + STATIC_LINE)
+        self.assertEqual(
+            api.build_toc_line(header, ordered=False, no_links=True),
+            (LIST_INDENTATION * (HEADER_TYPE_3 - 1)) + UNORDERED_LIST_SYMBOL +
+            LEADING_WHITESPACE_1 + STATIC_LINE)
 
-        self.assertEqual(api.build_toc_line(header,
-                                            ordered=False,
-                                            no_links=False),
-          (LIST_INDENTATION * (HEADER_TYPE_3 - 1)) + UNORDERED_LIST_SYMBOL + LEADING_WHITESPACE_1 + '[' + STATIC_LINE + ']' + '(#' + STATIC_LINE + ')')
+        self.assertEqual(
+            api.build_toc_line(header, ordered=False, no_links=False),
+            (LIST_INDENTATION * (HEADER_TYPE_3 - 1)) + UNORDERED_LIST_SYMBOL +
+            LEADING_WHITESPACE_1 + '[' + STATIC_LINE + ']' + '(#' +
+            STATIC_LINE + ')')
 
     def test_build_anchor_link(self):
         r"""Test anchor link generation.
@@ -129,38 +130,43 @@ class TestApi(unittest.TestCase):
         self.assertEqual(api.get_md_header_type(H4 + STATIC_LINE), None)
 
         self.assertEqual(
-            api.get_md_header_type(LEADING_WHITESPACE_10 + H1 + STATIC_LINE), 1)
+            api.get_md_header_type(LEADING_WHITESPACE_10 + H1 + STATIC_LINE),
+            1)
         self.assertEqual(
-            api.get_md_header_type(LEADING_WHITESPACE_10 + H2 + STATIC_LINE), 2)
+            api.get_md_header_type(LEADING_WHITESPACE_10 + H2 + STATIC_LINE),
+            2)
         self.assertEqual(
-            api.get_md_header_type(LEADING_WHITESPACE_10 + H3 + STATIC_LINE), 3)
+            api.get_md_header_type(LEADING_WHITESPACE_10 + H3 + STATIC_LINE),
+            3)
         self.assertEqual(
             api.get_md_header_type(LEADING_WHITESPACE_10 + H4 + STATIC_LINE),
             None)
 
         self.assertEqual(
-            api.get_md_header_type(H1 + LEADING_WHITESPACE_10 + STATIC_LINE), 1)
+            api.get_md_header_type(H1 + LEADING_WHITESPACE_10 + STATIC_LINE),
+            1)
         self.assertEqual(
-            api.get_md_header_type(H2 + LEADING_WHITESPACE_10 + STATIC_LINE), 2)
+            api.get_md_header_type(H2 + LEADING_WHITESPACE_10 + STATIC_LINE),
+            2)
         self.assertEqual(
-            api.get_md_header_type(H3 + LEADING_WHITESPACE_10 + STATIC_LINE), 3)
+            api.get_md_header_type(H3 + LEADING_WHITESPACE_10 + STATIC_LINE),
+            3)
         self.assertEqual(
             api.get_md_header_type(H4 + LEADING_WHITESPACE_10 + STATIC_LINE),
             None)
 
         self.assertEqual(
-            api.get_md_header_type(
-                LEADING_WHITESPACE_10 + H1 + LEADING_WHITESPACE_10 + STATIC_LINE), 1)
+            api.get_md_header_type(LEADING_WHITESPACE_10 + H1 +
+                                   LEADING_WHITESPACE_10 + STATIC_LINE), 1)
         self.assertEqual(
-            api.get_md_header_type(
-                LEADING_WHITESPACE_10 + H2 + LEADING_WHITESPACE_10 + STATIC_LINE), 2)
+            api.get_md_header_type(LEADING_WHITESPACE_10 + H2 +
+                                   LEADING_WHITESPACE_10 + STATIC_LINE), 2)
         self.assertEqual(
-            api.get_md_header_type(
-                LEADING_WHITESPACE_10 + H3 + LEADING_WHITESPACE_10 + STATIC_LINE), 3)
+            api.get_md_header_type(LEADING_WHITESPACE_10 + H3 +
+                                   LEADING_WHITESPACE_10 + STATIC_LINE), 3)
         self.assertEqual(
-            api.get_md_header_type(
-                LEADING_WHITESPACE_10 + H4 + LEADING_WHITESPACE_10 + STATIC_LINE),
-            None)
+            api.get_md_header_type(LEADING_WHITESPACE_10 + H4 +
+                                   LEADING_WHITESPACE_10 + STATIC_LINE), None)
 
         self.assertEqual(api.get_md_header_type(STATIC_LINE), None)
 
@@ -173,19 +179,19 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.remove_md_header_syntax(H1 + STATIC_LINE), STATIC_LINE)
         self.assertEqual(
-            api.remove_md_header_syntax(LEADING_WHITESPACE_10 + H1 + STATIC_LINE),
-            STATIC_LINE)
+            api.remove_md_header_syntax(
+                LEADING_WHITESPACE_10 + H1 + STATIC_LINE), STATIC_LINE)
         self.assertEqual(
-            api.remove_md_header_syntax(H1 + LEADING_WHITESPACE_10 + STATIC_LINE),
+            api.remove_md_header_syntax(
+                H1 + LEADING_WHITESPACE_10 + STATIC_LINE), STATIC_LINE)
+        self.assertEqual(
+            api.remove_md_header_syntax(LEADING_WHITESPACE_10 + H1 +
+                                        LEADING_WHITESPACE_10 + STATIC_LINE),
             STATIC_LINE)
         self.assertEqual(
             api.remove_md_header_syntax(
-                LEADING_WHITESPACE_10 + H1 + LEADING_WHITESPACE_10 + STATIC_LINE),
-            STATIC_LINE)
-        self.assertEqual(
-            api.remove_md_header_syntax(LEADING_WHITESPACE_10 + H1 +
-                                        LEADING_WHITESPACE_10 + H1 + STATIC_LINE),
-            H1 + STATIC_LINE)
+                LEADING_WHITESPACE_10 + H1 + LEADING_WHITESPACE_10 + H1 +
+                STATIC_LINE), H1 + STATIC_LINE)
 
     def test_get_md_header(self):
         r"""Test building of the header data structure.

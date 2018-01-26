@@ -24,6 +24,9 @@
 
 default: pep doc test
 
+githook:
+	git config core.hooksPath .githooks
+
 pep:
 	yapf --style '{based_on_style: pep8; split_before_logical_operator: False}' -i md_toc/*.py tests/*.py
 	flake8 --ignore=F401,E501 md_toc/*.py tests/*.py
