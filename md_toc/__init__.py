@@ -1,7 +1,7 @@
 #
 # __init__.py
 #
-# Copyright (C) 2017 frnmst (Franco Masotti) <franco.masotti@live.com>
+# Copyright (C) 2017-2018 frnmst (Franco Masotti) <franco.masotti@live.com>
 #                                            <franco.masotti@student.unife.it>
 #
 # This file is part of md-toc.

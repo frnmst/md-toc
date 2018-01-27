@@ -1,7 +1,7 @@
 Copyright and License
 =====================
 
-Copyright (C) 2017 frnmst (Franco Masotti) <franco.masotti@live.com>
+Copyright (C) 2017-2018 frnmst (Franco Masotti) <franco.masotti@live.com>
 <franco.masotti@student.unife.it>
 
 fpyutils is free software: you can redistribute it and/or modify
