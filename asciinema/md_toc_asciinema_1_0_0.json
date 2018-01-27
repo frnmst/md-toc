@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "width": 83,
+  "height": 46,
+  "duration": 28.378759,
+  "command": "./md_toc_asciinema_1_0_0_demo.sh",
+  "title": null,
+  "env": {
+    "TERM": "st-256color",
+    "SHELL": "/bin/bash"
+  },
+  "stdout": [
+    [
+      0.013629,
+      "Running a demo to show some of md_toc's capabilities...\r\n"
+    ],
+    [
+      0.000432,
+      "\r\n"
+    ],
+    [
+      2.001283,
+      "$ md_toc -h\r\n"
+    ],
+    [
+      0.261431,
+      "usage: md_toc [-h] [-i] [-n] [-o] [-p {standard,github,redcarpet,gitlab}]\r\n              [-t TOC_MARKER] [-l HEADER_LEVELS] [-v]\r\n              FILE_NAME\r\n\r\nMarkdown Table Of Contents\r\n\r\npositional arguments:\r\n  FILE_NAME             the I/O file name\r\n\r\noptional arguments:\r\n  -h, --help            show this help message and exit\r\n  -i, --in-place        overwrite the input file\r\n  -n, --no-links        avoids adding links to corresponding content\r\n  -o, --ordered         write as an ordered list\r\n  -p {standard,github,redcarpet,gitlab}, --parser {standard,github,redcarpet,gitlab}\r\n                        decide what markdown parser will be used to generate\r\n                        the links. Defaults to standard\r\n  -t TOC_MARKER, --toc-marker TOC_MARKER\r\n                        set the string to be used as the marker for\r\n                        positioning the table of contents\r\n  -l HEADER_LEVELS, --header-levels HEADER_LEVELS\r\n                        set the maximum level of headers to be considered as\r\n "
+    ],
+    [
+      3.1e-05,
+      "                       part of the TOC\r\n  -v, --version         show program's version number and exit\r\n\r\nReturn values: 0 OK, 1 Error, 2 Invalid command\r\n"
+    ],
+    [
+      0.014976,
+      "\r\n"
+    ],
+    [
+      5.003232,
+      "$ cat foo.md\r\n"
+    ],
+    [
+      0.001457,
+      "# Hi\r\n\r\n[](TOC)\r\n\r\nhey\r\n\r\n## How are you?           !!!\r\n\r\n## fine, thanks\r\n\r\n### Bye\r\n\r\n## Bye bye\r\n"
+    ],
+    [
+      0.000547,
+      "\r\n"
+    ],
+    [
+      5.001721,
+      "$ md_toc -p github foo.md\r\n"
+    ],
+    [
+      0.251735,
+      "- [Hi](#hi)\r\n    - [How are you?           !!!](#how-are-you-----------)\r\n    - [fine, thanks](#fine-thanks)\r\n        - [Bye](#bye)\r\n    - [Bye bye](#bye-bye)\r\n"
+    ],
+    [
+      0.015469,
+      "\r\n"
+    ],
+    [
+      5.001438,
+      "$ md_toc -o -p gitlab foo.md\r\n"
+    ],
+    [
+      0.252434,
+      "1. [Hi](#hi)\r\n    1. [How are you?           !!!](#how-are-you)\r\n    2. [fine, thanks](#fine-thanks)\r\n        1. [Bye](#bye)\r\n    3. [Bye bye](#bye-bye)\r\n"
+    ],
+    [
+      0.01472,
+      "\r\n"
+    ],
+    [
+      5.001544,
+      "$ md_toc -n foo.md\r\n"
+    ],
+    [
+      0.245354,
+      "- Hi\r\n    - How are you?           !!!\r\n    - fine, thanks\r\n        - Bye\r\n    - Bye bye\r\n"
+    ],
+    [
+      0.014583,
+      "\r\n"
+    ],
+    [
+      5.001507,
+      "$ Editing the file in-place...\r\n"
+    ],
+    [
+      0.000604,
+      "$ md_toc -i -p redcarpet foo.md\r\n"
+    ],
+    [
+      0.276076,
+      "$ cat foo.md\r\n"
+    ],
+    [
+      0.001687,
+      "# Hi\r\n\r\n[](TOC)\r\n\r\n- [Hi](#hi)\r\n    - [How are you?           !!!](#how-are-you)\r\n    - [fine, thanks](#fine-thanks)\r\n        - [Bye](#bye)\r\n    - [Bye bye](#bye-bye)\r\n\r\n[](TOC)\r\n\r\nhey\r\n\r\n## How are you?           !!!\r\n\r\n## fine, thanks\r\n\r\n### Bye\r\n\r\n## Bye bye\r\n"
+    ]
+  ]
+}
