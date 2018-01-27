@@ -13,6 +13,5 @@ Main Interface
 .. autofunction:: increase_index_ordered_list
 .. autofunction:: build_anchor_link
 .. autofunction:: build_toc
-.. autofunction:: write_toc_on_md_file
-
+.. autofunction:: write_string_on_file_between_markers
 

@@ -23,6 +23,7 @@
 
 from .api import (remove_md_header_syntax, get_md_header, get_md_header_type,
                   build_toc_line, increase_index_ordered_list,
-                  build_anchor_link, build_toc, write_toc_on_md_file)
+                  build_anchor_link, build_toc,
+                  write_string_on_file_between_markers)
 from .cli import (CliInterface)
 # from .exceptions import ()

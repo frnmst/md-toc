@@ -26,16 +26,16 @@ import re
 import curses.ascii
 
 
-def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
+def write_string_on_file_between_markers(filename, string, marker):
     r"""Write the table of contents.
 
     :parameter filename: the file that needs to be read or modified.
-    :parameter toc: the table of contents.
-    :parameter toc_marker: a marker that will identify the start
-         and the end of the table of contents. Defaults to ``[](TOC)``.
+    :parameter string: the string that will be written on the file.
+    :parameter marker: a marker that will identify the start
+         and the end of the string.
     :type filename: str
-    :type toc: str
-    :type toc_marker: str
+    :type string: str
+    :type marker: str
     :returns: None
     :rtype: None
     :raises: one of the fpyutils exceptions or one of the built-in exceptions.
@@ -47,28 +47,60 @@ def write_toc_on_md_file(filename, toc, toc_marker='[](TOC)'):
         >>> import md_toc
         >>> f = open('foo.md')
         >>> print(f.read(),end='')
-        TODO
+        ## Hi
+
+        [](TOC)
+
+        hey
+
+        ### How are you?           !!!
+
+        fine, thanks
+
+        # Bye
+        >>> md_toc.write_string_on_file_between_markers('fake_md.md','Hallo \
+        how are you?\nVery well thanks...\n\nGoodbye\n\n\nFarewell\n', \
+        '[](TOC)')
+        >>> print(f.read(),end='')
+        ## Hi
+
+        [](TOC)
+
+        Hallo how are you?
+        Very well thanks...
+
+        Goodbye
+
+
+        Farewell
+
+        [](TOC)
+
+        hey
+
+        ### How are you?           !!!
+
+        fine, thanks
+
+        # Bye
     """
-    assert isinstance(toc, str)
-    assert isinstance(toc_marker, str)
+    assert isinstance(string, str)
+    assert isinstance(marker, str)
 
-    final_string = toc_marker + '\n\n' + toc.rstrip(
-    ) + '\n\n' + toc_marker + '\n'
-    toc_marker_line_positions = fpyutils.get_line_matches(
-        filename, toc_marker, 2, loose_matching=True)
+    final_string = marker + '\n\n' + string.rstrip() + '\n\n' + marker + '\n'
+    marker_line_positions = fpyutils.get_line_matches(
+        filename, marker, 2, loose_matching=True)
 
-    if 1 in toc_marker_line_positions:
-        if 2 in toc_marker_line_positions:
-            fpyutils.remove_line_interval(
-                filename, toc_marker_line_positions[1],
-                toc_marker_line_positions[2], filename)
+    if 1 in marker_line_positions:
+        if 2 in marker_line_positions:
+            fpyutils.remove_line_interval(filename, marker_line_positions[1],
+                                          marker_line_positions[2], filename)
         else:
-            fpyutils.remove_line_interval(
-                filename, toc_marker_line_positions[1],
-                toc_marker_line_positions[1], filename)
+            fpyutils.remove_line_interval(filename, marker_line_positions[1],
+                                          marker_line_positions[1], filename)
         # See fpyutils for the reason of the -1 here.
-        fpyutils.insert_string_at_line(
-            filename, final_string, toc_marker_line_positions[1] - 1, filename)
+        fpyutils.insert_string_at_line(filename, final_string,
+                                       marker_line_positions[1] - 1, filename)
 
 
 def build_toc(filename,
@@ -81,7 +113,9 @@ def build_toc(filename,
     :parameter filename: the file that needs to be read.
     :parameter ordered: decides whether to build an ordered list or not.
     :parameter no_links: disables the use of links.
-    :parameter max_header_levels: TODO
+    :parameter max_header_levels: the maximum level of headers to be
+         considered as such when building the table of contents. Defaults to
+         ``3``.
     :parameter anchor_type: decides rules on how to generate anchor links.
          Defaults to ``standard``.
     :type filename: str
@@ -100,17 +134,28 @@ def build_toc(filename,
         >>> import md_toc
         >>> f = open('foo.md')
         >>> print(f.read(),end='')
-        TODO
+        ## Hi
+
+        hey
+
+        ### How are you?           !!!
+
+        fine, thanks
+
+        # Bye
+        >>> print(md_toc.build_toc('foo.md',anchor_type='gitlab'),end='')
+            - [Hi](#hi)
+                - [How are you?           !!!](#how-are-you)
+        - [Bye](#bye)
     """
     assert isinstance(filename, str)
 
-    toc = ''
-    header_duplicate_counter = dict()
-
-    # Useful for ordered lists only.
+    # Base cases.
     header_type_counter = dict()
     header_type_curr = 0
     header_type_prev = 0
+    toc = ''
+    header_duplicate_counter = dict()
 
     with open(filename, 'r') as f:
         line = f.readline()
@@ -149,10 +194,9 @@ def increase_index_ordered_list(header_type_count, header_type_prev,
     :Example:
 
     >>> ht = {1: 0, 2: 0, 3: 0}
-    >>> md_toc.api.increase_index_ordered_list(ht,3,3)
+    >>> md_toc.increase_index_ordered_list(ht,3,3)
     >>> ht
     {1: 0, 2: 0, 3: 1}
-    TODO
     """
     assert isinstance(header_type_count, dict)
     assert isinstance(header_type_prev, int)
@@ -191,9 +235,8 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
     :Example:
 
     >>> header =  {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi-how-are-you'}
-    >>> print(md_toc.api.build_toc_line(header,ordered=True,index=3))
+    >>> print(md_toc.build_toc_line(header,ordered=True,index=3))
         3. [hi hOw Are YOu!!? ? #](#hi-how-are-you)
-    TODO
     """
     assert isinstance(header, dict)
     assert 'type' in header
@@ -242,7 +285,8 @@ def build_anchor_link(header_text_trimmed,
     :type header_text_trimmed: str
     :type header_duplicate_counter: dict
     :type anchor_type: str
-    :returns: the anchor link or None. TODO
+    :returns: None if the specified anchor type is not recognized, or the
+         anchor link, otherwise.
     :rtype: str
     :raises: one of the built-in exceptions.
 
@@ -250,7 +294,10 @@ def build_anchor_link(header_text_trimmed,
         and for the licenses of each markdown parser algorithm, please refer to
         the 'Markdown spec' documentation page.
 
-    :Example: TODO
+    :Example:
+
+    >>> print(md_toc.build_anchor_link('   hello ## how # are you ???  ! ',dict(),'gitlab'))
+    hello-how-are-you
     """
     assert isinstance(header_text_trimmed, str)
     assert isinstance(header_duplicate_counter, dict)
@@ -349,15 +396,23 @@ def get_md_header_type(line, max_header_levels=3):
     r"""Given a line extract the title type.
 
     :parameter line: the line to be examined.
-    :parameter max_header_levels: the maximum levels.... TODO.
+    :parameter max_header_levels: the maximum level of headers to be
+         considered as such when building the table of contents. Defaults to ``3``.
     :type line: str
     :type max_header_levels: int
-    :returns: TODO
-    :rtype: TODO
+    :returns: None if the line does not contain header elements, or the header
+        type, otherwise.
+    :rtype: int
+    :raises: one of the built in exceptions.
 
-    :warning: TODO
+    :warning: the parameter max_header_levels must be greater than 0.
 
-    :Example: TODO
+    :Example:
+
+    >>> print(md_toc.get_md_header_type('###  hello ## how # are you ???  ! ',6))
+    3
+    >>> print(md_toc.get_md_header_type('###  hello ## how # are you ???  ! ',2))
+    None
     """
     assert isinstance(line, str)
     assert isinstance(max_header_levels, int)
@@ -384,11 +439,21 @@ def get_md_header_type(line, max_header_levels=3):
 def remove_md_header_syntax(header_text_line):
     r"""Return a trimmed version of the input line without the markdown header syntax.
 
-    :parameter header_text_line: TODO
+    :parameter header_text_line: a single markdown line that needs to be
+         transformed into a TOC line.
+    :type header_text_line: str
+    :returns: a trimmed version of the input line without the markdown header
+         syntax.
+    :rtype: str
+    :raises: one of the built-in exceptions.
+
     :note: this function removes the leading and trailing whitespaces, the first
         consecutive '#' characters and any space left behind after removing those.
 
-    :Example: TODO
+    :Example:
+
+    >>> md_toc.remove_md_header_syntax(' ### hello ## how # are you ???  ! ')
+    'hello ## how # are you ???  !'
     """
     assert isinstance(header_text_line, str)
 
@@ -401,15 +466,19 @@ def get_md_header(header_text_line,
                   anchor_type='standard'):
     r"""Build a data structure with the elements needed to create a TOC line.
 
-    :parameter header_text_line: TODO
+    :parameter header_text_line: a single markdown line that needs to be
+         transformed into a TOC line.
     :parameter header_duplicate_counter: a data structure that contains the
          number of occurrencies of each header anchor link. This is used to
          avoid duplicate anchor links and it is meaningful only for certain
          values of anchor_type.
+    :parameter max_header_levels: the maximum level of headers to be
+         considered as such when building the table of contents. Defaults to ``3``.
     :parameter anchor_type: decides rules on how to generate anchor links.
          Defaults to ``standard``.
     :type header_text_line: str
     :type header_duplicate_counter: dict
+    :type max_header_levels: int
     :type anchor_type: str
     :returns: None if the input line does not correspond to one of the
          designated cases or a data structure containing the necessary
@@ -421,8 +490,8 @@ def get_md_header(header_text_line,
 
     :Example:
 
-    >>> print(md_toc.api.get_md_header(' ## hi hOw Are YOu!!? ? #'))
-    {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi-how-are-you'}
+    >>> print(md_toc.get_md_header(' ## hi hOw Are YOu!!? ? #'))
+    {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi hOw Are YOu!!? ? #'}
     """
     header_type = get_md_header_type(header_text_line, max_header_levels)
     if header_type is None:

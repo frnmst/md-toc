@@ -23,7 +23,7 @@
 
 import argparse
 import pkg_resources
-from .api import (write_toc_on_md_file, build_toc)
+from .api import (write_string_on_file_between_markers, build_toc)
 
 
 class CliToApi():
@@ -42,8 +42,8 @@ class CliToApi():
             max_header_levels=int(args.header_levels),
             anchor_type=args.parser)
         if args.in_place:
-            write_toc_on_md_file(
-                args.filename, toc=toc, toc_marker=args.toc_marker)
+            write_string_on_file_between_markers(
+                filename=args.filename, string=toc, marker=args.toc_marker)
         else:
             print(toc, end='')
 
@@ -59,8 +59,7 @@ class CliInterface():
         """Create the CLI parser."""
         parser = argparse.ArgumentParser(
             description='Markdown Table Of Contents',
-            epilog="Return values: 0 OK, 1 \
-                                         Error, 2 Invalid command")
+            epilog="Return values: 0 OK, 1 Error, 2 Invalid command")
         parser.add_argument(
             'filename', metavar='FILE_NAME', help='the I/O file name')
         parser.add_argument(
@@ -83,22 +82,20 @@ class CliInterface():
             '--parser',
             choices=['standard', 'github', 'redcarpet', 'gitlab'],
             default='standard',
-            help='decide what markdown parser will be used \
-                  to generate the links. Defaults to standard')
+            help='decide what markdown parser will be used to generate the \
+                  links. Defaults to standard')
         parser.add_argument(
             '-t',
             '--toc-marker',
             metavar='TOC_MARKER',
-            help='set the string to be used as the marker \
-                  for positioning the table of contents',
-        )
+            help='set the string to be used as the marker for positioning the \
+                  table of contents')
         parser.add_argument(
             '-l',
             '--header-levels',
             default=3,
-            help='set the maximum level of headers to \
-                  be considered as part of the TOC',
-        )
+            help='set the maximum level of headers to be considered as part \
+                  of the TOC')
         parser.add_argument(
             '-v',
             '--version',

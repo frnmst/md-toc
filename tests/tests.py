@@ -42,7 +42,7 @@ UNORDERED_LIST_SYMBOL = '-'
 class TestApi(unittest.TestCase):
     r"""Test the main API."""
 
-    def test_write_toc_on_md_file(self):
+    def test_write_string_on_file_between_markers(self):
         r"""Test that the TOC is written correcly on the file.
 
         Most of the job is done by the fpyutils library. Refer to that

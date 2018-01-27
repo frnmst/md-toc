@@ -4,6 +4,8 @@ CLI Usage helps
 Main help
 ---------
 
+::
+
     usage: md_toc [-h] [-i] [-n] [-o] [-p {standard,github,redcarpet,gitlab}]
                   [-t TOC_MARKER] [-l HEADER_LEVELS] [-v]
                   FILE_NAME
@@ -18,8 +20,7 @@ Main help
       -i, --in-place        overwrite the input file
       -n, --no-links        avoids adding links to corresponding content
       -o, --ordered         write as an ordered list
-      -p {standard,github,redcarpet,gitlab}, --parser 
-    {standard,github,redcarpet,gitlab}
+      -p {standard,github,redcarpet,gitlab}, --parser {standard,github,redcarpet,gitlab}
                             decide what markdown parser will be used to generate
                             the links. Defaults to standard
       -t TOC_MARKER, --toc-marker TOC_MARKER
