@@ -181,9 +181,9 @@ def increase_index_ordered_list(header_type_count, header_type_prev,
                                 header_type_curr):
     r"""Compute the current index for ordered list table of contents.
 
-    :parameter: header_type_count: the index numbers for all headers.
-    :parameter: header_type_prev: the previous type of header (h1, h2 or h3).
-    :parameter: header_type_curr: the current type of header (h1, h2 or h3).
+    :parameter header_type_count: the count of each header type.
+    :parameter header_type_prev: the previous type of header (h[1-Inf]).
+    :parameter header_type_curr: the current type of header (h[1-Inf]).
     :type header_type_count: dict
     :type header_type_prev: int
     :type header_type_curr: int
