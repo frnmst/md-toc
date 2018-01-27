@@ -25,8 +25,8 @@ version of the TOC.
 Video
 -----
 
-.. image:: https://asciinema.org/a/155223.png
-     :target: https://asciinema.org/a/155223
+.. image:: https://asciinema.org/a/159550.png
+     :target: https://asciinema.org/a/159550
      :align: center
 
 Documentation
