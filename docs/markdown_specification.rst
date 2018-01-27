@@ -126,7 +126,7 @@ how to render anchor links. Note that only ``standard``, ``github``,
 What are headers and what are not
 ---------------------------------
 
-According to the GFM, there can be no more than 6 types of headings,``h1`` to 
+According to the GFM, there can be no more than 6 types of headings, ``h1`` to 
 ``h6`` in HTML terms, and there shall be from 0 to a 3 space indentation 
 (optionally) for a text to be a header
 
