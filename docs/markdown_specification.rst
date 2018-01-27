@@ -13,8 +13,8 @@ while others don't; some strip consecutive dash characters while others don't;
 and so on...
 
 What follows is a list of parameters and rules used by md_toc to decide 
-how to render anchor links. Note that some of them have not been implemented 
-yet.
+how to render anchor links. Note that only ``standard``, ``github``,
+``redcarpet`` and ``gitlab`` are currently implemented.
 
 - ``standard``: no transformation is done.
 
