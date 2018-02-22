@@ -25,6 +25,8 @@ import argparse
 import pkg_resources
 from .api import (write_string_on_file_between_markers, build_toc)
 
+DEFAULT_TOC_MARKER='[](TOC)'
+DEFAULT_PARSER='github'
 
 class CliToApi():
     """An interface between the CLI and API functions."""
@@ -32,9 +34,9 @@ class CliToApi():
     def write_toc(self, args):
         """Write the table of contents."""
         if args.toc_marker is None:
-            args.toc_marker = '[](TOC)'
+            args.toc_marker = DEFAULT_TOC_MARKER
         if args.parser is None:
-            args.parser = 'standard'
+            args.parser = DEFAULT_PARSER
         toc = build_toc(
             filename=args.filename,
             ordered=args.ordered,
@@ -80,16 +82,16 @@ class CliInterface():
         parser.add_argument(
             '-p',
             '--parser',
-            choices=['standard', 'github', 'redcarpet', 'gitlab'],
-            default='standard',
+            choices=['github', 'redcarpet', 'gitlab'],
+            default=DEFAULT_PARSER,
             help='decide what markdown parser will be used to generate the \
-                  links. Defaults to standard')
+                  links. Defaults to ' + DEFAULT_PARSER)
         parser.add_argument(
             '-t',
             '--toc-marker',
             metavar='TOC_MARKER',
             help='set the string to be used as the marker for positioning the \
-                  table of contents')
+                  table of contents. Defaults to ' + DEFAULT_TOC_MARKER)
         parser.add_argument(
             '-l',
             '--header-levels',

@@ -100,21 +100,21 @@ class TestApi(unittest.TestCase):
         r"""Test anchor link generation.
 
         Algorithm testing should be done upstream.
-        Test duplicates for anchor_type='github' and anchor_type='gitlab'.
+        Test duplicates for parser='github' and parser='gitlab'.
         """
         header_duplicate_counter = dict()
         api.build_anchor_link(
-            STATIC_LINE, header_duplicate_counter, anchor_type='github')
+            STATIC_LINE, header_duplicate_counter, parser='github')
         api.build_anchor_link(
-            STATIC_LINE, header_duplicate_counter, anchor_type='github')
+            STATIC_LINE, header_duplicate_counter, parser='github')
         for k in header_duplicate_counter:
             self.assertEqual(header_duplicate_counter[k], 2)
 
         header_duplicate_counter = dict()
         api.build_anchor_link(
-            STATIC_LINE, header_duplicate_counter, anchor_type='gitlab')
+            STATIC_LINE, header_duplicate_counter, parser='gitlab')
         api.build_anchor_link(
-            STATIC_LINE, header_duplicate_counter, anchor_type='gitlab')
+            STATIC_LINE, header_duplicate_counter, parser='gitlab')
         for k in header_duplicate_counter:
             self.assertEqual(header_duplicate_counter[k], 2)
 

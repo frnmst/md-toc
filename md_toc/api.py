@@ -107,7 +107,7 @@ def build_toc(filename,
               ordered=False,
               no_links=False,
               max_header_levels=3,
-              anchor_type='standard'):
+              parser='github'):
     r"""Parse file by line and build the table of contents.
 
     :parameter filename: the file that needs to be read.
@@ -116,13 +116,13 @@ def build_toc(filename,
     :parameter max_header_levels: the maximum level of headers to be
          considered as such when building the table of contents. Defaults to
          ``3``.
-    :parameter anchor_type: decides rules on how to generate anchor links.
-         Defaults to ``standard``.
+    :parameter parser: decides rules on how to generate anchor links.
+         Defaults to ``github   ``.
     :type filename: str
     :type ordered: bool
     :type no_links: bool
     :type max_header_levels: int
-    :type anchor_type: str
+    :type parser: str
     :returns: the corresponding table of contents.
     :rtype: str
     :raises: one of the built-in exceptions.
@@ -143,7 +143,7 @@ def build_toc(filename,
         fine, thanks
 
         # Bye
-        >>> print(md_toc.build_toc('foo.md',anchor_type='gitlab'),end='')
+        >>> print(md_toc.build_toc('foo.md',parser='gitlab'),end='')
             - [Hi](#hi)
                 - [How are you?           !!!](#how-are-you)
         - [Bye](#bye)
@@ -161,7 +161,7 @@ def build_toc(filename,
         line = f.readline()
         while line:
             header = get_md_header(line, header_duplicate_counter,
-                                   max_header_levels, anchor_type)
+                                   max_header_levels, parser)
             if header is not None:
                 header_type_curr = header['type']
                 increase_index_ordered_list(header_type_counter,
@@ -272,19 +272,19 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
 
 def build_anchor_link(header_text_trimmed,
                       header_duplicate_counter,
-                      anchor_type='standard'):
+                      parser='github'):
     r"""Apply the specified slug rule to build the anchor link.
 
     :parameter header_text_trimmed: the text that needs to be transformed in a link
     :parameter header_duplicate_counter: a data structure that keeps track of
          possible duplicate header links in order to avoid them. This is
-         meaningful only for certain values of anchor_type.
-    :parameter anchor_type: decides rules on how to generate anchor links.
-         Defaults to ``standard``. Supported anchor types are: ``standard``,
-         ``github``, ``gitlab``, ``redcarpet``.
+         meaningful only for certain values of parser.
+    :parameter parser: decides rules on how to generate anchor links.
+         Defaults to ``github``. Supported anchor types are: ``github``,
+         ``gitlab``, ``redcarpet``.
     :type header_text_trimmed: str
     :type header_duplicate_counter: dict
-    :type anchor_type: str
+    :type parser: str
     :returns: None if the specified anchor type is not recognized, or the
          anchor link, otherwise.
     :rtype: str
@@ -301,12 +301,9 @@ def build_anchor_link(header_text_trimmed,
     """
     assert isinstance(header_text_trimmed, str)
     assert isinstance(header_duplicate_counter, dict)
-    assert isinstance(anchor_type, str)
+    assert isinstance(parser, str)
 
-    if anchor_type == 'standard':
-        return header_text_trimmed
-
-    elif anchor_type == 'github':
+    if parser == 'github':
         header_text_trimmed = header_text_trimmed.lower()
         # Remove punctuation: Keep spaces, hypens and "word characters"
         # only.
@@ -327,7 +324,7 @@ def build_anchor_link(header_text_trimmed,
 
         return header_text_trimmed
 
-    elif anchor_type == 'gitlab' or anchor_type == 'redcarpet':
+    elif parser == 'gitlab' or parser == 'redcarpet':
         # To ensure full compatibility what follows is a direct translation
         # of the rndr_header_anchor C function used in redcarpet.
         STRIPPED = " -&+$,/:;=?@\"#{}|^~[]`\\*()%.!'"
@@ -375,7 +372,7 @@ def build_anchor_link(header_text_trimmed,
 
         # Check for duplicates (this is working in github only).
         # https://gitlab.com/help/user/markdown.md#header-ids-and-links
-        if anchor_type == 'gitlab':
+        if parser == 'gitlab':
             # Apparently redcarpet does not handle duplicate entries, but
             # Gitlab does, although I cannot find the code responsable for it.
             ht = header_text_trimmed_middle_stage
@@ -392,7 +389,7 @@ def build_anchor_link(header_text_trimmed,
         return None
 
 
-def get_md_header_type(line, max_header_levels=3):
+def get_md_header_type(line, max_header_levels=3, parser='github'):
     r"""Given a line extract the title type.
 
     :parameter line: the line to be examined.
@@ -417,6 +414,9 @@ def get_md_header_type(line, max_header_levels=3):
     assert isinstance(line, str)
     assert isinstance(max_header_levels, int)
     assert max_header_levels > 0
+
+    if parser == 'github':
+        pass
 
     # Remove leading and whitespace from line to engage a lax parsing.
     line = line.lstrip()
@@ -463,7 +463,7 @@ def remove_md_header_syntax(header_text_line):
 def get_md_header(header_text_line,
                   header_duplicate_counter,
                   max_header_levels=3,
-                  anchor_type='standard'):
+                  parser='github'):
     r"""Build a data structure with the elements needed to create a TOC line.
 
     :parameter header_text_line: a single markdown line that needs to be
@@ -471,15 +471,15 @@ def get_md_header(header_text_line,
     :parameter header_duplicate_counter: a data structure that contains the
          number of occurrencies of each header anchor link. This is used to
          avoid duplicate anchor links and it is meaningful only for certain
-         values of anchor_type.
+         values of parser.
     :parameter max_header_levels: the maximum level of headers to be
          considered as such when building the table of contents. Defaults to ``3``.
-    :parameter anchor_type: decides rules on how to generate anchor links.
-         Defaults to ``standard``.
+    :parameter parser: decides rules on how to generate anchor links.
+         Defaults to ``github``.
     :type header_text_line: str
     :type header_duplicate_counter: dict
     :type max_header_levels: int
-    :type anchor_type: str
+    :type parser: str
     :returns: None if the input line does not correspond to one of the
          designated cases or a data structure containing the necessary
          components to create a table of contents line, otherwise.
@@ -505,7 +505,7 @@ def get_md_header(header_text_line,
             header_text_trimmed,
             'text_anchor_link':
             build_anchor_link(header_text_trimmed, header_duplicate_counter,
-                              anchor_type)
+                              parser)
         }
         return header
 

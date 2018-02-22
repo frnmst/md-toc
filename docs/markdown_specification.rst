@@ -13,10 +13,8 @@ while others don't; some strip consecutive dash characters while others don't;
 and so on...
 
 What follows is a list of parameters and rules used by md_toc to decide 
-how to render anchor links. Note that only ``standard``, ``github``,
-``redcarpet`` and ``gitlab`` are currently implemented.
-
-- ``standard``: no transformation is done.
+how to render anchor links. Note that only ``github``, ``redcarpet`` and 
+``gitlab`` are currently implemented.
 
 - ``github``: a translated version of the Ruby algorithm is used in md_toc. 
   The original one is repored here: 
@@ -155,3 +153,4 @@ probably with the other markdown parsers as well (which may be also behave
 differrently compared to GitHub's cmark in this matter). Knowing what are 
 headers and what are not requires going through the specific parts of the code 
 of all the parsers.
+
