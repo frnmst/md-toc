@@ -25,8 +25,9 @@ import argparse
 import pkg_resources
 from .api import (write_string_on_file_between_markers, build_toc)
 
-DEFAULT_TOC_MARKER='[](TOC)'
-DEFAULT_PARSER='github'
+DEFAULT_TOC_MARKER = '[](TOC)'
+DEFAULT_PARSER = 'github'
+
 
 class CliToApi():
     """An interface between the CLI and API functions."""

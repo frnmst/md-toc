@@ -124,18 +124,7 @@ how to render anchor links. Note that only ``github``, ``redcarpet`` and
 What are headers and what are not
 ---------------------------------
 
-According to the GFM, there can be no more than 6 types of headings, ``h1`` to 
-``h6`` in HTML terms, and there shall be from 0 to a 3 space indentation 
-(optionally) for a text to be a header
-
-  - https://github.github.com/gfm/#atx-heading
-
-To avoid unexpected behaviours empty headers are ignored while building the 
-table of contents. The GFM, however, allows empty headers:
-
-  - https://github.github.com/gfm/#example-49
-
-There are a lot of other special cases described on the GFM document.
+Only ATX headings are supported in md_toc.
 
 Anyway, md_toc simplifies all this. A line is a header when:
 
@@ -149,8 +138,16 @@ Anyway, md_toc simplifies all this. A line is a header when:
     ``#`` characters.
 
 md_toc's definition of header/heading is certainly not conformat with GFM and 
-probably with the other markdown parsers as well (which may be also behave 
-differrently compared to GitHub's cmark in this matter). Knowing what are 
+probably with the other markdown parsers as well (which maybe also differrent
+compared to GitHub's cmark in this matter). Knowing what are 
 headers and what are not requires going through the specific parts of the code 
 of all the parsers.
+
+- ``github``: the code used in md_toc is based on the following:
+
+  - https://github.github.com/gfm/#atx-heading
+
+- ``redcarpet``
+
+  - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1981
 

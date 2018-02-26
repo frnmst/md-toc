@@ -24,7 +24,7 @@
 import fpyutils
 import re
 import curses.ascii
-
+import math
 
 def write_string_on_file_between_markers(filename, string, marker):
     r"""Write the table of contents.
@@ -285,8 +285,8 @@ def build_anchor_link(header_text_trimmed,
     :type header_text_trimmed: str
     :type header_duplicate_counter: dict
     :type parser: str
-    :returns: None if the specified anchor type is not recognized, or the
-         anchor link, otherwise.
+    :returns: None if the specified parser is not recognized, or the anchor
+         link, otherwise.
     :rtype: str
     :raises: one of the built-in exceptions.
 
@@ -321,9 +321,7 @@ def build_anchor_link(header_text_trimmed,
             header_text_trimmed = header_text_trimmed + '-' + str(
                 header_duplicate_counter[header_text_trimmed])
         header_duplicate_counter[ht] += 1
-
         return header_text_trimmed
-
     elif parser == 'gitlab' or parser == 'redcarpet':
         # To ensure full compatibility what follows is a direct translation
         # of the rndr_header_anchor C function used in redcarpet.
@@ -385,12 +383,37 @@ def build_anchor_link(header_text_trimmed,
 
         return header_text_trimmed_middle_stage
 
-    else:
-        return None
+
+def remove_consecutive_characters(s, remove_char):
+    assert isinstance(s, str)
+    assert isinstance(remove_char, str)
+    assert len(remove_char) == 1
+
+    i = 0
+    final_string = str()
+    while i < len(s):
+        if s[i] == remove_char:
+            j = i
+            count = 1
+            match = True
+            while j < len(s) - 1 and match:
+                if s[j] == s[j+1]:
+                    count += 1
+                else:
+                    match = False
+                j += 1
+            remove_char_count = math.floor(count/2)
+            final_string += remove_char_count * remove_char
+            i += count
+        else:
+            final_string += s[i]
+            i += 1
+
+    return final_string
 
 
-def get_md_header_type(line, max_header_levels=3, parser='github'):
-    r"""Given a line extract the title type.
+def get_atx_heading(line, keep_header_levels=3, parser='github'):
+    r"""Given a line extract the title and its type.
 
     :parameter line: the line to be examined.
     :parameter max_header_levels: the maximum level of headers to be
@@ -406,36 +429,75 @@ def get_md_header_type(line, max_header_levels=3, parser='github'):
 
     :Example:
 
-    >>> print(md_toc.get_md_header_type('###  hello ## how # are you ???  ! ',6))
+    >>> print(md_toc.get_atx_heading('###  hello ## how # are you ???  ! ',6))
     3
-    >>> print(md_toc.get_md_header_type('###  hello ## how # are you ???  ! ',2))
+    >>> print(md_toc.get_atx_heading('###  hello ## how # are you ???  ! ',2))
     None
     """
     assert isinstance(line, str)
-    assert isinstance(max_header_levels, int)
-    assert max_header_levels > 0
+    assert isinstance(keep_header_levels, int)
+    assert keep_header_levels > 0
+
+    if len(line) < 0:
+        return None
 
     if parser == 'github':
-        pass
+        # This algorithm is a reverse engineering of the behavour described
+        # in the GFM document as well as some test results.
 
-    # Remove leading and whitespace from line to engage a lax parsing.
-    line = line.lstrip()
+        if line[0] == '\\':
+            return None
 
-    # Determine the header type by counting the number of the
-    # first consecutive '#' characters in the line.
-    # Count until we are in range of max_header_levels.
-    header_type = 0
-    line_length = len(line)
-    while header_type < line_length and line[header_type] == '#' and header_type <= max_header_levels:
-        header_type += 1
-    # Ignore not valid or empty headers.
-    if header_type == 0 or header_type > max_header_levels or line.lstrip(
-            '#') == '':
-        return None
-    else:
-        return header_type
+        i = 0
+        max_indentation = 3
+        while i < len(line) and line[i] == ' ' and i <= max_indentation:
+            i += 1
+        if i > max_indentation:
+            return None
+
+        offset = i
+        max_header_levels = 6
+        while i < len(line) and line[i] == '#' and i <= max_header_levels + offset:
+            i += 1
+        if i > max_header_levels or i > keep_header_levels:
+            return None
+        current_headers = i
+
+        if i < len(line) and line[i] != ' ':
+            return None
+
+        # An algorithm to find the start and the end of the closing sequence.
+        # The closing sequence includes all the significant part of the
+        # string.
+        i += 1
+        cs_start = i
+        cs_end = cs_start
+        line_prime = line[::-1]
+        hash_char_rounds = 0
+        go_on = True
+        i = 0
+        i_prev = i
+        while i < len(line) - cs_start - 1 and go_on:
+            if ((line_prime[i] != ' ' and line_prime[i] != '#')
+                or hash_char_rounds > 1):
+                if i > i_prev:
+                    cs_end = len(line_prime) - i_prev
+                else:
+                    cs_end = len(line_prime) - i
+                go_on = False
+            while go_on and line_prime[i] == ' ':
+                i+=1
+            i_prev = i
+            while go_on and line_prime[i] == '#':
+                i+=1
+            if i > i_prev:
+                hash_char_rounds += 1
+
+        # from:to+1 (otherwise from_to == '')
+        return current_headers, remove_consecutive_characters(line[cs_start:cs_end+1], '\\')
 
 
+# TODO: don't need remove_md_header_syntax anymore.
 def remove_md_header_syntax(header_text_line):
     r"""Return a trimmed version of the input line without the markdown header syntax.
 
@@ -493,7 +555,7 @@ def get_md_header(header_text_line,
     >>> print(md_toc.get_md_header(' ## hi hOw Are YOu!!? ? #'))
     {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi hOw Are YOu!!? ? #'}
     """
-    header_type = get_md_header_type(header_text_line, max_header_levels)
+    header_type = get_atx_heading(header_text_line, max_header_levels)
     if header_type is None:
         return header_type
     else:

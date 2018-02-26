@@ -118,7 +118,30 @@ class TestApi(unittest.TestCase):
         for k in header_duplicate_counter:
             self.assertEqual(header_duplicate_counter[k], 2)
 
-    def test_get_md_header_type(self):
+    def test_get_atx_heading(self):
+        r"""Test the title gathering for edge cases and various parsers.
+        """
+        self.assertEqual(api.get_atx_heading(H1 + STATIC_LINE, 3, 'github'), None)
+        self.assertEqual(api.get_atx_heading(H1 + LEADING_WHITESPACE_1 + STATIC_LINE, 3, 'github'), (1, STATIC_LINE))
+        self.assertEqual(api.get_atx_heading(H4 + LEADING_WHITESPACE_1 + STATIC_LINE, 3, 'github'), None)
+
+
+        api.get_atx_heading('###\\\\\\\\#\\\\####\\#\\\\\\#\mmx\\')
+        api.get_atx_heading('#\\\#')
+        api.get_atx_heading('#\\')
+        api.get_atx_heading('## foo ## ## ')
+        api.get_atx_heading('## foo ##b ## ')
+        api.get_atx_heading('## foo #\#b ## ')
+        api.get_atx_heading('## foo #\#b ## ')
+        api.get_atx_heading('## foo #\\#b ## ')
+        api.get_atx_heading('## foo #\\#b #\# ')
+        api.get_atx_heading('# ')
+        api.get_atx_heading('#')
+        api.get_atx_heading('## ')
+        api.get_atx_heading('# no')
+        print(api.get_atx_heading('# h      '))
+
+    def _test_get_md_header_type(self):
         r"""Test h{1,2,3} and h{4,Inf} headers and non-headers.
 
         Use the max_header variable set to the default value 3.
