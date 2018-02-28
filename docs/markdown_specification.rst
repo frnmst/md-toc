@@ -124,28 +124,19 @@ how to render anchor links. Note that only ``github``, ``redcarpet`` and
 What are headers and what are not
 ---------------------------------
 
-Only ATX headings are supported in md_toc.
+Only ATX-style headings are supported in md_toc.
 
-Anyway, md_toc simplifies all this. A line is a header when:
-
-  - it starts with a consecutive series of ``#`` characters which may go from 
-    1 to infinite,
-  - and, there shall be an unlimited number of indentation spaces between the 
-    start of the line and the first ``#`` character,
-  - and, there shall be an unlimited number of spaces between the 
-    last ``#`` character and the header text,
-  - and NOT, when there are whitespace characters only after the series of
-    ``#`` characters.
-
-md_toc's definition of header/heading is certainly not conformat with GFM and 
-probably with the other markdown parsers as well (which maybe also differrent
-compared to GitHub's cmark in this matter). Knowing what are 
-headers and what are not requires going through the specific parts of the code 
-of all the parsers.
-
-- ``github``: the code used in md_toc is based on the following:
+- ``github``: the code used in md_toc is a reverse engineering of the 
+  behavour described in the following:
 
   - https://github.github.com/gfm/#atx-heading
+
+  The escape character ``\`` will be left as-is since they are parsed by 
+  Github's markdown parser already:
+
+  - https://github.github.com/gfm/#backslash-escapes
+
+  Every other rule is applied.
 
 - ``redcarpet``
 

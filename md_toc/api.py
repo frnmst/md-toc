@@ -24,7 +24,7 @@
 import fpyutils
 import re
 import curses.ascii
-import math
+
 
 def write_string_on_file_between_markers(filename, string, marker):
     r"""Write the table of contents.
@@ -384,54 +384,30 @@ def build_anchor_link(header_text_trimmed,
         return header_text_trimmed_middle_stage
 
 
-def remove_consecutive_characters(s, remove_char):
-    assert isinstance(s, str)
-    assert isinstance(remove_char, str)
-    assert len(remove_char) == 1
-
-    i = 0
-    final_string = str()
-    while i < len(s):
-        if s[i] == remove_char:
-            j = i
-            count = 1
-            match = True
-            while j < len(s) - 1 and match:
-                if s[j] == s[j+1]:
-                    count += 1
-                else:
-                    match = False
-                j += 1
-            remove_char_count = math.floor(count/2)
-            final_string += remove_char_count * remove_char
-            i += count
-        else:
-            final_string += s[i]
-            i += 1
-
-    return final_string
-
-
 def get_atx_heading(line, keep_header_levels=3, parser='github'):
     r"""Given a line extract the title and its type.
 
     :parameter line: the line to be examined.
-    :parameter max_header_levels: the maximum level of headers to be
+    :parameter keep_header_levels: the maximum level of headers to be
          considered as such when building the table of contents. Defaults to ``3``.
+    :parameter parser: decides rules on how to generate the anchor text.
+         Defaults to ``github``. Supported anchor types are: ``github``,
+         ``gitlab``, ``redcarpet``.
     :type line: str
     :type max_header_levels: int
-    :returns: None if the line does not contain header elements, or the header
-        type, otherwise.
-    :rtype: int
+    :returns: None if the line does not contain header elements, or a tuple
+         containing the header type and the trimmed header text, according to
+         the selected parser rules, otherwise.
+    :rtype: tuple
     :raises: one of the built in exceptions.
 
-    :warning: the parameter max_header_levels must be greater than 0.
+    :warning: the parameter keep_header_levels must be greater than 0.
 
     :Example:
 
     >>> print(md_toc.get_atx_heading('###  hello ## how # are you ???  ! ',6))
-    3
-    >>> print(md_toc.get_atx_heading('###  hello ## how # are you ???  ! ',2))
+    (3, 'hello ## how # are you ???  !')
+    >>> print(md_toc.get_atx_heading('###  hello ## how # are you ???  ! ',2,'github'))
     None
     """
     assert isinstance(line, str)
@@ -442,8 +418,6 @@ def get_atx_heading(line, keep_header_levels=3, parser='github'):
         return None
 
     if parser == 'github':
-        # This algorithm is a reverse engineering of the behavour described
-        # in the GFM document as well as some test results.
 
         if line[0] == '\\':
             return None
@@ -457,19 +431,24 @@ def get_atx_heading(line, keep_header_levels=3, parser='github'):
 
         offset = i
         max_header_levels = 6
-        while i < len(line) and line[i] == '#' and i <= max_header_levels + offset:
+        while i < len(
+                line) and line[i] == '#' and i <= max_header_levels + offset:
             i += 1
-        if i > max_header_levels or i > keep_header_levels:
+        if i - offset > max_header_levels or i - offset > keep_header_levels or i - offset == 0:
             return None
-        current_headers = i
+        current_headers = i - offset
 
         if i < len(line) and line[i] != ' ':
             return None
 
+        i += 1
+        # Exclude leading whitespaces after the ATX header identifier.
+        while i < len(line) and line[i] == ' ':
+            i += 1
+
         # An algorithm to find the start and the end of the closing sequence.
         # The closing sequence includes all the significant part of the
         # string.
-        i += 1
         cs_start = i
         cs_end = cs_start
         line_prime = line[::-1]
@@ -478,48 +457,26 @@ def get_atx_heading(line, keep_header_levels=3, parser='github'):
         i = 0
         i_prev = i
         while i < len(line) - cs_start - 1 and go_on:
-            if ((line_prime[i] != ' ' and line_prime[i] != '#')
-                or hash_char_rounds > 1):
+            if ((line_prime[i] != ' ' and line_prime[i] != '#') or
+                    hash_char_rounds > 1):
                 if i > i_prev:
                     cs_end = len(line_prime) - i_prev
                 else:
                     cs_end = len(line_prime) - i
                 go_on = False
             while go_on and line_prime[i] == ' ':
-                i+=1
+                i += 1
             i_prev = i
             while go_on and line_prime[i] == '#':
-                i+=1
+                i += 1
             if i > i_prev:
                 hash_char_rounds += 1
 
-        # from:to+1 (otherwise from_to == '')
-        return current_headers, remove_consecutive_characters(line[cs_start:cs_end+1], '\\')
+        return current_headers, line[cs_start:cs_end]
 
-
-# TODO: don't need remove_md_header_syntax anymore.
-def remove_md_header_syntax(header_text_line):
-    r"""Return a trimmed version of the input line without the markdown header syntax.
-
-    :parameter header_text_line: a single markdown line that needs to be
-         transformed into a TOC line.
-    :type header_text_line: str
-    :returns: a trimmed version of the input line without the markdown header
-         syntax.
-    :rtype: str
-    :raises: one of the built-in exceptions.
-
-    :note: this function removes the leading and trailing whitespaces, the first
-        consecutive '#' characters and any space left behind after removing those.
-
-    :Example:
-
-    >>> md_toc.remove_md_header_syntax(' ### hello ## how # are you ???  ! ')
-    'hello ## how # are you ???  !'
-    """
-    assert isinstance(header_text_line, str)
-
-    return header_text_line.strip().lstrip('#').lstrip()
+    # TODO
+    elif parser == 'redcarpet' or parser == 'gitlab':
+        return None
 
 
 def get_md_header(header_text_line,
@@ -555,11 +512,11 @@ def get_md_header(header_text_line,
     >>> print(md_toc.get_md_header(' ## hi hOw Are YOu!!? ? #'))
     {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi hOw Are YOu!!? ? #'}
     """
-    header_type = get_atx_heading(header_text_line, max_header_levels)
+    header_type, header_text_trimmed = get_atx_heading(header_text_line,
+                                                       max_header_levels)
     if header_type is None:
         return header_type
     else:
-        header_text_trimmed = remove_md_header_syntax(header_text_line)
         header = {
             'type':
             header_type,

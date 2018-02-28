@@ -25,13 +25,28 @@ from md_toc import api, exceptions
 import unittest
 
 # Some static variables.
-STATIC_LINE = 'This is a static line'
-LEADING_WHITESPACE_10 = 10 * ' '
-LEADING_WHITESPACE_1 = 1 * ' '
+LINE = 'This is a static line'
+LINE_FOO = 'foo'
+LINE_BAR = 'bar'
+LINE_5_BOLT = '5 bolt'
+LINE_HASHTAG = 'hashtag'
+LINE_BAR_BAZ = '*bar* \*baz\*'
+LINE_BAR_BAZ_NO_ESCAPE = '*bar* *baz*'
+LINE_B = 'b'
+LINE_ESCAPE = '\\'
+
+S1 = 1 * ' '
+S2 = 2 * ' '
+S3 = 3 * ' '
+S4 = 4 * ' '
+S10 = 10 * ' '
 H1 = 1 * '#'
 H2 = 2 * '#'
 H3 = 3 * '#'
 H4 = 4 * '#'
+H5 = 5 * '#'
+H6 = 6 * '#'
+H7 = 7 * '#'
 LIST_INDENTATION = 4 * ' '
 HEADER_TYPE_1 = 1
 HEADER_TYPE_2 = 2
@@ -82,19 +97,18 @@ class TestApi(unittest.TestCase):
         """
         header = {
             'type': HEADER_TYPE_3,
-            'text_original': STATIC_LINE,
-            'text_anchor_link': STATIC_LINE
+            'text_original': LINE,
+            'text_anchor_link': LINE
         }
         self.assertEqual(
             api.build_toc_line(header, ordered=False, no_links=True),
-            (LIST_INDENTATION * (HEADER_TYPE_3 - 1)) + UNORDERED_LIST_SYMBOL +
-            LEADING_WHITESPACE_1 + STATIC_LINE)
+            (LIST_INDENTATION *
+             (HEADER_TYPE_3 - 1)) + UNORDERED_LIST_SYMBOL + S1 + LINE)
 
         self.assertEqual(
             api.build_toc_line(header, ordered=False, no_links=False),
             (LIST_INDENTATION * (HEADER_TYPE_3 - 1)) + UNORDERED_LIST_SYMBOL +
-            LEADING_WHITESPACE_1 + '[' + STATIC_LINE + ']' + '(#' +
-            STATIC_LINE + ')')
+            S1 + '[' + LINE + ']' + '(#' + LINE + ')')
 
     def test_build_anchor_link(self):
         r"""Test anchor link generation.
@@ -103,118 +117,138 @@ class TestApi(unittest.TestCase):
         Test duplicates for parser='github' and parser='gitlab'.
         """
         header_duplicate_counter = dict()
-        api.build_anchor_link(
-            STATIC_LINE, header_duplicate_counter, parser='github')
-        api.build_anchor_link(
-            STATIC_LINE, header_duplicate_counter, parser='github')
+        api.build_anchor_link(LINE, header_duplicate_counter, parser='github')
+        api.build_anchor_link(LINE, header_duplicate_counter, parser='github')
         for k in header_duplicate_counter:
             self.assertEqual(header_duplicate_counter[k], 2)
 
         header_duplicate_counter = dict()
-        api.build_anchor_link(
-            STATIC_LINE, header_duplicate_counter, parser='gitlab')
-        api.build_anchor_link(
-            STATIC_LINE, header_duplicate_counter, parser='gitlab')
+        api.build_anchor_link(LINE, header_duplicate_counter, parser='gitlab')
+        api.build_anchor_link(LINE, header_duplicate_counter, parser='gitlab')
         for k in header_duplicate_counter:
             self.assertEqual(header_duplicate_counter[k], 2)
 
     def test_get_atx_heading(self):
         r"""Test the title gathering for edge cases and various parsers.
+
+        Github examples are the same ones reported in the GFM document, except
+        for minor changes.
         """
-        self.assertEqual(api.get_atx_heading(H1 + STATIC_LINE, 3, 'github'), None)
-        self.assertEqual(api.get_atx_heading(H1 + LEADING_WHITESPACE_1 + STATIC_LINE, 3, 'github'), (1, STATIC_LINE))
-        self.assertEqual(api.get_atx_heading(H4 + LEADING_WHITESPACE_1 + STATIC_LINE, 3, 'github'), None)
-
-
-        api.get_atx_heading('###\\\\\\\\#\\\\####\\#\\\\\\#\mmx\\')
-        api.get_atx_heading('#\\\#')
-        api.get_atx_heading('#\\')
-        api.get_atx_heading('## foo ## ## ')
-        api.get_atx_heading('## foo ##b ## ')
-        api.get_atx_heading('## foo #\#b ## ')
-        api.get_atx_heading('## foo #\#b ## ')
-        api.get_atx_heading('## foo #\\#b ## ')
-        api.get_atx_heading('## foo #\\#b #\# ')
-        api.get_atx_heading('# ')
-        api.get_atx_heading('#')
-        api.get_atx_heading('## ')
-        api.get_atx_heading('# no')
-        print(api.get_atx_heading('# h      '))
-
-    def _test_get_md_header_type(self):
-        r"""Test h{1,2,3} and h{4,Inf} headers and non-headers.
-
-        Use the max_header variable set to the default value 3.
-        Test several possible line configurations.
-        """
-        self.assertEqual(api.get_md_header_type(H1 + STATIC_LINE), 1)
-        self.assertEqual(api.get_md_header_type(H2 + STATIC_LINE), 2)
-        self.assertEqual(api.get_md_header_type(H3 + STATIC_LINE), 3)
-        self.assertEqual(api.get_md_header_type(H4 + STATIC_LINE), None)
-
+        # github
+        # Example 32
         self.assertEqual(
-            api.get_md_header_type(LEADING_WHITESPACE_10 + H1 + STATIC_LINE),
-            1)
+            api.get_atx_heading(H1 + S1 + LINE_FOO, 6, 'github'),
+            (1, LINE_FOO))
         self.assertEqual(
-            api.get_md_header_type(LEADING_WHITESPACE_10 + H2 + STATIC_LINE),
-            2)
+            api.get_atx_heading(H2 + S1 + LINE_FOO, 6, 'github'),
+            (2, LINE_FOO))
         self.assertEqual(
-            api.get_md_header_type(LEADING_WHITESPACE_10 + H3 + STATIC_LINE),
-            3)
+            api.get_atx_heading(H3 + S1 + LINE_FOO, 6, 'github'),
+            (3, LINE_FOO))
         self.assertEqual(
-            api.get_md_header_type(LEADING_WHITESPACE_10 + H4 + STATIC_LINE),
+            api.get_atx_heading(H4 + S1 + LINE_FOO, 6, 'github'),
+            (4, LINE_FOO))
+        self.assertEqual(
+            api.get_atx_heading(H5 + S1 + LINE_FOO, 6, 'github'),
+            (5, LINE_FOO))
+        self.assertEqual(
+            api.get_atx_heading(H6 + S1 + LINE_FOO, 6, 'github'),
+            (6, LINE_FOO))
+
+        # Example 33
+        self.assertEqual(
+            api.get_atx_heading(H7 + S1 + LINE_FOO, 7, 'github'), None)
+
+        # Example 34
+        self.assertEqual(
+            api.get_atx_heading(H1 + LINE_5_BOLT, 6, 'github'), None)
+        self.assertEqual(
+            api.get_atx_heading(H1 + LINE_HASHTAG, 6, 'github'), None)
+
+        # Example 35
+        self.assertEqual(
+            api.get_atx_heading(LINE_ESCAPE + H1 + S1 + LINE_FOO, 6, 'github'),
             None)
 
+        # Example 36
         self.assertEqual(
-            api.get_md_header_type(H1 + LEADING_WHITESPACE_10 + STATIC_LINE),
-            1)
-        self.assertEqual(
-            api.get_md_header_type(H2 + LEADING_WHITESPACE_10 + STATIC_LINE),
-            2)
-        self.assertEqual(
-            api.get_md_header_type(H3 + LEADING_WHITESPACE_10 + STATIC_LINE),
-            3)
-        self.assertEqual(
-            api.get_md_header_type(H4 + LEADING_WHITESPACE_10 + STATIC_LINE),
-            None)
+            api.get_atx_heading(H1 + S1 + LINE_FOO + S1 + LINE_BAR_BAZ, 3,
+                                'github'), (1, LINE_FOO + S1 + LINE_BAR_BAZ))
 
+        # Example 37
         self.assertEqual(
-            api.get_md_header_type(LEADING_WHITESPACE_10 + H1 +
-                                   LEADING_WHITESPACE_10 + STATIC_LINE), 1)
-        self.assertEqual(
-            api.get_md_header_type(LEADING_WHITESPACE_10 + H2 +
-                                   LEADING_WHITESPACE_10 + STATIC_LINE), 2)
-        self.assertEqual(
-            api.get_md_header_type(LEADING_WHITESPACE_10 + H3 +
-                                   LEADING_WHITESPACE_10 + STATIC_LINE), 3)
-        self.assertEqual(
-            api.get_md_header_type(LEADING_WHITESPACE_10 + H4 +
-                                   LEADING_WHITESPACE_10 + STATIC_LINE), None)
+            api.get_atx_heading(H1 + S10 + LINE_FOO + S10, 6, 'github'),
+            (1, LINE_FOO))
 
-        self.assertEqual(api.get_md_header_type(STATIC_LINE), None)
+        # Example 38
+        self.assertEqual(
+            api.get_atx_heading(S1 + H1 + S1 + LINE_FOO, 6, 'github'),
+            (1, LINE_FOO))
+        self.assertEqual(
+            api.get_atx_heading(S2 + H1 + S1 + LINE_FOO, 6, 'github'),
+            (1, LINE_FOO))
+        self.assertEqual(
+            api.get_atx_heading(S3 + H1 + S1 + LINE_FOO, 6, 'github'),
+            (1, LINE_FOO))
 
-        self.assertEqual(api.get_md_header_type(''), None)
+        # Example 39 and 40
+        self.assertEqual(
+            api.get_atx_heading(S4 + H1 + S1 + LINE_FOO, 6, 'github'), None)
 
-        self.assertEqual(api.get_md_header_type(H1), None)
+        # Example 41
+        self.assertEqual(
+            api.get_atx_heading(H2 + S1 + LINE_FOO + S1 + H2, 6, 'github'),
+            (2, LINE_FOO))
+        self.assertEqual(
+            api.get_atx_heading(S2 + H3 + S3 + LINE_BAR + S4 + H3, 6,
+                                'github'), (3, LINE_BAR))
 
-    def test_remove_md_header_syntax(self):
-        r"""Test line trimming with 5 possible configurations."""
+        # Example 42
         self.assertEqual(
-            api.remove_md_header_syntax(H1 + STATIC_LINE), STATIC_LINE)
+            api.get_atx_heading(H1 + S1 + LINE_FOO + S1, 6, 'github'),
+            (1, LINE_FOO))
+        self.assertEqual(api.get_atx_heading(H5 * 7, 6, 'github'), None)
         self.assertEqual(
-            api.remove_md_header_syntax(
-                LEADING_WHITESPACE_10 + H1 + STATIC_LINE), STATIC_LINE)
+            api.get_atx_heading(H5 + S1 + LINE_FOO + S1 + H2, 6, 'github'),
+            (5, LINE_FOO))
+
+        # Example 43
         self.assertEqual(
-            api.remove_md_header_syntax(
-                H1 + LEADING_WHITESPACE_10 + STATIC_LINE), STATIC_LINE)
+            api.get_atx_heading(H3 + S1 + LINE_FOO + S1 + H3 + S4, 6,
+                                'github'), (3, LINE_FOO))
+
+        # Example 44
         self.assertEqual(
-            api.remove_md_header_syntax(LEADING_WHITESPACE_10 + H1 +
-                                        LEADING_WHITESPACE_10 + STATIC_LINE),
-            STATIC_LINE)
+            api.get_atx_heading(H3 + S1 + LINE_FOO + S1 + H3 + S1 + LINE_B, 6,
+                                'github'),
+            (3, LINE_FOO + S1 + H3 + S1 + LINE_B))
+
+        # Example 45
         self.assertEqual(
-            api.remove_md_header_syntax(
-                LEADING_WHITESPACE_10 + H1 + LEADING_WHITESPACE_10 + H1 +
-                STATIC_LINE), H1 + STATIC_LINE)
+            api.get_atx_heading(H1 + S1 + LINE_FOO + H1, 6, 'github'),
+            (1, LINE_FOO + H1))
+
+        # Example 46
+        self.assertEqual(
+            api.get_atx_heading(H3 + S1 + LINE_FOO + S1 + LINE_ESCAPE + H3, 6,
+                                'github'),
+            (3, LINE_FOO + S1 + LINE_ESCAPE + H3))
+        self.assertEqual(
+            api.get_atx_heading(
+                H2 + S1 + LINE_FOO + S1 + H1 + LINE_ESCAPE + H2, 6, 'github'),
+            (2, LINE_FOO + S1 + H1 + LINE_ESCAPE + H2))
+        self.assertEqual(
+            api.get_atx_heading(H1 + S1 + LINE_FOO + S1 + LINE_ESCAPE + H1, 6,
+                                'github'),
+            (1, LINE_FOO + S1 + LINE_ESCAPE + H1))
+
+        # Example 49
+        self.assertEqual(api.get_atx_heading(H2 + S1, 6, 'github'), (2, ''))
+        self.assertEqual(api.get_atx_heading(H1, 6, 'github'), (1, ''))
+        self.assertEqual(
+            api.get_atx_heading(H3 + S1 + H3, 6, 'github'), (3, ''))
+
+        # TODO: readcarpet, github
 
     def test_get_md_header(self):
         r"""Test building of the header data structure.
