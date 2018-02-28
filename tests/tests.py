@@ -31,9 +31,10 @@ LINE_BAR = 'bar'
 LINE_5_BOLT = '5 bolt'
 LINE_HASHTAG = 'hashtag'
 LINE_BAR_BAZ = '*bar* \*baz\*'
-LINE_BAR_BAZ_NO_ESCAPE = '*bar* *baz*'
 LINE_B = 'b'
 LINE_ESCAPE = '\\'
+LINE_1000_CHARS = 1000 * 'c'
+
 
 S1 = 1 * ' '
 S2 = 2 * ' '
@@ -47,6 +48,7 @@ H4 = 4 * '#'
 H5 = 5 * '#'
 H6 = 6 * '#'
 H7 = 7 * '#'
+
 LIST_INDENTATION = 4 * ' '
 HEADER_TYPE_1 = 1
 HEADER_TYPE_2 = 2
@@ -247,6 +249,10 @@ class TestApi(unittest.TestCase):
         self.assertEqual(api.get_atx_heading(H1, 6, 'github'), (1, ''))
         self.assertEqual(
             api.get_atx_heading(H3 + S1 + H3, 6, 'github'), (3, ''))
+
+        # Test MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL
+        with self.assertRaises(exceptions.OverflowCharsLinkLabel):
+            api.get_atx_heading(H1 + S1 + LINE_1000_CHARS, 6, 'github')
 
         # TODO: readcarpet, github
 

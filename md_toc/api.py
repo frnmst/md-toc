@@ -24,7 +24,11 @@
 import fpyutils
 import re
 import curses.ascii
+from .exceptions import (OverflowCharsLinkLabel)
 
+MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL = 999
+MD_PARSER_GITHUB_MAX_INDENTATION = 3
+MD_PARSER_GITHUB_MAX_HEADER_LEVELS = 6
 
 def write_string_on_file_between_markers(filename, string, marker):
     r"""Write the table of contents.
@@ -106,14 +110,14 @@ def write_string_on_file_between_markers(filename, string, marker):
 def build_toc(filename,
               ordered=False,
               no_links=False,
-              max_header_levels=3,
+              keep_header_levels=3,
               parser='github'):
     r"""Parse file by line and build the table of contents.
 
     :parameter filename: the file that needs to be read.
     :parameter ordered: decides whether to build an ordered list or not.
     :parameter no_links: disables the use of links.
-    :parameter max_header_levels: the maximum level of headers to be
+    :parameter keep_header_levels: the maximum level of headers to be
          considered as such when building the table of contents. Defaults to
          ``3``.
     :parameter parser: decides rules on how to generate anchor links.
@@ -121,7 +125,7 @@ def build_toc(filename,
     :type filename: str
     :type ordered: bool
     :type no_links: bool
-    :type max_header_levels: int
+    :type keep_header_levels: int
     :type parser: str
     :returns: the corresponding table of contents.
     :rtype: str
@@ -161,7 +165,7 @@ def build_toc(filename,
         line = f.readline()
         while line:
             header = get_md_header(line, header_duplicate_counter,
-                                   max_header_levels, parser)
+                                   keep_header_levels, parser, no_links)
             if header is not None:
                 header_type_curr = header['type']
                 increase_index_ordered_list(header_type_counter,
@@ -384,8 +388,8 @@ def build_anchor_link(header_text_trimmed,
         return header_text_trimmed_middle_stage
 
 
-def get_atx_heading(line, keep_header_levels=3, parser='github'):
-    r"""Given a line extract the title and its type.
+def get_atx_heading(line, keep_header_levels=3, parser='github', no_links=False):
+    r"""Given a line extract the link label and its type.
 
     :parameter line: the line to be examined.
     :parameter keep_header_levels: the maximum level of headers to be
@@ -394,7 +398,7 @@ def get_atx_heading(line, keep_header_levels=3, parser='github'):
          Defaults to ``github``. Supported anchor types are: ``github``,
          ``gitlab``, ``redcarpet``.
     :type line: str
-    :type max_header_levels: int
+    :type keep_header_levels: int
     :returns: None if the line does not contain header elements, or a tuple
          containing the header type and the trimmed header text, according to
          the selected parser rules, otherwise.
@@ -423,18 +427,16 @@ def get_atx_heading(line, keep_header_levels=3, parser='github'):
             return None
 
         i = 0
-        max_indentation = 3
-        while i < len(line) and line[i] == ' ' and i <= max_indentation:
+        while i < len(line) and line[i] == ' ' and i <= MD_PARSER_GITHUB_MAX_INDENTATION:
             i += 1
-        if i > max_indentation:
+        if i > MD_PARSER_GITHUB_MAX_INDENTATION:
             return None
 
         offset = i
-        max_header_levels = 6
         while i < len(
-                line) and line[i] == '#' and i <= max_header_levels + offset:
+                line) and line[i] == '#' and i <= MD_PARSER_GITHUB_MAX_HEADER_LEVELS + offset:
             i += 1
-        if i - offset > max_header_levels or i - offset > keep_header_levels or i - offset == 0:
+        if i - offset > MD_PARSER_GITHUB_MAX_HEADER_LEVELS or i - offset > keep_header_levels or i - offset == 0:
             return None
         current_headers = i - offset
 
@@ -472,7 +474,15 @@ def get_atx_heading(line, keep_header_levels=3, parser='github'):
             if i > i_prev:
                 hash_char_rounds += 1
 
-        return current_headers, line[cs_start:cs_end]
+        final_line = line[cs_start:cs_end]
+
+        # Escape character workaround.
+        if not no_links and len(final_line) > 0 and final_line[-1] == '\\':
+            final_file += ' '
+        if not no_links and len(final_line) > MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL:
+            raise OverflowCharsLinkLabel
+
+        return current_headers, final_line
 
     # TODO
     elif parser == 'redcarpet' or parser == 'gitlab':
@@ -481,8 +491,9 @@ def get_atx_heading(line, keep_header_levels=3, parser='github'):
 
 def get_md_header(header_text_line,
                   header_duplicate_counter,
-                  max_header_levels=3,
-                  parser='github'):
+                  keep_header_levels=3,
+                  parser='github',
+                  no_links=False):
     r"""Build a data structure with the elements needed to create a TOC line.
 
     :parameter header_text_line: a single markdown line that needs to be
@@ -491,13 +502,13 @@ def get_md_header(header_text_line,
          number of occurrencies of each header anchor link. This is used to
          avoid duplicate anchor links and it is meaningful only for certain
          values of parser.
-    :parameter max_header_levels: the maximum level of headers to be
+    :parameter keep_header_levels: the maximum level of headers to be
          considered as such when building the table of contents. Defaults to ``3``.
     :parameter parser: decides rules on how to generate anchor links.
          Defaults to ``github``.
     :type header_text_line: str
     :type header_duplicate_counter: dict
-    :type max_header_levels: int
+    :type keep_header_levels: int
     :type parser: str
     :returns: None if the input line does not correspond to one of the
          designated cases or a data structure containing the necessary
@@ -513,7 +524,9 @@ def get_md_header(header_text_line,
     {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi hOw Are YOu!!? ? #'}
     """
     header_type, header_text_trimmed = get_atx_heading(header_text_line,
-                                                       max_header_levels)
+                                                       keep_header_levels,
+                                                       parser,
+                                                       no_links)
     if header_type is None:
         return header_type
     else:

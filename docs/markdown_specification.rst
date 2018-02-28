@@ -142,3 +142,20 @@ Only ATX-style headings are supported in md_toc.
 
   - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1981
 
+
+Link label rules
+----------------
+
+- ``github``:
+
+  - https://github.github.com/gfm/#link-label
+
+        # If a line ends in 1 or more '\' characters, this disrupts the anchor
+        # title. For example:
+        #  - [xdmdmsdm\](#xdmdmsdm)
+        # becomes:
+        #  <ul><li>[xdmdmsdm](#xdmdmsdm)</li></ul>
+        # instead of:
+        #  <ul><li><a href="xdmdmsdm">xdmdmsdm\</a></li></ul>
+        # A workaround is to add a space character at the end of the string.
+
