@@ -21,7 +21,7 @@ how to render anchor links. Note that only ``github``, ``redcarpet`` and
   
   - https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb
 
-  GitHub uses a forked version of cmark-gfm:
+  GitHub uses a forked version of cmark:
 
   - https://github.com/github/cmark
 
@@ -146,16 +146,17 @@ Only ATX-style headings are supported in md_toc.
 Link label rules
 ----------------
 
+If the user decides to generate the table of contents with the anchor links,
+then link label rules will be applied.
+
 - ``github``:
 
   - https://github.github.com/gfm/#link-label
 
-        # If a line ends in 1 or more '\' characters, this disrupts the anchor
-        # title. For example:
-        #  - [xdmdmsdm\](#xdmdmsdm)
-        # becomes:
-        #  <ul><li>[xdmdmsdm](#xdmdmsdm)</li></ul>
-        # instead of:
-        #  <ul><li><a href="xdmdmsdm">xdmdmsdm\</a></li></ul>
-        # A workaround is to add a space character at the end of the string.
+  If a line ends in 1 or more '\' characters, this disrupts the anchor
+  title. For example ``- [xdmdmsdm\](#xdmdmsdm)`` becomes 
+  ``<ul><li>[xdmdmsdm](#xdmdmsdm)</li></ul>`` instead of 
+  ``<ul><li><a href="xdmdmsdm">xdmdmsdm\</a></li></ul>``.
+  The workaround used in md_toc is to add a space character at the end of the 
+  string, so it becomes: ``<ul><li><a href="xdmdmsdm">xdmdmsdm\ </a></li></ul>``
 

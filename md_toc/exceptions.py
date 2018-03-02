@@ -23,5 +23,6 @@
 
 # Exception might be added in the future if necessary
 
+
 class OverflowCharsLinkLabel(Exception):
     """Cannot parse link label."""

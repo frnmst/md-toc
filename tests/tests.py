@@ -35,7 +35,6 @@ LINE_B = 'b'
 LINE_ESCAPE = '\\'
 LINE_1000_CHARS = 1000 * 'c'
 
-
 S1 = 1 * ' '
 S2 = 2 * ' '
 S3 = 3 * ' '
@@ -134,7 +133,9 @@ class TestApi(unittest.TestCase):
         r"""Test the title gathering for edge cases and various parsers.
 
         Github examples are the same ones reported in the GFM document, except
-        for minor changes.
+        for minor changes. The example numbers are the same ones reported in
+        the cited document. There are also a couple of more tests for special
+        cases.
         """
         # github
         # Example 32
@@ -249,6 +250,11 @@ class TestApi(unittest.TestCase):
         self.assertEqual(api.get_atx_heading(H1, 6, 'github'), (1, ''))
         self.assertEqual(
             api.get_atx_heading(H3 + S1 + H3, 6, 'github'), (3, ''))
+
+        # Test escape character space workaround.
+        self.assertEqual(
+            api.get_atx_heading(H2 + S1 + LINE_FOO + LINE_ESCAPE, 6, 'github'),
+            (2, LINE_FOO + LINE_ESCAPE + S1))
 
         # Test MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL
         with self.assertRaises(exceptions.OverflowCharsLinkLabel):

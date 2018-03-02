@@ -30,6 +30,7 @@ MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL = 999
 MD_PARSER_GITHUB_MAX_INDENTATION = 3
 MD_PARSER_GITHUB_MAX_HEADER_LEVELS = 6
 
+
 def write_string_on_file_between_markers(filename, string, marker):
     r"""Write the table of contents.
 
@@ -388,7 +389,10 @@ def build_anchor_link(header_text_trimmed,
         return header_text_trimmed_middle_stage
 
 
-def get_atx_heading(line, keep_header_levels=3, parser='github', no_links=False):
+def get_atx_heading(line,
+                    keep_header_levels=3,
+                    parser='github',
+                    no_links=False):
     r"""Given a line extract the link label and its type.
 
     :parameter line: the line to be examined.
@@ -397,11 +401,15 @@ def get_atx_heading(line, keep_header_levels=3, parser='github', no_links=False)
     :parameter parser: decides rules on how to generate the anchor text.
          Defaults to ``github``. Supported anchor types are: ``github``,
          ``gitlab``, ``redcarpet``.
+    :parameter no_links: disables the use of links.
     :type line: str
     :type keep_header_levels: int
-    :returns: None if the line does not contain header elements, or a tuple
-         containing the header type and the trimmed header text, according to
-         the selected parser rules, otherwise.
+    :type parser: str
+    :type np_links: bool
+    :returns: None if the line does not contain header elements according to
+         the rules of the selected markdown parser, or a tuple containing the
+         header type and the trimmed header text, according to the selected
+         parser rules, otherwise.
     :rtype: tuple
     :raises: one of the built in exceptions.
 
@@ -427,14 +435,17 @@ def get_atx_heading(line, keep_header_levels=3, parser='github', no_links=False)
             return None
 
         i = 0
-        while i < len(line) and line[i] == ' ' and i <= MD_PARSER_GITHUB_MAX_INDENTATION:
+        while i < len(
+                line
+        ) and line[i] == ' ' and i <= MD_PARSER_GITHUB_MAX_INDENTATION:
             i += 1
         if i > MD_PARSER_GITHUB_MAX_INDENTATION:
             return None
 
         offset = i
         while i < len(
-                line) and line[i] == '#' and i <= MD_PARSER_GITHUB_MAX_HEADER_LEVELS + offset:
+                line
+        ) and line[i] == '#' and i <= MD_PARSER_GITHUB_MAX_HEADER_LEVELS + offset:
             i += 1
         if i - offset > MD_PARSER_GITHUB_MAX_HEADER_LEVELS or i - offset > keep_header_levels or i - offset == 0:
             return None
@@ -450,7 +461,8 @@ def get_atx_heading(line, keep_header_levels=3, parser='github', no_links=False)
 
         # An algorithm to find the start and the end of the closing sequence.
         # The closing sequence includes all the significant part of the
-        # string.
+        # string. This algorithm has a complexity of O(n) with n being the
+        # length of the line.
         cs_start = i
         cs_end = cs_start
         line_prime = line[::-1]
@@ -478,13 +490,14 @@ def get_atx_heading(line, keep_header_levels=3, parser='github', no_links=False)
 
         # Escape character workaround.
         if not no_links and len(final_line) > 0 and final_line[-1] == '\\':
-            final_file += ' '
-        if not no_links and len(final_line) > MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL:
+            final_line += ' '
+        if not no_links and len(
+                final_line) > MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL:
             raise OverflowCharsLinkLabel
 
         return current_headers, final_line
 
-    # TODO
+    # TODO. Assume redcarpet and github use the same algorithm.
     elif parser == 'redcarpet' or parser == 'gitlab':
         return None
 
@@ -523,10 +536,8 @@ def get_md_header(header_text_line,
     >>> print(md_toc.get_md_header(' ## hi hOw Are YOu!!? ? #'))
     {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi hOw Are YOu!!? ? #'}
     """
-    header_type, header_text_trimmed = get_atx_heading(header_text_line,
-                                                       keep_header_levels,
-                                                       parser,
-                                                       no_links)
+    header_type, header_text_trimmed = get_atx_heading(
+        header_text_line, keep_header_levels, parser, no_links)
     if header_type is None:
         return header_type
     else:
