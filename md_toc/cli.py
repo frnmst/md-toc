@@ -26,7 +26,7 @@ import pkg_resources
 from .api import (write_string_on_file_between_markers, build_toc)
 
 DEFAULT_TOC_MARKER = '[](TOC)'
-DEFAULT_PARSER = 'github'
+DEFAULT_MD_PARSER = 'github'
 
 
 class CliToApi():
@@ -37,7 +37,7 @@ class CliToApi():
         if args.toc_marker is None:
             args.toc_marker = DEFAULT_TOC_MARKER
         if args.parser is None:
-            args.parser = DEFAULT_PARSER
+            args.parser = DEFAULT_MD_PARSER
         toc = build_toc(
             filename=args.filename,
             ordered=args.ordered,
@@ -84,9 +84,9 @@ class CliInterface():
             '-p',
             '--parser',
             choices=['github', 'redcarpet', 'gitlab'],
-            default=DEFAULT_PARSER,
+            default=DEFAULT_MD_PARSER,
             help='decide what markdown parser will be used to generate the \
-                  links. Defaults to ' + DEFAULT_PARSER)
+                  links. Defaults to ' + DEFAULT_MD_PARSER)
         parser.add_argument(
             '-t',
             '--toc-marker',

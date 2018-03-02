@@ -6,8 +6,7 @@ Developer Interface
 Main Interface
 --------------
 
-.. autofunction:: remove_md_header_syntax
-.. autofunction:: get_md_header_type
+.. autofunction:: get_atx_heading
 .. autofunction:: get_md_header
 .. autofunction:: build_toc_line
 .. autofunction:: increase_index_ordered_list

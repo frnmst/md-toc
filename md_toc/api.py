@@ -122,7 +122,7 @@ def build_toc(filename,
          considered as such when building the table of contents. Defaults to
          ``3``.
     :parameter parser: decides rules on how to generate anchor links.
-         Defaults to ``github   ``.
+         Defaults to ``github``.
     :type filename: str
     :type ordered: bool
     :type no_links: bool
