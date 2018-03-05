@@ -163,6 +163,63 @@ then link label rules will be applied.
   The workaround used in md_toc is to add a space character at the end of the 
   string, so it becomes: ``<ul><li><a href="xdmdmsdm">xdmdmsdm\ </a></li></ul>``
 
+- ``redcarpet``, ``gitlab``:
+
+  - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L998
+
+  Lets inspect this loop (from https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1017):
+
+  ::
+
+        /* looking for the matching closing bracket */
+        for (level = 1; i < size; i++) {
+            if (data[i] == '\n')
+                text_has_nl = 1;
+
+            else if (data[i - 1] == '\\')
+                continue;
+
+            else if (data[i] == '[')
+                level++;
+
+            else if (data[i] == ']') {
+                level--;
+                if (level <= 0)
+                    break;
+            }
+        }
+
+        if (i >= size)
+            goto cleanup;
+
+
+  The cleanup label looks like this:
+
+
+  ::
+
+            /* cleanup */
+            cleanup:
+                rndr->work_bufs[BUFFER_SPAN].size = (int)org_work_size;
+                return ret ? i : 0;
+
+
+  An example: ``[test \](test \)`` becomes ``[test ](test )`` instead of
+  ``<a href="test \">test \</a>
+
+  Infact, you can see that if the current character is ``\\`` then the the 
+  current iteration is skipped. If for any chance the next character is ``]`` 
+  then the inline link closing parenthesis detection is ignored. ``i`` becomes
+  equal to ``size`` eventually and so we jump to the ``cleanup`` label.
+  That lable contains a return statement so that string is not treated as 
+  inline link anymore. A similar code is implemented also for
+  detecting ``(`` and ``)``. See:
+
+  - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1088
+  - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1099
+
+  To solve this we use the same workaround used for ``github``.
+
 
 Notes about non implemented markdown parsers in md_toc
 ------------------------------------------------------

@@ -26,6 +26,7 @@ import unittest
 
 # Some static variables.
 LINE = 'This is a static line'
+LINE_EMPTY = ''
 
 # github test lines.
 GITHUB_LINE_FOO = 'foo'
@@ -246,10 +247,10 @@ class TestApi(unittest.TestCase):
             (1, GITHUB_LINE_FOO + S1 + GITHUB_LINE_ESCAPE + H1))
 
         # Example 49
-        self.assertEqual(api.get_atx_heading(H2 + S1, 6, 'github'), (2, ''))
-        self.assertEqual(api.get_atx_heading(H1, 6, 'github'), (1, ''))
+        self.assertEqual(api.get_atx_heading(H2 + S1, 6, 'github'), (2, LINE_EMPTY))
+        self.assertEqual(api.get_atx_heading(H1, 6, 'github'), (1, LINE_EMPTY))
         self.assertEqual(
-            api.get_atx_heading(H3 + S1 + H3, 6, 'github'), (3, ''))
+            api.get_atx_heading(H3 + S1 + H3, 6, 'github'), (3, LINE_EMPTY))
 
         # Test escape character space workaround.
         self.assertEqual(
@@ -261,7 +262,7 @@ class TestApi(unittest.TestCase):
             api.get_atx_heading(H1 + S1 + GITHUB_LINE_1000_CHARS, 6, 'github')
 
         # Test an empty line.
-        self.assertEqual(api.get_atx_heading('',6,'github'),None)
+        self.assertEqual(api.get_atx_heading(LINE_EMPTY,6,'github'),None)
 
         # readcarpet and gitlab
         # It does not seem that there are exaustive tests so we have to invent
@@ -277,8 +278,11 @@ class TestApi(unittest.TestCase):
         self.assertEqual(api.get_atx_heading('# h1 #\\##',6,'redcarpet'),(1, 'h1 #\\'))
         self.assertEqual(api.get_atx_heading('# hello #\\# #',6,'redcarpet'),(1, 'hello #\#'))
 
+        # Test escape character space workaround.
+        self.assertEqual(api.get_atx_heading('# hello \\',6,'redcarpet'),(1, 'hello \\ '))
+
         # Test an empty line.
-        self.assertEqual(api.get_atx_heading('',6,'redcarpet'),None)
+        self.assertEqual(api.get_atx_heading(LINE_EMPTY,6,'redcarpet'),None)
 
 
     def test_get_md_header(self):

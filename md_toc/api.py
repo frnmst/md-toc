@@ -527,12 +527,14 @@ def get_atx_heading(line,
             end -= 1
 
         if end > i:
-            # parse_inline(work, rndr, data + i, end - i);
-            return current_headers, line[i:end]
+            # Escape character workaround.
+            final_line = line
+            if not no_links and len(final_line) > 0 and final_line[-1] == '\\':
+                final_line += ' '
+                end += 1
+            return current_headers, final_line[i:end]
         else:
             return None
-
-        # TODO: check link label rules.
 
 
 def get_md_header(header_text_line,
