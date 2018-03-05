@@ -4,14 +4,6 @@ Markdown spec
 Anchor link types and behaviours
 --------------------------------
 
-Since anchor links are a prominent feature of md_toc so some research was 
-necessary to make sure that they work under all conditions.
-
-Markdown parsers have different behaviours regarding anchor links. Some of them 
-implement them while others don't; some act on the duplicate entry problem 
-while others don't; some strip consecutive dash characters while others don't; 
-and so on...
-
 What follows is a list of parameters and rules used by md_toc to decide 
 how to render anchor links. Note that only ``github``, ``redcarpet`` and 
 ``gitlab`` are currently implemented.
@@ -104,22 +96,6 @@ how to render anchor links. Note that only ``github``, ``redcarpet`` and
 
   - https://gitlab.com/help/user/markdown.md#header-ids-and-links
               
-- ``gogs``, ``marked``, ``notabug``: Gogs uses marked as the markdown 
-  parser while *NotABug.org is powered by a liberated version of gogs*. 
-  Situation seems unclear. Here are some links:
-
-  - https://gogs.io/docs
-  - https://github.com/chjj/marked
-  - https://github.com/chjj/marked/issues/981
-  - https://github.com/chjj/marked/search?q=anchor&type=Issues&utf8=%E2%9C%93
-  - https://notabug.org/hp/gogs/
-
-  For this reason no implementation is available for the moment.
-
-- ``kramdown``: It is unclear if this feature is available. See:
-
-  - https://github.com/gettalong/kramdown/search?q=anchor&type=Issues&utf8=%E2%9C%93
-
 
 What are headers and what are not
 ---------------------------------
@@ -138,8 +114,35 @@ Only ATX-style headings are supported in md_toc.
 
   Every other rule is applied.
 
-- ``redcarpet``
+- ``redcarpet``: asssume that ``gitlab`` uses the redcarpet algorithm.
 
+  This is the license used in md_toc:
+
+  ::
+
+        Copyright (c) 2009, Natacha Porté
+        Copyright (c) 2015, Vicent Marti
+        Copyright (c) 2018, Franco Masotti <franco.masotti@student.unife.it>
+
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in
+        all copies or substantial portions of the Software.
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER  DEALINGS IN
+        THE SOFTWARE.
+
+
+  - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1444
   - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1981
 
 
@@ -159,4 +162,34 @@ then link label rules will be applied.
   ``<ul><li><a href="xdmdmsdm">xdmdmsdm\</a></li></ul>``.
   The workaround used in md_toc is to add a space character at the end of the 
   string, so it becomes: ``<ul><li><a href="xdmdmsdm">xdmdmsdm\ </a></li></ul>``
+
+
+Notes about non implemented markdown parsers in md_toc
+------------------------------------------------------
+
+If you have a look at 
+https://www.w3.org/community/markdown/wiki/MarkdownImplementations
+you will see that there are a ton of different markdown parsers out there 
+(moreover, that list has not been updated in a while).
+
+Markdown parsers have different behaviours regarding anchor links. Some of them 
+implement them while others don't; some act on the duplicate entry problem 
+while others don't; some strip consecutive dash characters while others don't; 
+and so on... For example:
+
+- Gogs, Marked`` and Notabug: Gogs uses marked as the markdown 
+  parser while *NotABug.org is powered by a liberated version of gogs*. 
+  Situation seems unclear. Here are some links:
+
+  - https://gogs.io/docs
+  - https://github.com/chjj/marked
+  - https://github.com/chjj/marked/issues/981
+  - https://github.com/chjj/marked/search?q=anchor&type=Issues&utf8=%E2%9C%93
+  - https://notabug.org/hp/gogs/
+
+  For this reason no implementation is available for the moment.
+
+- Kramdown: It is unclear if this feature is available. See:
+
+  - https://github.com/gettalong/kramdown/search?q=anchor&type=Issues&utf8=%E2%9C%93
 

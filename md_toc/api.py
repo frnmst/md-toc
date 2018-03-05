@@ -27,9 +27,10 @@ import curses.ascii
 from .exceptions import (OverflowCharsLinkLabel)
 
 MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL = 999
+# redcarpet and gitlab do not allow the following.
 MD_PARSER_GITHUB_MAX_INDENTATION = 3
 MD_PARSER_GITHUB_MAX_HEADER_LEVELS = 6
-
+MD_PARSER_REDCARPET_MAX_HEADER_LEVELS = 6
 
 def write_string_on_file_between_markers(filename, string, marker):
     r"""Write the table of contents.
@@ -426,7 +427,7 @@ def get_atx_heading(line,
     assert isinstance(keep_header_levels, int)
     assert keep_header_levels > 0
 
-    if len(line) < 0:
+    if len(line) == 0:
         return None
 
     if parser == 'github':
@@ -497,9 +498,41 @@ def get_atx_heading(line,
 
         return current_headers, final_line
 
-    # TODO. Assume redcarpet and github use the same algorithm.
     elif parser == 'redcarpet' or parser == 'gitlab':
-        return None
+        # This is a modified version of the original source code.
+
+        if line[0] != '#':
+            return None
+
+        i = 0
+        while (i < len(line) and i < MD_PARSER_REDCARPET_MAX_HEADER_LEVELS and
+            line[i] == '#'):
+            i += 1
+        current_headers = i
+
+        if i < len(line) and line[i] != ' ':
+            return None
+
+        while i < len(line) and line[i] == ' ':
+            i += 1
+
+        end = i
+        while end < len(line) and line[end] != '\n':
+            end += 1
+
+        while end > 0 and line[end - 1] == '#':
+            end -= 1
+
+        while end > 0 and line[end - 1] == ' ':
+            end -= 1
+
+        if end > i:
+            # parse_inline(work, rndr, data + i, end - i);
+            return current_headers, line[i:end]
+        else:
+            return None
+
+        # TODO: check link label rules.
 
 
 def get_md_header(header_text_line,
