@@ -536,6 +536,8 @@ def get_atx_heading(line,
         else:
             return None
 
+    # TODO: escape or remove '[', ']', '(', ')' in inline links.
+
 
 def get_md_header(header_text_line,
                   header_duplicate_counter,

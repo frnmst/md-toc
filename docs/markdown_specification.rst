@@ -169,6 +169,8 @@ then link label rules will be applied.
 
   Lets inspect this loop (from https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1017):
 
+  .. highlight:: c
+
   ::
 
         /* looking for the matching closing bracket */
@@ -204,8 +206,11 @@ then link label rules will be applied.
                 return ret ? i : 0;
 
 
+  .. highlight:: python
+
+
   An example: ``[test \](test \)`` becomes ``[test ](test )`` instead of
-  ``<a href="test \">test \</a>
+  ``<a href="test \">test \</a>``
 
   Infact, you can see that if the current character is ``\\`` then the the 
   current iteration is skipped. If for any chance the next character is ``]`` 
@@ -234,7 +239,7 @@ implement them while others don't; some act on the duplicate entry problem
 while others don't; some strip consecutive dash characters while others don't; 
 and so on... For example:
 
-- Gogs, Marked`` and Notabug: Gogs uses marked as the markdown 
+- Gogs, Marked and Notabug: Gogs uses marked as the markdown 
   parser while *NotABug.org is powered by a liberated version of gogs*. 
   Situation seems unclear. Here are some links:
 
