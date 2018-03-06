@@ -26,6 +26,11 @@ code):
 All the necessary dependencies should be installed automatically along with the 
 program.
 
+Packages
+--------
+
+- The package will be available for AUR... TODO
+
 Dependencies
 ------------
 

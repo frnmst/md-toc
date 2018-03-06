@@ -32,6 +32,7 @@ MD_PARSER_GITHUB_MAX_INDENTATION = 3
 MD_PARSER_GITHUB_MAX_HEADER_LEVELS = 6
 MD_PARSER_REDCARPET_MAX_HEADER_LEVELS = 6
 
+
 def write_string_on_file_between_markers(filename, string, marker):
     r"""Write the table of contents.
 
@@ -506,7 +507,7 @@ def get_atx_heading(line,
 
         i = 0
         while (i < len(line) and i < MD_PARSER_REDCARPET_MAX_HEADER_LEVELS and
-            line[i] == '#'):
+               line[i] == '#'):
             i += 1
         current_headers = i
 
