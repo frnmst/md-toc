@@ -339,9 +339,19 @@ class TestApi(unittest.TestCase):
 
         # Test newline.
         self.assertEqual(
+            api.get_atx_heading(H1 + LINE_NEWLINE, 6, 'gitlab'), None)
+        self.assertEqual(
             api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO + LINE_NEWLINE +
                                 REDCARPET_LINE_FOO, 6, 'gitlab'),
             (1, REDCARPET_LINE_FOO))
+        self.assertEqual(
+            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'gitlab'), None)
+        self.assertEqual(
+            api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO +
+                                LINE_CARRIAGE_RETURN + REDCARPET_LINE_FOO, 6,
+                                'gitlab'),
+            (1,
+             REDCARPET_LINE_FOO + LINE_CARRIAGE_RETURN + REDCARPET_LINE_FOO))
 
     def test_get_md_header(self):
         r"""Test building of the header data structure.
