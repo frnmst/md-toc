@@ -51,7 +51,7 @@ Help
 
 ::
 
-    usage: md_toc [-h] [-i] [-n] [-o] [-p {standard,github,redcarpet,gitlab}]
+    usage: md_toc [-h] [-i] [-n] [-o] [-p {github,redcarpet,gitlab}]
                   [-t TOC_MARKER] [-l HEADER_LEVELS] [-v]
                   FILE_NAME
 
@@ -65,14 +65,14 @@ Help
       -i, --in-place        overwrite the input file
       -n, --no-links        avoids adding links to corresponding content
       -o, --ordered         write as an ordered list
-      -p {standard,github,redcarpet,gitlab}, --parser {standard,github,redcarpet,gitlab}
+      -p {github,redcarpet,gitlab}, --parser {github,redcarpet,gitlab}
                             decide what markdown parser will be used to generate
-                            the links. Defaults to standard
+                            the links. Defaults to github
       -t TOC_MARKER, --toc-marker TOC_MARKER
                             set the string to be used as the marker for
-                            positioning the table of contents
+                            positioning the table of contents. Defaults to [](TOC)
       -l HEADER_LEVELS, --header-levels HEADER_LEVELS
-                            set the maximum level of headers to be considered as
+                            set the maximum level of headers to be considered as  
                             part of the TOC
       -v, --version         show program's version number and exit
 
