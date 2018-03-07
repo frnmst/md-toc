@@ -488,6 +488,15 @@ def get_atx_heading(line,
             if i > i_prev:
                 hash_char_rounds += 1
 
+        # Instead of changing the whole algorithm to check for line
+        # endings, this seems cleaner.
+        find_newline = line.find('\u000a')
+        find_carriage_return = line.find('\u000d')
+        if find_newline != -1:
+            cs_end = min(cs_end, find_newline)
+        if find_carriage_return != -1:
+            cs_end = min(cs_end, find_carriage_return)
+
         final_line = line[cs_start:cs_end]
 
         # Escape character workaround.
@@ -496,8 +505,6 @@ def get_atx_heading(line,
         if not no_links and len(
                 final_line) > MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL:
             raise OverflowCharsLinkLabel
-
-        return current_headers, final_line
 
     elif parser == 'redcarpet' or parser == 'gitlab':
         # This is a modified version of the original source code.
@@ -533,11 +540,13 @@ def get_atx_heading(line,
             if not no_links and len(final_line) > 0 and final_line[-1] == '\\':
                 final_line += ' '
                 end += 1
-            return current_headers, final_line[i:end]
+            final_line = final_line[i:end]
         else:
             return None
 
     # TODO: escape or remove '[', ']', '(', ')' in inline links.
+
+    return current_headers, final_line
 
 
 def get_md_header(header_text_line,
@@ -574,11 +583,12 @@ def get_md_header(header_text_line,
     >>> print(md_toc.get_md_header(' ## hi hOw Are YOu!!? ? #'))
     {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi hOw Are YOu!!? ? #'}
     """
-    header_type, header_text_trimmed = get_atx_heading(
-        header_text_line, keep_header_levels, parser, no_links)
-    if header_type is None:
-        return header_type
+    result = get_atx_heading(header_text_line, keep_header_levels, parser,
+                             no_links)
+    if result is None:
+        return result
     else:
+        header_type, header_text_trimmed = result
         header = {
             'type':
             header_type,

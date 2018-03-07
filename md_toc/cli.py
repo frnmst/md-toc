@@ -42,8 +42,8 @@ class CliToApi():
             filename=args.filename,
             ordered=args.ordered,
             no_links=args.no_links,
-            max_header_levels=int(args.header_levels),
-            anchor_type=args.parser)
+            keep_header_levels=int(args.header_levels),
+            parser=args.parser)
         if args.in_place:
             write_string_on_file_between_markers(
                 filename=args.filename, string=toc, marker=args.toc_marker)

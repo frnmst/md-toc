@@ -112,6 +112,14 @@ Only ATX-style headings are supported in md_toc.
 
   - https://github.github.com/gfm/#backslash-escapes
 
+  A line ending character is ``U+000A`` or the ``U+000D`` character,
+  respectively ``\n`` and ``\r``. Everything following those characters
+  is ignored. This has also the benefit to automatically remove
+  the trailing newline or carriage return at the end of each line. See also:
+
+  - https://github.github.com/gfm/#line
+  - https://github.github.com/gfm/#line-ending
+
   Every other rule is applied.
 
 - ``redcarpet``: asssume that ``gitlab`` uses the redcarpet algorithm.
