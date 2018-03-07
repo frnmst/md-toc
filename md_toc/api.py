@@ -453,7 +453,10 @@ def get_atx_heading(line,
             return None
         current_headers = i - offset
 
-        if i < len(line) and line[i] != ' ':
+        # Include special cases for line endings which should not be
+        # discarded as non-ATX headers.
+        if i < len(line) and (line[i] != ' ' and line[i] != '\u000a' and
+                              line[i] != '\u000d'):
             return None
 
         i += 1

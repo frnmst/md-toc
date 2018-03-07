@@ -115,14 +115,16 @@ Only ATX-style headings are supported in md_toc.
   A line ending character is ``U+000A`` or the ``U+000D`` character,
   respectively ``\n`` and ``\r``. Everything following those characters
   is ignored. This has also the benefit to automatically remove
-  the trailing newline or carriage return at the end of each line. See also:
+  the trailing newline or carriage return at the end of each line. This also
+  includes ARX headers with line endings only as main content, such as
+  ``#\n`` or ``#\r``. See also:
 
   - https://github.github.com/gfm/#line
   - https://github.github.com/gfm/#line-ending
 
-  Every other rule is applied.
+  Every other rule for ATX headings is applied.
 
-- ``redcarpet``: asssume that ``gitlab`` uses the redcarpet algorithm.
+- ``redcarpet``: assume that ``gitlab`` uses the redcarpet algorithm.
 
   This is the license used in md_toc:
 

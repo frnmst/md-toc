@@ -43,6 +43,7 @@ LIST_INDENTATION = 4 * ' '
 UNORDERED_LIST_SYMBOL = '-'
 LINE_ESCAPE = '\\'
 LINE_NEWLINE = '\n'
+LINE_CARRIAGE_RETURN = '\r'
 
 # github test lines.
 GITHUB_LINE_FOO = 'foo'
@@ -131,7 +132,7 @@ class TestApi(unittest.TestCase):
 
         GitHub examples are the same ones reported in the GFM document, except
         for minor changes. The example numbers are the same ones reported in
-        the cited document. There are also a couple of more tests for special
+        the cited document. There are also some more tests for special
         cases.
 
         Redcarpet and GitLab examples are different from the ones present
@@ -268,6 +269,22 @@ class TestApi(unittest.TestCase):
         # Test an empty line.
         self.assertEqual(api.get_atx_heading(LINE_EMPTY, 6, 'github'), None)
 
+        # Test line endings.
+        self.assertEqual(
+            api.get_atx_heading(H1 + LINE_NEWLINE, 6, 'github'),
+            (1, LINE_EMPTY))
+        self.assertEqual(
+            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'github'),
+            (1, LINE_EMPTY))
+        self.assertEqual(
+            api.get_atx_heading(
+                H1 + S1 + GITHUB_LINE_FOO + LINE_NEWLINE + GITHUB_LINE_FOO, 6,
+                'github'), (1, GITHUB_LINE_FOO))
+        self.assertEqual(
+            api.get_atx_heading(H1 + S1 + GITHUB_LINE_FOO +
+                                LINE_CARRIAGE_RETURN + GITHUB_LINE_FOO, 6,
+                                'github'), (1, GITHUB_LINE_FOO))
+
         # readcarpet and gitlab
         # It does not seem that there are exaustive tests so we have to invent
         # our own. See https://github.com/vmg/redcarpet/tree/master/test
@@ -319,6 +336,12 @@ class TestApi(unittest.TestCase):
 
         # Test an empty line.
         self.assertEqual(api.get_atx_heading(LINE_EMPTY, 6, 'redcarpet'), None)
+
+        # Test newline.
+        self.assertEqual(
+            api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO + LINE_NEWLINE +
+                                REDCARPET_LINE_FOO, 6, 'gitlab'),
+            (1, REDCARPET_LINE_FOO))
 
     def test_get_md_header(self):
         r"""Test building of the header data structure.
