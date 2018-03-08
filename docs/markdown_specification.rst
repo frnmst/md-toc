@@ -1,12 +1,15 @@
 Markdown spec
 =============
 
+Introduction
+------------
+
+md_toc aimes to be as conformant as possible to each supported markdown 
+parser. What follows is a list of parameters and rules used by md_toc to decide
+how to parse markdown files and to generate the table of contents.
+
 Anchor link types and behaviours
 --------------------------------
-
-What follows is a list of parameters and rules used by md_toc to decide 
-how to render anchor links. Note that only ``github``, ``redcarpet`` and 
-``gitlab`` are currently implemented.
 
 - ``github``: a translated version of the Ruby algorithm is used in md_toc. 
   The original one is repored here: 
@@ -172,6 +175,11 @@ then link label rules will be applied.
   ``<ul><li><a href="xdmdmsdm">xdmdmsdm\</a></li></ul>``.
   The workaround used in md_toc is to add a space character at the end of the 
   string, so it becomes: ``<ul><li><a href="xdmdmsdm">xdmdmsdm\ </a></li></ul>``
+
+  If the link lables contains only whitespace characters a ``GithubEmptyLinkLabel``
+  exception is raised.
+  If the number of characters inside the link label is over 999 a 
+  ``GithubOverflowCharsLinkLabel`` is raised.
 
 - ``redcarpet``, ``gitlab``:
 

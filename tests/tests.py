@@ -251,10 +251,18 @@ class TestApi(unittest.TestCase):
 
         # Example 49
         self.assertEqual(
-            api.get_atx_heading(H2 + S1, 6, 'github'), (2, LINE_EMPTY))
-        self.assertEqual(api.get_atx_heading(H1, 6, 'github'), (1, LINE_EMPTY))
+            api.get_atx_heading(H2 + S1, 6, 'github', True), (2, LINE_EMPTY))
+        self.assertEqual(api.get_atx_heading(H1, 6, 'github', True), (1, LINE_EMPTY))
         self.assertEqual(
-            api.get_atx_heading(H3 + S1 + H3, 6, 'github'), (3, LINE_EMPTY))
+            api.get_atx_heading(H3 + S1 + H3, 6, 'github', True), (3, LINE_EMPTY))
+
+        # Example 49 with link labels.
+        with self.assertRaises(exceptions.GithubEmptyLinkLabel):
+            api.get_atx_heading(H2 + S1, 6, 'github', False)
+        with self.assertRaises(exceptions.GithubEmptyLinkLabel):
+            api.get_atx_heading(H1, 6, 'github', False)
+        with self.assertRaises(exceptions.GithubEmptyLinkLabel):
+            api.get_atx_heading(H3 + S1 + H3, 6, 'github', False)
 
         # Test escape character space workaround.
         self.assertEqual(
@@ -263,7 +271,7 @@ class TestApi(unittest.TestCase):
             (2, GITHUB_LINE_FOO + LINE_ESCAPE + S1))
 
         # Test MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL
-        with self.assertRaises(exceptions.OverflowCharsLinkLabel):
+        with self.assertRaises(exceptions.GithubOverflowCharsLinkLabel):
             api.get_atx_heading(H1 + S1 + GITHUB_LINE_1000_CHARS, 6, 'github')
 
         # Test an empty line.
@@ -271,10 +279,10 @@ class TestApi(unittest.TestCase):
 
         # Test line endings.
         self.assertEqual(
-            api.get_atx_heading(H1 + LINE_NEWLINE, 6, 'github'),
+            api.get_atx_heading(H1 + LINE_NEWLINE, 6, 'github', True),
             (1, LINE_EMPTY))
         self.assertEqual(
-            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'github'),
+            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'github', True),
             (1, LINE_EMPTY))
         self.assertEqual(
             api.get_atx_heading(
@@ -284,6 +292,12 @@ class TestApi(unittest.TestCase):
             api.get_atx_heading(H1 + S1 + GITHUB_LINE_FOO +
                                 LINE_CARRIAGE_RETURN + GITHUB_LINE_FOO, 6,
                                 'github'), (1, GITHUB_LINE_FOO))
+
+        # Test line endings with link labels.
+        with self.assertRaises(exceptions.GithubEmptyLinkLabel):
+                api.get_atx_heading(H1 + LINE_NEWLINE, 6, 'github', False)
+        with self.assertRaises(exceptions.GithubEmptyLinkLabel):
+                api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'github', False)
 
         # readcarpet and gitlab
         # It does not seem that there are exaustive tests so we have to invent

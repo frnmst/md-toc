@@ -35,7 +35,7 @@ Documentation
 http://frnmst.github.io/md-toc
 
 Please read carefully the `Markdown specification`_ section of the documentation 
-to learn how this program parsers markdown files.
+to learn how this program parsers markdown files and builds a correct output.
 
 .. _Markdown specification: http://frnmst.github.io/md-toc/markdown_specification.html
 

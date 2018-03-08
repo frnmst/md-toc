@@ -24,5 +24,8 @@
 # Exception might be added in the future if necessary
 
 
-class OverflowCharsLinkLabel(Exception):
+class GithubOverflowCharsLinkLabel(Exception):
     """Cannot parse link label."""
+
+class GithubEmptyLinkLabel(Exception):
+    """The link lables contains only whitespace characters or is empty."""

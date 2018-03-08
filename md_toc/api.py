@@ -24,7 +24,7 @@
 import fpyutils
 import re
 import curses.ascii
-from .exceptions import (OverflowCharsLinkLabel)
+from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel)
 
 MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL = 999
 # redcarpet and gitlab do not allow the following.
@@ -262,6 +262,9 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
     else:
         list_symbol = '-'
 
+    # TODO: check if the following works on all parsers
+    # TODO: see https://github.github.com/gfm/#list-items
+    # TODO: and how redcarpet deals with this.
     # Ordered list require 4-level indentation,
     # while unordered either 2 or 4. Common case is 4.
     no_of_indentation_spaces = 4 * (header['type'] - 1)
@@ -503,11 +506,13 @@ def get_atx_heading(line,
         final_line = line[cs_start:cs_end]
 
         # Escape character workaround.
-        if not no_links and len(final_line) > 0 and final_line[-1] == '\\':
-            final_line += ' '
-        if not no_links and len(
-                final_line) > MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL:
-            raise OverflowCharsLinkLabel
+        if not no_links:
+            if len(final_line) > 0 and final_line[-1] == '\\':
+                final_line += ' '
+            if len(final_line.strip('\u0020').strip('\u0009').strip('\u000a').strip('\u000b').strip('\u000c').strip('\u000d')) == 0:
+                raise GithubEmptyLinkLabel
+            if len(final_line) > MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL:
+                raise GithubOverflowCharsLinkLabel
 
     elif parser == 'redcarpet' or parser == 'gitlab':
         # This is a modified version of the original source code.
@@ -548,6 +553,7 @@ def get_atx_heading(line,
             return None
 
     # TODO: escape or remove '[', ']', '(', ')' in inline links.
+    # TODO: check link label rules for github and redcarpet, gitlab.
 
     return current_headers, final_line
 
