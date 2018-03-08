@@ -505,17 +505,17 @@ def get_atx_heading(line,
 
         final_line = line[cs_start:cs_end]
 
-        # Escape character workaround.
         if not no_links:
             if len(final_line) > 0 and final_line[-1] == '\\':
                 final_line += ' '
-            if len(final_line.strip('\u0020').strip('\u0009').strip('\u000a').strip('\u000b').strip('\u000c').strip('\u000d')) == 0:
+            if len(
+                    final_line.strip('\u0020').strip('\u0009').strip('\u000a')
+                    .strip('\u000b').strip('\u000c').strip('\u000d')) == 0:
                 raise GithubEmptyLinkLabel
             if len(final_line) > MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL:
                 raise GithubOverflowCharsLinkLabel
 
     elif parser == 'redcarpet' or parser == 'gitlab':
-        # This is a modified version of the original source code.
 
         if line[0] != '#':
             return None
@@ -543,7 +543,6 @@ def get_atx_heading(line,
             end -= 1
 
         if end > i:
-            # Escape character workaround.
             final_line = line
             if not no_links and len(final_line) > 0 and final_line[-1] == '\\':
                 final_line += ' '

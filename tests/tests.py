@@ -252,9 +252,11 @@ class TestApi(unittest.TestCase):
         # Example 49
         self.assertEqual(
             api.get_atx_heading(H2 + S1, 6, 'github', True), (2, LINE_EMPTY))
-        self.assertEqual(api.get_atx_heading(H1, 6, 'github', True), (1, LINE_EMPTY))
         self.assertEqual(
-            api.get_atx_heading(H3 + S1 + H3, 6, 'github', True), (3, LINE_EMPTY))
+            api.get_atx_heading(H1, 6, 'github', True), (1, LINE_EMPTY))
+        self.assertEqual(
+            api.get_atx_heading(H3 + S1 + H3, 6, 'github', True),
+            (3, LINE_EMPTY))
 
         # Example 49 with link labels.
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
@@ -295,9 +297,9 @@ class TestApi(unittest.TestCase):
 
         # Test line endings with link labels.
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
-                api.get_atx_heading(H1 + LINE_NEWLINE, 6, 'github', False)
+            api.get_atx_heading(H1 + LINE_NEWLINE, 6, 'github', False)
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
-                api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'github', False)
+            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'github', False)
 
         # readcarpet and gitlab
         # It does not seem that there are exaustive tests so we have to invent
