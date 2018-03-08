@@ -176,10 +176,18 @@ then link label rules will be applied.
   The workaround used in md_toc is to add a space character at the end of the 
   string, so it becomes: ``<ul><li><a href="xdmdmsdm">xdmdmsdm\ </a></li></ul>``
 
-  If the link lables contains only whitespace characters a ``GithubEmptyLinkLabel``
+  If the link label contains only whitespace characters a ``GithubEmptyLinkLabel``
   exception is raised.
+
   If the number of characters inside the link label is over 999 a 
   ``GithubOverflowCharsLinkLabel`` is raised.
+
+  If the headers contains ``[`` or ``]``, these characters 
+  need to be escape accoring to these rules:
+
+  - https://github.github.com/gfm/#link-text
+  - https://github.github.com/gfm/#example-302
+  - https://github.github.com/gfm/#example-496
 
 - ``redcarpet``, ``gitlab``:
 
