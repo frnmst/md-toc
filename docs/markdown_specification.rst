@@ -183,11 +183,93 @@ then link label rules will be applied.
   ``GithubOverflowCharsLinkLabel`` is raised.
 
   If the headers contains ``[`` or ``]``, these characters 
-  need to be escape accoring to these rules:
+  are treated with the following rules.
 
   - https://github.github.com/gfm/#link-text
   - https://github.github.com/gfm/#example-302
   - https://github.github.com/gfm/#example-496
+
+  According to a function in the source code, balanced square brackets do not
+  work, however they do when interpeted by the web interface. It is however 
+  possible that they are supported within the ``handle_close_bracket`` 
+  function.
+
+  - https://github.com/github/cmark/blob/6b101e33ba1637e294076c46c69cd6a262c7539f/src/inlines.c#L881
+  - https://github.com/github/cmark/blob/6b101e33ba1637e294076c46c69cd6a262c7539f/src/inlines.c#L994
+
+
+  Here is the original C function with some more comments added:
+
+  .. highlight:: c
+
+  ::
+
+        // Parse a link label.  Returns 1 if successful.
+        // Note:  unescaped brackets are not allowed in labels.
+        // The label begins with `[` and ends with the first `]` character
+        // encountered.  Backticks in labels do not start code spans.
+        static int link_label(subject *subj, cmark_chunk *raw_label) {
+          bufsize_t startpos = subj->pos;
+          int length = 0;
+          unsigned char c;
+
+          // advance past [
+          //
+          // Ignore the open link label identifier
+          // peek_char simply returns the current char if we are
+          // in range of the string, 0 otherwise.
+          if (peek_char(subj) == '[') {
+            advance(subj);
+          } else {
+            return 0;
+          }
+
+          while ((c = peek_char(subj)) && c != '[' && c != ']') {
+            // If there is an escape and the next character is (for example) 
+            // '[' or ']' then,
+            // ignore the loop conditions.
+            // If there are nested balanced square brakets this loop ends.
+            if (c == '\\') {
+              advance(subj);
+              length++;
+
+              // Puntuation characters are the ones defined at:
+              // https://github.github.com/gfm/#ascii-punctuation-character
+              if (cmark_ispunct(peek_char(subj))) {
+                advance(subj);
+                length++;
+              }
+            } else {
+              advance(subj);
+              length++;
+            }
+            // MAX_LINK_LABEL_LENGTH is a constant defined at
+            // https://github.com/github/cmark/blob/master/src/parser.h#L13
+            if (length > MAX_LINK_LABEL_LENGTH) {
+              goto noMatch;
+            }
+          }
+
+          // If the loop terminates when the current character is ']' then 
+          // everything between '[' and ']' is the link label...
+          if (c == ']') { // match found
+            *raw_label =
+                cmark_chunk_dup(&subj->input, startpos + 1, subj->pos - (startpos + 1));
+            cmark_chunk_trim(raw_label);
+            advance(subj); // advance past ]
+            return 1;
+          }
+
+        // ...otherwise return error.
+        // This label always get executed according to C rules.
+        noMatch:
+          subj->pos = startpos; // rewind
+          return 0;
+        }
+
+
+  For simpleness the escape ``[`` and ``]`` rule is used.
+
 
 - ``redcarpet``, ``gitlab``:
 
@@ -223,6 +305,7 @@ then link label rules will be applied.
 
   The cleanup label looks like this:
 
+  .. highlight:: c
 
   ::
 
@@ -233,7 +316,6 @@ then link label rules will be applied.
 
 
   .. highlight:: python
-
 
   An example: ``[test \](test \)`` becomes ``[test ](test )`` instead of
   ``<a href="test \">test \</a>``

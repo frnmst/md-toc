@@ -510,7 +510,7 @@ def get_atx_heading(line,
             if len(final_line) > 0 and final_line[-1] == '\u005c':
                 final_line += ' '
             if len(
-                     final_line.strip('\u0020').strip('\u0009').strip('\u000a')
+                    final_line.strip('\u0020').strip('\u0009').strip('\u000a')
                     .strip('\u000b').strip('\u000c').strip('\u000d')) == 0:
                 raise GithubEmptyLinkLabel
             if len(final_line) > MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL:
@@ -518,20 +518,20 @@ def get_atx_heading(line,
             # Escape square brackets if not already escaped.
             i = 0
             while i < len(final_line):
-                if (final_line[i] == '[' or
-                    final_line[i] == ']'):
+                if (final_line[i] == '[' or final_line[i] == ']'):
                     j = i - 1
                     consecutive_escape_characters = 0
                     while j >= 0 and final_line[j] == '\u005c':
                         consecutive_escape_characters += 1
                         j -= 1
                     if ((consecutive_escape_characters > 0 and
-                        consecutive_escape_characters % 2 == 0) or
-                        consecutive_escape_characters == 0):
-                            tmp = '\u005c'
+                         consecutive_escape_characters % 2 == 0) or
+                            consecutive_escape_characters == 0):
+                        tmp = '\u005c'
                     else:
-                            tmp = str()
-                    final_line = final_line[0:i] + tmp + final_line[i:len(final_line)]
+                        tmp = str()
+                    final_line = final_line[0:i] + tmp + final_line[i:len(
+                        final_line)]
                     i += 1 + len(tmp)
                 else:
                     i += 1

@@ -44,6 +44,8 @@ UNORDERED_LIST_SYMBOL = '-'
 LINE_ESCAPE = '\\'
 LINE_NEWLINE = '\n'
 LINE_CARRIAGE_RETURN = '\r'
+LINE_SQUARE_BRACKET_OPEN = '['
+LINE_SQUARE_BRACKET_CLOSE = ']'
 
 # github test lines.
 GITHUB_LINE_FOO = 'foo'
@@ -265,6 +267,25 @@ class TestApi(unittest.TestCase):
             api.get_atx_heading(H1, 6, 'github', False)
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
             api.get_atx_heading(H3 + S1 + H3, 6, 'github', False)
+
+        # Test escaping examples reported in the documentation.
+        # A modified Example 302 and Example 496 (for square brackets).
+        self.assertEqual(
+            api.get_atx_heading(
+                H1 + S1 + LINE_SQUARE_BRACKET_OPEN + S1 + GITHUB_LINE_FOO +
+                S1 + LINE_SQUARE_BRACKET_OPEN + GITHUB_LINE_BAR +
+                LINE_SQUARE_BRACKET_CLOSE + LINE_SQUARE_BRACKET_CLOSE, 6,
+                'github'),
+            (1, LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + S1 + GITHUB_LINE_FOO +
+             S1 + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + GITHUB_LINE_BAR +
+             LINE_ESCAPE + LINE_SQUARE_BRACKET_CLOSE + LINE_ESCAPE +
+             LINE_SQUARE_BRACKET_CLOSE))
+        self.assertEqual(
+            api.get_atx_heading(
+                H1 + S1 + LINE_ESCAPE + LINE_ESCAPE +
+                LINE_SQUARE_BRACKET_OPEN + S1 + GITHUB_LINE_FOO, 6, 'github'),
+            (1, LINE_ESCAPE + LINE_ESCAPE + LINE_ESCAPE +
+             LINE_SQUARE_BRACKET_OPEN + S1 + GITHUB_LINE_FOO))
 
         # Test escape character space workaround.
         self.assertEqual(
