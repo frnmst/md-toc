@@ -83,7 +83,7 @@ class CliInterface():
         parser.add_argument(
             '-p',
             '--parser',
-            choices=['github', 'redcarpet', 'gitlab'],
+            choices=['github', 'cmark', 'redcarpet', 'gitlab'],
             default=DEFAULT_MD_PARSER,
             help='decide what markdown parser will be used to generate the \
                   links. Defaults to ' + DEFAULT_MD_PARSER)

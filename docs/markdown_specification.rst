@@ -8,6 +8,30 @@ md_toc aimes to be as conformant as possible to each supported markdown
 parser. What follows is a list of parameters and rules used by md_toc to decide
 how to parse markdown files and to generate the table of contents.
 
+Supported markdown parsers
+--------------------------
+
+- ``cmark``:
+
+  - https://github.com/commonmark/cmark
+
+- ``github`` uses a forked version of ``cmark``: with some extensions added:
+
+  - https://github.com/github/cmark
+
+  The extension used in GFM (Github Flavored Markdown) should not concern
+  md_toc. For this reason we assume that ``cmark`` is an alias of ``github``
+  in md_toc.
+
+- ``redcarpet``:
+
+  - https://github.com/vmg/redcarpet
+
+- ``gitlab``:
+
+  - Uses ``redcarpet`` with minor modifications. See next.
+
+
 Anchor link types and behaviours
 --------------------------------
 
@@ -15,10 +39,6 @@ Anchor link types and behaviours
   The original one is repored here: 
   
   - https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb
-
-  GitHub uses a forked version of cmark:
-
-  - https://github.com/github/cmark
 
   I could not find the code directly responsable for the anchor link generation.
   See also:
@@ -98,7 +118,7 @@ Anchor link types and behaviours
   available here:
 
   - https://gitlab.com/help/user/markdown.md#header-ids-and-links
-              
+
 
 What are headers and what are not
 ---------------------------------

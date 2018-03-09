@@ -313,7 +313,7 @@ def build_anchor_link(header_text_trimmed,
     assert isinstance(header_duplicate_counter, dict)
     assert isinstance(parser, str)
 
-    if parser == 'github':
+    if parser == 'github' or parser == 'cmark':
         header_text_trimmed = header_text_trimmed.lower()
         # Remove punctuation: Keep spaces, hypens and "word characters"
         # only.
@@ -435,7 +435,7 @@ def get_atx_heading(line,
     if len(line) == 0:
         return None
 
-    if parser == 'github':
+    if parser == 'github' or parser == 'cmark':
 
         if line[0] == '\u005c':
             return None
