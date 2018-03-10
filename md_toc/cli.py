@@ -28,7 +28,7 @@ from .api import (write_string_on_file_between_markers, build_toc)
 
 DEFAULT_TOC_MARKER = '[](TOC)'
 DEFAULT_MD_PARSER = 'github'
-PROGRAM_DESCRIPTION = 'Markdown Table Of Contents'
+PROGRAM_DESCRIPTION = 'Markdown Table Of Contents: Automatically generate a compliant table\nof contents for a markdown file to improve document readability.'
 VERSION_NAME = 'md_toc'
 VERSION_NUMBER = str(pkg_resources.get_distribution('md_toc').version)
 VERSION_COPYRIGHT = 'Copyright (C) 2018 Franco Masotti, frnmst'
