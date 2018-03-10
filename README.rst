@@ -1,8 +1,8 @@
 Markdown Table Of Contents
 ==========================
 
-Automatically generate a table of contents for a markdown file to improve
-document readability.
+Automatically generate a compliant table of contents for a markdown file to 
+improve document readability.
 
 Description
 -----------
@@ -21,6 +21,10 @@ As a final remark, it is possible to generate an ordered and an unordered table
 of contents. In both cases, each element of the toc is by default a clickable 
 link to a paragraph in the page. It is also possible to generate non-linked 
 version of the TOC.
+
+Rules for generating the table of contents are determined by the selected 
+markdown parser. md_toc aimes to be as conformant as possible in respect to 
+each one of them.
 
 Video
 -----
@@ -77,6 +81,11 @@ Help
       -v, --version         show program's version number and exit
 
     Return values: 0 OK, 1 Error, 2 Invalid command
+
+    Copyright (C) 2018 Franco Masotti, frnmst
+    License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+    This is free software: you are free to change and redistribute it.
+    There is NO WARRANTY, to the extent permitted by law.
 
 
 License

@@ -22,11 +22,18 @@
 """Command line interface file."""
 
 import argparse
+import textwrap
 import pkg_resources
 from .api import (write_string_on_file_between_markers, build_toc)
 
 DEFAULT_TOC_MARKER = '[](TOC)'
 DEFAULT_MD_PARSER = 'github'
+PROGRAM_DESCRIPTION = 'Markdown Table Of Contents'
+VERSION_NAME = 'md_toc'
+VERSION_NUMBER = str(pkg_resources.get_distribution('md_toc').version)
+VERSION_COPYRIGHT = 'Copyright (C) 2018 Franco Masotti, frnmst'
+VERSION_LICENSE = 'License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.'
+PROGRAM_EPILOG = 'Return values: 0 OK, 1 Error, 2 Invalid command' + '\n\n' + VERSION_COPYRIGHT + '\n' + VERSION_LICENSE
 
 
 class CliToApi():
@@ -61,8 +68,9 @@ class CliInterface():
     def create_parser(self):
         """Create the CLI parser."""
         parser = argparse.ArgumentParser(
-            description='Markdown Table Of Contents',
-            epilog="Return values: 0 OK, 1 Error, 2 Invalid command")
+            description=PROGRAM_DESCRIPTION,
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            epilog=textwrap.dedent(PROGRAM_EPILOG))
         parser.add_argument(
             'filename', metavar='FILE_NAME', help='the I/O file name')
         parser.add_argument(
@@ -103,7 +111,7 @@ class CliInterface():
             '-v',
             '--version',
             action='version',
-            version=pkg_resources.get_distribution('md_toc').version)
+            version=VERSION_NAME + ' ' + VERSION_NUMBER)
 
         parser.set_defaults(func=CliToApi().write_toc)
 

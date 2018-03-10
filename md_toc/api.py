@@ -28,7 +28,6 @@ from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
                          GithubOverflowOrderedListMarker)
 
 MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL = 999
-# redcarpet and gitlab do not allow the following.
 MD_PARSER_GITHUB_MAX_INDENTATION = 3
 MD_PARSER_GITHUB_MAX_HEADER_LEVELS = 6
 MD_PARSER_GITHUB_MAX_ORDERED_LIST_MARKER = 999999999
@@ -175,7 +174,8 @@ def build_toc(filename,
                 header_type_curr = header['type']
                 if ordered:
                     increase_index_ordered_list(header_type_counter,
-                                                header_type_prev, header_type_curr, parser)
+                                                header_type_prev,
+                                                header_type_curr, parser)
                 toc += build_toc_line(
                     header,
                     ordered,
@@ -187,16 +187,20 @@ def build_toc(filename,
     return toc
 
 
-def increase_index_ordered_list(header_type_count, header_type_prev,
-                                header_type_curr, parser='github'):
+def increase_index_ordered_list(header_type_count,
+                                header_type_prev,
+                                header_type_curr,
+                                parser='github'):
     r"""Compute the current index for ordered list table of contents.
 
     :parameter header_type_count: the count of each header type.
     :parameter header_type_prev: the previous type of header (h[1-Inf]).
     :parameter header_type_curr: the current type of header (h[1-Inf]).
+    :parameter parser: decides rules on how to generate ordered list markers
     :type header_type_count: dict
     :type header_type_prev: int
     :type header_type_curr: int
+    :type parser: str
     :returns: None
     :rtype: None
     :raises: one of the built in exceptions
@@ -222,6 +226,7 @@ def increase_index_ordered_list(header_type_count, header_type_prev,
 
     header_type_count[header_type_curr] += 1
 
+    # TODO: check if exists MD_PARSER_REDCARPET_MAX_ORDERED_LIST_MARKER
     if parser == 'github':
         if header_type_count[header_type_curr] > MD_PARSER_GITHUB_MAX_ORDERED_LIST_MARKER:
             raise GithubOverflowOrderedListMarker
