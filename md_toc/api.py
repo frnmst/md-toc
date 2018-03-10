@@ -24,12 +24,14 @@
 import fpyutils
 import re
 import curses.ascii
-from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel)
+from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
+                         GithubOverflowOrderedListMarker)
 
 MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL = 999
 # redcarpet and gitlab do not allow the following.
 MD_PARSER_GITHUB_MAX_INDENTATION = 3
 MD_PARSER_GITHUB_MAX_HEADER_LEVELS = 6
+MD_PARSER_GITHUB_MAX_ORDERED_LIST_MARKER = 999999999
 MD_PARSER_REDCARPET_MAX_HEADER_LEVELS = 6
 
 
@@ -171,8 +173,9 @@ def build_toc(filename,
                                    keep_header_levels, parser, no_links)
             if header is not None:
                 header_type_curr = header['type']
-                increase_index_ordered_list(header_type_counter,
-                                            header_type_prev, header_type_curr)
+                if ordered:
+                    increase_index_ordered_list(header_type_counter,
+                                                header_type_prev, header_type_curr, parser)
                 toc += build_toc_line(
                     header,
                     ordered,
@@ -185,7 +188,7 @@ def build_toc(filename,
 
 
 def increase_index_ordered_list(header_type_count, header_type_prev,
-                                header_type_curr):
+                                header_type_curr, parser='github'):
     r"""Compute the current index for ordered list table of contents.
 
     :parameter header_type_count: the count of each header type.
@@ -212,12 +215,16 @@ def increase_index_ordered_list(header_type_count, header_type_prev,
     assert header_type_curr > 0
 
     # Base cases for a new table of contents or a new index type.
-    if header_type_prev is 0:
+    if header_type_prev == 0:
         header_type_prev = header_type_curr
     if header_type_curr not in header_type_count:
         header_type_count[header_type_curr] = 0
 
     header_type_count[header_type_curr] += 1
+
+    if parser == 'github':
+        if header_type_count[header_type_curr] > MD_PARSER_GITHUB_MAX_ORDERED_LIST_MARKER:
+            raise GithubOverflowOrderedListMarker
 
 
 def build_toc_line(header, ordered=False, no_links=False, index=1):
@@ -264,6 +271,7 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
 
     # TODO: check if the following works on all parsers
     # TODO: see https://github.github.com/gfm/#list-items
+    # TODO: and #list-marker
     # TODO: and how redcarpet deals with this.
     # Ordered list require 4-level indentation,
     # while unordered either 2 or 4. Common case is 4.

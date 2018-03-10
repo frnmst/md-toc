@@ -91,6 +91,11 @@ class TestApi(unittest.TestCase):
         api.increase_index_ordered_list(ht, 1, 1)
         self.assertEqual(ht[1], 2)
 
+        # Check overflow rule for github.
+        ht[1] = 999999999
+        with self.assertRaises(exceptions.GithubOverflowOrderedListMarker):
+            api.increase_index_ordered_list(ht, 1, 1)
+
     def test_build_toc_line(self):
         r"""Test toc line building for different types of inputs.
 

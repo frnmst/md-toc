@@ -21,12 +21,11 @@
 #
 """Exceptions file."""
 
-# Exception might be added in the future if necessary
-
-
 class GithubOverflowCharsLinkLabel(Exception):
     """Cannot parse link label."""
 
-
 class GithubEmptyLinkLabel(Exception):
     """The link lables contains only whitespace characters or is empty."""
+
+class GithubOverflowOrderedListMarker(Exception):
+    """The ordered list marker number is too big."""

@@ -20,7 +20,7 @@ Main help
       -i, --in-place        overwrite the input file
       -n, --no-links        avoids adding links to corresponding content
       -o, --ordered         write as an ordered list
-      -p {github,redcarpet,gitlab}, --parser {github,redcarpet,gitlab}
+      -p {github,cmark,redcarpet,gitlab}, --parser {github,cmark,redcarpet,gitlab}
                             decide what markdown parser will be used to generate
                             the links. Defaults to github
       -t TOC_MARKER, --toc-marker TOC_MARKER
