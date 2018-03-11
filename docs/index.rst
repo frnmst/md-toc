@@ -11,7 +11,6 @@ Welcome to md-toc's documentation!
    :caption: Contents:
 
    install
-   cli
    api
    markdown_specification
    pep

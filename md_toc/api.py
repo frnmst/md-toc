@@ -47,50 +47,6 @@ def write_string_on_file_between_markers(filename, string, marker):
     :returns: None
     :rtype: None
     :raises: one of the fpyutils exceptions or one of the built-in exceptions.
-
-    :Example:
-
-    ::
-
-        >>> import md_toc
-        >>> f = open('foo.md')
-        >>> print(f.read(),end='')
-        ## Hi
-
-        [](TOC)
-
-        hey
-
-        ### How are you?           !!!
-
-        fine, thanks
-
-        # Bye
-        >>> md_toc.write_string_on_file_between_markers('fake_md.md','Hallo \
-        how are you?\nVery well thanks...\n\nGoodbye\n\n\nFarewell\n', \
-        '[](TOC)')
-        >>> print(f.read(),end='')
-        ## Hi
-
-        [](TOC)
-
-        Hallo how are you?
-        Very well thanks...
-
-        Goodbye
-
-
-        Farewell
-
-        [](TOC)
-
-        hey
-
-        ### How are you?           !!!
-
-        fine, thanks
-
-        # Bye
     """
     assert isinstance(string, str)
     assert isinstance(marker, str)
@@ -134,27 +90,6 @@ def build_toc(filename,
     :returns: the corresponding table of contents.
     :rtype: str
     :raises: one of the built-in exceptions.
-
-    :Example:
-
-    ::
-
-        >>> import md_toc
-        >>> f = open('foo.md')
-        >>> print(f.read(),end='')
-        ## Hi
-
-        hey
-
-        ### How are you?           !!!
-
-        fine, thanks
-
-        # Bye
-        >>> print(md_toc.build_toc('foo.md',parser='gitlab'),end='')
-            - [Hi](#hi)
-                - [How are you?           !!!](#how-are-you)
-        - [Bye](#bye)
     """
     assert isinstance(filename, str)
 
@@ -204,13 +139,6 @@ def increase_index_ordered_list(header_type_count,
     :returns: None
     :rtype: None
     :raises: one of the built in exceptions
-
-    :Example:
-
-    >>> ht = {1: 0, 2: 0, 3: 0}
-    >>> md_toc.increase_index_ordered_list(ht,3,3)
-    >>> ht
-    {1: 0, 2: 0, 3: 1}
     """
     assert isinstance(header_type_count, dict)
     assert isinstance(header_type_prev, int)
@@ -250,12 +178,6 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
     :returns: a single line of the table of contents.
     :rtype: str
     :raises: one of the built-in exceptions.
-
-    :Example:
-
-    >>> header =  {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi-how-are-you'}
-    >>> print(md_toc.build_toc_line(header,ordered=True,index=3))
-        3. [hi hOw Are YOu!!? ? #](#hi-how-are-you)
     """
     assert isinstance(header, dict)
     assert 'type' in header
@@ -312,15 +234,8 @@ def build_anchor_link(header_text_trimmed,
          link, otherwise.
     :rtype: str
     :raises: one of the built-in exceptions.
-
-    :note: For a detailed description of the behaviour of each anchor type
-        and for the licenses of each markdown parser algorithm, please refer to
+    :note: The licenses of each markdown parser algorithm are reported on
         the 'Markdown spec' documentation page.
-
-    :Example:
-
-    >>> print(md_toc.build_anchor_link('   hello ## how # are you ???  ! ',dict(),'gitlab'))
-    hello-how-are-you
     """
     assert isinstance(header_text_trimmed, str)
     assert isinstance(header_duplicate_counter, dict)
@@ -431,15 +346,7 @@ def get_atx_heading(line,
     :rtype: tuple
     :raises: one of the built in exceptions or GithubEmptyLinkLabel or
          GithubOverflowCharsLinkLabel
-
     :warning: the parameter keep_header_levels must be greater than 0.
-
-    :Example:
-
-    >>> print(md_toc.get_atx_heading('###  hello ## how # are you ???  ! ',6))
-    (3, 'hello ## how # are you ???  !')
-    >>> print(md_toc.get_atx_heading('###  hello ## how # are you ???  ! ',2,'github'))
-    None
     """
     assert isinstance(line, str)
     assert isinstance(keep_header_levels, int)
@@ -618,13 +525,7 @@ def get_md_header(header_text_line,
          components to create a table of contents line, otherwise.
     :rtype: dict
     :raises: one of the built-in exceptions.
-
     :note: this works like a wrapper to other functions.
-
-    :Example:
-
-    >>> print(md_toc.get_md_header(' ## hi hOw Are YOu!!? ? #'))
-    {'type': 2, 'text_original': 'hi hOw Are YOu!!? ? #', 'text_anchor_link': 'hi hOw Are YOu!!? ? #'}
     """
     result = get_atx_heading(header_text_line, keep_header_levels, parser,
                              no_links)

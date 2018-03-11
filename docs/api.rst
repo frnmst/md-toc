@@ -6,6 +6,9 @@ Developer Interface
 Main Interface
 --------------
 
+Examples for the most relevant api functions can be viewed in the test
+file.
+
 .. autofunction:: get_atx_heading
 .. autofunction:: get_md_header
 .. autofunction:: build_toc_line
