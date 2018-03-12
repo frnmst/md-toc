@@ -83,13 +83,22 @@ class TestApi(unittest.TestCase):
         r"""Test that the list index increases correctly.
 
         Test both base cases and the non-base case by verifying that the index
-        increases.
+        increases or resets.
         """
+        # Check that the index increases if we are on the same sublist.
         ht = dict()
         api.increase_index_ordered_list(ht, 0, 1)
         self.assertEqual(ht[1], 1)
         api.increase_index_ordered_list(ht, 1, 1)
         self.assertEqual(ht[1], 2)
+
+        # Check that the index resets if we are starting a new sublist.
+        ht = dict()
+        ht[1] = 1
+        ht[2] = 3
+        ht[3] = 1
+        api.increase_index_ordered_list(ht, 2, 3)
+        self.assertEqual(ht[3], 1)
 
         # Check overflow rule for github.
         ht[1] = 999999999

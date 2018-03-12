@@ -111,11 +111,11 @@ def build_toc(filename,
                     increase_index_ordered_list(header_type_counter,
                                                 header_type_prev,
                                                 header_type_curr, parser)
-                toc += build_toc_line(
-                    header,
-                    ordered,
-                    no_links,
-                    index=header_type_counter[header_type_curr]) + '\n'
+                    index = header_type_counter[header_type_curr]
+                else:
+                    index = 1
+                toc += build_toc_line(header, ordered, no_links, index,
+                                      parser) + '\n'
                 header_type_prev = header_type_curr
             line = f.readline()
 
@@ -145,11 +145,13 @@ def increase_index_ordered_list(header_type_count,
     assert isinstance(header_type_curr, int)
     # header_type_prev might be 0 while header_type_curr can't.
     assert header_type_curr > 0
+    assert isinstance(parser, str)
 
     # Base cases for a new table of contents or a new index type.
     if header_type_prev == 0:
         header_type_prev = header_type_curr
-    if header_type_curr not in header_type_count:
+    if (header_type_curr not in header_type_count or
+            header_type_prev < header_type_curr):
         header_type_count[header_type_curr] = 0
 
     header_type_count[header_type_curr] += 1
@@ -160,11 +162,15 @@ def increase_index_ordered_list(header_type_count,
             raise GithubOverflowOrderedListMarker
 
 
-def build_toc_line(header, ordered=False, no_links=False, index=1):
+def build_toc_line(header,
+                   ordered=False,
+                   no_links=False,
+                   index=1,
+                   parser='github'):
     r"""Return a list element of the table of contents.
 
     :parameter header: a data structure that contains the original
-         text, the slugified text and the type of header.
+         text, the trimmed text and the type of header.
     :parameter ordered: if set to ``True``, numbers will be used
          as list ids or otherwise a dash character, otherwise. Defaults
          to ``False``.
@@ -190,27 +196,32 @@ def build_toc_line(header, ordered=False, no_links=False, index=1):
     assert isinstance(ordered, bool)
     assert isinstance(no_links, bool)
     assert isinstance(index, int)
+    assert isinstance(parser, str)
 
-    if ordered:
-        list_symbol = str(index) + '.'
-    else:
-        list_symbol = '-'
+    toc_line = str()
 
-    # TODO: check if the following works on all parsers
-    # TODO: see https://github.github.com/gfm/#list-items
-    # TODO: and #list-marker
-    # TODO: and how redcarpet deals with this.
-    # Ordered list require 4-level indentation,
-    # while unordered either 2 or 4. Common case is 4.
-    no_of_indentation_spaces = 4 * (header['type'] - 1)
-    indentation_spaces = no_of_indentation_spaces * ' '
+    #    if parser == 'github' or parser == 'cmark':
+    if parser is not None:
+        if ordered:
+            list_marker = str(index) + '.'
+        else:
+            list_marker = '-'
+        space_after_list_marker = ' '
 
-    if no_links:
-        line = header['text_original']
-    else:
-        line = '[' + header['text_original'] + ']' + '(#' + header['text_anchor_link'] + ')'
+        # TODO: check if the following works on all parsers
+        # TODO: see https://github.github.com/gfm/#list-items
+        # TODO: and #list-marker
+        # TODO: and how redcarpet deals with this.
+        # FIXME: the following is false.
+        no_of_indentation_spaces = 4 * (header['type'] - 1)
+        indentation_spaces = no_of_indentation_spaces * ' '
 
-    toc_line = indentation_spaces + list_symbol + ' ' + line
+        if no_links:
+            line = header['text_original']
+        else:
+            line = '[' + header['text_original'] + ']' + '(#' + header['text_anchor_link'] + ')'
+
+        toc_line = indentation_spaces + list_marker + ' ' + line
 
     return toc_line
 
@@ -351,6 +362,8 @@ def get_atx_heading(line,
     assert isinstance(line, str)
     assert isinstance(keep_header_levels, int)
     assert keep_header_levels > 0
+    assert isinstance(parser, str)
+    assert isinstance(no_links, bool)
 
     if len(line) == 0:
         return None
