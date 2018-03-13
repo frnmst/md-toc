@@ -23,6 +23,7 @@
 
 import argparse
 import textwrap
+import copy
 import pkg_resources
 from .api import (write_string_on_file_between_markers, build_toc)
 
@@ -43,7 +44,7 @@ class CliToApi():
     def write_toc(self, args):
         """Write the table of contents."""
         ordered = False
-        if args.md_parser == 'github' or md_parser == 'cmark':
+        if args.parser == 'github' or args.parser == 'cmark':
             list_marker = MD_PARSER_GITHUB_DEFAULT_LIST_MARKER
         if args.ordered_list_marker is not None:
             list_marker = args.ordered_list_marker
@@ -80,7 +81,7 @@ class CliInterface():
             formatter_class=argparse.RawDescriptionHelpFormatter,
             epilog=textwrap.dedent(PROGRAM_EPILOG))
 
-        subparsers = parser.add_subparsers(dest='parser')
+        subparsers = parser.add_subparsers(dest='parser',title='markdown parser')
         subparsers.required = False
 
         # Common optional parameters.
@@ -98,8 +99,8 @@ class CliInterface():
                       'set the string to be used as the marker for positioning the \
                       table of contents. Defaults to ' + DEFAULT_TOC_MARKER]
 
-        # Specific markdown parser options.
-        github = subparsers.add_parser('github')
+        # Github + cmark.
+        github = subparsers.add_parser('github',aliases=['cmark'])
         github.add_argument(in_place[0], in_place[1], action=in_place[2], help=in_place[3])
         github.add_argument(no_links[0], no_links[1], action=no_links[2], help=no_links[3])
         megroup = github.add_mutually_exclusive_group()
@@ -124,8 +125,6 @@ class CliInterface():
             help='set the maximum level of headers to be considered as part \
                   of the TOC. Defaults to 6')
         github.add_argument(toc_marker[0], toc_marker[1], metavar=toc_marker[2], help=toc_marker[3])
-        github.set_defaults(md_parser='github')
-
 
         parser.add_argument(
             'filename', metavar='FILE_NAME', help='the I/O file name')
