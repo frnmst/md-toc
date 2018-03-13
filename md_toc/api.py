@@ -27,10 +27,15 @@ import curses.ascii
 from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
                          GithubOverflowOrderedListMarker)
 
+# github, cmark constants
 MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL = 999
 MD_PARSER_GITHUB_MAX_INDENTATION = 3
 MD_PARSER_GITHUB_MAX_HEADER_LEVELS = 6
 MD_PARSER_GITHUB_MAX_ORDERED_LIST_MARKER = 999999999
+MD_PARSER_GITHUB_BULLET_LIST_MARKER = ['-', '+', '*']
+MD_PARSER_GITHUB_CLOSING_ORDERED_LIST_MARKER = ['.', ')']
+
+# redcarpet, github constants.
 MD_PARSER_REDCARPET_MAX_HEADER_LEVELS = 6
 
 
@@ -71,7 +76,8 @@ def build_toc(filename,
               ordered=False,
               no_links=False,
               keep_header_levels=3,
-              parser='github'):
+              parser='github',
+              list_marker='-'):
     r"""Parse file by line and build the table of contents.
 
     :parameter filename: the file that needs to be read.
@@ -115,7 +121,7 @@ def build_toc(filename,
                 else:
                     index = 1
                 toc += build_toc_line(header, ordered, no_links, index,
-                                      parser) + '\n'
+                                      parser, list_marker) + '\n'
                 header_type_prev = header_type_curr
             line = f.readline()
 
@@ -166,7 +172,8 @@ def build_toc_line(header,
                    ordered=False,
                    no_links=False,
                    index=1,
-                   parser='github'):
+                   parser='github',
+                   list_marker='-'):
     r"""Return a list element of the table of contents.
 
     :parameter header: a data structure that contains the original
@@ -197,21 +204,22 @@ def build_toc_line(header,
     assert isinstance(no_links, bool)
     assert isinstance(index, int)
     assert isinstance(parser, str)
+    assert isinstance(list_marker, str)
 
     toc_line = str()
 
-    #    if parser == 'github' or parser == 'cmark':
-    if parser is not None:
+    if parser == 'github' or parser == 'cmark':
         if ordered:
-            list_marker = str(index) + '.'
+            assert list_marker in MD_PARSER_GITHUB_CLOSING_ORDERED_LIST_MARKER
         else:
-            list_marker = '-'
+            assert list_marker in MD_PARSER_GITHUB_BULLET_LIST_MARKER
+
+        if ordered:
+            list_marker = str(index) + list_marker
+
         space_after_list_marker = ' '
 
-        # TODO: check if the following works on all parsers
-        # TODO: see https://github.github.com/gfm/#list-items
-        # TODO: and #list-marker
-        # TODO: and how redcarpet deals with this.
+        # TODO: how does redcarpet deals with this?
         # FIXME: the following is false.
         no_of_indentation_spaces = 4 * (header['type'] - 1)
         indentation_spaces = no_of_indentation_spaces * ' '

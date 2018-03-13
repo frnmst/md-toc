@@ -29,7 +29,7 @@ Supported markdown parsers
 
 - ``gitlab``:
 
-  - Uses ``redcarpet`` with minor modifications. See next.
+  Uses ``redcarpet`` with minor modifications. See next.
 
 What are headers and what are not
 ---------------------------------
@@ -92,8 +92,22 @@ Only ATX-style headings are supported in md_toc.
 List item rules
 ---------------
 
-- ``github``: Ordered list markers cannot exceed ``99999999``. If that is the 
-  case, a ``GithubOverflowOrderedListMarker`` exception is raised.
+- ``github``: 
+
+  - https://github.github.com/gfm/#list-items
+
+  We are interested in sublists indentation rules...
+
+  Ordered list markers cannot exceed ``99999999`` according to the following. 
+  If that is the case, a ``GithubOverflowOrderedListMarker`` exception 
+  is raised:
+
+  - https://github.github.com/gfm/#ordered-list-marker
+
+  We are not concerned about using ``0`` or negative numbers as list markers.
+
+
+All bullet and ordered list markers are supported.
 
 Link label rules
 ----------------
