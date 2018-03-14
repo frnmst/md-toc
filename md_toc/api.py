@@ -196,7 +196,6 @@ def build_toc_line(header,
     assert isinstance(index, int)
     assert isinstance(parser, str)
 
-    print(list_marker)
     assert isinstance(list_marker, str)
 
     toc_line = str()

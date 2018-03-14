@@ -51,7 +51,7 @@ class CliToApi():
             elif args.unordered_list_marker is not None:
                 list_marker = args.unordered_list_marker
             else:
-                list_marker = md_parser['github']['list']['unordered']
+                list_marker = md_parser['github']['list']['unordered']['default_marker']
 
         toc = build_toc(
             filename=args.filename,
@@ -101,7 +101,7 @@ class CliInterface():
         ]
 
         # Github + cmark.
-        github = subparsers.add_parser('github', aliases=['cmark'])
+        github = subparsers.add_parser('github', aliases=['cmark'], description='Use Commonmark rules to generate an output. If no option is selected, the default output will be an unordered list with the respective default values as listed below')
         github.add_argument(
             in_place[0], in_place[1], action=in_place[2], help=in_place[3])
         github.add_argument(
