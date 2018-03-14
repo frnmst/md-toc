@@ -26,17 +26,8 @@ import re
 import curses.ascii
 from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
                          GithubOverflowOrderedListMarker)
-
-# github, cmark constants
-MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL = 999
-MD_PARSER_GITHUB_MAX_INDENTATION = 3
-MD_PARSER_GITHUB_MAX_HEADER_LEVELS = 6
-MD_PARSER_GITHUB_MAX_ORDERED_LIST_MARKER = 999999999
-MD_PARSER_GITHUB_BULLET_LIST_MARKER = ['-', '+', '*']
-MD_PARSER_GITHUB_CLOSING_ORDERED_LIST_MARKER = ['.', ')']
-
-# redcarpet, github constants.
-MD_PARSER_REDCARPET_MAX_HEADER_LEVELS = 6
+from .constants import common_defaults
+from .constants import parser as md_parser
 
 
 def write_string_on_file_between_markers(filename, string, marker):
@@ -120,8 +111,8 @@ def build_toc(filename,
                     index = header_type_counter[header_type_curr]
                 else:
                     index = 1
-                toc += build_toc_line(header, ordered, no_links, index,
-                                      parser, list_marker) + '\n'
+                toc += build_toc_line(header, ordered, no_links, index, parser,
+                                      list_marker) + '\n'
                 header_type_prev = header_type_curr
             line = f.readline()
 
@@ -164,7 +155,7 @@ def increase_index_ordered_list(header_type_count,
 
     # TODO: check if exists MD_PARSER_REDCARPET_MAX_ORDERED_LIST_MARKER
     if parser == 'github':
-        if header_type_count[header_type_curr] > MD_PARSER_GITHUB_MAX_ORDERED_LIST_MARKER:
+        if header_type_count[header_type_curr] > md_parser['github']['list']['ordered']['max_marker_number']:
             raise GithubOverflowOrderedListMarker
 
 
@@ -204,15 +195,19 @@ def build_toc_line(header,
     assert isinstance(no_links, bool)
     assert isinstance(index, int)
     assert isinstance(parser, str)
+
+    print(list_marker)
     assert isinstance(list_marker, str)
 
     toc_line = str()
 
     if parser == 'github' or parser == 'cmark':
         if ordered:
-            assert list_marker in MD_PARSER_GITHUB_CLOSING_ORDERED_LIST_MARKER
+            assert list_marker in md_parser['github']['list']['ordered'][
+                'closing_markers']
         else:
-            assert list_marker in MD_PARSER_GITHUB_BULLET_LIST_MARKER
+            assert list_marker in md_parser['github']['list']['unordered'][
+                'bullet_markers']
 
         if ordered:
             list_marker = str(index) + list_marker
@@ -384,17 +379,17 @@ def get_atx_heading(line,
         i = 0
         while i < len(
                 line
-        ) and line[i] == ' ' and i <= MD_PARSER_GITHUB_MAX_INDENTATION:
+        ) and line[i] == ' ' and i <= md_parser['github']['header']['max_space_indentation']:
             i += 1
-        if i > MD_PARSER_GITHUB_MAX_INDENTATION:
+        if i > md_parser['github']['header']['max_space_indentation']:
             return None
 
         offset = i
         while i < len(
                 line
-        ) and line[i] == '#' and i <= MD_PARSER_GITHUB_MAX_HEADER_LEVELS + offset:
+        ) and line[i] == '#' and i <= md_parser['github']['header']['max_levels'] + offset:
             i += 1
-        if i - offset > MD_PARSER_GITHUB_MAX_HEADER_LEVELS or i - offset > keep_header_levels or i - offset == 0:
+        if i - offset > md_parser['github']['header']['max_levels'] or i - offset > keep_header_levels or i - offset == 0:
             return None
         current_headers = i - offset
 
@@ -454,7 +449,7 @@ def get_atx_heading(line,
                     final_line.strip('\u0020').strip('\u0009').strip('\u000a')
                     .strip('\u000b').strip('\u000c').strip('\u000d')) == 0:
                 raise GithubEmptyLinkLabel
-            if len(final_line) > MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL:
+            if len(final_line) > md_parser['github']['link']['max_chars_label']:
                 raise GithubOverflowCharsLinkLabel
             # Escape square brackets if not already escaped.
             i = 0
@@ -483,7 +478,8 @@ def get_atx_heading(line,
             return None
 
         i = 0
-        while (i < len(line) and i < MD_PARSER_REDCARPET_MAX_HEADER_LEVELS and
+        while (i < len(line) and
+               i < md_parser['redcarpet']['header']['max_levels'] and
                line[i] == '#'):
             i += 1
         current_headers = i
