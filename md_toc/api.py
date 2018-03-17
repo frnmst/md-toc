@@ -195,11 +195,7 @@ def build_toc_line(header,
     assert isinstance(no_links, bool)
     assert isinstance(index, int)
     assert isinstance(parser, str)
-
     assert isinstance(list_marker, str)
-
-    toc_line = str()
-
     if parser == 'github' or parser == 'cmark':
         if ordered:
             assert list_marker in md_parser['github']['list']['ordered'][
@@ -207,23 +203,34 @@ def build_toc_line(header,
         else:
             assert list_marker in md_parser['github']['list']['unordered'][
                 'bullet_markers']
-
+    elif parser == 'redcarpet' or parser == 'gitlab':
         if ordered:
-            list_marker = str(index) + list_marker
-
-        space_after_list_marker = ' '
-
-        # TODO: how does redcarpet deals with this?
-        # FIXME: the following is false.
-        no_of_indentation_spaces = 4 * (header['type'] - 1)
-        indentation_spaces = no_of_indentation_spaces * ' '
-
-        if no_links:
-            line = header['text_original']
+            assert list_marker in md_parser['redcarpet']['list']['ordered'][
+                'closing_markers']
         else:
-            line = '[' + header['text_original'] + ']' + '(#' + header['text_anchor_link'] + ')'
+            assert list_marker in md_parser['redcarpet']['list']['unordered'][
+                'bullet_markers']
 
-        toc_line = indentation_spaces + list_marker + ' ' + line
+    # FIXME: This function.
+
+    toc_line = str()
+
+    if ordered:
+        list_marker = str(index) + list_marker
+
+    space_after_list_marker = ' '
+
+    # TODO: how does redcarpet deals with this?
+    # FIXME: the following works only for some cases.
+    no_of_indentation_spaces = 4 * (header['type'] - 1)
+    indentation_spaces = no_of_indentation_spaces * ' '
+
+    if no_links:
+        line = header['text_original']
+    else:
+        line = '[' + header['text_original'] + ']' + '(#' + header['text_anchor_link'] + ')'
+
+    toc_line = indentation_spaces + list_marker + ' ' + line
 
     return toc_line
 

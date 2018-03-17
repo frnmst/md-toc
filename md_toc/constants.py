@@ -54,13 +54,26 @@ parser['github']['header'] = {
 
 parser['cmark'] = parser['github']
 
-parser['redcarpet']['header'] = {'max_space_indentation': 0, 'max_levels': 6}
-parser['redcarpet']['list']['ordered'] = {
-    'closing_markers': ['.'],
-}
+
 parser['redcarpet']['list']['unordered'] = {
     'bullet_markers': ['-', '+', '*'],
 }
+
+parser['redcarpet']['list']['ordered'] = {
+    'closing_markers': ['.'],
+    'default_closing_marker': '.'
+}
+parser['redcarpet']['list']['unordered'] = {
+    'bullet_markers': ['-', '+', '*'],
+    'default_marker': '-'
+}
+
+parser['redcarpet']['header'] = {
+    'max_space_indentation': 0,
+    'max_levels': 6,
+    'default_keep_levels': 3
+}
+
 
 parser['gitlab'] = parser['redcarpet']
 

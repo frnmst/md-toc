@@ -400,3 +400,15 @@ and so on... For example:
 
   - https://github.com/gettalong/kramdown/search?q=anchor&type=Issues&utf8=%E2%9C%93
 
+
+Steps to add an unsupported markdown parser
+-------------------------------------------
+
+1. Find the source code and/or documents.
+2. Find the rules for each section, such as anchor link generation, title 
+   detection, etc... Rely more on the source code than on the documentation (if 
+   possible)
+3. Add the relevant information on this page.
+4. Write or adapt an algorithm for that section.
+5. Write unit tests for it.
+6. Add the new parser to the CLI interface.
