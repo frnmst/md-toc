@@ -218,8 +218,6 @@ def build_toc_line(header,
     if ordered:
         list_marker = str(index) + list_marker
 
-    space_after_list_marker = ' '
-
     # TODO: how does redcarpet deals with this?
     # FIXME: the following works only for some cases.
     no_of_indentation_spaces = 4 * (header['type'] - 1)

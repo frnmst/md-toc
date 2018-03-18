@@ -49,17 +49,17 @@ Conventions
 - PEP.
 - 4 space indentation.
 
-Help
-----
+Helps
+-----
 
 
 ::
 
-    usage: md_toc [-h] [-i] [-n] [-o] [-p {github,redcarpet,gitlab}]
-                  [-t TOC_MARKER] [-l HEADER_LEVELS] [-v]
-                  FILE_NAME
+    usage: md_toc [-h] [-i] [-n] [-t TOC_MARKER] [-v]
+                  {github,cmark,redcarpet,gitlab} ... FILE_NAME
 
-    Markdown Table Of Contents
+    Markdown Table Of Contents: Automatically generate a compliant table
+    of contents for a markdown file to improve document readability.
 
     positional arguments:
       FILE_NAME             the I/O file name
@@ -67,18 +67,14 @@ Help
     optional arguments:
       -h, --help            show this help message and exit
       -i, --in-place        overwrite the input file
-      -n, --no-links        avoids adding links to corresponding content
-      -o, --ordered         write as an ordered list
-      -p {github,cmark,redcarpet,gitlab}, --parser {github,cmark,redcarpet,gitlab}
-                            decide what markdown parser will be used to generate
-                            the links. Defaults to github
+      -n, --no-links        avoids adding links to the corresponding content
       -t TOC_MARKER, --toc-marker TOC_MARKER
                             set the string to be used as the marker for
                             positioning the table of contents. Defaults to [](TOC)
-      -l HEADER_LEVELS, --header-levels HEADER_LEVELS
-                            set the maximum level of headers to be considered as  
-                            part of the TOC
       -v, --version         show program's version number and exit
+
+    markdown parser:
+      {github,cmark,redcarpet,gitlab}
 
     Return values: 0 OK, 1 Error, 2 Invalid command
 
@@ -86,6 +82,57 @@ Help
     License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
     This is free software: you are free to change and redistribute it.
     There is NO WARRANTY, to the extent permitted by law.
+
+
+::
+
+    usage: md_toc github [-h] [-u [{-,+,*}] | -o [{.,)}]] [-l [{1,2,3,4,5,6}]]
+
+    Use Commonmark rules to generate an output. If no option is selected, the
+    default output will be an unordered list with the respective default values as
+    listed below
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -u [{-,+,*}], --unordered-list-marker [{-,+,*}]
+                            set the marker and enables unordered list. Defaults to
+                            -
+      -o [{.,)}], --ordered-list-marker [{.,)}]
+                            set the marker and enables ordered lists. Defaults to
+                            .
+      -l [{1,2,3,4,5,6}], --header-levels [{1,2,3,4,5,6}]
+                            set the maximum level of headers to be considered as
+                            part of the TOC. Defaults to 3
+
+
+::
+
+    usage: md_toc redcarpet [-h] [-u [{-,+,*}] | -o [{.}]] [-l [{1,2,3,4,5,6}]]
+
+    Use Redcarpet rules to generate an output. If no option is selected, the
+    default output will be an unordered list with the respective default values as
+    listed below. Gitlab rules are the same as Redcarpet except that conflicts are
+    avoided with duplicate headers.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -u [{-,+,*}], --unordered-list-marker [{-,+,*}]
+                            set the marker and enables unordered list. Defaults to
+                            -
+      -o [{.}], --ordered-list-marker [{.}]
+                            set the marker and enables ordered lists. Defaults to
+                            .
+      -l [{1,2,3,4,5,6}], --header-levels [{1,2,3,4,5,6}]
+                            set the maximum level of headers to be considered as
+                            part of the TOC. Defaults to 3
+
+
+TODO and FIXME
+--------------
+
+::
+
+    grep -e TODO -e FIXME -n */*.py
 
 
 License

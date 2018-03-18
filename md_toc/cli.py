@@ -127,7 +127,8 @@ class CliInterface():
             help='set the maximum level of headers to be considered as part \
                   of the TOC. Defaults to ' +
             str(md_parser['github']['header']['default_keep_levels']))
-        github.set_defaults(header_levels=md_parser['github']['header']['default_keep_levels'])
+        github.set_defaults(
+            header_levels=md_parser['github']['header']['default_keep_levels'])
 
         # Redcarpet.
         redcarpet = subparsers.add_parser(
@@ -144,48 +145,59 @@ class CliInterface():
         megroup.add_argument(
             '-u',
             '--unordered-list-marker',
-            choices=md_parser['redcarpet']['list']['unordered']['bullet_markers'],
+            choices=md_parser['redcarpet']['list']['unordered'][
+                'bullet_markers'],
             nargs='?',
-            const=md_parser['redcarpet']['list']['unordered']['default_marker'],
+            const=md_parser['redcarpet']['list']['unordered'][
+                'default_marker'],
             help='set the marker and enables unordered list. Defaults to ' +
             md_parser['redcarpet']['list']['unordered']['default_marker'])
         megroup.add_argument(
             '-o',
             '--ordered-list-marker',
-            choices=md_parser['redcarpet']['list']['ordered']['closing_markers'],
+            choices=md_parser['redcarpet']['list']['ordered'][
+                'closing_markers'],
             nargs='?',
             const=md_parser['redcarpet']['list']['ordered'][
                 'default_closing_marker'],
             help='set the marker and enables ordered lists. Defaults to ' +
-            md_parser['redcarpet']['list']['ordered']['default_closing_marker'])
+            md_parser['redcarpet']['list']['ordered']['default_closing_marker']
+        )
         redcarpet.add_argument(
             '-l',
             '--header-levels',
             choices=[
                 str(i)
-                for i in range(1,
-                               md_parser['redcarpet']['header']['max_levels'] + 1)
+                for i in range(
+                    1, md_parser['redcarpet']['header']['max_levels'] + 1)
             ],
             nargs='?',
             const=str(md_parser['redcarpet']['header']['default_keep_levels']),
             help='set the maximum level of headers to be considered as part \
                   of the TOC. Defaults to ' +
             str(md_parser['redcarpet']['header']['default_keep_levels']))
-        redcarpet.set_defaults(header_levels=md_parser['redcarpet']['header']['default_keep_levels'])
-
+        redcarpet.set_defaults(header_levels=md_parser['redcarpet']['header'][
+            'default_keep_levels'])
 
         parser.add_argument(
             'filename', metavar='FILE_NAME', help='the I/O file name')
         parser.add_argument(
-            '-i', '--in-place', action='store_true', help='overwrite the input file')
+            '-i',
+            '--in-place',
+            action='store_true',
+            help='overwrite the input file')
         parser.add_argument(
-            '-n', '--no-links', action='store_true',
+            '-n',
+            '--no-links',
+            action='store_true',
             help='avoids adding links to the corresponding content')
         parser.add_argument(
-            '-t', '--toc-marker',
+            '-t',
+            '--toc-marker',
             metavar='TOC_MARKER',
             help='set the string to be used as the marker for positioning the \
-                  table of contents. Defaults to ' + common_defaults['toc_marker'])
+                  table of contents. Defaults to ' +
+            common_defaults['toc_marker'])
         parser.set_defaults(toc_marker=common_defaults['toc_marker'])
 
         parser.add_argument(

@@ -29,16 +29,14 @@ program.
 Packages
 --------
 
-- The package will be available for AUR... TODO
+- The package WILL be available for AUR...
 
 Dependencies
 ------------
 
 - Python 3.x
 - fpyutils_
-- python-slugify_
 
 .. _fpyutils: https://github.com/frnmst/fpyutils
 
-.. _python-slugify: https://github.com/un33k/python-slugify
 
