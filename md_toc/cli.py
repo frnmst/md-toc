@@ -23,14 +23,17 @@
 
 import argparse
 import textwrap
-import pkg_resources
+from pkg_resources import (get_distribution, DistributionNotFound)
 from .api import (write_string_on_file_between_markers, build_toc)
 from .constants import common_defaults
 from .constants import parser as md_parser
 
 PROGRAM_DESCRIPTION = 'Markdown Table Of Contents: Automatically generate a compliant table\nof contents for a markdown file to improve document readability.'
 VERSION_NAME = 'md_toc'
-VERSION_NUMBER = str(pkg_resources.get_distribution('md_toc').version)
+try:
+    VERSION_NUMBER = str(get_distribution('md_toc').version)
+except DistributionNotFound:
+    VERSION_NUMBER = 'vDevel'
 VERSION_COPYRIGHT = 'Copyright (C) 2018 Franco Masotti, frnmst'
 VERSION_LICENSE = 'License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.'
 PROGRAM_EPILOG = 'Return values: 0 OK, 1 Error, 2 Invalid command' + '\n\n' + VERSION_COPYRIGHT + '\n' + VERSION_LICENSE

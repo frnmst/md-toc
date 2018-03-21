@@ -30,7 +30,7 @@ setup(
     description='An utility that is able to generate a table of contents for a markdown file.',
     long_description=open('README.rst').read(),
     package_data={
-        '': ['*.txt', '*.rst'],
+        'md_toc': ['*.txt', '*.rst'],
     },
     author='Franco Masotti',
     author_email='franco.masotti@student.unife.it',
@@ -51,6 +51,6 @@ setup(
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Programming Language :: Python :: 3',
     ],
-    install_requires=['fpyutils==0.0.2'],
+    install_requires=['fpyutils>=0.0.2'],
 )
 

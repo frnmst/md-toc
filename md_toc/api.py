@@ -29,6 +29,8 @@ from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
 from .constants import common_defaults
 from .constants import parser as md_parser
 
+# FIXME: Fix all docstrings.
+
 
 def write_string_on_file_between_markers(filename, string, marker):
     r"""Write the table of contents.
