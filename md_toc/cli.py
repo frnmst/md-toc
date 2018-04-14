@@ -24,7 +24,7 @@
 import argparse
 import textwrap
 from pkg_resources import (get_distribution, DistributionNotFound)
-from .api import (write_string_on_file_between_markers, build_toc)
+from .api import (write_string_on_files_between_markers, build_toc)
 from .constants import common_defaults
 from .constants import parser as md_parser
 
@@ -59,7 +59,7 @@ class CliToApi():
                 list_marker = md_parser['redcarpet']['list']['unordered'][
                     'default_marker']
 
-        toc = build_toc(
+        toc_struct = build_toc(
             filename=args.filename,
             ordered=ordered,
             no_links=args.no_links,
@@ -67,10 +67,11 @@ class CliToApi():
             parser=args.parser,
             list_marker=list_marker)
         if args.in_place:
-            write_string_on_file_between_markers(
-                filename=args.filename, string=toc, marker=args.toc_marker)
+            write_string_on_files_between_markers(
+                filename=args.filename, string_struct=toc_struct, marker=args.toc_marker)
         else:
-            print(toc, end='')
+            for k, toc in toc_struct.items():
+                print(toc, end='')
 
 
 class CliInterface():
@@ -87,9 +88,12 @@ class CliInterface():
             formatter_class=argparse.RawDescriptionHelpFormatter,
             epilog=textwrap.dedent(PROGRAM_EPILOG))
 
+        parser.add_argument(
+            'filename', metavar='FILE_NAME', nargs='*', help='the I/O file name')
+
         subparsers = parser.add_subparsers(
             dest='parser', title='markdown parser')
-        subparsers.required = False
+        subparsers.required = True
 
         # Github + cmark.
         github = subparsers.add_parser(
@@ -182,8 +186,6 @@ class CliInterface():
         redcarpet.set_defaults(header_levels=md_parser['redcarpet']['header'][
             'default_keep_levels'])
 
-        parser.add_argument(
-            'filename', metavar='FILE_NAME', help='the I/O file name')
         parser.add_argument(
             '-i',
             '--in-place',

@@ -24,6 +24,7 @@
 import fpyutils
 import re
 import curses.ascii
+import sys
 from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
                          GithubOverflowOrderedListMarker)
 from .constants import common_defaults
@@ -32,7 +33,7 @@ from .constants import parser as md_parser
 # FIXME: Fix all docstrings.
 
 
-def write_string_on_file_between_markers(filename, string, marker):
+def write_string_on_files_between_markers(filename, string_struct, marker):
     r"""Write the table of contents.
 
     :parameter filename: the file that needs to be read or modified.
@@ -46,23 +47,26 @@ def write_string_on_file_between_markers(filename, string, marker):
     :rtype: None
     :raises: one of the fpyutils exceptions or one of the built-in exceptions.
     """
-    assert isinstance(string, str)
+#    assert isinstance(string, str)
     assert isinstance(marker, str)
 
-    final_string = marker + '\n\n' + string.rstrip() + '\n\n' + marker + '\n'
-    marker_line_positions = fpyutils.get_line_matches(
-        filename, marker, 2, loose_matching=True)
+    file_id = 0
+    for f in filename:
+        final_string = marker + '\n\n' + string_struct[file_id].rstrip() + '\n\n' + marker + '\n'
+        marker_line_positions = fpyutils.get_line_matches(f, marker, 2, loose_matching=True)
 
-    if 1 in marker_line_positions:
-        if 2 in marker_line_positions:
-            fpyutils.remove_line_interval(filename, marker_line_positions[1],
-                                          marker_line_positions[2], filename)
-        else:
-            fpyutils.remove_line_interval(filename, marker_line_positions[1],
-                                          marker_line_positions[1], filename)
-        # See fpyutils for the reason of the -1 here.
-        fpyutils.insert_string_at_line(filename, final_string,
-                                       marker_line_positions[1] - 1, filename)
+        if 1 in marker_line_positions:
+            if 2 in marker_line_positions:
+                fpyutils.remove_line_interval(f, marker_line_positions[1],
+                                              marker_line_positions[2], f)
+            else:
+                fpyutils.remove_line_interval(f, marker_line_positions[1],
+                                              marker_line_positions[1], f)
+
+            fpyutils.insert_string_at_line(f, final_string,
+                                           marker_line_positions[1], f, append=False)
+
+        file_id += 1
 
 
 def build_toc(filename,
@@ -86,21 +90,33 @@ def build_toc(filename,
     :type no_links: bool
     :type keep_header_levels: int
     :type parser: str
-    :returns: the corresponding table of contents.
-    :rtype: str
+    :returns: the corresponding table of contents for each input file.
+    :rtype: list
     :raises: one of the built-in exceptions.
     """
-    assert isinstance(filename, str)
+    assert isinstance(filename, list)
+    if len(filename) > 0:
+        for f in filename:
+            assert isinstance(f, str)
+
+    if len(filename) == 0:
+        filename[0] == '-'
 
     # Base cases.
     header_type_counter = dict()
     header_type_curr = 0
     header_type_prev = 0
-    toc = ''
     header_duplicate_counter = dict()
+    file_id = 0
+    toc_struct = list()
 
-    with open(filename, 'r') as f:
+    while file_id < len(filename):
+        if filename[file_id] == '-':
+            f = sys.stdin
+        else:
+            f = open(filename[file_id], 'r')
         line = f.readline()
+        toc_struct.append('')
         while line:
             header = get_md_header(line, header_duplicate_counter,
                                    keep_header_levels, parser, no_links)
@@ -113,12 +129,15 @@ def build_toc(filename,
                     index = header_type_counter[header_type_curr]
                 else:
                     index = 1
-                toc += build_toc_line(header, ordered, no_links, index, parser,
+                toc_struct[file_id] += build_toc_line(header, ordered, no_links, index, parser,
                                       list_marker) + '\n'
                 header_type_prev = header_type_curr
             line = f.readline()
+        f.close()
 
-    return toc
+        file_id += 1
+
+    return toc_struct
 
 
 def increase_index_ordered_list(header_type_count,
