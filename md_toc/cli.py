@@ -24,7 +24,7 @@
 import argparse
 import textwrap
 from pkg_resources import (get_distribution, DistributionNotFound)
-from .api import (write_string_on_files_between_markers, build_toc)
+from .api import (write_strings_on_files_between_markers, build_multiple_tocs)
 from .constants import common_defaults
 from .constants import parser as md_parser
 
@@ -59,18 +59,18 @@ class CliToApi():
                 list_marker = md_parser['redcarpet']['list']['unordered'][
                     'default_marker']
 
-        toc_struct = build_toc(
-            filename=args.filename,
+        toc_struct = build_multiple_tocs(
+            filenames=args.filename,
             ordered=ordered,
             no_links=args.no_links,
             keep_header_levels=int(args.header_levels),
             parser=args.parser,
             list_marker=list_marker)
         if args.in_place:
-            write_string_on_files_between_markers(
+            write_strings_on_files_between_markers(
                 filename=args.filename, string_struct=toc_struct, marker=args.toc_marker)
         else:
-            for k, toc in toc_struct.items():
+            for toc in toc_struct:
                 print(toc, end='')
 
 

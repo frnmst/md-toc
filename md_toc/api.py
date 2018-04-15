@@ -32,44 +32,66 @@ from .constants import parser as md_parser
 
 # FIXME: Fix all docstrings.
 
-
-def write_string_on_files_between_markers(filename, string_struct, marker):
-    r"""Write the table of contents.
+def write_string_on_file_between_markers(filename, string, marker):
+    r"""Write the table of contents on a single file.
 
     :parameter filename: the file that needs to be read or modified.
     :parameter string: the string that will be written on the file.
     :parameter marker: a marker that will identify the start
          and the end of the string.
-    :type filename: str
+    :type filenames: str
     :type string: str
     :type marker: str
     :returns: None
     :rtype: None
     :raises: one of the fpyutils exceptions or one of the built-in exceptions.
     """
-#    assert isinstance(string, str)
+    assert isinstance(filename, str)
+    assert isinstance(string, str)
     assert isinstance(marker, str)
 
-    file_id = 0
-    for f in filename:
-        final_string = marker + '\n\n' + string_struct[file_id].rstrip() + '\n\n' + marker + '\n'
-        marker_line_positions = fpyutils.get_line_matches(f, marker, 2, loose_matching=True)
+    final_string = marker + '\n\n' + string.rstrip() + '\n\n' + marker + '\n'
+    marker_line_positions = fpyutils.get_line_matches(filename, marker, 2, loose_matching=True)
 
-        if 1 in marker_line_positions:
-            if 2 in marker_line_positions:
-                fpyutils.remove_line_interval(f, marker_line_positions[1],
-                                              marker_line_positions[2], f)
-            else:
-                fpyutils.remove_line_interval(f, marker_line_positions[1],
+    if 1 in marker_line_positions:
+        if 2 in marker_line_positions:
+            fpyutils.remove_line_interval(filename, marker_line_positions[1],
+                                          marker_line_positions[2], f)
+        else:
+            fpyutils.remove_line_interval(filename, marker_line_positions[1],
                                               marker_line_positions[1], f)
+        fpyutils.insert_string_at_line(filename, final_string,
+                                       marker_line_positions[1], filename, append=False)
 
-            fpyutils.insert_string_at_line(f, final_string,
-                                           marker_line_positions[1], f, append=False)
 
+def write_strings_on_files_between_markers(filenames, strings, marker):
+    r"""Write the table of contents on multiple files.
+
+    :parameter filenames: the files that needs to be read or modified.
+    :parameter strings: the strings that will be written on the file. Each
+         string is associated with one file.
+    :parameter marker: a marker that will identify the start
+         and the end of the string.
+    :type filenames: list
+    :type string: list
+    :type marker: str
+    :returns: None
+    :rtype: None
+    :raises: one of the fpyutils exceptions or one of the built-in exceptions.
+    """
+    if len(filenames) > 0:
+        for f in filenames:
+            assert isinstance(f, str)
+    if len(strings) > 0:
+        for s in strings:
+            assert isinstance(f, str)
+    file_id = 0
+    for f in filenames:
+        write_string_on_file_between_markers(f, strings[file_id], marker)
         file_id += 1
 
 
-def build_toc(filename,
+def build_multiple_tocs(filenames,
               ordered=False,
               no_links=False,
               keep_header_levels=3,
@@ -77,7 +99,7 @@ def build_toc(filename,
               list_marker='-'):
     r"""Parse file by line and build the table of contents.
 
-    :parameter filename: the file that needs to be read.
+    :parameter filenames: the file that needs to be read.
     :parameter ordered: decides whether to build an ordered list or not.
     :parameter no_links: disables the use of links.
     :parameter keep_header_levels: the maximum level of headers to be
@@ -85,7 +107,7 @@ def build_toc(filename,
          ``3``.
     :parameter parser: decides rules on how to generate anchor links.
          Defaults to ``github``.
-    :type filename: str
+    :type filenames: str
     :type ordered: bool
     :type no_links: bool
     :type keep_header_levels: int
@@ -94,15 +116,14 @@ def build_toc(filename,
     :rtype: list
     :raises: one of the built-in exceptions.
     """
-    assert isinstance(filename, list)
-    if len(filename) > 0:
-        for f in filename:
+    assert isinstance(filenames, list)
+    if len(filenames) > 0:
+        for f in filenames:
             assert isinstance(f, str)
 
-    if len(filename) == 0:
-        filename[0] == '-'
+    if len(filenames) == 0:
+        filenames[0] == '-'
 
-    # Base cases.
     header_type_counter = dict()
     header_type_curr = 0
     header_type_prev = 0
@@ -110,11 +131,11 @@ def build_toc(filename,
     file_id = 0
     toc_struct = list()
 
-    while file_id < len(filename):
-        if filename[file_id] == '-':
+    while file_id < len(filenames):
+        if filenames[file_id] == '-':
             f = sys.stdin
         else:
-            f = open(filename[file_id], 'r')
+            f = open(filenames[file_id], 'r')
         line = f.readline()
         toc_struct.append('')
         while line:
