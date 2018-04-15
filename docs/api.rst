@@ -14,6 +14,7 @@ file.
 .. autofunction:: build_toc_line
 .. autofunction:: increase_index_ordered_list
 .. autofunction:: build_anchor_link
-.. autofunction:: build_toc
+.. autofunction:: build_multiple_tocs
 .. autofunction:: write_string_on_file_between_markers
+.. autofunction:: write_strings_on_files_between_markers
 
