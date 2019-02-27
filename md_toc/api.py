@@ -122,7 +122,7 @@ def build_multiple_tocs(filenames,
             assert isinstance(f, str)
 
     if len(filenames) == 0:
-        filenames[0] == '-'
+        filenames.append('-')
 
     header_type_counter = dict()
     header_type_curr = 0
