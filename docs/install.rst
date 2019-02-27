@@ -15,7 +15,7 @@ or simply
     make install
 
 
-You can also install fpyutils via pip (i.e: without having download the source 
+You can also install md_toc via pip (i.e: without having to download the source 
 code):
 
 ::
