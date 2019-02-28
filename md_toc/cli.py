@@ -52,8 +52,8 @@ class CliToApi():
         elif args.unordered_list_marker is not None:
             list_marker = args.unordered_list_marker
         else:
-            if (args.parser == 'github' or args.parser == 'cmark'
-                or args.parser == 'gilab' or args.parser == 'commonmarker'):
+            if (args.parser == 'github' or args.parser == 'cmark' or
+                    args.parser == 'gilab' or args.parser == 'commonmarker'):
                 list_marker = md_parser['github']['list']['unordered'][
                     'default_marker']
             if args.parser == 'redcarpet':
@@ -69,7 +69,9 @@ class CliToApi():
             list_marker=list_marker)
         if args.in_place:
             write_strings_on_files_between_markers(
-                filename=args.filename, string_struct=toc_struct, marker=args.toc_marker)
+                filenames=args.filename,
+                strings=toc_struct,
+                marker=args.toc_marker)
         else:
             for toc in toc_struct:
                 print(toc, end='')
@@ -90,7 +92,10 @@ class CliInterface():
             epilog=textwrap.dedent(PROGRAM_EPILOG))
 
         parser.add_argument(
-            'filename', metavar='FILE_NAME', nargs='*', help='the I/O file name')
+            'filename',
+            metavar='FILE_NAME',
+            nargs='*',
+            help='the I/O file name')
 
         subparsers = parser.add_subparsers(
             dest='parser', title='markdown parser')
@@ -118,8 +123,8 @@ class CliInterface():
             '--ordered-list-marker',
             choices=md_parser['github']['list']['ordered']['closing_markers'],
             nargs='?',
-            const=md_parser['github']['list']['ordered'][
-                'default_closing_marker'],
+            const=md_parser['github']['list']['ordered']
+            ['default_closing_marker'],
             help='set the marker and enables ordered lists. Defaults to ' +
             md_parser['github']['list']['ordered']['default_closing_marker'])
         github.add_argument(
@@ -127,14 +132,14 @@ class CliInterface():
             '--header-levels',
             choices=[
                 str(i)
-                for i in range(1,
-                               md_parser['github']['header']['max_levels'] + 1)
+                for i in range(1, md_parser['github']['header']['max_levels'] +
+                               1)
             ],
             nargs='?',
             const=str(md_parser['github']['header']['default_keep_levels']),
             help='set the maximum level of headers to be considered as part \
-                  of the TOC. Defaults to ' +
-            str(md_parser['github']['header']['default_keep_levels']))
+                  of the TOC. Defaults to ' + str(
+                md_parser['github']['header']['default_keep_levels']))
         github.set_defaults(
             header_levels=md_parser['github']['header']['default_keep_levels'])
 
@@ -152,21 +157,21 @@ class CliInterface():
         megroup.add_argument(
             '-u',
             '--unordered-list-marker',
-            choices=md_parser['redcarpet']['list']['unordered'][
-                'bullet_markers'],
+            choices=md_parser['redcarpet']['list']['unordered']
+            ['bullet_markers'],
             nargs='?',
-            const=md_parser['redcarpet']['list']['unordered'][
-                'default_marker'],
+            const=md_parser['redcarpet']['list']['unordered']
+            ['default_marker'],
             help='set the marker and enables unordered list. Defaults to ' +
             md_parser['redcarpet']['list']['unordered']['default_marker'])
         megroup.add_argument(
             '-o',
             '--ordered-list-marker',
-            choices=md_parser['redcarpet']['list']['ordered'][
-                'closing_markers'],
+            choices=md_parser['redcarpet']['list']['ordered']
+            ['closing_markers'],
             nargs='?',
-            const=md_parser['redcarpet']['list']['ordered'][
-                'default_closing_marker'],
+            const=md_parser['redcarpet']['list']['ordered']
+            ['default_closing_marker'],
             help='set the marker and enables ordered lists. Defaults to ' +
             md_parser['redcarpet']['list']['ordered']['default_closing_marker']
         )
@@ -174,17 +179,16 @@ class CliInterface():
             '-l',
             '--header-levels',
             choices=[
-                str(i)
-                for i in range(
+                str(i) for i in range(
                     1, md_parser['redcarpet']['header']['max_levels'] + 1)
             ],
             nargs='?',
             const=str(md_parser['redcarpet']['header']['default_keep_levels']),
             help='set the maximum level of headers to be considered as part \
-                  of the TOC. Defaults to ' +
-            str(md_parser['redcarpet']['header']['default_keep_levels']))
-        redcarpet.set_defaults(header_levels=md_parser['redcarpet']['header'][
-            'default_keep_levels'])
+                  of the TOC. Defaults to ' + str(
+                md_parser['redcarpet']['header']['default_keep_levels']))
+        redcarpet.set_defaults(header_levels=md_parser['redcarpet']['header']
+                               ['default_keep_levels'])
 
         parser.add_argument(
             '-i',

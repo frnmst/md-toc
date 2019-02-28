@@ -32,6 +32,7 @@ from .constants import parser as md_parser
 
 # FIXME: Fix all docstrings.
 
+
 def write_string_on_file_between_markers(filename, string, marker):
     r"""Write the table of contents on a single file.
 
@@ -51,17 +52,22 @@ def write_string_on_file_between_markers(filename, string, marker):
     assert isinstance(marker, str)
 
     final_string = marker + '\n\n' + string.rstrip() + '\n\n' + marker + '\n'
-    marker_line_positions = fpyutils.get_line_matches(filename, marker, 2, loose_matching=True)
+    marker_line_positions = fpyutils.get_line_matches(
+        filename, marker, 2, loose_matching=True)
 
     if 1 in marker_line_positions:
         if 2 in marker_line_positions:
             fpyutils.remove_line_interval(filename, marker_line_positions[1],
-                                          marker_line_positions[2], f)
+                                          marker_line_positions[2], filename)
         else:
             fpyutils.remove_line_interval(filename, marker_line_positions[1],
-                                              marker_line_positions[1], f)
-        fpyutils.insert_string_at_line(filename, final_string,
-                                       marker_line_positions[1], filename, append=False)
+                                          marker_line_positions[1], filename)
+        fpyutils.insert_string_at_line(
+            filename,
+            final_string,
+            marker_line_positions[1],
+            filename,
+            append=False)
 
 
 def write_strings_on_files_between_markers(filenames, strings, marker):
@@ -79,12 +85,15 @@ def write_strings_on_files_between_markers(filenames, strings, marker):
     :rtype: None
     :raises: one of the fpyutils exceptions or one of the built-in exceptions.
     """
+    assert isinstance(filenames, list)
     if len(filenames) > 0:
         for f in filenames:
             assert isinstance(f, str)
+    assert isinstance(strings, list)
     if len(strings) > 0:
         for s in strings:
-            assert isinstance(f, str)
+            assert isinstance(s, str)
+
     file_id = 0
     for f in filenames:
         write_string_on_file_between_markers(f, strings[file_id], marker)
@@ -92,11 +101,11 @@ def write_strings_on_files_between_markers(filenames, strings, marker):
 
 
 def build_multiple_tocs(filenames,
-              ordered=False,
-              no_links=False,
-              keep_header_levels=3,
-              parser='github',
-              list_marker='-'):
+                        ordered=False,
+                        no_links=False,
+                        keep_header_levels=3,
+                        parser='github',
+                        list_marker='-'):
     r"""Parse file by line and build the table of contents.
 
     :parameter filenames: the file that needs to be read.
@@ -150,8 +159,9 @@ def build_multiple_tocs(filenames,
                     index = header_type_counter[header_type_curr]
                 else:
                     index = 1
-                toc_struct[file_id] += build_toc_line(header, ordered, no_links, index, parser,
-                                      list_marker) + '\n'
+                toc_struct[file_id] += build_toc_line(header, ordered,
+                                                      no_links, index, parser,
+                                                      list_marker) + '\n'
                 header_type_prev = header_type_curr
             line = f.readline()
         f.close()
@@ -195,9 +205,10 @@ def increase_index_ordered_list(header_type_count,
 
     header_type_count[header_type_curr] += 1
 
-    if (parser == 'github' or parser == 'cmark'
-        or parser == 'gitlab' or parser == 'commonmarker'):
-        if header_type_count[header_type_curr] > md_parser['github']['list']['ordered']['max_marker_number']:
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
+            parser == 'commonmarker'):
+        if header_type_count[header_type_curr] > md_parser['github']['list'][
+                'ordered']['max_marker_number']:
             raise GithubOverflowOrderedListMarker
 
 
@@ -238,8 +249,8 @@ def build_toc_line(header,
     assert isinstance(index, int)
     assert isinstance(parser, str)
     assert isinstance(list_marker, str)
-    if (parser == 'github' or parser == 'cmark'
-        or parser == 'gitlab' or parser == 'commonmarker'):
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
+            parser == 'commonmarker'):
         if ordered:
             assert list_marker in md_parser['github']['list']['ordered'][
                 'closing_markers']
@@ -269,7 +280,8 @@ def build_toc_line(header,
     if no_links:
         line = header['text_original']
     else:
-        line = '[' + header['text_original'] + ']' + '(#' + header['text_anchor_link'] + ')'
+        line = '[' + header['text_original'] + ']' + '(#' + header[
+            'text_anchor_link'] + ')'
 
     toc_line = indentation_spaces + list_marker + ' ' + line
 
@@ -302,8 +314,8 @@ def build_anchor_link(header_text_trimmed,
     assert isinstance(header_duplicate_counter, dict)
     assert isinstance(parser, str)
 
-    if (parser == 'github' or parser == 'cmark'
-        or parser == 'gitlab' or parser == 'commonmarker'):
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
+            parser == 'commonmarker'):
         header_text_trimmed = header_text_trimmed.lower()
         # Remove punctuation: Keep spaces, hypens and "word characters"
         # only.
@@ -332,10 +344,12 @@ def build_anchor_link(header_text_trimmed,
         header_text_trimmed_middle_stage = ''
         for i in range(0, header_text_trimmed_len):
             if header_text_trimmed[i] == '<':
-                while i < header_text_trimmed_len and header_text_trimmed[i] != '>':
+                while i < header_text_trimmed_len and header_text_trimmed[
+                        i] != '>':
                     i += 1
             elif header_text_trimmed[i] == '&':
-                while i < header_text_trimmed_len and header_text_trimmed[i] != ';':
+                while i < header_text_trimmed_len and header_text_trimmed[
+                        i] != ';':
                     i += 1
             # str.find() == -1 if character is not found in str.
             # https://docs.python.org/3.6/library/stdtypes.html?highlight=find#str.find
@@ -406,26 +420,25 @@ def get_atx_heading(line,
     if len(line) == 0:
         return None
 
-    if (parser == 'github' or parser == 'cmark'
-        or parser == 'gitlab' or parser == 'commonmarker'):
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
+            parser == 'commonmarker'):
 
         if line[0] == '\u005c':
             return None
 
         i = 0
-        while i < len(
-                line
-        ) and line[i] == ' ' and i <= md_parser['github']['header']['max_space_indentation']:
+        while i < len(line) and line[i] == ' ' and i <= md_parser['github'][
+                'header']['max_space_indentation']:
             i += 1
         if i > md_parser['github']['header']['max_space_indentation']:
             return None
 
         offset = i
-        while i < len(
-                line
-        ) and line[i] == '#' and i <= md_parser['github']['header']['max_levels'] + offset:
+        while i < len(line) and line[i] == '#' and i <= md_parser['github'][
+                'header']['max_levels'] + offset:
             i += 1
-        if i - offset > md_parser['github']['header']['max_levels'] or i - offset > keep_header_levels or i - offset == 0:
+        if i - offset > md_parser['github']['header'][
+                'max_levels'] or i - offset > keep_header_levels or i - offset == 0:
             return None
         current_headers = i - offset
 
@@ -482,10 +495,11 @@ def get_atx_heading(line,
             if len(final_line) > 0 and final_line[-1] == '\u005c':
                 final_line += ' '
             if len(
-                    final_line.strip('\u0020').strip('\u0009').strip('\u000a')
-                    .strip('\u000b').strip('\u000c').strip('\u000d')) == 0:
+                    final_line.strip('\u0020').strip('\u0009').strip('\u000a').
+                    strip('\u000b').strip('\u000c').strip('\u000d')) == 0:
                 raise GithubEmptyLinkLabel
-            if len(final_line) > md_parser['github']['link']['max_chars_label']:
+            if len(final_line
+                   ) > md_parser['github']['link']['max_chars_label']:
                 raise GithubOverflowCharsLinkLabel
             # Escape square brackets if not already escaped.
             i = 0

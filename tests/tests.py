@@ -280,8 +280,8 @@ class TestApi(unittest.TestCase):
         # A modified Example 302 and Example 496 (for square brackets).
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + LINE_SQUARE_BRACKET_OPEN + S1 + GITHUB_LINE_FOO +
-                S1 + LINE_SQUARE_BRACKET_OPEN + GITHUB_LINE_BAR +
+                H1 + S1 + LINE_SQUARE_BRACKET_OPEN + S1 + GITHUB_LINE_FOO + S1
+                + LINE_SQUARE_BRACKET_OPEN + GITHUB_LINE_BAR +
                 LINE_SQUARE_BRACKET_CLOSE + LINE_SQUARE_BRACKET_CLOSE, 6,
                 'github'),
             (1, LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + S1 + GITHUB_LINE_FOO +
@@ -290,8 +290,8 @@ class TestApi(unittest.TestCase):
              LINE_SQUARE_BRACKET_CLOSE))
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + LINE_ESCAPE + LINE_ESCAPE +
-                LINE_SQUARE_BRACKET_OPEN + S1 + GITHUB_LINE_FOO, 6, 'github'),
+                H1 + S1 + LINE_ESCAPE + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN
+                + S1 + GITHUB_LINE_FOO, 6, 'github'),
             (1, LINE_ESCAPE + LINE_ESCAPE + LINE_ESCAPE +
              LINE_SQUARE_BRACKET_OPEN + S1 + GITHUB_LINE_FOO))
 
@@ -320,9 +320,9 @@ class TestApi(unittest.TestCase):
                 H1 + S1 + GITHUB_LINE_FOO + LINE_NEWLINE + GITHUB_LINE_FOO, 6,
                 'github'), (1, GITHUB_LINE_FOO))
         self.assertEqual(
-            api.get_atx_heading(H1 + S1 + GITHUB_LINE_FOO +
-                                LINE_CARRIAGE_RETURN + GITHUB_LINE_FOO, 6,
-                                'github'), (1, GITHUB_LINE_FOO))
+            api.get_atx_heading(
+                H1 + S1 + GITHUB_LINE_FOO + LINE_CARRIAGE_RETURN +
+                GITHUB_LINE_FOO, 6, 'github'), (1, GITHUB_LINE_FOO))
 
         # Test line endings with link labels.
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
@@ -362,9 +362,9 @@ class TestApi(unittest.TestCase):
             (1, REDCARPET_LINE_FOO + S1 + H3))
 
         self.assertEqual(
-            api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO + S1 + H1 +
-                                LINE_ESCAPE + LINE_ESCAPE + H2, 6,
-                                'redcarpet'),
+            api.get_atx_heading(
+                H1 + S1 + REDCARPET_LINE_FOO + S1 + H1 + LINE_ESCAPE +
+                LINE_ESCAPE + H2, 6, 'redcarpet'),
             (1, REDCARPET_LINE_FOO + S1 + H1 + LINE_ESCAPE + LINE_ESCAPE))
 
         self.assertEqual(
@@ -386,15 +386,16 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.get_atx_heading(H1 + LINE_NEWLINE, 6, 'redcarpet'), None)
         self.assertEqual(
-            api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO + LINE_NEWLINE +
-                                REDCARPET_LINE_FOO, 6, 'redcarpet'),
-            (1, REDCARPET_LINE_FOO))
+            api.get_atx_heading(
+                H1 + S1 + REDCARPET_LINE_FOO + LINE_NEWLINE +
+                REDCARPET_LINE_FOO, 6, 'redcarpet'), (1, REDCARPET_LINE_FOO))
         self.assertEqual(
-            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'redcarpet'), None)
+            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'redcarpet'),
+            None)
         self.assertEqual(
-            api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO +
-                                LINE_CARRIAGE_RETURN + REDCARPET_LINE_FOO, 6,
-                                'redcarpet'),
+            api.get_atx_heading(
+                H1 + S1 + REDCARPET_LINE_FOO + LINE_CARRIAGE_RETURN +
+                REDCARPET_LINE_FOO, 6, 'redcarpet'),
             (1,
              REDCARPET_LINE_FOO + LINE_CARRIAGE_RETURN + REDCARPET_LINE_FOO))
 
