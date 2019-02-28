@@ -129,17 +129,11 @@ class TestApi(unittest.TestCase):
         r"""Test anchor link generation.
 
         Algorithm testing should be done upstream.
-        Test duplicates for parser='github' and parser='gitlab'.
+        Test duplicates for parser='github'.
         """
         header_duplicate_counter = dict()
         api.build_anchor_link(LINE, header_duplicate_counter, parser='github')
         api.build_anchor_link(LINE, header_duplicate_counter, parser='github')
-        for k in header_duplicate_counter:
-            self.assertEqual(header_duplicate_counter[k], 2)
-
-        header_duplicate_counter = dict()
-        api.build_anchor_link(LINE, header_duplicate_counter, parser='gitlab')
-        api.build_anchor_link(LINE, header_duplicate_counter, parser='gitlab')
         for k in header_duplicate_counter:
             self.assertEqual(header_duplicate_counter[k], 2)
 
@@ -336,7 +330,7 @@ class TestApi(unittest.TestCase):
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
             api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'github', False)
 
-        # readcarpet and gitlab
+        # readcarpet
         # It does not seem that there are exaustive tests so we have to invent
         # our own. See https://github.com/vmg/redcarpet/tree/master/test
         # for more information.
@@ -390,17 +384,17 @@ class TestApi(unittest.TestCase):
 
         # Test newline.
         self.assertEqual(
-            api.get_atx_heading(H1 + LINE_NEWLINE, 6, 'gitlab'), None)
+            api.get_atx_heading(H1 + LINE_NEWLINE, 6, 'redcarpet'), None)
         self.assertEqual(
             api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO + LINE_NEWLINE +
-                                REDCARPET_LINE_FOO, 6, 'gitlab'),
+                                REDCARPET_LINE_FOO, 6, 'redcarpet'),
             (1, REDCARPET_LINE_FOO))
         self.assertEqual(
-            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'gitlab'), None)
+            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'redcarpet'), None)
         self.assertEqual(
             api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO +
                                 LINE_CARRIAGE_RETURN + REDCARPET_LINE_FOO, 6,
-                                'gitlab'),
+                                'redcarpet'),
             (1,
              REDCARPET_LINE_FOO + LINE_CARRIAGE_RETURN + REDCARPET_LINE_FOO))
 

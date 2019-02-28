@@ -52,10 +52,11 @@ class CliToApi():
         elif args.unordered_list_marker is not None:
             list_marker = args.unordered_list_marker
         else:
-            if args.parser == 'github' or args.parser == 'cmark':
+            if (args.parser == 'github' or args.parser == 'cmark'
+                or args.parser == 'gilab' or args.parser == 'commonmarker'):
                 list_marker = md_parser['github']['list']['unordered'][
                     'default_marker']
-            if args.parser == 'redcarpet' or args.parser == 'gitlab':
+            if args.parser == 'redcarpet':
                 list_marker = md_parser['redcarpet']['list']['unordered'][
                     'default_marker']
 
@@ -95,10 +96,10 @@ class CliInterface():
             dest='parser', title='markdown parser')
         subparsers.required = True
 
-        # Github + cmark.
+        # Github + cmark + gitlab + commonmarker.
         github = subparsers.add_parser(
             'github',
-            aliases=['cmark'],
+            aliases=['cmark', 'gitlab', 'commonmarker'],
             description='Use Commonmark rules to generate an output. If no \
                          option is selected, the default output will be an \
                          unordered list with the respective default values \
@@ -140,7 +141,6 @@ class CliInterface():
         # Redcarpet.
         redcarpet = subparsers.add_parser(
             'redcarpet',
-            aliases=['gitlab'],
             description='Use Redcarpet rules to generate an output. If no \
                          option is selected, the default output will be an \
                          unordered list with the respective default values \

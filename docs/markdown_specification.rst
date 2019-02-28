@@ -15,7 +15,7 @@ Supported markdown parsers
 
   - https://github.com/commonmark/cmark
 
-- ``github`` uses a forked version of ``cmark``: with some extensions added:
+- ``github`` uses a forked version of ``cmark`` with some added extensions:
 
   - https://github.com/github/cmark
 
@@ -29,12 +29,26 @@ Supported markdown parsers
 
 - ``gitlab``:
 
-  Used ``redcarpet`` with minor modifications and now uses commonmarker, a
-  "Ruby wrapper for libcmark (CommonMark parser)". Older versions of md_toc,
-  prior to version 3.0.0, use ``gitlab`` as an alias of ``redcarpet``
-  while newer versions use ``github`` instead. The extensions used in GitLab Flavored Markdown
-  (not to be confused with GitHub Flavored Markdown) should not concern 
-  md_toc. For this reason we assume that ``gitlab`` is an alias of ``github``.
+  Used ``redcarpet`` with minor modifications and now uses ``commonmarker``. 
+  Older versions of md_toc, prior to version 3.0.0, use ``gitlab`` as an alias 
+  of ``redcarpet`` while newer versions use ``github`` instead. The extensions 
+  used in GitLab Flavored Markdown (not to be confused with GitHub Flavored 
+  Markdown) should not concern md_toc. For this reason we assume that 
+  ``gitlab`` is an alias of ``github``.
+
+- ``commonmarker``
+
+  An alias of ``gitlab``.
+
+  - https://github.com/gjtorikian/commonmarker
+  - https://www.gjtorikian.com/commonmarker/
+
+  A "Ruby wrapper for libcmark (CommonMark parser)". As described on their 
+  website: "It also includes extensions to the CommonMark spec as documented in 
+  the GitHub Flavored Markdown spec, such as support for tables, 
+  strikethroughs, and autolinking.". For this reason we assume that
+  ``commonmarker`` is an alias of ``github``.
+
 
 What are headers and what are not
 ---------------------------------
@@ -94,11 +108,16 @@ Only ATX-style headings are supported in md_toc.
   - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1444
   - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1981
 
+
 List item rules
 ---------------
 
 We are interested in sublists indentation rules for all types of lists, and 
 integer overflows in case of ordered lists.
+
+We are not concerned about using ``0`` or negative numbers as list markers.
+
+All bullet and ordered list markers are supported.
 
 - ``github``: 
 
@@ -109,8 +128,7 @@ integer overflows in case of ordered lists.
   is raised:
 
   - https://github.github.com/gfm/#ordered-list-marker
-
-  We are not concerned about using ``0`` or negative numbers as list markers.
+  - https://spec.commonmark.org/0.28/#ordered-list-marker
 
 - ``redcarpet``:
 
@@ -118,7 +136,6 @@ integer overflows in case of ordered lists.
 
   - https://github.com/vmg/redcarpet/blob/8db31cb83e7d81b19970466645e899b5ac3bc15d/ext/redcarpet/markdown.c#L1529  
 
-All bullet and ordered list markers are supported.
 
 Link label rules
 ----------------
@@ -232,7 +249,7 @@ then link label rules will be applied.
   For simpleness the escape ``[`` and ``]`` rule is used.
 
 
-- ``redcarpet``, ``gitlab``:
+- ``redcarpet``:
 
   - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L998
 
@@ -293,6 +310,7 @@ then link label rules will be applied.
   - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1099
 
   To solve this we use the same workaround used for ``github``.
+
 
 Anchor link types and behaviours
 --------------------------------
@@ -375,11 +393,12 @@ Anchor link types and behaviours
   - https://github.com/vmg/redcarpet/issues/618#issuecomment-306476184
   - https://github.com/vmg/redcarpet/issues/307#issuecomment-261793668
 
-- ``gitlab``: GitLab used the Redcarpet parser with some modifications, such 
-  as duplicate anchor link detection. A generic pseudocode is
-  available here:
 
-  - https://gitlab.com/help/user/markdown.md#header-ids-and-links
+Code fences
+-----------
+
+Code fences, also known as code blocks are... 
+TODO.
 
 
 Notes about non implemented markdown parsers in md_toc

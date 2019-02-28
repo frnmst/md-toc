@@ -53,6 +53,8 @@ parser['github']['header'] = {
 }
 
 parser['cmark'] = parser['github']
+parser['gitlab'] = parser['github']
+parser['commonmarker'] = parser['github']
 
 parser['redcarpet']['list']['unordered'] = {
     'bullet_markers': ['-', '+', '*'],
@@ -72,8 +74,6 @@ parser['redcarpet']['header'] = {
     'max_levels': 6,
     'default_keep_levels': 3
 }
-
-parser['gitlab'] = parser['redcarpet']
 
 if __name__ == '__main__':
     pass

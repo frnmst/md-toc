@@ -195,7 +195,8 @@ def increase_index_ordered_list(header_type_count,
 
     header_type_count[header_type_curr] += 1
 
-    if parser == 'github':
+    if (parser == 'github' or parser == 'cmark'
+        or parser == 'gitlab' or parser == 'commonmarker'):
         if header_type_count[header_type_curr] > md_parser['github']['list']['ordered']['max_marker_number']:
             raise GithubOverflowOrderedListMarker
 
@@ -237,14 +238,15 @@ def build_toc_line(header,
     assert isinstance(index, int)
     assert isinstance(parser, str)
     assert isinstance(list_marker, str)
-    if parser == 'github' or parser == 'cmark':
+    if (parser == 'github' or parser == 'cmark'
+        or parser == 'gitlab' or parser == 'commonmarker'):
         if ordered:
             assert list_marker in md_parser['github']['list']['ordered'][
                 'closing_markers']
         else:
             assert list_marker in md_parser['github']['list']['unordered'][
                 'bullet_markers']
-    elif parser == 'redcarpet' or parser == 'gitlab':
+    elif parser == 'redcarpet':
         if ordered:
             assert list_marker in md_parser['redcarpet']['list']['ordered'][
                 'closing_markers']
@@ -300,7 +302,8 @@ def build_anchor_link(header_text_trimmed,
     assert isinstance(header_duplicate_counter, dict)
     assert isinstance(parser, str)
 
-    if parser == 'github' or parser == 'cmark':
+    if (parser == 'github' or parser == 'cmark'
+        or parser == 'gitlab' or parser == 'commonmarker'):
         header_text_trimmed = header_text_trimmed.lower()
         # Remove punctuation: Keep spaces, hypens and "word characters"
         # only.
@@ -319,7 +322,7 @@ def build_anchor_link(header_text_trimmed,
                 header_duplicate_counter[header_text_trimmed])
         header_duplicate_counter[ht] += 1
         return header_text_trimmed
-    elif parser == 'gitlab' or parser == 'redcarpet':
+    elif parser == 'redcarpet':
         # To ensure full compatibility what follows is a direct translation
         # of the rndr_header_anchor C function used in redcarpet.
         STRIPPED = " -&+$,/:;=?@\"#{}|^~[]`\\*()%.!'"
@@ -365,19 +368,6 @@ def build_anchor_link(header_text_trimmed,
             # Apparently there is no %l in Python...
             header_text_trimmed_middle_stage = 'part-' + '{0:x}'.format(hash)
 
-        # Check for duplicates (this is working in github only).
-        # https://gitlab.com/help/user/markdown.md#header-ids-and-links
-        if parser == 'gitlab':
-            # Apparently redcarpet does not handle duplicate entries, but
-            # Gitlab does, although I cannot find the code responsable for it.
-            ht = header_text_trimmed_middle_stage
-            if header_text_trimmed_middle_stage not in header_duplicate_counter:
-                header_duplicate_counter[header_text_trimmed_middle_stage] = 0
-            if header_duplicate_counter[header_text_trimmed_middle_stage] > 0:
-                header_text_trimmed_middle_stage = header_text_trimmed_middle_stage + '-' + str(
-                    header_duplicate_counter[header_text_trimmed_middle_stage])
-            header_duplicate_counter[ht] += 1
-
         return header_text_trimmed_middle_stage
 
 
@@ -416,7 +406,8 @@ def get_atx_heading(line,
     if len(line) == 0:
         return None
 
-    if parser == 'github' or parser == 'cmark':
+    if (parser == 'github' or parser == 'cmark'
+        or parser == 'gitlab' or parser == 'commonmarker'):
 
         if line[0] == '\u005c':
             return None
@@ -517,7 +508,7 @@ def get_atx_heading(line,
                 else:
                     i += 1
 
-    elif parser == 'redcarpet' or parser == 'gitlab':
+    elif parser == 'redcarpet':
 
         if line[0] != '#':
             return None
@@ -555,8 +546,7 @@ def get_atx_heading(line,
             return None
 
     # TODO: escape or remove '[', ']', '(', ')' in inline links for redcarpet,
-    # TODO: gitlab
-    # TODO: check link label rules for redcarpet, gitlab.
+    # TODO: check link label rules for redcarpet.
 
     return current_headers, final_line
 
