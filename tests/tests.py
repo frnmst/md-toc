@@ -71,7 +71,7 @@ class TestApi(unittest.TestCase):
         otherwise.
         """
 
-    def test_build_toc(self):
+    def test_build_multiple_tocs(self):
         r"""Test that the TOC is built correctly.
 
         There is no need to test this since it is a wrapper for several

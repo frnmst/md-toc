@@ -195,7 +195,6 @@ def increase_index_ordered_list(header_type_count,
 
     header_type_count[header_type_curr] += 1
 
-    # TODO: check if exists MD_PARSER_REDCARPET_MAX_ORDERED_LIST_MARKER
     if parser == 'github':
         if header_type_count[header_type_curr] > md_parser['github']['list']['ordered']['max_marker_number']:
             raise GithubOverflowOrderedListMarker

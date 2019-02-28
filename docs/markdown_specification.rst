@@ -19,7 +19,7 @@ Supported markdown parsers
 
   - https://github.com/github/cmark
 
-  The extension used in GFM (Github Flavored Markdown) should not concern
+  The extensions used in GitHub Flavored Markdown should not concern
   md_toc. For this reason we assume that ``cmark`` is an alias of ``github``
   in md_toc.
 
@@ -29,7 +29,12 @@ Supported markdown parsers
 
 - ``gitlab``:
 
-  Uses ``redcarpet`` with minor modifications. See next.
+  Used ``redcarpet`` with minor modifications and now uses commonmarker, a
+  "Ruby wrapper for libcmark (CommonMark parser)". Older versions of md_toc,
+  prior to version 3.0.0, use ``gitlab`` as an alias of ``redcarpet``
+  while newer versions use ``github`` instead. The extensions used in GitLab Flavored Markdown
+  (not to be confused with GitHub Flavored Markdown) should not concern 
+  md_toc. For this reason we assume that ``gitlab`` is an alias of ``github``.
 
 What are headers and what are not
 ---------------------------------
@@ -58,7 +63,7 @@ Only ATX-style headings are supported in md_toc.
 
   Every other rule for ATX headings is applied.
 
-- ``redcarpet``: assume that ``gitlab`` uses the redcarpet algorithm.
+- ``redcarpet``:
 
   This is the license used in md_toc:
 
@@ -92,11 +97,12 @@ Only ATX-style headings are supported in md_toc.
 List item rules
 ---------------
 
+We are interested in sublists indentation rules for all types of lists, and 
+integer overflows in case of ordered lists.
+
 - ``github``: 
 
   - https://github.github.com/gfm/#list-items
-
-  We are interested in sublists indentation rules...
 
   Ordered list markers cannot exceed ``99999999`` according to the following. 
   If that is the case, a ``GithubOverflowOrderedListMarker`` exception 
@@ -106,6 +112,11 @@ List item rules
 
   We are not concerned about using ``0`` or negative numbers as list markers.
 
+- ``redcarpet``:
+
+  Apparently there are no cases of ordered list marker overflows:
+
+  - https://github.com/vmg/redcarpet/blob/8db31cb83e7d81b19970466645e899b5ac3bc15d/ext/redcarpet/markdown.c#L1529  
 
 All bullet and ordered list markers are supported.
 
@@ -364,7 +375,7 @@ Anchor link types and behaviours
   - https://github.com/vmg/redcarpet/issues/618#issuecomment-306476184
   - https://github.com/vmg/redcarpet/issues/307#issuecomment-261793668
 
-- ``gitlab``: GitLab uses the Redcarpet parser with some modifications, such 
+- ``gitlab``: GitLab used the Redcarpet parser with some modifications, such 
   as duplicate anchor link detection. A generic pseudocode is
   available here:
 
@@ -384,15 +395,18 @@ implement them while others don't; some act on the duplicate entry problem
 while others don't; some strip consecutive dash characters while others don't; 
 and so on... For example:
 
-- Gogs, Marked and Notabug: Gogs uses marked as the markdown 
-  parser while *NotABug.org is powered by a liberated version of gogs*. 
-  Situation seems unclear. Here are some links:
+- Gogs, Marked, Notabug, Gitea: Gogs uses marked as the markdown 
+  parser while *NotABug.org is powered by a liberated version of gogs*.
+  Gitea, a fork of Gogs, probably uses a custom parser. See link below.
+  Situation is unclear. Here are some links:
 
   - https://gogs.io/docs
   - https://github.com/chjj/marked
   - https://github.com/chjj/marked/issues/981
   - https://github.com/chjj/marked/search?q=anchor&type=Issues&utf8=%E2%9C%93
   - https://notabug.org/hp/gogs/
+  - https://github.com/go-gitea/gitea
+  - https://github.com/go-gitea/gitea/blob/2a03e96bceadfcc5e18bd61e755980ee72dcdb15/modules/markup/markdown/markdown.go
 
   For this reason no implementation is available for the moment.
 
