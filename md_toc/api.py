@@ -159,9 +159,9 @@ def build_multiple_tocs(filenames,
                     index = header_type_counter[header_type_curr]
                 else:
                     index = 1
-                toc_struct[file_id] += build_toc_line(header, ordered,
-                                                      no_links, index, parser,
-                                                      list_marker) + '\n'
+                toc_struct[file_id] += build_toc_line(
+                    header, ordered, no_links, index, parser, list_marker,
+                    header_type_prev) + '\n'
                 header_type_prev = header_type_curr
             line = f.readline()
         f.close()
@@ -212,12 +212,71 @@ def increase_index_ordered_list(header_type_count,
             raise GithubOverflowOrderedListMarker
 
 
-def build_toc_line(header,
-                   ordered=False,
-                   no_links=False,
-                   index=1,
-                   parser='github',
-                   list_marker='-'):
+def compute_toc_line_indentation_spaces(header_type_curr=1,
+                                        header_type_prev=0,
+                                        index_prev=0,
+                                        no_of_indentation_spaces_prev=0,
+                                        parser='github',
+                                        list_marker='-',
+                                        ordered=False):
+    r"""
+    """
+    assert isinstance(header_type_curr, int)
+    assert header_type_curr > 0
+    assert isinstance(header_type_prev, int)
+    assert header_type_prev >= 0
+    assert isinstance(parser, str)
+    assert isinstance(list_marker, str)
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
+            parser == 'commonmarker'):
+        if ordered:
+            assert list_marker in md_parser['github']['list']['ordered'][
+                'closing_markers']
+        else:
+            assert list_marker in md_parser['github']['list']['unordered'][
+                'bullet_markers']
+    elif parser == 'redcarpet':
+        if ordered:
+            assert list_marker in md_parser['redcarpet']['list']['ordered'][
+                'closing_markers']
+        else:
+            assert list_marker in md_parser['redcarpet']['list']['unordered'][
+                'bullet_markers']
+    assert isinstance(ordered, bool)
+    assert isinstance(index_prev, int)
+    assert index_prev >= 0
+    assert isinstance(no_of_indentation_spaces_prev, int)
+    assert no_of_indentation_spaces_prev >= 0
+
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
+            parser == 'commonmarker'):
+        if header_type_prev == 0 or header_type_prev == 1:
+            # Base case for the first toc line or for a previous h1.
+            no_of_indentation_spaces_curr = 0
+        elif header_type_curr == header_type_prev:
+            # Base case for same indentation.
+            no_of_indentation_spaces_curr = no_of_indentation_spaces_prev
+        else:
+            if ordered:
+                list_marker_prev = str(index_prev) + list_marker
+            else:
+                list_marker_prev = list_marker
+            no_of_indentation_spaces_curr = (no_of_indentation_spaces_prev +
+                                             len(list_marker_prev) + len(' '))
+
+    # TODO: how does redcarpet deal with this?
+    elif parser == 'redcarpet':
+        no_of_indentation_spaces_curr = 4 * (header_type_curr - 1)
+
+    return no_of_indentation_spaces_curr
+
+
+def build_toc_line_without_indentation(header,
+                                       ordered=False,
+                                       no_links=False,
+                                       index=1,
+                                       parser='github',
+                                       list_marker='-'):
     r"""Return a list element of the table of contents.
 
     :parameter header: a data structure that contains the original
@@ -228,10 +287,12 @@ def build_toc_line(header,
     :parameter no_links: disables the use of links.
     :parameter index: a number that will be used as list id in case of an
          ordered table of contents. Defaults to ``1``.
+    :parameter header_type_prev: Defaults to ``0``.
     :type header: dict
     :type ordered: bool
     :type no_links: bool
     :type index: int
+    :type header_type_prev: int
     :returns: a single line of the table of contents.
     :rtype: str
     :raises: one of the built-in exceptions.
@@ -247,6 +308,7 @@ def build_toc_line(header,
     assert isinstance(ordered, bool)
     assert isinstance(no_links, bool)
     assert isinstance(index, int)
+    assert index > 0
     assert isinstance(parser, str)
     assert isinstance(list_marker, str)
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
@@ -265,25 +327,24 @@ def build_toc_line(header,
             assert list_marker in md_parser['redcarpet']['list']['unordered'][
                 'bullet_markers']
 
-    # FIXME: This function.
-
-    toc_line = str()
-
     if ordered:
         list_marker = str(index) + list_marker
 
-    # TODO: how does redcarpet deals with this?
-    # FIXME: the following works only for some cases.
-    no_of_indentation_spaces = 4 * (header['type'] - 1)
-    indentation_spaces = no_of_indentation_spaces * ' '
-
+    # FIXME: is this always correct?
     if no_links:
         line = header['text_original']
     else:
         line = '[' + header['text_original'] + ']' + '(#' + header[
             'text_anchor_link'] + ')'
+    toc_line_no_indent = list_marker + ' ' + line
 
-    toc_line = indentation_spaces + list_marker + ' ' + line
+    return toc_line_no_indent
+
+
+# TODO: No need to test the following function.
+def build_toc_line(toc_line_no_indent, no_of_indentation_spaces=0):
+    indentation = no_of_indentation_spaces * ' '
+    toc_line = indentation + toc_line_no_indent
 
     return toc_line
 

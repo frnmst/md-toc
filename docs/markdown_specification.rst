@@ -115,7 +115,8 @@ List item rules
 We are interested in sublists indentation rules for all types of lists, and 
 integer overflows in case of ordered lists.
 
-We are not concerned about using ``0`` or negative numbers as list markers.
+We are not concerned about using ``0`` or negative numbers as list markers so 
+these cases will not be considered.
 
 All bullet and ordered list markers are supported.
 

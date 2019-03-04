@@ -105,6 +105,64 @@ class TestApi(unittest.TestCase):
         with self.assertRaises(exceptions.GithubOverflowOrderedListMarker):
             api.increase_index_ordered_list(ht, 1, 1)
 
+    def test_compute_toc_line_indentation_spaces(self):
+        # github.
+
+        # Unordered TOC.
+
+        # Base cases.
+        # First TOC line.
+        self.assertEqual(
+            api.compute_toc_line_indentation_spaces(
+                header_type_curr=4,
+                header_type_prev=0,
+                parser='github',
+                ordered=False,
+                no_of_indentation_spaces_prev=0), 0)
+
+        # A generic TOC line after h1.
+        self.assertEqual(
+            api.compute_toc_line_indentation_spaces(
+                header_type_curr=4,
+                header_type_prev=1,
+                parser='github',
+                ordered=False,
+                no_of_indentation_spaces_prev=0), 0)
+
+        # First TOC line with the incorrect number of indentation spaces.
+        self.assertEqual(
+            api.compute_toc_line_indentation_spaces(
+                header_type_curr=4,
+                header_type_prev=0,
+                parser='github',
+                ordered=False,
+                no_of_indentation_spaces_prev=2), 0)
+
+        # Generic case.
+        self.assertEqual(
+            api.compute_toc_line_indentation_spaces(
+                header_type_curr=3,
+                header_type_prev=2,
+                parser='github',
+                ordered=False,
+                no_of_indentation_spaces_prev=2), 4)
+
+        # Ordered TOC.
+
+        # Generic case.
+        self.assertEqual(
+            api.compute_toc_line_indentation_spaces(
+                header_type_curr=3,
+                header_type_prev=2,
+                parser='github',
+                list_marker='.',
+                ordered=True,
+                index_prev=11,
+                no_of_indentation_spaces_prev=4), 8)
+
+        # redcarpet.
+
+    @unittest.skip("===UNDEFINED API===")
     def test_build_toc_line(self):
         r"""Test toc line building for different types of inputs.
 
@@ -115,14 +173,35 @@ class TestApi(unittest.TestCase):
         Ordered and non-ordered lists generate the same kind of
         strings, so there is no point in testing both cases.
         """
+        # github.
+        header = {'type': 3, 'text_original': LINE, 'text_anchor_link': LINE}
+        header_type_prev = 2
+        index_prev = 11
+        no_of_indentation_spaces_prev = 4
+        index = 1
+        list_marker = '.'
+        self.assertEqual(
+            api.build_toc_line(
+                header,
+                ordered=True,
+                no_links=True,
+                list_marker=list_marker,
+                header_type_prev=header_type_prev,
+                index_prev=index_prev,
+                no_of_indentation_spaces_prev=no_of_indentation_spaces_prev,
+                index=index), (S1 * 8) + str(index) + list_marker + S1 + LINE)
+
+        # redcarpet.
         header = {'type': 3, 'text_original': LINE, 'text_anchor_link': LINE}
         self.assertEqual(
-            api.build_toc_line(header, ordered=False, no_links=True),
+            api.build_toc_line(
+                header, ordered=False, no_links=True, parser='redcarpet'),
             (LIST_INDENTATION * (3 - 1)) + UNORDERED_LIST_SYMBOL + S1 + LINE)
 
         self.assertEqual(
-            api.build_toc_line(header, ordered=False,
-                               no_links=False), (LIST_INDENTATION * (3 - 1)) +
+            api.build_toc_line(
+                header, ordered=False, no_links=False,
+                parser='redcarpet'), (LIST_INDENTATION * (3 - 1)) +
             UNORDERED_LIST_SYMBOL + S1 + '[' + LINE + ']' + '(#' + LINE + ')')
 
     def test_build_anchor_link(self):
