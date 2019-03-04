@@ -103,6 +103,7 @@ def write_strings_on_files_between_markers(filenames, strings, marker):
 def build_multiple_tocs(filenames,
                         ordered=False,
                         no_links=False,
+                        no_indentation=False,
                         keep_header_levels=3,
                         parser='github',
                         list_marker='-'):

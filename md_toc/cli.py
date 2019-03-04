@@ -64,6 +64,7 @@ class CliToApi():
             filenames=args.filename,
             ordered=ordered,
             no_links=args.no_links,
+            no_indentation=args.no_indentation,
             keep_header_levels=int(args.header_levels),
             parser=args.parser,
             list_marker=list_marker)
@@ -191,17 +192,22 @@ class CliInterface():
                                ['default_keep_levels'])
 
         parser.add_argument(
-            '-i',
+            '-p',
             '--in-place',
             action='store_true',
             help='overwrite the input file')
         parser.add_argument(
-            '-n',
+            '-l',
             '--no-links',
             action='store_true',
             help='avoids adding links to the corresponding content')
         parser.add_argument(
-            '-t',
+            '-i',
+            '--no-indentation',
+            action='store_true',
+            help='avoids adding indentations to the corresponding content')
+        parser.add_argument(
+            '-m',
             '--toc-marker',
             metavar='TOC_MARKER',
             help='set the string to be used as the marker for positioning the \
