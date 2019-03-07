@@ -142,13 +142,13 @@ class TestApi(unittest.TestCase):
                 no_of_indentation_spaces_prev=2), 0)
 
         # A generic TOC line with the incorrect number of indentation spaces.
-        self.assertEqual(
-            api.compute_toc_line_indentation_spaces(
-                header_type_curr=2,
-                header_type_prev=2,
-                parser='github',
-                ordered=False,
-                no_of_indentation_spaces_prev=999), 2)
+#        self.assertEqual(
+#            api.compute_toc_line_indentation_spaces(
+#                header_type_curr=2,
+#                header_type_prev=2,
+#                parser='github',
+#                ordered=False,
+#                no_of_indentation_spaces_prev=999), 2)
 
         # Generic case.
         self.assertEqual(
@@ -160,16 +160,20 @@ class TestApi(unittest.TestCase):
                 no_of_indentation_spaces_prev=2), 4)
 
         # Ordered TOC.
-        # Generic case.
+        # Generic case. More Indentation.
+        # TODO
+
+        # Generic case. Less Indentation
         self.assertEqual(
             api.compute_toc_line_indentation_spaces(
-                header_type_curr=3,
-                header_type_prev=2,
+                header_type_curr=2,
+                header_type_prev=3,
                 parser='github',
                 list_marker='.',
                 ordered=True,
-                index_prev=11,
-                no_of_indentation_spaces_prev=4), 8)
+                index=1002,
+                list_marker_top=['998.','999.','1001.','0.','0.','0.'],
+                no_of_indentation_spaces_prev=10), 5)
 
         # redcarpet.
 
