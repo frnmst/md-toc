@@ -213,6 +213,65 @@ def increase_index_ordered_list(header_type_count,
             raise GithubOverflowOrderedListMarker
 
 
+# TODO
+# TODO
+# FIXME
+# FIXME
+def toc_renders_as_list(header_type_curr=1,
+                        parser='github',
+                        indentation_array=list()):
+    r"""Check if the TOC will render as a working list.
+
+    :parameter header_type_curr: the current type of header (h[1-Inf]).
+    :parameter parser: decides rules on how to generate ordered list markers
+    :type header_type_curr: int
+    :type parser: str
+    :returns: renders_as_list
+    :rtype: bool
+    :raises: one of the built in exceptions
+    """
+    assert isinstance(header_type_curr, int)
+    assert header_type_curr > 0
+    assert isinstance(parser, str)
+    assert isinstance(indentation_array, list)
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
+            parser == 'commonmarker'):
+        if len(indentation_array) > 0:
+            assert len(indentation_array
+                       ) == parser['github']['header']['max_levels'] + 1
+
+    renders_as_list = True
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
+            parser == 'commonmarker'):
+        # 0. Build indentation_array.
+        if indentation_array == list():
+            indentation_array[0] = True
+            for i in range(1, parser['github']['header']['max_levels'] + 1):
+                indentation_array[i].append(False)
+
+        # 1. Update with current information.
+        indentation_array[header_type_curr] = True
+
+        # 2. Reset next cells to false as a detection mechanism.
+        indentation_array[(header_type_curr +
+                           1):parser['github']['header']['max_levels']] = False
+
+        # 3. Check for previous false cells. If there is a "hole" in the array
+        #    it means that the TOC will have extra indentation space, thus not
+        #    rendering as an HTML list.
+        i = header_type_curr
+        while i >= 0 and indentation_array[i]:
+            i -= 1
+        if i > 0:
+            renders_as_list = False
+
+    elif parser == 'redcarpet':
+        pass
+        # TODO
+
+    return renders_as_list, indentation_array
+
+
 def compute_toc_line_indentation_spaces(header_type_curr=1,
                                         header_type_prev=0,
                                         index_prev=0,
@@ -342,7 +401,7 @@ def build_toc_line_without_indentation(header,
     return toc_line_no_indent
 
 
-# TODO: No need to test the following function.
+# No need to test the following function.
 def build_toc_line(toc_line_no_indent, no_of_indentation_spaces=0):
     indentation = no_of_indentation_spaces * ' '
     toc_line = indentation + toc_line_no_indent

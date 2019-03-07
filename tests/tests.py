@@ -105,12 +105,15 @@ class TestApi(unittest.TestCase):
         with self.assertRaises(exceptions.GithubOverflowOrderedListMarker):
             api.increase_index_ordered_list(ht, 1, 1)
 
+    # TODO FIXME.
+    def test_toc_renders_as_list(self):
+        pass
+
     def test_compute_toc_line_indentation_spaces(self):
         # github.
-
         # Unordered TOC.
-
         # Base cases.
+
         # First TOC line.
         self.assertEqual(
             api.compute_toc_line_indentation_spaces(
@@ -130,6 +133,7 @@ class TestApi(unittest.TestCase):
                 no_of_indentation_spaces_prev=0), 0)
 
         # First TOC line with the incorrect number of indentation spaces.
+        # Test if the exception is raised. TODO.
         self.assertEqual(
             api.compute_toc_line_indentation_spaces(
                 header_type_curr=4,
@@ -148,7 +152,6 @@ class TestApi(unittest.TestCase):
                 no_of_indentation_spaces_prev=2), 4)
 
         # Ordered TOC.
-
         # Generic case.
         self.assertEqual(
             api.compute_toc_line_indentation_spaces(
