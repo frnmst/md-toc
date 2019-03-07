@@ -133,7 +133,6 @@ class TestApi(unittest.TestCase):
                 no_of_indentation_spaces_prev=0), 0)
 
         # First TOC line with the incorrect number of indentation spaces.
-        # Test if the exception is raised. TODO.
         self.assertEqual(
             api.compute_toc_line_indentation_spaces(
                 header_type_curr=4,
@@ -141,6 +140,15 @@ class TestApi(unittest.TestCase):
                 parser='github',
                 ordered=False,
                 no_of_indentation_spaces_prev=2), 0)
+
+        # A generic TOC line with the incorrect number of indentation spaces.
+        self.assertEqual(
+            api.compute_toc_line_indentation_spaces(
+                header_type_curr=2,
+                header_type_prev=2,
+                parser='github',
+                ordered=False,
+                no_of_indentation_spaces_prev=999), 2)
 
         # Generic case.
         self.assertEqual(

@@ -216,7 +216,8 @@ def increase_index_ordered_list(header_type_count,
 # TODO
 # TODO
 # FIXME
-# FIXME
+# FIXME: Check if the TOC MIGHT NOT RENDER as list. This depends
+#        on the parser.
 def toc_renders_as_list(header_type_curr=1,
                         parser='github',
                         indentation_array=list()):
@@ -310,19 +311,42 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
             parser == 'commonmarker'):
-        if header_type_prev == 0 or header_type_prev == 1:
+        if header_type_prev == 0:
             # Base case for the first toc line or for a previous h1.
             no_of_indentation_spaces_curr = 0
         elif header_type_curr == header_type_prev:
-            # Base case for same indentation.
+            # Base case for same indentation. Please note that this function
+            # assumes that no_of_indentation_spaces_prev contains the correct
+            # number of spaces. There is no way to check it. FIXME.
+            # TODO: In theory we can check for possible overflows especially
+            # TODO: for ordered lists: if 6 * no_of_indentation_spaces_curr > \
+            # TODO: len(parser['github']['list']['ordered']['max_levels']) then \
+            # TODO: FAIL
             no_of_indentation_spaces_curr = no_of_indentation_spaces_prev
         else:
-            if ordered:
-                list_marker_prev = str(index_prev) + list_marker
-            else:
-                list_marker_prev = list_marker
-            no_of_indentation_spaces_curr = (no_of_indentation_spaces_prev +
-                                             len(list_marker_prev) + len(' '))
+            # Generic cases.
+            if header_type_curr > header_type_prev:
+                # More indentation.
+                if ordered:
+                    list_marker_prev = str(index_prev) + list_marker
+                else:
+                    list_marker_prev = list_marker
+                no_of_indentation_spaces_curr = (no_of_indentation_spaces_prev +
+                                                 len(list_marker_prev) + len(' '))
+            elif header_type_curr < header_type_prev:
+                # Less indentation.
+                if ordered:
+                    list_marker_prev = str(index_prev) + list_marker
+                else:
+                    list_marker_prev = list_marker
+                no_of_indentation_spaces_curr = (no_of_indentation_spaces_prev -
+                                                 len(list_marker_prev) - len(' '))
+
+#        if header_type_prev == 0 or header_type_prev == 1:
+#            if no_of_indentation_spaces_curr != 0:
+#                # FIXME.
+#                raise Error
+
 
     # TODO: how does redcarpet deal with this?
     elif parser == 'redcarpet':
