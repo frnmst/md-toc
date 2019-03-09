@@ -254,8 +254,9 @@ def toc_renders_as_list(header_type_curr=1,
         indentation_array[header_type_curr] = True
 
         # 2. Reset next cells to false as a detection mechanism.
-        indentation_array[(header_type_curr +
-                           1):md_parser['github']['header']['max_levels']] = False
+        indentation_array[(
+            header_type_curr +
+            1):md_parser['github']['header']['max_levels']] = False
 
         # 3. Check for previous false cells. If there is a "hole" in the array
         #    it means that the TOC will have extra indentation space, thus not
@@ -312,15 +313,17 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
             parser == 'commonmarker'):
+        # TODO Explain that list indentation with this parser is always based on
+        # the previous state.
 
         if list_marker_top == list():
-            for i in range (0,md_parser['github']['header']['max_levels']):
+            for i in range(0, md_parser['github']['header']['max_levels']):
                 if ordered:
                     list_marker_top.append('0.')
                 else:
                     list_marker_top.append(list_marker)
 
-        if header_type_prev == 0 or header_type_prev == 1:
+        if header_type_prev == 0:
             # Base case for the first toc line or for a previous h1.
             no_of_indentation_spaces_curr = 0
         elif header_type_curr == header_type_prev:
@@ -337,23 +340,25 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
             list_marker_prev = str(list_marker_top[header_type_curr - 1])
             if header_type_curr > header_type_prev:
                 # More indentation.
-                no_of_indentation_spaces_curr = (no_of_indentation_spaces_prev +
-                                                 len(list_marker_prev) + len(' '))
+                no_of_indentation_spaces_curr = (
+                    no_of_indentation_spaces_prev + len(list_marker_prev) +
+                    len(' '))
             elif header_type_curr < header_type_prev:
                 # Less indentation.
-                no_of_indentation_spaces_curr = (no_of_indentation_spaces_prev -
-                                                 len(list_marker_prev) - len(' '))
+                no_of_indentation_spaces_curr = (
+                    no_of_indentation_spaces_prev - len(list_marker_prev) -
+                    len(' '))
 
             # Reset older nested list indices..
-            for i in range(header_type_curr - 1 + 1, md_parser['github']['header']['max_levels']):
-                # Reset with the appropriate marker.
+            for i in range(header_type_curr - 1 + 1,
+                           md_parser['github']['header']['max_levels']):
+                # Reset with the appropriate marker. FIXME.
                 list_marker_top[i] = None
 
         if ordered:
             list_marker_top[header_type_curr - 1] = str(index) + list_marker
         else:
             list_marker_top[header_type_curr - 1] = list_marker
-
 
     # TODO: how does redcarpet deal with this?
     elif parser == 'redcarpet':
