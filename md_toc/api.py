@@ -108,13 +108,20 @@ def build_toc(filename,
         while line:
             # Ignore lines within code fences
             # https://github.github.com/gfm/#code-fence
-            line_without_leading_spaces = line.lstrip(' ').rstrip('\n')
-            is_valid_code_fence_ident = len(line) - len(line_without_leading_spaces) <= 3
+            line_without_trailing_newline = line.rstrip('\n')
+            line_without_leading_spaces = line_without_trailing_newline.lstrip(' ')
+            is_valid_code_fence_ident = len(line_without_trailing_newline) - len(line_without_leading_spaces) <= 3
 
             if inside_code_fence:
                 line_without_leading_or_trailing_spaces = line_without_leading_spaces.rstrip(' ')
-                if is_valid_code_fence_ident and line_without_leading_spaces.startswith(closing_code_fence) and line_without_leading_or_trailing_spaces == len(line_without_leading_or_trailing_spaces) * line_without_leading_spaces[0]:
-                    inside_code_fence = False
+                is_line_homogeneous = line_without_leading_or_trailing_spaces == (
+                    len(line_without_leading_or_trailing_spaces) * line_without_leading_spaces[0]
+                )
+                inside_code_fence = not all([
+                    is_valid_code_fence_ident,
+                    line_without_leading_spaces.startswith(closing_code_fence),
+                    is_line_homogeneous
+                ])
                 line = f.readline()
                 continue
 
