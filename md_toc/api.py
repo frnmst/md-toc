@@ -108,7 +108,7 @@ def build_toc(filename,
         while line:
             # Ignore lines within code fences
             # https://github.github.com/gfm/#code-fence
-            line_without_leading_spaces = line.lstrip(' ')
+            line_without_leading_spaces = line.lstrip(' ').rstrip('\n')
             is_valid_code_fence_ident = len(line) - len(line_without_leading_spaces) <= 3
 
             if inside_code_fence:
