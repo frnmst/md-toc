@@ -99,9 +99,34 @@ def build_toc(filename,
     toc = ''
     header_duplicate_counter = dict()
 
+    # Code fence state tracking
+    inside_code_fence = False
+    closing_code_fence = ''
+
     with open(filename, 'r') as f:
         line = f.readline()
         while line:
+            # Ignore lines within code fences
+            # https://github.github.com/gfm/#code-fence
+            line_without_leading_spaces = line.lstrip(' ')
+            is_valid_code_fence_ident = len(line) - len(line_without_leading_spaces) <= 3
+
+            if inside_code_fence:
+                line_without_leading_or_trailing_spaces = line_without_leading_spaces.rstrip(' ')
+                if is_valid_code_fence_ident and line_without_leading_spaces.startswith(closing_code_fence) and line_without_leading_or_trailing_spaces == len(line_without_leading_or_trailing_spaces) * line_without_leading_spaces[0]:
+                    inside_code_fence = False
+                line = f.readline()
+                continue
+
+            if is_valid_code_fence_ident and line_without_leading_spaces.startswith((3 * '`', 3 * '~')):
+                info_string = line.lstrip(line_without_leading_spaces[0])
+                if '`' not in info_string:
+                    inside_code_fence = True
+                    closing_code_fence = line.rstrip(info_string)
+                    line = f.readline()
+                    continue
+
+            # Parse headers
             header = get_md_header(line, header_duplicate_counter,
                                    keep_header_levels, parser, no_links)
             if header is not None:
