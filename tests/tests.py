@@ -130,10 +130,9 @@ class TestApi(unittest.TestCase):
 
         Note that no_of_indentation_spaces_prev might not contain the correct value.
         """
-        # Note that no_of_indentation_spaces_prev might not contain the correct value.
-
         # github.
-        # Unordered TOC.
+        # Unordered TOC. In this case there is no need to do specific tests
+        # on the returned list marker log.
 
         # First TOC line.
         self.assertEqual(

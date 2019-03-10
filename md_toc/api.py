@@ -278,8 +278,8 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
                                         header_type_prev=0,
                                         no_of_indentation_spaces_prev=0,
                                         parser='github',
-                                        list_marker='-',
                                         ordered=False,
+                                        list_marker='-',
                                         list_marker_log=list(),
                                         index=1):
     r"""
@@ -288,7 +288,10 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
     assert header_type_curr > 0
     assert isinstance(header_type_prev, int)
     assert header_type_prev >= 0
+    assert isinstance(no_of_indentation_spaces_prev, int)
+    assert no_of_indentation_spaces_prev >= 0
     assert isinstance(parser, str)
+    assert isinstance(ordered, bool)
     assert isinstance(list_marker, str)
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
             parser == 'commonmarker'):
@@ -305,11 +308,16 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
         else:
             assert list_marker in md_parser['redcarpet']['list']['unordered'][
                 'bullet_markers']
-    assert isinstance(ordered, bool)
+    assert isinstance(list_marker_log, list)
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
+            parser == 'commonmarker'):
+        if list_marker_log != list():
+            assert len(
+                list_marker_log) == md_parser['github']['header']['max_levels']
+            for e in list_marker_log:
+                assert isinstance(e, str)
     assert isinstance(index, int)
     assert index > 0
-    assert isinstance(no_of_indentation_spaces_prev, int)
-    assert no_of_indentation_spaces_prev >= 0
     # if parser github assert len list_marker_log = 6, if defined.
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
