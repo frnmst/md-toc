@@ -38,6 +38,8 @@ parser['github']['link'] = {
 
 parser['github']['list']['ordered'] = {
     'closing_markers': ['.', ')'],
+    'default_marker_number': 1,
+    'min_marker_number': 0,
     'max_marker_number': 999999999,
     'default_closing_marker': '.'
 }

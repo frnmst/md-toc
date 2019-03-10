@@ -276,12 +276,12 @@ def toc_renders_as_list(header_type_curr=1,
 
 def compute_toc_line_indentation_spaces(header_type_curr=1,
                                         header_type_prev=0,
-                                        list_marker_top=list(),
-                                        index=1,
                                         no_of_indentation_spaces_prev=0,
                                         parser='github',
                                         list_marker='-',
-                                        ordered=False):
+                                        ordered=False,
+                                        list_marker_log=list(),
+                                        index=1):
     r"""
     """
     assert isinstance(header_type_curr, int)
@@ -310,21 +310,19 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
     assert index > 0
     assert isinstance(no_of_indentation_spaces_prev, int)
     assert no_of_indentation_spaces_prev >= 0
+    # if parser github assert len list_marker_log = 6, if defined.
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
             parser == 'commonmarker'):
-        # TODO Explain that list indentation with this parser is always based on
-        # the previous state.
-
-        if list_marker_top == list():
+        if list_marker_log == list():
             for i in range(0, md_parser['github']['header']['max_levels']):
                 if ordered:
-                    list_marker_top.append('0.')
-                else:
-                    list_marker_top.append(list_marker)
+                    list_marker_log.append(
+                        str(md_parser['github']['list']['ordered']
+                            ['min_marker_number']) + list_marker)
 
         if header_type_prev == 0:
-            # Base case for the first toc line or for a previous h1.
+            # Base case for the first toc line.
             no_of_indentation_spaces_curr = 0
         elif header_type_curr == header_type_prev:
             # Base case for same indentation. Please note that this function
@@ -336,8 +334,13 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
             # TODO: FAIL
             no_of_indentation_spaces_curr = no_of_indentation_spaces_prev
         else:
+            if ordered:
+                list_marker_prev = str(list_marker_log[header_type_curr - 1])
+            else:
+                # This will always be 1 character.
+                list_marker_prev = list_marker
+
             # Generic cases.
-            list_marker_prev = str(list_marker_top[header_type_curr - 1])
             if header_type_curr > header_type_prev:
                 # More indentation.
                 no_of_indentation_spaces_curr = (
@@ -349,22 +352,25 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
                     no_of_indentation_spaces_prev - len(list_marker_prev) -
                     len(' '))
 
-            # Reset older nested list indices..
-            for i in range(header_type_curr - 1 + 1,
+            # Reset older nested list indices. If this is not performed then
+            # future nested ordered lists will rely on incorrect data to
+            # compute indentations.
+            for i in range((header_type_curr - 1) + 1,
                            md_parser['github']['header']['max_levels']):
-                # Reset with the appropriate marker. FIXME.
-                list_marker_top[i] = None
+                if ordered:
+                    list_marker_log[i] = str(
+                        md_parser['github']['list']['ordered']
+                        ['min_marker_number']) + list_marker
 
+        # Update the data structure.
         if ordered:
-            list_marker_top[header_type_curr - 1] = str(index) + list_marker
-        else:
-            list_marker_top[header_type_curr - 1] = list_marker
+            list_marker_log[header_type_curr - 1] = str(index) + list_marker
 
     # TODO: how does redcarpet deal with this?
     elif parser == 'redcarpet':
         no_of_indentation_spaces_curr = 4 * (header_type_curr - 1)
 
-    return no_of_indentation_spaces_curr
+    return no_of_indentation_spaces_curr, list_marker_log
 
 
 def build_toc_line_without_indentation(header,

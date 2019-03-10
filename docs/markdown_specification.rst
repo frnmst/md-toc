@@ -160,9 +160,12 @@ and this is what md_toc renders:
          - [bar](bar)
 
 
-
-
 - ``github``: 
+
+  - TODO
+
+  List indentation with this parser is always based on the previous state.
+  TODO
 
   - https://github.github.com/gfm/#list-items
 
