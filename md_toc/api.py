@@ -311,7 +311,7 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
     assert isinstance(list_marker_log, list)
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
             parser == 'commonmarker'):
-        if list_marker_log != list():
+        if ordered and list_marker_log != list():
             assert len(
                 list_marker_log) == md_parser['github']['header']['max_levels']
             for e in list_marker_log:
@@ -322,12 +322,12 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
             parser == 'commonmarker'):
-        if list_marker_log == list():
-            for i in range(0, md_parser['github']['header']['max_levels']):
-                if ordered:
-                    list_marker_log.append(
-                        str(md_parser['github']['list']['ordered']
-                            ['min_marker_number']) + list_marker)
+        if ordered and list_marker_log == list():
+            list_marker_log = [
+                str(md_parser['github']['list']['ordered']
+                    ['min_marker_number']) + list_marker
+                for i in range(0, md_parser['github']['header']['max_levels'])
+            ]
 
         if header_type_prev == 0:
             # Base case for the first toc line.
@@ -345,7 +345,7 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
             if ordered:
                 list_marker_prev = str(list_marker_log[header_type_curr - 1])
             else:
-                # This will always be 1 character.
+                # list_marker for unordered lists will always be 1 character.
                 list_marker_prev = list_marker
 
             # Generic cases.
@@ -363,9 +363,9 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
             # Reset older nested list indices. If this is not performed then
             # future nested ordered lists will rely on incorrect data to
             # compute indentations.
-            for i in range((header_type_curr - 1) + 1,
-                           md_parser['github']['header']['max_levels']):
-                if ordered:
+            if ordered:
+                for i in range((header_type_curr - 1) + 1,
+                               md_parser['github']['header']['max_levels']):
                     list_marker_log[i] = str(
                         md_parser['github']['list']['ordered']
                         ['min_marker_number']) + list_marker
