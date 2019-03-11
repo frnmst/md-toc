@@ -280,6 +280,41 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
                                         list_marker_log=list(),
                                         index=1):
     r"""Compute the number of indentation spaces for the TOC list element.
+
+    :parameter header_type_curr: the current type of header (h[1-Inf]).
+         Defaults to ``1``.
+    :parameter header_type_prev: the previous type of header (h[1-Inf]).
+         Defaults to ``0``.
+    :parameter no_of_indentation_spaces_prev: the number of previous indentation spaces.
+         Defaults to ``0``.
+    :parameter parser: decides rules on how compute indentations. Defaults
+         to ``github``.
+    :parameter ordered: if set to ``True``, numbers will be used
+         as list ids or otherwise a dash character, otherwise. Defaults
+         to ``False``.
+    :parameter list_marker: TODO. Defaults to ``-``.
+    :parameter list_marker_log: TODO. Defaults to ``[]``.
+    :parameter index: a number that will be used as list id in case of an
+         ordered table of contents. Defaults to ``1``.
+    :type header_type_curr: int
+    :type header_type_prev: int
+    :type no_of_indentation_spaces_prev: int
+    :type parser: str
+    :type ordered: bool
+    :type list_marker: str
+    :type list_marker_log: list
+    :rtpe index: int
+    :returns: no_of_indentation_spaces_curr
+    :rtype: int
+    :raises: one of the built in exceptions
+
+    :note: Please note that this function
+         assumes that no_of_indentation_spaces_prev contains the correct
+         number of spaces. There is no way to check it. FIXME.
+         TODO: In theory we can check for possible overflows especially
+         TODO: for ordered lists: if 6 * no_of_indentation_spaces_curr > \
+         TODO: len(parser['github']['list']['ordered']['max_levels']) then 
+         TODO: FAIL
     """
     assert isinstance(header_type_curr, int)
     assert header_type_curr > 0
@@ -329,13 +364,7 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
             # Base case for the first toc line.
             no_of_indentation_spaces_curr = 0
         elif header_type_curr == header_type_prev:
-            # Base case for same indentation. Please note that this function
-            # assumes that no_of_indentation_spaces_prev contains the correct
-            # number of spaces. There is no way to check it. FIXME.
-            # TODO: In theory we can check for possible overflows especially
-            # TODO: for ordered lists: if 6 * no_of_indentation_spaces_curr > \
-            # TODO: len(parser['github']['list']['ordered']['max_levels']) then \
-            # TODO: FAIL
+            # Base case for same indentation.
             no_of_indentation_spaces_curr = no_of_indentation_spaces_prev
         else:
             if ordered:
@@ -447,7 +476,6 @@ def build_toc_line_without_indentation(header,
     return toc_line_no_indent
 
 
-# No need to test the following function.
 def build_toc_line(toc_line_no_indent, no_of_indentation_spaces=0):
     indentation = no_of_indentation_spaces * ' '
     toc_line = indentation + toc_line_no_indent
