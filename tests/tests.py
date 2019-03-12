@@ -130,8 +130,6 @@ class TestApi(unittest.TestCase):
 
     def test_compute_toc_line_indentation_spaces(self):
         r"""Test that the TOC list indentation spaces are computed correctly.
-
-        Note that no_of_indentation_spaces_prev might not contain the correct value.
         """
         # github.
         # Unordered TOC. In this case there is no need to do specific tests
@@ -182,6 +180,7 @@ class TestApi(unittest.TestCase):
         # Ordered TOC.
 
         # First TOC line.
+        list_marker_log = ['0.', '0.', '0.', '0.', '0.', '0.']
         self.assertEqual(
             api.compute_toc_line_indentation_spaces(
                 GENERIC_HEADER_TYPE_CURR,
@@ -190,10 +189,13 @@ class TestApi(unittest.TestCase):
                 'github',
                 ordered=True,
                 list_marker='.',
-                list_marker_log=list(),
+                list_marker_log=list_marker_log,
                 index=GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX), 0)
+        self.assertEqual(list_marker_log,
+                         ['0.', '0.', '0.', '0.', '0.', '1000.'])
 
         # First TOC line with the incorrect number of indentation spaces.
+        list_marker_log = ['0.', '0.', '0.', '0.', '0.', '0.']
         self.assertEqual(
             api.compute_toc_line_indentation_spaces(
                 GENERIC_HEADER_TYPE_CURR,
@@ -202,8 +204,10 @@ class TestApi(unittest.TestCase):
                 'github',
                 ordered=True,
                 list_marker='.',
-                list_marker_log=list(),
+                list_marker_log=list_marker_log,
                 index=GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX), 0)
+        self.assertEqual(list_marker_log,
+                         ['0.', '0.', '0.', '0.', '0.', '1000.'])
 
         # A generic TOC line with no_of_indentation_spaces_prev=0.
         list_marker_log = ['998.', '999.', '1001.', '0.', '0.', '0.']
@@ -219,6 +223,8 @@ class TestApi(unittest.TestCase):
                 list_marker_log=list_marker_log,
                 index=GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX),
             len(list_marker_log_cpy[GENERIC_HEADER_TYPE_CURR - 1]) + len(S1))
+        self.assertEqual(list_marker_log,
+                         ['998.', '999.', '1001.', '0.', '0.', '1000.'])
 
         # Another base case.
         list_marker_log = ['998.', '999.', '1001.', '0.', '0.', '0.']
@@ -234,6 +240,8 @@ class TestApi(unittest.TestCase):
                 list_marker_log=list_marker_log,
                 index=GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX),
             GENERIC_NUMBER_OF_INDENTATION_SPACES)
+        self.assertEqual(list_marker_log,
+                         ['998.', '999.', '1001.', '0.', '0.', '1000.'])
 
         # Generic case more indentation.
         list_marker_log = ['998.', '999.', '1001.', '0.', '0.', '0.']
@@ -320,12 +328,11 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.build_toc_line(
                 header, ordered=False, no_links=True, parser='redcarpet'),
-            (LIST_INDENTATION * (3 - 1)) + UNORDERED_LIST_SYMBOL + S1 + LINE)
+            UNORDERED_LIST_SYMBOL + S1 + LINE)
 
         self.assertEqual(
             api.build_toc_line(
-                header, ordered=False, no_links=False,
-                parser='redcarpet'), (LIST_INDENTATION * (3 - 1)) +
+                header, ordered=False, no_links=False, parser='redcarpet'),
             UNORDERED_LIST_SYMBOL + S1 + '[' + LINE + ']' + '(#' + LINE + ')')
 
     @unittest.skip("===TODO===")

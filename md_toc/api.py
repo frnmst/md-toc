@@ -134,14 +134,16 @@ def build_multiple_tocs(filenames,
     if len(filenames) == 0:
         filenames.append('-')
 
-    header_type_counter = dict()
-    header_type_curr = 0
-    header_type_prev = 0
-    header_duplicate_counter = dict()
     file_id = 0
-    toc_struct = list()
-
     while file_id < len(filenames):
+        header_type_counter = dict()
+        header_type_curr = 0
+        header_type_prev = 0
+        header_duplicate_counter = dict()
+        toc_struct = list()
+        no_of_indentation_spaces_prev = 0
+        if ordered:
+            list_marker_log = build_list_marker_log(parser, list_marker)
         if filenames[file_id] == '-':
             f = sys.stdin
         else:
@@ -160,10 +162,16 @@ def build_multiple_tocs(filenames,
                     index = header_type_counter[header_type_curr]
                 else:
                     index = 1
+                no_of_indentation_spaces_curr = compute_toc_line_indentation_spaces(
+                    header_type_curr, header_type_prev,
+                    no_of_indentation_spaces_prev, parser, ordered,
+                    list_marker, list_marker_log, index)
+                toc_line_no_indent = build_toc_line_without_indentation(
+                    header, ordered, no_links, index, parser, list_marker)
                 toc_struct[file_id] += build_toc_line(
-                    header, ordered, no_links, index, parser, list_marker,
-                    header_type_prev) + '\n'
+                    toc_line_no_indent, no_of_indentation_spaces_curr) + '\n'
                 header_type_prev = header_type_curr
+                no_of_indentation_spaces_prev = no_of_indentation_spaces_curr
             line = f.readline()
         f.close()
 
@@ -271,13 +279,31 @@ def toc_renders_as_list(header_type_curr=1,
     return renders_as_list, indentation_array
 
 
+# FIXME: this is only useful for ordered lists.
+def build_list_marker_log(parser='github', list_marker='.'):
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
+            parser == 'commonmarker'):
+        list_marker_log = [
+            str(md_parser['github']['list']['ordered']['min_marker_number']) +
+            list_marker
+            for i in range(0, md_parser['github']['header']['max_levels'])
+        ]
+
+    elif parser == 'redcarpet':
+        # TODO
+        pass
+
+    return list_marker_log
+
+
 def compute_toc_line_indentation_spaces(header_type_curr=1,
                                         header_type_prev=0,
                                         no_of_indentation_spaces_prev=0,
                                         parser='github',
                                         ordered=False,
                                         list_marker='-',
-                                        list_marker_log=list(),
+                                        list_marker_log=build_list_marker_log(
+                                            'github', '.'),
                                         index=1):
     r"""Compute the number of indentation spaces for the TOC list element.
 
@@ -343,7 +369,7 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
     assert isinstance(list_marker_log, list)
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
             parser == 'commonmarker'):
-        if ordered and list_marker_log != list():
+        if ordered:
             assert len(
                 list_marker_log) == md_parser['github']['header']['max_levels']
             for e in list_marker_log:
@@ -353,13 +379,6 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
             parser == 'commonmarker'):
-        if ordered and list_marker_log == list():
-            list_marker_log = [
-                str(md_parser['github']['list']['ordered']
-                    ['min_marker_number']) + list_marker
-                for i in range(0, md_parser['github']['header']['max_levels'])
-            ]
-
         if header_type_prev == 0:
             # Base case for the first toc line.
             no_of_indentation_spaces_curr = 0
