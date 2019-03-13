@@ -131,15 +131,15 @@ see this example
      ### baz
 
 
-no problem here because this is rendered by md_toc, using``github`` as parser, 
+no problem here because this is rendered by md_toc, using ``github`` as parser, 
 with:
 
 
   ::
 
-     - [foo](foo)
-       - [bar](bar)
-         - [baz](baz)
+     - [foo](#foo)
+       - [bar](#bar)
+         - [baz](#baz)
 
 
 Now, let's take the previous example and reverse the order of the lines:
@@ -152,12 +152,26 @@ Now, let's take the previous example and reverse the order of the lines:
      # foo
 
 
-and this is what md_toc renders:
+and this is what md_toc renders using ``github``:
 
 
-     - [baz](baz)
-       - [foo](foo)
-         - [bar](bar)
+  ::
+
+
+    - [baz](#baz)
+    - [foo](#foo)
+    - [bar](#bar)
+
+
+while the user might expect this:
+
+
+  ::
+
+
+        - [baz](#baz)
+      - [foo](#foo)
+    - [bar](#bar)
 
 
 - ``github``: 

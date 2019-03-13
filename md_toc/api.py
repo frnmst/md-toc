@@ -223,6 +223,7 @@ def increase_index_ordered_list(header_type_count,
 
 # TODO FIXME: Check if the TOC MIGHT NOT RENDER as list (or what the user intended
 # TODO FIXME: with the ATX headings. This depends on the parser.
+'''
 def toc_renders_as_list(header_type_curr=1,
                         parser='github',
                         indentation_array=list()):
@@ -277,10 +278,21 @@ def toc_renders_as_list(header_type_curr=1,
         # TODO
 
     return renders_as_list, indentation_array
+'''
 
 
-# FIXME: this is only useful for ordered lists.
 def build_list_marker_log(parser='github', list_marker='.'):
+    r"""Create a data structure that holds list marker information.
+
+    :parameter parser: decides rules on how compute indentations. Defaults
+         to ``github``.
+    :parameter list_marker: a string that contains some of the first characters of the list element. Defaults to ``-``.
+    """
+    assert isinstance(parser, str)
+    assert isinstance(list_marker, str)
+
+    list_marker_log = list()
+
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
             parser == 'commonmarker'):
         list_marker_log = [
@@ -318,8 +330,8 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
     :parameter ordered: if set to ``True``, numbers will be used
          as list ids or otherwise a dash character, otherwise. Defaults
          to ``False``.
-    :parameter list_marker: TODO. Defaults to ``-``.
-    :parameter list_marker_log: TODO. Defaults to ``[]``.
+    :parameter list_marker: a string that contains some of the first characters of the list element. Defaults to ``-``.
+    :parameter list_marker_log: a data structure that holds list marker information for ordered lists. Defaults to ``build_list_marker_log('github', '.')``.
     :parameter index: a number that will be used as list id in case of an
          ordered table of contents. Defaults to ``1``.
     :type header_type_curr: int
@@ -336,11 +348,7 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
 
     :note: Please note that this function
          assumes that no_of_indentation_spaces_prev contains the correct
-         number of spaces. There is no way to check it. FIXME.
-         TODO: In theory we can check for possible overflows especially
-         TODO: for ordered lists: if 6 * no_of_indentation_spaces_curr > \
-         TODO: len(parser['github']['list']['ordered']['max_levels']) then 
-         TODO: FAIL
+         number of spaces.
     """
     assert isinstance(header_type_curr, int)
     assert header_type_curr > 0
@@ -481,21 +489,29 @@ def build_toc_line_without_indentation(header,
             assert list_marker in md_parser['redcarpet']['list']['unordered'][
                 'bullet_markers']
 
-    if ordered:
-        list_marker = str(index) + list_marker
+    toc_line_no_indent = str()
 
-    # FIXME: is this always correct?
-    if no_links:
-        line = header['text_original']
-    else:
-        line = '[' + header['text_original'] + ']' + '(#' + header[
-            'text_anchor_link'] + ')'
-    toc_line_no_indent = list_marker + ' ' + line
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
+            parser == 'commonmarker' or parser == 'redcarpet'):
+        if ordered:
+            list_marker = str(index) + list_marker
+
+        # FIXME: is this always correct?
+        if no_links:
+            line = header['text_original']
+        else:
+            line = '[' + header['text_original'] + ']' + '(#' + header[
+                'text_anchor_link'] + ')'
+        toc_line_no_indent = list_marker + ' ' + line
 
     return toc_line_no_indent
 
 
 def build_toc_line(toc_line_no_indent, no_of_indentation_spaces=0):
+    r"""Build the TOC line.
+
+    TODO
+    """
     indentation = no_of_indentation_spaces * ' '
     toc_line = indentation + toc_line_no_indent
 

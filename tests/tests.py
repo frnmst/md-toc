@@ -128,6 +128,10 @@ class TestApi(unittest.TestCase):
     def test_toc_renders_as_list(self):
         pass
 
+    # TODO FIXME.
+    def test_build_list_marker_log(self):
+        pass
+
     def test_compute_toc_line_indentation_spaces(self):
         r"""Test that the TOC list indentation spaces are computed correctly.
         """
@@ -294,9 +298,8 @@ class TestApi(unittest.TestCase):
         #        parser='redcarpet'), (LIST_INDENTATION * (3 - 1)) +
         #    UNORDERED_LIST_SYMBOL + S1 + '[' + LINE + ']' + '(#' + LINE + ')')
 
-    @unittest.skip("===UNDEFINED API===")
     def test_build_toc_line_without_indentation(self):
-        r"""Test toc line building for different types of inputs.
+        r"""Test TOC line building for different types of inputs.
 
         Types of inputs to be tested:
             non-ordered list
@@ -305,39 +308,28 @@ class TestApi(unittest.TestCase):
         Ordered and non-ordered lists generate the same kind of
         strings, so there is no point in testing both cases.
         """
-        # github.
-        header = {'type': 3, 'text_original': LINE, 'text_anchor_link': LINE}
-        header_type_prev = 2
-        index_prev = 11
-        no_of_indentation_spaces_prev = 4
-        index = 1
-        list_marker = '.'
+        # github and redcarpet.
+        header = {
+            'type': GENERIC_HEADER_TYPE_CURR,
+            'text_original': LINE,
+            'text_anchor_link': LINE
+        }
         self.assertEqual(
-            api.build_toc_line(
-                header,
-                ordered=True,
-                no_links=True,
-                list_marker=list_marker,
-                header_type_prev=header_type_prev,
-                index_prev=index_prev,
-                no_of_indentation_spaces_prev=no_of_indentation_spaces_prev,
-                index=index), (S1 * 8) + str(index) + list_marker + S1 + LINE)
-
-        # redcarpet.
-        header = {'type': 3, 'text_original': LINE, 'text_anchor_link': LINE}
-        self.assertEqual(
-            api.build_toc_line(
-                header, ordered=False, no_links=True, parser='redcarpet'),
+            api.build_toc_line_without_indentation(
+                header, ordered=False, no_links=True, parser='github'),
             UNORDERED_LIST_SYMBOL + S1 + LINE)
 
         self.assertEqual(
-            api.build_toc_line(
-                header, ordered=False, no_links=False, parser='redcarpet'),
+            api.build_toc_line_without_indentation(
+                header, ordered=False, no_links=False, parser='github'),
             UNORDERED_LIST_SYMBOL + S1 + '[' + LINE + ']' + '(#' + LINE + ')')
 
-    @unittest.skip("===TODO===")
     def test_build_toc_line(self):
-        pass
+        r"""Test that the TOC line is built correcly.
+
+        This function is a frontend to both the build_toc_line_without_indentation and compute_toc_line_indentation_spaces functions.
+        Refer to those two functions for the unit tests.
+        """
 
     def test_build_anchor_link(self):
         r"""Test anchor link generation.
