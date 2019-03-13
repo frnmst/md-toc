@@ -52,7 +52,7 @@ H6 = 6 * '#'
 H7 = 7 * '#'
 
 # Lists.
-LIST_INDENTATION = 4 * ' '
+LIST_INDENTATION = 4
 UNORDERED_LIST_SYMBOL = '-'
 
 # Header types.
@@ -285,18 +285,15 @@ class TestApi(unittest.TestCase):
                          ['998.', '1000.', '0.', '0.', '0.', '0.'])
 
         # redcarpet.
-        # TODO
-        #header = {'type': 3, 'text_original': LINE, 'text_anchor_link': LINE}
-        #self.assertEqual(
-        #    api.build_toc_line(
-        #        header, ordered=False, no_links=True, parser='redcarpet'),
-        #    (LIST_INDENTATION * (3 - 1)) + UNORDERED_LIST_SYMBOL + S1 + LINE)
-        #
-        #self.assertEqual(
-        #    api.build_toc_line(
-        #        header, ordered=False, no_links=False,
-        #        parser='redcarpet'), (LIST_INDENTATION * (3 - 1)) +
-        #    UNORDERED_LIST_SYMBOL + S1 + '[' + LINE + ']' + '(#' + LINE + ')')
+        # TODO FIXME.
+        self.assertEqual(
+            api.compute_toc_line_indentation_spaces(
+                GENERIC_HEADER_TYPE_CURR,
+                GENERIC_HEADER_TYPE_PREV,
+                GENERIC_NUMBER_OF_INDENTATION_SPACES,
+                'redcarpet'),
+            LIST_INDENTATION * (GENERIC_HEADER_TYPE_CURR - 1))
+
 
     def test_build_toc_line_without_indentation(self):
         r"""Test TOC line building for different types of inputs.
@@ -309,6 +306,7 @@ class TestApi(unittest.TestCase):
         strings, so there is no point in testing both cases.
         """
         # github and redcarpet.
+        # FIXME.
         header = {
             'type': GENERIC_HEADER_TYPE_CURR,
             'text_original': LINE,

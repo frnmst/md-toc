@@ -286,7 +286,13 @@ def build_list_marker_log(parser='github', list_marker='.'):
 
     :parameter parser: decides rules on how compute indentations. Defaults
          to ``github``.
-    :parameter list_marker: a string that contains some of the first characters of the list element. Defaults to ``-``.
+    :parameter list_marker: a string that contains some of the first
+         characters of the list element. Defaults to ``-``.
+    :type parser: str
+    :type list_marker: str
+    :returns: list_marker_log
+    :rtype: list
+    :raises: one of the built in exceptions
     """
     assert isinstance(parser, str)
     assert isinstance(list_marker, str)
@@ -341,7 +347,7 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
     :type ordered: bool
     :type list_marker: str
     :type list_marker_log: list
-    :rtpe index: int
+    :type index: int
     :returns: no_of_indentation_spaces_curr
     :rtype: int
     :raises: one of the built in exceptions
