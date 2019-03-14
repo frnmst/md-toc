@@ -123,6 +123,9 @@ Only ATX-style headings are supported in md_toc.
 List item rules
 ---------------
 
+Problems
+````````
+
 We are interested in sublists indentation rules for all types of lists, and 
 integer overflows in case of ordered lists.
 
@@ -184,6 +187,8 @@ while the user might expect this:
       - [foo](#foo)
     - [bar](#bar)
 
+Indentation
+```````````
 
 - ``github``: 
 
@@ -197,13 +202,6 @@ while the user might expect this:
     blocks must be indented five spaces in order to fall under the list item."
 
   - https://github.github.com/gfm/#list-items
-
-  Ordered list markers cannot exceed ``99999999`` according to the following. 
-  If that is the case, a ``GithubOverflowOrderedListMarker`` exception 
-  is raised:
-
-  - https://github.github.com/gfm/#ordered-list-marker
-  - https://spec.commonmark.org/0.28/#ordered-list-marker
 
 - ``redcarpet``:
 
@@ -248,8 +246,8 @@ while the user might expect this:
       }
 
 
-  As far as I can tell from other parts of the code, on a new list block the 4 spaces 
-  indentation rule applies:
+  As far as I can tell from the previous and other functions, on a new list 
+  block the 4 spaces indentation rule applies:
 
   - https://github.com/vmg/redcarpet/blob/94f6e27bdf2395efa555a7c772a3d8b70fb84346/ext/redcarpet/markdown.c#L1822
   - https://github.com/vmg/redcarpet/blob/94f6e27bdf2395efa555a7c772a3d8b70fb84346/ext/redcarpet/markdown.c#L1873
@@ -257,8 +255,9 @@ while the user might expect this:
   This means that anything that has more than 3 whitespaces is considered as 
   sublist. The only exception seems to be for the first sublist in a list 
   block, in which that case even a single whitespace counts as a sublist. 
-  The 4 spacs indentation rule applices nontheless, so to keep things simple 
-  md_toc will always use 4 whitespaces for sublists.
+  The 4 spaces indentation rule appllies nontheless, so to keep things simple 
+  md_toc will always use 4 whitespaces for sublists.   Apparently, ordered and 
+  unordered lists share the same proprieties.
 
   Let's see this example:
 
@@ -308,8 +307,6 @@ while the user might expect this:
       </ul></li>
       </ul>
 
-
-  Apparently, ordered and unordered lists share the same proprieties.
 
   What follows is an extract of a C function in redcarpet that parses list 
   items.
@@ -426,10 +423,22 @@ while the user might expect this:
 
                 beg = end;
             }
-
-            // The function continues here...
         }
 
+
+Overflows
+`````````
+
+- ``github``: 
+
+  Ordered list markers cannot exceed ``99999999`` according to the following. 
+  If that is the case, a ``GithubOverflowOrderedListMarker`` exception 
+  is raised:
+
+  - https://github.github.com/gfm/#ordered-list-marker
+  - https://spec.commonmark.org/0.28/#ordered-list-marker
+
+- ``redcarpet``:
 
   Apparently there are no cases of ordered list marker overflows:
 
