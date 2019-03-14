@@ -241,7 +241,7 @@ Indentation
           if (is_next_headerline(data + i, size - i))
               return 0;
 
-          // Return the first non whitespace character.
+          // Return the first non whitespace character after the list marker.
           return i + 2;
       }
 
@@ -275,7 +275,7 @@ Indentation
               - foo
 
 
-  This is how redcarpet renders once you run ``$ redcarpet ${FILE}``:
+  This is how redcarpet renders it once you run ``$ redcarpet ${FILE}``:
 
 
    ::
@@ -309,9 +309,10 @@ Indentation
 
 
   What follows is an extract of a C function in redcarpet that parses list 
-  items.
+  items. I have added all the single line comments.
 
   .. highlight:: c
+
 
   ::
 
@@ -369,6 +370,8 @@ Indentation
 
                 // Count up to 4 characters of indentation.
                 // If we have 4 characters then it might be a sublist.
+                // Note that this is an offset and does not point to an
+                // index in the actual line string.
                 /* calculating the indentation */
                 i = 0;
                 while (i < 4 && beg + i < end && data[beg + i] == ' ')
@@ -406,6 +409,9 @@ Indentation
                     if (pre == orgpre) /* the following item must have */
                         break;             /* the same indentation */
     
+                    // If the indentation does not match the previous one then
+                    // assume that it is a sublist. Check later whether it is
+                    // or not.
                     if (!sublist)
                         sublist = work->size;
                 }
@@ -415,15 +421,52 @@ Indentation
                     break;
                 }
                 else if (in_empty) {
+                    // Add a line delimiter to the next line if it is missing.
                     bufputc(work, '\n');
                     has_inside_empty = 1;
                 }
 
                 in_empty = 0;
-
                 beg = end;
             }
+
+            if (*flags & MKD_LI_BLOCK) {
+                /* intermediate render of block li */
+                if (sublist && sublist < work->size) {
+                    parse_block(inter, rndr, work->data, sublist);
+                    parse_block(inter, rndr, work->data + sublist, work->size - sublist);
+            }
+            else
+                parse_block(inter, rndr, work->data, work->size);
         }
+
+
+  According to the code, ``parse_listitem`` is called indirectly by 
+  ``parse_block`` (via ``parse_list``), but ``parse_block`` is called directly 
+  by ``parse_listitem`` so the code analysis 
+  is not trivial. For this reason I might be mistaken about the 4 spaces 
+  indentation rule. Here is an extract of the ``parse_block`` function with
+  the calls to ``parse_list``:
+
+  .. highlight:: c
+
+  ::
+
+
+      /* parse_block • parsing of one block, returning next uint8_t to parse */
+      static void
+      parse_block(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
+      size)
+      {
+          while (beg < size) {
+
+              else if (prefix_uli(txt_data, end))
+                beg += parse_list(ob, rndr, txt_data, end, 0);
+
+              else if (prefix_oli(txt_data, end))
+                beg += parse_list(ob, rndr, txt_data, end, MKD_LIST_ORDERED);
+          }
+      } 
 
 
 Overflows
@@ -432,7 +475,7 @@ Overflows
 - ``github``: 
 
   Ordered list markers cannot exceed ``99999999`` according to the following. 
-  If that is the case, a ``GithubOverflowOrderedListMarker`` exception 
+  If that is the case then a ``GithubOverflowOrderedListMarker`` exception 
   is raised:
 
   - https://github.github.com/gfm/#ordered-list-marker
@@ -709,8 +752,8 @@ Code fences, also known as code blocks are...
 TODO.
 
 
-Notes about non implemented markdown parsers in md_toc
-------------------------------------------------------
+Non implemented markdown parsers in md_toc
+------------------------------------------
 
 If you have a look at 
 https://www.w3.org/community/markdown/wiki/MarkdownImplementations
