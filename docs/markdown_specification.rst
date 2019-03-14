@@ -48,11 +48,11 @@ Supported markdown parsers
   - https://github.com/vmg/redcarpet
 
 
-Summary
-```````
+Parser Summary
+``````````````
 
    ===================   ============   ==================================================================================
-   Parser                Alias of       Supported version
+   Parser                Alias of       Supported parser version
    ===================   ============   ==================================================================================
    ``cmark``             ``github``
    ``commonmarker``      ``github``
@@ -206,6 +206,230 @@ while the user might expect this:
   - https://spec.commonmark.org/0.28/#ordered-list-marker
 
 - ``redcarpet``:
+
+  - https://github.com/vmg/redcarpet/blob/94f6e27bdf2395efa555a7c772a3d8b70fb84346/ext/redcarpet/markdown.c#L1553
+  - https://github.com/vmg/redcarpet/blob/94f6e27bdf2395efa555a7c772a3d8b70fb84346/ext/redcarpet/markdown.c#L1528
+
+  The following C function returns the first non-whitespace character
+  after the list marker. The value of ``0`` is returned if the input
+  line is not a list element. List item rules are explained in the 
+  single line comments.
+
+  .. highlight:: c
+
+  ::
+
+
+      /* prefix_uli • returns unordered list item prefix */
+      static size_t
+      prefix_uli(uint8_t *data, size_t size)
+      {
+          size_t i = 0;
+
+          // There can be up to 3 whitespaces before the list marker.
+          if (i < size && data[i] == ' ') i++;
+          if (i < size && data[i] == ' ') i++;
+          if (i < size && data[i] == ' ') i++;
+
+          // The next non-whitespace character must be a list marker and
+          // the character after the list marker must be a whitespace.
+          if (i + 1 >= size ||
+             (data[i] != '*' && data[i] != '+' && data[i] != '-') ||
+              data[i + 1] != ' ')
+              return 0;
+
+          // Check that the next line is not a header
+          // that uses the `-` or `=` characters as markers.
+          if (is_next_headerline(data + i, size - i))
+              return 0;
+
+          // Return the first non whitespace character.
+          return i + 2;
+      }
+
+
+  As far as I can tell from other parts of the code, on a new list block the 4 spaces 
+  indentation rule applies:
+
+  - https://github.com/vmg/redcarpet/blob/94f6e27bdf2395efa555a7c772a3d8b70fb84346/ext/redcarpet/markdown.c#L1822
+  - https://github.com/vmg/redcarpet/blob/94f6e27bdf2395efa555a7c772a3d8b70fb84346/ext/redcarpet/markdown.c#L1873
+
+  This means that anything that has more than 3 whitespaces is considered as 
+  sublist. The only exception seems to be for the first sublist in a list 
+  block, in which that case even a single whitespace counts as a sublist. 
+  The 4 spacs indentation rule applices nontheless, so to keep things simple 
+  md_toc will always use 4 whitespaces for sublists.
+
+  Let's see this example:
+
+
+  ::
+
+      - I
+       - am
+           - foo
+
+    stop
+
+      - I 
+          - am
+              - foo
+
+
+  This is how redcarpet renders once you run ``$ redcarpet ${FILE}``:
+
+
+   ::
+
+
+      <ul>
+      <li>I
+
+      <ul>
+      <li>am
+
+      <ul>
+      <li>foo</li>
+      </ul></li>
+      </ul></li>
+      </ul>
+
+      <p>stop</p>
+
+      <ul>
+      <li>I
+
+      <ul>
+      <li>am
+
+      <ul>
+      <li>foo</li>
+      </ul></li>
+      </ul></li>
+      </ul>
+
+
+  Apparently, ordered and unordered lists share the same proprieties.
+
+  What follows is an extract of a C function in redcarpet that parses list 
+  items.
+
+  .. highlight:: c
+
+  ::
+
+
+        /* parse_listitem • parsing of a single list item */
+        /*  assuming initial prefix is already removed */
+        static size_t
+        parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, 
+        size_t size, int *flags)
+        {
+            struct buf *work = 0, *inter = 0;
+            size_t beg = 0, end, pre, sublist = 0, orgpre = 0, i;
+            int in_empty = 0, has_inside_empty = 0, in_fence = 0;
+
+            // This is the base case, usually of indentation 0 but it can be
+            // from 0 to 3 spaces. If it was 4 spaces it would be a code 
+            // block.
+            /* keeping track of the first indentation prefix */
+            while (orgpre < 3 && orgpre < size && data[orgpre] == ' ')
+                orgpre++;
+
+            // Get the first index of string after the list marker. Try both 
+            // ordered and unordered lists
+            beg = prefix_uli(data, size);
+            if (!beg)
+                beg = prefix_oli(data, size);
+
+            if (!beg)
+                return 0;
+
+            /* skipping to the beginning of the following line */
+            end = beg;
+            while (end < size && data[end - 1] != '\n')
+                end++;
+
+            // Iterate line by line using the '\n' character as delimiter.
+            /* process the following lines */
+            while (beg < size) {
+                size_t has_next_uli = 0, has_next_oli = 0;
+
+                // Go to the next line.
+                end++;
+
+                // Find the end of the line.
+                while (end < size && data[end - 1] != '\n')
+                    end++;
+
+                // Skip the next line if it is empty.
+                /* process an empty line */
+                if (is_empty(data + beg, end - beg)) {
+                    in_empty = 1;
+                    beg = end;
+                    continue;
+                }
+
+                // Count up to 4 characters of indentation.
+                // If we have 4 characters then it might be a sublist.
+                /* calculating the indentation */
+                i = 0;
+                while (i < 4 && beg + i < end && data[beg + i] == ' ')
+                    i++;
+
+                pre = i;
+
+                /* Only check for new list items if we are **not** inside
+                 * a fenced code block */
+                 if (!in_fence) {
+                   has_next_uli = prefix_uli(data + beg + i, end - beg - i);
+                   has_next_oli = prefix_oli(data + beg + i, end - beg - i);
+                }
+
+                /* checking for ul/ol switch */
+                if (in_empty && (
+                    ((*flags & MKD_LIST_ORDERED) && has_next_uli) ||
+                    (!(*flags & MKD_LIST_ORDERED) && has_next_oli))){
+                    *flags |= MKD_LI_END;
+                    break; /* the following item must have same list type */
+                }
+
+                // Determine if we are dealing with:
+                // - an empty line
+                // - a new list item
+                // - a sublist
+                /* checking for a new item */
+                if ((has_next_uli && !is_hrule(data + beg + i, end - beg - i)) || has_next_oli) {
+                    if (in_empty)
+                        has_inside_empty = 1;
+
+                    // The next list item's indentation (pre) must be the same as 
+                    // the previous one (orgpre), otherwise it might be a 
+                    // sublist.
+                    if (pre == orgpre) /* the following item must have */
+                        break;             /* the same indentation */
+    
+                    if (!sublist)
+                        sublist = work->size;
+                }
+                /* joining only indented stuff after empty lines */
+                else if (in_empty && i < 4 && data[beg] != '\t') {
+                    *flags |= MKD_LI_END;
+                    break;
+                }
+                else if (in_empty) {
+                    bufputc(work, '\n');
+                    has_inside_empty = 1;
+                }
+
+                in_empty = 0;
+
+                beg = end;
+            }
+
+            // The function continues here...
+        }
+
 
   Apparently there are no cases of ordered list marker overflows:
 

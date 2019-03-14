@@ -125,10 +125,6 @@ class TestApi(unittest.TestCase):
             api.increase_index_ordered_list(ht, 1, 1)
 
     # TODO FIXME.
-    def test_toc_renders_as_list(self):
-        pass
-
-    # TODO FIXME.
     def test_build_list_marker_log(self):
         pass
 
