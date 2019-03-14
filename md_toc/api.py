@@ -100,38 +100,24 @@ def build_toc(filename,
     header_duplicate_counter = dict()
 
     # Code fence state tracking
-    inside_code_fence = False
-    closing_code_fence = ''
+    is_within_code_fence = False
+    code_fence = ''
 
     with open(filename, 'r') as f:
         line = f.readline()
         while line:
             # Ignore lines within code fences
             # https://github.github.com/gfm/#code-fence
-            line_without_trailing_newline = line.rstrip('\n')
-            line_without_leading_spaces = line_without_trailing_newline.lstrip(' ')
-            is_valid_code_fence_ident = len(line_without_trailing_newline) - len(line_without_leading_spaces) <= 3
-
-            if inside_code_fence:
-                line_without_leading_or_trailing_spaces = line_without_leading_spaces.rstrip(' ')
-                is_line_homogeneous = line_without_leading_or_trailing_spaces == (
-                    len(line_without_leading_or_trailing_spaces) * line_without_leading_spaces[0]
-                )
-                inside_code_fence = not all([
-                    is_valid_code_fence_ident,
-                    line_without_leading_spaces.startswith(closing_code_fence),
-                    is_line_homogeneous
-                ])
-                line = f.readline()
-                continue
-
-            if is_valid_code_fence_ident and line_without_leading_spaces.startswith((3 * '`', 3 * '~')):
-                info_string = line.lstrip(line_without_leading_spaces[0])
-                if '`' not in info_string:
-                    inside_code_fence = True
-                    closing_code_fence = line.rstrip(info_string)
+            if not is_within_code_fence:
+                code_fence = is_opening_code_fence(line)
+                if code_fence is not None:
+                    is_within_code_fence = True
                     line = f.readline()
                     continue
+            else:
+                is_within_code_fence = not is_closing_code_fence(line, code_fence)
+                line = f.readline()
+                continue
 
             # Parse headers
             header = get_md_header(line, header_duplicate_counter,
@@ -598,6 +584,81 @@ def get_md_header(header_text_line,
                               parser)
         }
         return header
+
+
+def _is_valid_code_fence_indent(line):
+    r""" Determine if the given line has valid indentation for a code block
+    fence.
+
+    :parameter line: a single markdown line to evaluate.
+    :type line: str
+    :returns: True if the given line has validat indentation or False
+    otherwise.
+    :rtype: bool
+    """
+    return len(line) - len(line.lstrip(' ')) <= 3
+
+
+def is_opening_code_fence(line):
+    r"""Determine if the given line is possibly the opening of a fenced code
+    block.
+
+    :parameter line: a single markdown line to evaluate.
+    :type line: str
+    :returns: None if the input line is not an opening code fence. Otherwise,
+    returns the string which will identify the closing code fence. The closing
+    string will be a sequence of at least 3 backticks (`) or tildes (~).
+    :rtype: typing.Optional[str]
+    """
+    if not _is_valid_code_fence_indent(line):
+        return None
+
+    line = line.lstrip(' ').rstrip('\n')
+    if not line.startswith(("```", '~~~')):
+        return None
+
+    info_string = line.lstrip(line[0]) if line != len(line) * line[0] else ''
+    # Backticks in info string are explicitly forbidden
+    if '`' in info_string:
+        return None
+
+    return line.rstrip(info_string)
+
+
+def is_closing_code_fence(line, fence):
+    r"""Determine if the given line is the end of a fenced code block.
+
+    :parameter line: a single markdown line to evaluate.
+    :paramter fence: a sequence of backticks or tildes marking the end of the
+    current code block
+    :type line: str
+    :type fence: str
+    :returns: True if the line ends the current code block. False otherwise.
+    :rtype: bool
+    """
+    if not _is_valid_code_fence_indent(line):
+        return False
+
+    # Validate code fence
+    if not fence.startswith(('`', '~')):
+        return False
+
+    if not len(fence) >= 3:
+        return False
+
+    if not fence == len(fence) * fence[0]:
+        return False
+
+    # Check line
+    line = line.lstrip(' ')
+    if not line.startswith(fence):
+        return False
+
+    line = line.rstrip('\n').rstrip(' ')
+    if not line == len(line) * fence[0]:
+        return False
+
+    return True
 
 
 if __name__ == '__main__':
