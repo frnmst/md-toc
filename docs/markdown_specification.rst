@@ -256,7 +256,7 @@ Indentation
   sublist. The only exception seems to be for the first sublist in a list 
   block, in which that case even a single whitespace counts as a sublist. 
   The 4 spaces indentation rule appllies nontheless, so to keep things simple 
-  md_toc will always use 4 whitespaces for sublists.   Apparently, ordered and 
+  md_toc will always use 4 whitespaces for sublists. Apparently, ordered and 
   unordered lists share the same proprieties.
 
   Let's see this example:
@@ -264,18 +264,19 @@ Indentation
 
   ::
 
+
       - I
        - am
            - foo
 
-    stop
+      stop
 
       - I 
           - am
               - foo
 
 
-  This is how redcarpet renders it once you run ``$ redcarpet ${FILE}``:
+  This is how redcarpet renders it once you run ``$ redcarpet``:
 
 
    ::
@@ -310,6 +311,7 @@ Indentation
 
   What follows is an extract of a C function in redcarpet that parses list 
   items. I have added all the single line comments.
+
 
   .. highlight:: c
 
@@ -445,8 +447,13 @@ Indentation
   ``parse_block`` (via ``parse_list``), but ``parse_block`` is called directly 
   by ``parse_listitem`` so the code analysis 
   is not trivial. For this reason I might be mistaken about the 4 spaces 
-  indentation rule. Here is an extract of the ``parse_block`` function with
-  the calls to ``parse_list``:
+  indentation rule.
+
+  - https://github.com/vmg/redcarpet/blob/94f6e27bdf2395efa555a7c772a3d8b70fb84346/ext/redcarpet/markdown.c#L2418
+  - https://github.com/vmg/redcarpet/blob/94f6e27bdf2395efa555a7c772a3d8b70fb84346/ext/redcarpet/markdown.c#L1958
+
+  Here is an extract of the ``parse_block`` function with the calls to 
+  ``parse_list``:
 
   .. highlight:: c
 
@@ -752,18 +759,18 @@ Code fences, also known as code blocks are...
 TODO.
 
 
-Non implemented markdown parsers in md_toc
-------------------------------------------
+Other markdown parsers
+----------------------
 
 If you have a look at 
 https://www.w3.org/community/markdown/wiki/MarkdownImplementations
-you will see that there are a ton of different markdown parsers out there 
-(moreover, that list has not been updated in a while).
+you will see that there are a ton of different markdown parsers out there.
+Moreover, that list has not been updated in a while.
 
 Markdown parsers have different behaviours regarding anchor links. Some of them 
 implement them while others don't; some act on the duplicate entry problem 
-while others don't; some strip consecutive dash characters while others don't; 
-and so on... For example:
+while others don't; some strip consecutive dash characters while others don't.
+And it's not just about anchor links, as you have read before. For example:
 
 - Gogs, Marked, Notabug, Gitea: Gogs uses marked as the markdown 
   parser while *NotABug.org is powered by a liberated version of gogs*.
@@ -786,7 +793,7 @@ and so on... For example:
 
 
 Steps to add an unsupported markdown parser
--------------------------------------------
+```````````````````````````````````````````
 
 1. Find the source code and/or documents.
 2. Find the rules for each section, such as anchor link generation, title 
