@@ -1,19 +1,21 @@
 Markdown Table Of Contents
 ==========================
 
-.. image:: https://img.shields.io/pypi/v/md-toc.svg 
-     :alt: PyPI md-toc version
+|pypiver|    |license|    |pyver|    |downloads|
 
-.. image:: https://img.shields.io/pypi/l/md-toc.svg?color=blue
-     :alt: PyPI - License
-     :taget: https://github.com/frnmst/md-toc/blob/master/LICENSE.txt
+.. |pypiver| image:: https://img.shields.io/pypi/v/md-toc.svg
+               :alt: PyPI md-toc version
+ 
+.. |license| image:: https://img.shields.io/pypi/l/md-toc.svg?color=blue
+               :alt: PyPI - License
+               :target: https://raw.githubusercontent.com/frnmst/md-toc/master/LICENSE.txt
 
-.. image:: https://img.shields.io/pypi/pyversions/md-toc.svg
-     :alt: PyPI - Python Version
+.. |pyver| image:: https://img.shields.io/pypi/pyversions/md-toc.svg
+             :alt: PyPI - Python Version
 
-.. image: https://pepy.tech/badge/md-toc
-     :alt: Downloads
-     :target: https://pepy.tech/project/md-toc
+.. |downloads| image:: https://pepy.tech/badge/md-toc
+                 :alt: Downloads
+                 :target: https://pepy.tech/project/md-toc
 
 Automatically generate a compliant table of contents for a markdown file to 
 improve document readability.
