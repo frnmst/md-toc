@@ -284,18 +284,14 @@ class TestApi(unittest.TestCase):
         # redcarpet.
         self.assertEqual(
             api.compute_toc_line_indentation_spaces(
-                GENERIC_HEADER_TYPE_CURR,
-                GENERIC_HEADER_TYPE_PREV,
-                GENERIC_NUMBER_OF_INDENTATION_SPACES,
-                'redcarpet'),
+                GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_PREV,
+                GENERIC_NUMBER_OF_INDENTATION_SPACES, 'redcarpet'),
             LIST_INDENTATION * (GENERIC_HEADER_TYPE_CURR - 1))
 
         self.assertEqual(
             api.compute_toc_line_indentation_spaces(
-                GENERIC_HEADER_TYPE_PREV,
-                GENERIC_HEADER_TYPE_CURR,
-                GENERIC_NUMBER_OF_INDENTATION_SPACES,
-                'redcarpet'),
+                GENERIC_HEADER_TYPE_PREV, GENERIC_HEADER_TYPE_CURR,
+                GENERIC_NUMBER_OF_INDENTATION_SPACES, 'redcarpet'),
             LIST_INDENTATION * (GENERIC_HEADER_TYPE_PREV - 1))
 
     def test_build_toc_line_without_indentation(self):

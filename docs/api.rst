@@ -17,4 +17,6 @@ file.
 .. autofunction:: build_multiple_tocs
 .. autofunction:: write_string_on_file_between_markers
 .. autofunction:: write_strings_on_files_between_markers
-
+.. autofunction:: build_list_marker_log
+.. autofunction:: compute_toc_line_indentation_spaces
+.. autofunction:: build_toc_line_without_indentation

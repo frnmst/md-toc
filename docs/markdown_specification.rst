@@ -752,13 +752,6 @@ Anchor link types and behaviours
   - https://github.com/vmg/redcarpet/issues/307#issuecomment-261793668
 
 
-Code fences
------------
-
-Code fences, also known as code blocks are... 
-TODO.
-
-
 Other markdown parsers
 ----------------------
 

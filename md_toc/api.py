@@ -26,7 +26,8 @@ import re
 import curses.ascii
 import sys
 from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
-                         GithubOverflowOrderedListMarker, StdinIsNotAFileToBeWritten)
+                         GithubOverflowOrderedListMarker,
+                         StdinIsNotAFileToBeWritten)
 from .constants import common_defaults
 from .constants import parser as md_parser
 
@@ -170,10 +171,13 @@ def build_multiple_tocs(filenames,
                     index = header_type_counter[header_type_curr]
                 else:
                     index = 1
-                no_of_indentation_spaces_curr = compute_toc_line_indentation_spaces(
-                    header_type_curr, header_type_prev,
-                    no_of_indentation_spaces_prev, parser, ordered,
-                    list_marker, list_marker_log, index)
+                if no_indentation:
+                    no_of_indentation_spaces_curr = 0
+                else:
+                    no_of_indentation_spaces_curr = compute_toc_line_indentation_spaces(
+                        header_type_curr, header_type_prev,
+                        no_of_indentation_spaces_prev, parser, ordered,
+                        list_marker, list_marker_log, index)
                 toc_line_no_indent = build_toc_line_without_indentation(
                     header, ordered, no_links, index, parser, list_marker)
                 toc_struct[file_id] += build_toc_line(
