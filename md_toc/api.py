@@ -26,7 +26,7 @@ import re
 import curses.ascii
 import sys
 from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
-                         GithubOverflowOrderedListMarker)
+                         GithubOverflowOrderedListMarker, StdinIsNotAFileToBeWritten)
 from .constants import common_defaults
 from .constants import parser as md_parser
 
@@ -45,11 +45,15 @@ def write_string_on_file_between_markers(filename, string, marker):
     :type marker: str
     :returns: None
     :rtype: None
-    :raises: one of the fpyutils exceptions or one of the built-in exceptions.
+    :raises: StdinIsNotAFileToBeWritten or one of the fpyutils exceptions
+         or one of the built-in exceptions.
     """
     assert isinstance(filename, str)
     assert isinstance(string, str)
     assert isinstance(marker, str)
+
+    if filename == '-':
+        raise StdinIsNotAFileToBeWritten
 
     final_string = marker + '\n\n' + string.rstrip() + '\n\n' + marker + '\n'
     marker_line_positions = fpyutils.get_line_matches(
@@ -150,6 +154,10 @@ def build_multiple_tocs(filenames,
             f = open(filenames[file_id], 'r')
         line = f.readline()
         toc_struct.append('')
+        if ordered:
+            list_marker_log = build_list_marker_log(parser, list_marker)
+        else:
+            list_marker_log = list()
         while line:
             header = get_md_header(line, header_duplicate_counter,
                                    keep_header_levels, parser, no_links)
@@ -189,14 +197,14 @@ def increase_index_ordered_list(header_type_count,
     :parameter header_type_count: the count of each header type.
     :parameter header_type_prev: the previous type of header (h[1-Inf]).
     :parameter header_type_curr: the current type of header (h[1-Inf]).
-    :parameter parser: decides rules on how to generate ordered list markers
+    :parameter parser: decides rules on how to generate ordered list markers.
     :type header_type_count: dict
     :type header_type_prev: int
     :type header_type_curr: int
     :type parser: str
     :returns: None
     :rtype: None
-    :raises: one of the built in exceptions
+    :raises: one of the built-in exceptions.
     """
     assert isinstance(header_type_count, dict)
     assert isinstance(header_type_prev, int)
@@ -221,66 +229,6 @@ def increase_index_ordered_list(header_type_count,
             raise GithubOverflowOrderedListMarker
 
 
-# TODO FIXME: Check if the TOC MIGHT NOT RENDER as list (or what the user intended
-# TODO FIXME: with the ATX headings. This depends on the parser.
-'''
-def toc_renders_as_list(header_type_curr=1,
-                        parser='github',
-                        indentation_array=list()):
-    r"""Check if the TOC will render as a working list.
-
-    :parameter header_type_curr: the current type of header (h[1-Inf]).
-    :parameter parser: decides rules on how to generate ordered list markers
-    :type header_type_curr: int
-    :type parser: str
-    :returns: renders_as_list
-    :rtype: bool
-    :raises: one of the built in exceptions
-    """
-    assert isinstance(header_type_curr, int)
-    assert header_type_curr > 0
-    assert isinstance(parser, str)
-    assert isinstance(indentation_array, list)
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
-            parser == 'commonmarker'):
-        if len(indentation_array) > 0:
-            assert len(indentation_array
-                       ) == md_parser['github']['header']['max_levels'] + 1
-
-    renders_as_list = True
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
-            parser == 'commonmarker'):
-        # 0. Build indentation_array.
-        if indentation_array == list():
-            indentation_array[0] = True
-            for i in range(1, md_parser['github']['header']['max_levels'] + 1):
-                indentation_array[i].append(False)
-
-        # 1. Update with current information.
-        indentation_array[header_type_curr] = True
-
-        # 2. Reset next cells to false as a detection mechanism.
-        indentation_array[(
-            header_type_curr +
-            1):md_parser['github']['header']['max_levels']] = False
-
-        # 3. Check for previous false cells. If there is a "hole" in the array
-        #    it means that the TOC will have extra indentation space, thus not
-        #    rendering as an HTML list.
-        i = header_type_curr
-        while i >= 0 and indentation_array[i]:
-            i -= 1
-        if i > 0:
-            renders_as_list = False
-
-    elif parser == 'redcarpet':
-        pass
-        # TODO
-
-    return renders_as_list, indentation_array
-'''
-
-
 def build_list_marker_log(parser='github', list_marker='.'):
     r"""Create a data structure that holds list marker information.
 
@@ -292,10 +240,19 @@ def build_list_marker_log(parser='github', list_marker='.'):
     :type list_marker: str
     :returns: list_marker_log
     :rtype: list
-    :raises: one of the built in exceptions
+    :raises: one of the built-in exceptions.
+    :note: Please note that this function makes sense only for
+         ordered lists.
     """
     assert isinstance(parser, str)
     assert isinstance(list_marker, str)
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
+            parser == 'commonmarker'):
+        assert list_marker in md_parser['github']['list']['ordered'][
+            'closing_markers']
+    elif parser == 'redcarpet':
+        assert list_marker in md_parser['redcarpet']['list']['ordered'][
+            'closing_markers']
 
     list_marker_log = list()
 
@@ -308,7 +265,6 @@ def build_list_marker_log(parser='github', list_marker='.'):
         ]
 
     elif parser == 'redcarpet':
-        # TODO
         pass
 
     return list_marker_log
@@ -350,8 +306,7 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
     :type index: int
     :returns: no_of_indentation_spaces_curr
     :rtype: int
-    :raises: one of the built in exceptions
-
+    :raises: one of the built-in exceptions.
     :note: Please note that this function
          assumes that no_of_indentation_spaces_prev contains the correct
          number of spaces.
@@ -432,7 +387,6 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
         if ordered:
             list_marker_log[header_type_curr - 1] = str(index) + list_marker
 
-    # TODO: how does redcarpet deal with this?
     elif parser == 'redcarpet':
         no_of_indentation_spaces_curr = 4 * (header_type_curr - 1)
 
@@ -461,7 +415,7 @@ def build_toc_line_without_indentation(header,
     :type no_links: bool
     :type index: int
     :type header_type_prev: int
-    :returns: a single line of the table of contents.
+    :returns: a single line of the table of contents without indentation.
     :rtype: str
     :raises: one of the built-in exceptions.
     """
@@ -516,8 +470,18 @@ def build_toc_line_without_indentation(header,
 def build_toc_line(toc_line_no_indent, no_of_indentation_spaces=0):
     r"""Build the TOC line.
 
-    TODO
+    :parameter toc_line_no_indent: the TOC line without indentation.
+    :parameter no_of_indentation_spaces: the number of indentation spaces.
+    :type toc_line_no_indent: str
+    :type no_of_indentation_spaces: int
+    :returns: a single line of the table of contents.
+    :rtype: str
+    :raises: one of the built-in exceptions.
     """
+    assert isinstance(toc_line_no_indent, str)
+    assert isinstance(no_of_indentation_spaces, int)
+    assert no_of_indentation_spaces >= 0
+
     indentation = no_of_indentation_spaces * ' '
     toc_line = indentation + toc_line_no_indent
 
@@ -644,7 +608,7 @@ def get_atx_heading(line,
          parser rules, otherwise.
     :rtype: tuple
     :raises: one of the built in exceptions or GithubEmptyLinkLabel or
-         GithubOverflowCharsLinkLabel
+         GithubOverflowCharsLinkLabel.
     :warning: the parameter keep_header_levels must be greater than 0.
     """
     assert isinstance(line, str)

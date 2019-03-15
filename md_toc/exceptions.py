@@ -32,3 +32,7 @@ class GithubEmptyLinkLabel(Exception):
 
 class GithubOverflowOrderedListMarker(Exception):
     """The ordered list marker number is too big."""
+
+
+class StdinIsNotAFileToBeWritten(Exception):
+    """stdin cannot be written onto."""

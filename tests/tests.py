@@ -86,9 +86,10 @@ class TestApi(unittest.TestCase):
         r"""Test that the TOC is written correcly on the file.
 
         Most of the job is done by the fpyutils library. Refer to that
-        for the unit tests. There is nothing of relevance to be tested
-        otherwise.
+        for the unit tests.
         """
+        with self.assertRaises(exceptions.StdinIsNotAFileToBeWritten):
+            api.write_string_on_file_between_markers('-', LINE, LINE)
 
     def test_build_multiple_tocs(self):
         r"""Test that the TOC is built correctly.
@@ -281,7 +282,6 @@ class TestApi(unittest.TestCase):
                          ['998.', '1000.', '0.', '0.', '0.', '0.'])
 
         # redcarpet.
-        # TODO FIXME.
         self.assertEqual(
             api.compute_toc_line_indentation_spaces(
                 GENERIC_HEADER_TYPE_CURR,
@@ -290,19 +290,20 @@ class TestApi(unittest.TestCase):
                 'redcarpet'),
             LIST_INDENTATION * (GENERIC_HEADER_TYPE_CURR - 1))
 
+        self.assertEqual(
+            api.compute_toc_line_indentation_spaces(
+                GENERIC_HEADER_TYPE_PREV,
+                GENERIC_HEADER_TYPE_CURR,
+                GENERIC_NUMBER_OF_INDENTATION_SPACES,
+                'redcarpet'),
+            LIST_INDENTATION * (GENERIC_HEADER_TYPE_PREV - 1))
 
     def test_build_toc_line_without_indentation(self):
         r"""Test TOC line building for different types of inputs.
-
-        Types of inputs to be tested:
-            non-ordered list
-            header_type > 1
-            links, no links
-        Ordered and non-ordered lists generate the same kind of
-        strings, so there is no point in testing both cases.
         """
         # github and redcarpet.
         # FIXME.
+
         header = {
             'type': GENERIC_HEADER_TYPE_CURR,
             'text_original': LINE,
@@ -321,7 +322,9 @@ class TestApi(unittest.TestCase):
     def test_build_toc_line(self):
         r"""Test that the TOC line is built correcly.
 
-        This function is a frontend to both the build_toc_line_without_indentation and compute_toc_line_indentation_spaces functions.
+        This function is a frontend to both the
+        build_toc_line_without_indentation and
+        compute_toc_line_indentation_spaces functions.
         Refer to those two functions for the unit tests.
         """
 
@@ -345,7 +348,7 @@ class TestApi(unittest.TestCase):
         the cited document. There are also some more tests for special
         cases.
 
-        Redcarpet and GitLab examples are different from the ones present
+        Redcarpet examples are different from the ones present
         in the test directory of the source code.
         """
         # github
