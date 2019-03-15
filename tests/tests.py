@@ -83,7 +83,7 @@ class TestApi(unittest.TestCase):
     r"""Test the main API."""
 
     def test_write_string_on_file_between_markers(self):
-        r"""Test that the TOC is written correcly on the file.
+        r"""Test that the TOC is written correctly on the file.
 
         Most of the job is done by the fpyutils library. Refer to that
         for the unit tests.
@@ -316,7 +316,7 @@ class TestApi(unittest.TestCase):
             UNORDERED_LIST_SYMBOL + S1 + '[' + LINE + ']' + '(#' + LINE + ')')
 
     def test_build_toc_line(self):
-        r"""Test that the TOC line is built correcly.
+        r"""Test that the TOC line is built correctly.
 
         This function is a frontend to both the
         build_toc_line_without_indentation and
