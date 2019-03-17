@@ -31,6 +31,7 @@ from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
 from .constants import common_defaults
 from .constants import parser as md_parser
 
+
 def write_string_on_file_between_markers(filename, string, marker):
     r"""Write the table of contents on a single file.
 
@@ -223,14 +224,14 @@ def increase_index_ordered_list(header_type_count,
     # Base cases for a new table of contents or a new index type.
     if header_type_prev == 0:
         header_type_prev = header_type_curr
-    if (header_type_curr not in header_type_count or
-            header_type_prev < header_type_curr):
+    if (header_type_curr not in header_type_count
+            or header_type_prev < header_type_curr):
         header_type_count[header_type_curr] = 0
 
     header_type_count[header_type_curr] += 1
 
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
-            parser == 'commonmarker'):
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker'):
         if header_type_count[header_type_curr] > md_parser['github']['list'][
                 'ordered']['max_marker_number']:
             raise GithubOverflowOrderedListMarker
@@ -253,8 +254,8 @@ def build_list_marker_log(parser='github', list_marker='.'):
     """
     assert isinstance(parser, str)
     assert isinstance(list_marker, str)
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
-            parser == 'commonmarker'):
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker'):
         assert list_marker in md_parser['github']['list']['ordered'][
             'closing_markers']
     elif parser == 'redcarpet':
@@ -263,8 +264,8 @@ def build_list_marker_log(parser='github', list_marker='.'):
 
     list_marker_log = list()
 
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
-            parser == 'commonmarker'):
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker'):
         list_marker_log = [
             str(md_parser['github']['list']['ordered']['min_marker_number']) +
             list_marker
@@ -331,8 +332,8 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
     assert isinstance(parser, str)
     assert isinstance(ordered, bool)
     assert isinstance(list_marker, str)
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
-            parser == 'commonmarker'):
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker'):
         if ordered:
             assert list_marker in md_parser['github']['list']['ordered'][
                 'closing_markers']
@@ -347,8 +348,8 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
             assert list_marker in md_parser['redcarpet']['list']['unordered'][
                 'bullet_markers']
     assert isinstance(list_marker_log, list)
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
-            parser == 'commonmarker'):
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker'):
         if ordered:
             assert len(
                 list_marker_log) == md_parser['github']['header']['max_levels']
@@ -357,8 +358,8 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
     assert isinstance(index, int)
     assert index > 0
 
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
-            parser == 'commonmarker'):
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker'):
         if header_type_prev == 0:
             # Base case for the first toc line.
             no_of_indentation_spaces_curr = 0
@@ -448,8 +449,8 @@ def build_toc_line_without_indentation(header,
     assert index > 0
     assert isinstance(parser, str)
     assert isinstance(list_marker, str)
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
-            parser == 'commonmarker'):
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker'):
         if ordered:
             assert list_marker in md_parser['github']['list']['ordered'][
                 'closing_markers']
@@ -466,8 +467,8 @@ def build_toc_line_without_indentation(header,
 
     toc_line_no_indent = str()
 
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
-            parser == 'commonmarker' or parser == 'redcarpet'):
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker' or parser == 'redcarpet'):
         if ordered:
             list_marker = str(index) + list_marker
 
@@ -530,8 +531,8 @@ def build_anchor_link(header_text_trimmed,
     assert isinstance(header_duplicate_counter, dict)
     assert isinstance(parser, str)
 
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
-            parser == 'commonmarker'):
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker'):
         header_text_trimmed = header_text_trimmed.lower()
         # Remove punctuation: Keep spaces, hypens and "word characters"
         # only.
@@ -636,8 +637,8 @@ def get_atx_heading(line,
     if len(line) == 0:
         return None
 
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab' or
-            parser == 'commonmarker'):
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker'):
 
         if line[0] == '\u005c':
             return None
@@ -660,8 +661,8 @@ def get_atx_heading(line,
 
         # Include special cases for line endings which should not be
         # discarded as non-ATX headers.
-        if i < len(line) and (line[i] != ' ' and line[i] != '\u000a' and
-                              line[i] != '\u000d'):
+        if i < len(line) and (line[i] != ' ' and line[i] != '\u000a'
+                              and line[i] != '\u000d'):
             return None
 
         i += 1
@@ -681,8 +682,8 @@ def get_atx_heading(line,
         i = 0
         i_prev = i
         while i < len(line) - cs_start - 1 and go_on:
-            if ((line_prime[i] != ' ' and line_prime[i] != '#') or
-                    hash_char_rounds > 1):
+            if ((line_prime[i] != ' ' and line_prime[i] != '#')
+                    or hash_char_rounds > 1):
                 if i > i_prev:
                     cs_end = len(line_prime) - i_prev
                 else:
@@ -726,9 +727,9 @@ def get_atx_heading(line,
                     while j >= 0 and final_line[j] == '\u005c':
                         consecutive_escape_characters += 1
                         j -= 1
-                    if ((consecutive_escape_characters > 0 and
-                         consecutive_escape_characters % 2 == 0) or
-                            consecutive_escape_characters == 0):
+                    if ((consecutive_escape_characters > 0
+                         and consecutive_escape_characters % 2 == 0)
+                            or consecutive_escape_characters == 0):
                         tmp = '\u005c'
                     else:
                         tmp = str()
@@ -744,9 +745,9 @@ def get_atx_heading(line,
             return None
 
         i = 0
-        while (i < len(line) and
-               i < md_parser['redcarpet']['header']['max_levels'] and
-               line[i] == '#'):
+        while (i < len(line)
+               and i < md_parser['redcarpet']['header']['max_levels']
+               and line[i] == '#'):
             i += 1
         current_headers = i
 

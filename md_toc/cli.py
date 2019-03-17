@@ -52,8 +52,9 @@ class CliToApi():
         elif args.unordered_list_marker is not None:
             list_marker = args.unordered_list_marker
         else:
-            if (args.parser == 'github' or args.parser == 'cmark' or
-                    args.parser == 'gilab' or args.parser == 'commonmarker'):
+            if (args.parser == 'github' or args.parser == 'cmark'
+                    or args.parser == 'gilab'
+                    or args.parser == 'commonmarker'):
                 list_marker = md_parser['github']['list']['unordered'][
                     'default_marker']
             if args.parser == 'redcarpet':

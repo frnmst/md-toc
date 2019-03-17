@@ -36,7 +36,7 @@ def main(args=None):
         if result is not None:
             print(result)
         retcode = 0
-    except Exception as e:
+    except Exception:
         retcode = 1
         traceback.print_exc()
     sys.exit(retcode)

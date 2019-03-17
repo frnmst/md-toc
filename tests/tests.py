@@ -125,9 +125,11 @@ class TestApi(unittest.TestCase):
         with self.assertRaises(exceptions.GithubOverflowOrderedListMarker):
             api.increase_index_ordered_list(ht, 1, 1)
 
-    # TODO FIXME.
     def test_build_list_marker_log(self):
-        pass
+        r"""Test that the list_marker_log data structure is built correctly.
+
+        There is no need to test this since it is a very simple function.
+        """
 
     def test_compute_toc_line_indentation_spaces(self):
         r"""Test that the TOC list indentation spaces are computed correctly.
