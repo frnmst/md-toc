@@ -31,9 +31,6 @@ from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
 from .constants import common_defaults
 from .constants import parser as md_parser
 
-# FIXME: Fix all docstrings.
-
-
 def write_string_on_file_between_markers(filename, string, marker):
     r"""Write the table of contents on a single file.
 
@@ -116,15 +113,20 @@ def build_multiple_tocs(filenames,
 
     :parameter filenames: the file that needs to be read.
     :parameter ordered: decides whether to build an ordered list or not.
+         Defaults to ``False``.
     :parameter no_links: disables the use of links.
+         Defaults to ``False``.
+    :parameter no_indentation: disables indentation in the list.
+         Defaults to ``False``.
     :parameter keep_header_levels: the maximum level of headers to be
-         considered as such when building the table of contents. Defaults to
-         ``3``.
+         considered as such when building the table of contents.
+         Defaults to ``3``.
     :parameter parser: decides rules on how to generate anchor links.
          Defaults to ``github``.
     :type filenames: str
     :type ordered: bool
     :type no_links: bool
+    :type no_indentation: bool
     :type keep_header_levels: int
     :type parser: str
     :returns: the corresponding table of contents for each input file.
@@ -202,6 +204,7 @@ def increase_index_ordered_list(header_type_count,
     :parameter header_type_prev: the previous type of header (h[1-Inf]).
     :parameter header_type_curr: the current type of header (h[1-Inf]).
     :parameter parser: decides rules on how to generate ordered list markers.
+         Defaults to ``github``.
     :type header_type_count: dict
     :type header_type_prev: int
     :type header_type_curr: int
@@ -236,8 +239,8 @@ def increase_index_ordered_list(header_type_count,
 def build_list_marker_log(parser='github', list_marker='.'):
     r"""Create a data structure that holds list marker information.
 
-    :parameter parser: decides rules on how compute indentations. Defaults
-         to ``github``.
+    :parameter parser: decides rules on how compute indentations.
+         Defaults to ``github``.
     :parameter list_marker: a string that contains some of the first
          characters of the list element. Defaults to ``-``.
     :type parser: str
@@ -291,13 +294,17 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
          Defaults to ``0``.
     :parameter no_of_indentation_spaces_prev: the number of previous indentation spaces.
          Defaults to ``0``.
-    :parameter parser: decides rules on how compute indentations. Defaults
-         to ``github``.
+    :parameter parser: decides rules on how compute indentations.
+         Defaults to ``github``.
     :parameter ordered: if set to ``True``, numbers will be used
-         as list ids or otherwise a dash character, otherwise. Defaults
-         to ``False``.
-    :parameter list_marker: a string that contains some of the first characters of the list element. Defaults to ``-``.
-    :parameter list_marker_log: a data structure that holds list marker information for ordered lists. Defaults to ``build_list_marker_log('github', '.')``.
+         as list ids or otherwise a dash character, otherwise.
+         Defaults to ``False``.
+    :parameter list_marker: a string that contains some of the first
+         characters of the list element.
+         Defaults to ``-``.
+    :parameter list_marker_log: a data structure that holds list marker
+         information for ordered lists.
+         Defaults to ``build_list_marker_log('github', '.')``.
     :parameter index: a number that will be used as list id in case of an
          ordered table of contents. Defaults to ``1``.
     :type header_type_curr: int
@@ -408,17 +415,21 @@ def build_toc_line_without_indentation(header,
     :parameter header: a data structure that contains the original
          text, the trimmed text and the type of header.
     :parameter ordered: if set to ``True``, numbers will be used
-         as list ids or otherwise a dash character, otherwise. Defaults
+         as list ids, otherwise a dash character. Defaults
          to ``False``.
-    :parameter no_links: disables the use of links.
+    :parameter no_links: disables the use of links. Defaults to ``False``.
     :parameter index: a number that will be used as list id in case of an
          ordered table of contents. Defaults to ``1``.
-    :parameter header_type_prev: Defaults to ``0``.
+    :parameter parser: decides rules on how compute indentations.
+         Defaults to ``github``.
+    :parameter list_marker: a string that contains some of the first
+         characters of the list element. Defaults to ``-``.
     :type header: dict
     :type ordered: bool
     :type no_links: bool
     :type index: int
-    :type header_type_prev: int
+    :type parser: str
+    :type list_marker: str
     :returns: a single line of the table of contents without indentation.
     :rtype: str
     :raises: one of the built-in exceptions.
@@ -476,6 +487,7 @@ def build_toc_line(toc_line_no_indent, no_of_indentation_spaces=0):
 
     :parameter toc_line_no_indent: the TOC line without indentation.
     :parameter no_of_indentation_spaces: the number of indentation spaces.
+         Defaults to ``0``.
     :type toc_line_no_indent: str
     :type no_of_indentation_spaces: int
     :returns: a single line of the table of contents.
@@ -497,13 +509,13 @@ def build_anchor_link(header_text_trimmed,
                       parser='github'):
     r"""Apply the specified slug rule to build the anchor link.
 
-    :parameter header_text_trimmed: the text that needs to be transformed in a link
+    :parameter header_text_trimmed: the text that needs to be transformed
+         in a link.
     :parameter header_duplicate_counter: a data structure that keeps track of
          possible duplicate header links in order to avoid them. This is
          meaningful only for certain values of parser.
     :parameter parser: decides rules on how to generate anchor links.
-         Defaults to ``github``. Supported anchor types are: ``github``,
-         ``gitlab``, ``redcarpet``.
+         Defaults to ``github``.
     :type header_text_trimmed: str
     :type header_duplicate_counter: dict
     :type parser: str
@@ -597,10 +609,10 @@ def get_atx_heading(line,
 
     :parameter line: the line to be examined.
     :parameter keep_header_levels: the maximum level of headers to be
-         considered as such when building the table of contents. Defaults to ``3``.
+         considered as such when building the table of contents.
+         Defaults to ``3``.
     :parameter parser: decides rules on how to generate the anchor text.
-         Defaults to ``github``. Supported anchor types are: ``github``,
-         ``gitlab``, ``redcarpet``.
+         Defaults to ``github``.
     :parameter no_links: disables the use of links.
     :type line: str
     :type keep_header_levels: int
@@ -783,7 +795,8 @@ def get_md_header(header_text_line,
          avoid duplicate anchor links and it is meaningful only for certain
          values of parser.
     :parameter keep_header_levels: the maximum level of headers to be
-         considered as such when building the table of contents. Defaults to ``3``.
+         considered as such when building the table of contents.
+         Defaults to ``3``.
     :parameter parser: decides rules on how to generate anchor links.
          Defaults to ``github``.
     :type header_text_line: str
