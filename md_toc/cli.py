@@ -53,7 +53,7 @@ class CliToApi():
             list_marker = args.unordered_list_marker
         else:
             if (args.parser == 'github' or args.parser == 'cmark'
-                    or args.parser == 'gilab'
+                    or args.parser == 'gitlab'
                     or args.parser == 'commonmarker'):
                 list_marker = md_parser['github']['list']['unordered'][
                     'default_marker']
