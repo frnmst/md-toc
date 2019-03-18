@@ -62,7 +62,7 @@ to learn how this program parsers markdown files and builds a correct output.
 Conventions
 -----------
 
-- PEP.
+- PEP 8.
 - 4 space indentation.
 
 Helps
@@ -71,8 +71,9 @@ Helps
 
 ::
 
-    usage: md_toc [-h] [-i] [-n] [-t TOC_MARKER] [-v]
-                  {github,cmark,redcarpet,gitlab} ... FILE_NAME
+    usage: md_toc [-h] [-p] [-l] [-i] [-m TOC_MARKER] [-v]
+                  [FILE_NAME [FILE_NAME ...]]
+                  {github,cmark,gitlab,commonmarker,redcarpet} ...
 
     Markdown Table Of Contents: Automatically generate a compliant table
     of contents for a markdown file to improve document readability.
@@ -82,19 +83,21 @@ Helps
 
     optional arguments:
       -h, --help            show this help message and exit
-      -i, --in-place        overwrite the input file
-      -n, --no-links        avoids adding links to the corresponding content
-      -t TOC_MARKER, --toc-marker TOC_MARKER
+      -p, --in-place        overwrite the input file
+      -l, --no-links        avoids adding links to the corresponding content
+      -i, --no-indentation  avoids adding indentations to the corresponding
+                            content
+      -m TOC_MARKER, --toc-marker TOC_MARKER
                             set the string to be used as the marker for
                             positioning the table of contents. Defaults to [](TOC)
       -v, --version         show program's version number and exit
 
     markdown parser:
-      {github,cmark,redcarpet,gitlab}
+      {github,cmark,gitlab,commonmarker,redcarpet}
 
     Return values: 0 OK, 1 Error, 2 Invalid command
 
-    Copyright (C) 2018 Franco Masotti, frnmst
+    Copyright (C) 2018-2019 Franco Masotti, frnmst
     License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
     This is free software: you are free to change and redistribute it.
     There is NO WARRANTY, to the extent permitted by law.
@@ -102,7 +105,9 @@ Helps
 
 ::
 
-    usage: md_toc github [-h] [-u [{-,+,*}] | -o [{.,)}]] [-l [{1,2,3,4,5,6}]]
+    usage: md_toc [FILE_NAME [FILE_NAME ...]] github [-h] [-u [{-,+,*}] | -o
+                                                     [{.,)}]]
+                                                     [-l [{1,2,3,4,5,6}]]
 
     Use Commonmark rules to generate an output. If no option is selected, the
     default output will be an unordered list with the respective default values as
@@ -123,7 +128,9 @@ Helps
 
 ::
 
-    usage: md_toc redcarpet [-h] [-u [{-,+,*}] | -o [{.}]] [-l [{1,2,3,4,5,6}]]
+    usage: md_toc [FILE_NAME [FILE_NAME ...]] redcarpet [-h] [-u [{-,+,*}] |
+                                                        -o [{.}]]
+                                                        [-l [{1,2,3,4,5,6}]]
 
     Use Redcarpet rules to generate an output. If no option is selected, the
     default output will be an unordered list with the respective default values as
@@ -140,7 +147,7 @@ Helps
                             .
       -l [{1,2,3,4,5,6}], --header-levels [{1,2,3,4,5,6}]
                             set the maximum level of headers to be considered as
-                            part of the TOC. Defaults to 3
+                            part of the TOC. Defaults to 3 
 
 
 TODO and FIXME
@@ -154,8 +161,7 @@ TODO and FIXME
 License
 -------
 
-Copyright (C) 2017-2018 frnmst (Franco Masotti) <franco.masotti@live.com>
-<franco.masotti@student.unife.it>
+Copyright (C) 2017-2019 frnmst (Franco Masotti) <franco.masotti@live.com>
 
 md-toc is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
