@@ -45,8 +45,8 @@ each one of them.
 Video
 -----
 
-.. image:: https://asciinema.org/a/170574.png
-     :target: https://asciinema.org/a/170574
+.. image:: https://asciinema.org/a/234434.png
+     :target: https://asciinema.org/a/234434
      :align: center
 
 Documentation
