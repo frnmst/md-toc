@@ -249,8 +249,7 @@ def build_list_marker_log(parser='github', list_marker='.'):
     :returns: list_marker_log
     :rtype: list
     :raises: one of the built-in exceptions.
-    :note: Please note that this function makes sense only for
-         ordered lists.
+    :note: This function makes sense for ordered lists only.
     """
     assert isinstance(parser, str)
     assert isinstance(list_marker, str)

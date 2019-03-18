@@ -54,6 +54,7 @@ H7 = 7 * '#'
 # Lists.
 LIST_INDENTATION = 4
 UNORDERED_LIST_SYMBOL = '-'
+ORDERED_LIST_SYMBOL = '.'
 
 # Header types.
 GENERIC_HEADER_TYPE_PREV = 2
@@ -136,7 +137,7 @@ class TestApi(unittest.TestCase):
         """
         # github.
         # Unordered TOC. In this case there is no need to do specific tests
-        # on the returned list marker log.
+        # on the modified list marker log.
 
         # First TOC line.
         self.assertEqual(
@@ -300,13 +301,13 @@ class TestApi(unittest.TestCase):
         r"""Test TOC line building for different types of inputs.
         """
         # github and redcarpet.
-        # FIXME.
-
         header = {
             'type': GENERIC_HEADER_TYPE_CURR,
             'text_original': LINE,
             'text_anchor_link': LINE
         }
+
+        # Unordered.
         self.assertEqual(
             api.build_toc_line_without_indentation(
                 header, ordered=False, no_links=True, parser='github'),
@@ -316,6 +317,24 @@ class TestApi(unittest.TestCase):
             api.build_toc_line_without_indentation(
                 header, ordered=False, no_links=False, parser='github'),
             UNORDERED_LIST_SYMBOL + S1 + '[' + LINE + ']' + '(#' + LINE + ')')
+
+        # Ordered.
+        self.assertEqual(
+            api.build_toc_line_without_indentation(
+                header,
+                ordered=True,
+                no_links=True,
+                list_marker=ORDERED_LIST_SYMBOL,
+                parser='github'), '1' + ORDERED_LIST_SYMBOL + S1 + LINE)
+
+        self.assertEqual(
+            api.build_toc_line_without_indentation(
+                header,
+                ordered=True,
+                no_links=False,
+                list_marker=ORDERED_LIST_SYMBOL,
+                parser='github'), '1' + ORDERED_LIST_SYMBOL + S1 + '[' + LINE +
+            ']' + '(#' + LINE + ')')
 
     def test_build_toc_line(self):
         r"""Test that the TOC line is built correctly.
