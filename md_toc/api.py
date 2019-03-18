@@ -162,7 +162,24 @@ def build_multiple_tocs(filenames,
             list_marker_log = build_list_marker_log(parser, list_marker)
         else:
             list_marker_log = list()
+        # Code fence state tracking.
+        is_within_code_fence = False
+        code_fence = str()
         while line:
+            # Ignore lines within code fences.
+            # https://github.github.com/gfm/#code-fence
+            if not is_within_code_fence:
+                code_fence = is_opening_code_fence(line)
+                if code_fence is not None:
+                    is_within_code_fence = True
+                    line = f.readline()
+                    continue
+            else:
+                is_within_code_fence = not is_closing_code_fence(line, code_fence)
+                line = f.readline()
+                continue
+
+            # Parse headers.
             header = get_md_header(line, header_duplicate_counter,
                                    keep_header_levels, parser, no_links)
             if header is not None:
@@ -826,6 +843,81 @@ def get_md_header(header_text_line,
                               parser)
         }
         return header
+
+
+def _is_valid_code_fence_indent(line):
+    r""" Determine if the given line has valid indentation for a code block
+    fence.
+
+    :parameter line: a single markdown line to evaluate.
+    :type line: str
+    :returns: True if the given line has validat indentation or False
+    otherwise.
+    :rtype: bool
+    """
+    return len(line) - len(line.lstrip(' ')) <= 3
+
+
+def is_opening_code_fence(line):
+    r"""Determine if the given line is possibly the opening of a fenced code
+    block.
+
+    :parameter line: a single markdown line to evaluate.
+    :type line: str
+    :returns: None if the input line is not an opening code fence. Otherwise,
+    returns the string which will identify the closing code fence. The closing
+    string will be a sequence of at least 3 backticks (`) or tildes (~).
+    :rtype: typing.Optional[str]
+    """
+    if not _is_valid_code_fence_indent(line):
+        return None
+
+    line = line.lstrip(' ').rstrip('\n')
+    if not line.startswith(("```", '~~~')):
+        return None
+
+    info_string = line.lstrip(line[0]) if line != len(line) * line[0] else ''
+    # Backticks in info string are explicitly forbidden
+    if '`' in info_string:
+        return None
+
+    return line.rstrip(info_string)
+
+
+def is_closing_code_fence(line, fence):
+    r"""Determine if the given line is the end of a fenced code block.
+
+    :parameter line: a single markdown line to evaluate.
+    :paramter fence: a sequence of backticks or tildes marking the end of the
+    current code block
+    :type line: str
+    :type fence: str
+    :returns: True if the line ends the current code block. False otherwise.
+    :rtype: bool
+    """
+    if not _is_valid_code_fence_indent(line):
+        return False
+
+    # Validate code fence
+    if not fence.startswith(('`', '~')):
+        return False
+
+    if not len(fence) >= 3:
+        return False
+
+    if not fence == len(fence) * fence[0]:
+        return False
+
+    # Check line
+    line = line.lstrip(' ')
+    if not line.startswith(fence):
+        return False
+
+    line = line.rstrip('\n').rstrip(' ')
+    if not line == len(line) * fence[0]:
+        return False
+
+    return True
 
 
 if __name__ == '__main__':
