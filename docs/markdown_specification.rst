@@ -752,6 +752,20 @@ Anchor link types and behaviours
   - https://github.com/vmg/redcarpet/issues/307#issuecomment-261793668
 
 
+Code fence
+----------
+
+Code fences are sections of a markdown document where some parsers treat the 
+text within them as verbatim. Usually the purpose of these sections is to 
+display source code. Some programming languages use the character ``#`` as a 
+way to comment a line in the code. For this reason md_toc needs to ignore code 
+fences in order not to treat the ``#`` character as an ATX-style heading.
+
+- ``github``: 
+  - https://github.github.com/gfm/#code-fence
+
+- ``redcarpet``: TODO
+
 Other markdown parsers
 ----------------------
 

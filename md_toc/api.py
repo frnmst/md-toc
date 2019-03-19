@@ -820,12 +820,12 @@ def _is_valid_code_fence_indent(line: str) -> bool:
     :returns: True if the given line has validat indentation or False
     otherwise.
     :rtype: bool
+    :raises: one of the built-in exceptions.
     """
-
     return len(line) - len(line.lstrip(' ')) <= 3
 
 
-def is_opening_code_fence(line: str) -> str:
+def is_opening_code_fence(line: str, parser: str = 'github') -> str:
     r"""Determine if the given line is possibly the opening of a fenced code
     block.
 
@@ -835,24 +835,30 @@ def is_opening_code_fence(line: str) -> str:
     returns the string which will identify the closing code fence. The closing
     string will be a sequence of at least 3 backticks (`) or tildes (~).
     :rtype: typing.Optional[str]
+    :raises: one of the built-in exceptions.
     """
 
-    if not _is_valid_code_fence_indent(line):
-        return None
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker'):
 
-    line = line.lstrip(' ').rstrip('\n')
-    if not line.startswith(("```", '~~~')):
-        return None
+        if not _is_valid_code_fence_indent(line):
+            return None
 
-    info_string = line.lstrip(line[0]) if line != len(line) * line[0] else ''
-    # Backticks in info string are explicitly forbidden.
-    if '`' in info_string:
-        return None
+        line = line.lstrip(' ').rstrip('\n')
+        if not line.startswith(("```", '~~~')):
+            return None
 
-    return line.rstrip(info_string)
+        info_string = line.lstrip(line[0]) if line != len(line) * line[0] else ''
+        # Backticks in info string are explicitly forbidden.
+        if '`' in info_string:
+            return None
+
+        return line.rstrip(info_string)
+    elif parser == 'redcarpet':
+        pass
 
 
-def is_closing_code_fence(line: str, fence: str) -> bool:
+def is_closing_code_fence(line: str, fence: str, parser: str = 'github') -> bool:
     r"""Determine if the given line is the end of a fenced code block.
 
     :parameter line: a single markdown line to evaluate.
@@ -862,31 +868,35 @@ def is_closing_code_fence(line: str, fence: str) -> bool:
     :type fence: str
     :returns: True if the line ends the current code block. False otherwise.
     :rtype: bool
+    :raises: one of the built-in exceptions.
     """
-    if not _is_valid_code_fence_indent(line):
-        return False
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker'):
+        if not _is_valid_code_fence_indent(line):
+            return False
 
-    # Validate code fence
-    if not fence.startswith(('`', '~')):
-        return False
+        # Validate code fence.
+        if not fence.startswith(('`', '~')):
+            return False
 
-    if not len(fence) >= 3:
-        return False
+        if not len(fence) >= 3:
+            return False
 
-    if not fence == len(fence) * fence[0]:
-        return False
+        if not fence == len(fence) * fence[0]:
+            return False
 
-    # Check line
-    line = line.lstrip(' ')
-    if not line.startswith(fence):
-        return False
+        # Check line.
+        line = line.lstrip(' ')
+        if not line.startswith(fence):
+            return False
 
-    line = line.rstrip('\n').rstrip(' ')
-    if not line == len(line) * fence[0]:
-        return False
+        line = line.rstrip('\n').rstrip(' ')
+        if not line == len(line) * fence[0]:
+            return False
 
-    return True
-
+        return True
+    elif parser == 'redcarpet':
+        pass
 
 if __name__ == '__main__':
     pass
