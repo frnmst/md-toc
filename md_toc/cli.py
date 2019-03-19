@@ -36,7 +36,9 @@ except DistributionNotFound:
     VERSION_NUMBER = 'vDevel'
 VERSION_COPYRIGHT = 'Copyright (C) 2018-2019 Franco Masotti, frnmst'
 VERSION_LICENSE = 'License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.'
-PROGRAM_EPILOG = 'Return values: 0 OK, 1 Error, 2 Invalid command' + '\n\n' + VERSION_COPYRIGHT + '\n' + VERSION_LICENSE
+RETURN_VALUES = 'Return values: 0 ok, 1 error, 2 invalid command'
+ADVICE = 'Please read the documentation to understand how each parser works'
+PROGRAM_EPILOG = ADVICE + '\n\n' + RETURN_VALUES + '\n\n' + VERSION_COPYRIGHT + '\n' + VERSION_LICENSE
 
 
 class CliToApi():
@@ -103,7 +105,7 @@ class CliInterface():
             dest='parser', title='markdown parser')
         subparsers.required = True
 
-        # Github + cmark + gitlab + commonmarker.
+        # github + cmark + gitlab + commonmarker.
         github = subparsers.add_parser(
             'github',
             aliases=['cmark', 'gitlab', 'commonmarker'],

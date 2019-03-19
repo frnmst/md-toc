@@ -32,7 +32,8 @@ from .constants import common_defaults
 from .constants import parser as md_parser
 
 
-def write_string_on_file_between_markers(filename: str, string: str, marker: str):
+def write_string_on_file_between_markers(filename: str, string: str,
+                                         marker: str):
     r"""Write the table of contents on a single file.
 
     :parameter filename: the file that needs to be read or modified.
@@ -47,10 +48,6 @@ def write_string_on_file_between_markers(filename: str, string: str, marker: str
     :raises: StdinIsNotAFileToBeWritten or one of the fpyutils exceptions
          or one of the built-in exceptions.
     """
-    assert isinstance(filename, str)
-    assert isinstance(string, str)
-    assert isinstance(marker, str)
-
     if filename == '-':
         raise StdinIsNotAFileToBeWritten
 
@@ -73,7 +70,8 @@ def write_string_on_file_between_markers(filename: str, string: str, marker: str
             append=False)
 
 
-def write_strings_on_files_between_markers(filenames: list, strings: list, marker: str):
+def write_strings_on_files_between_markers(filenames: list, strings: list,
+                                           marker: str):
     r"""Write the table of contents on multiple files.
 
     :parameter filenames: the files that needs to be read or modified.
@@ -105,7 +103,7 @@ def write_strings_on_files_between_markers(filenames: list, strings: list, marke
 def build_multiple_tocs(filenames: list,
                         ordered: bool = False,
                         no_links: bool = False,
-                        no_indentation :bool = False,
+                        no_indentation: bool = False,
                         keep_header_levels: int = 3,
                         parser: str = 'github',
                         list_marker: str = '-'):
@@ -140,7 +138,6 @@ def build_multiple_tocs(filenames: list,
 
     if len(filenames) == 0:
         filenames.append('-')
-
     file_id = 0
     while file_id < len(filenames):
         header_type_counter = dict()
@@ -161,12 +158,9 @@ def build_multiple_tocs(filenames: list,
             list_marker_log = build_list_marker_log(parser, list_marker)
         else:
             list_marker_log = list()
-        # Code fence state tracking.
         is_within_code_fence = False
         code_fence = str()
         while line:
-            # Ignore lines within code fences.
-            # https://github.github.com/gfm/#code-fence
             if not is_within_code_fence:
                 code_fence = is_opening_code_fence(line)
                 if code_fence is not None:
@@ -174,11 +168,10 @@ def build_multiple_tocs(filenames: list,
                     line = f.readline()
                     continue
             else:
-                is_within_code_fence = not is_closing_code_fence(line, code_fence)
+                is_within_code_fence = not is_closing_code_fence(
+                    line, code_fence)
                 line = f.readline()
                 continue
-
-            # Parse headers.
             header = get_md_header(line, header_duplicate_counter,
                                    keep_header_levels, parser, no_links)
             if header is not None:
@@ -250,7 +243,8 @@ def increase_index_ordered_list(header_type_count: dict,
             raise GithubOverflowOrderedListMarker
 
 
-def build_list_marker_log(parser: str = 'github', list_marker: str = '.') -> list:
+def build_list_marker_log(parser: str = 'github',
+                          list_marker: str = '.') -> list:
     r"""Create a data structure that holds list marker information.
 
     :parameter parser: decides rules on how compute indentations.
@@ -288,15 +282,15 @@ def build_list_marker_log(parser: str = 'github', list_marker: str = '.') -> lis
     return list_marker_log
 
 
-def compute_toc_line_indentation_spaces(header_type_curr: int = 1,
-                                        header_type_prev: int = 0,
-                                        no_of_indentation_spaces_prev: int = 0,
-                                        parser: str = 'github',
-                                        ordered: bool = False,
-                                        list_marker: str = '-',
-                                        list_marker_log=build_list_marker_log(
-                                            'github', '.'),
-                                        index: int = 1) -> int:
+def compute_toc_line_indentation_spaces(
+        header_type_curr: int = 1,
+        header_type_prev: int = 0,
+        no_of_indentation_spaces_prev: int = 0,
+        parser: str = 'github',
+        ordered: bool = False,
+        list_marker: str = '-',
+        list_marker_log: list = build_list_marker_log('github', '.'),
+        index: int = 1) -> int:
     r"""Compute the number of indentation spaces for the TOC list element.
 
     :parameter header_type_curr: the current type of header (h[1-Inf]).
@@ -351,7 +345,6 @@ def compute_toc_line_indentation_spaces(header_type_curr: int = 1,
         else:
             assert list_marker in md_parser['redcarpet']['list']['unordered'][
                 'bullet_markers']
-    assert isinstance(list_marker_log, list)
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
         if ordered:
@@ -444,7 +437,7 @@ def build_toc_line_without_indentation(header: dict,
     assert isinstance(header['type'], int)
     assert isinstance(header['text_original'], str)
     assert isinstance(header['text_anchor_link'], str)
-    assert header['type'] > 0
+    assert header['type'] >= 1
     assert index >= 1
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
@@ -480,7 +473,8 @@ def build_toc_line_without_indentation(header: dict,
     return toc_line_no_indent
 
 
-def build_toc_line(toc_line_no_indent: str, no_of_indentation_spaces: int = 0) -> str:
+def build_toc_line(toc_line_no_indent: str,
+                   no_of_indentation_spaces: int = 0) -> str:
     r"""Build the TOC line.
 
     :parameter toc_line_no_indent: the TOC line without indentation.
