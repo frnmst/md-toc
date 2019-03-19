@@ -32,7 +32,7 @@ from .constants import common_defaults
 from .constants import parser as md_parser
 
 
-def write_string_on_file_between_markers(filename, string, marker):
+def write_string_on_file_between_markers(filename: str, string: str, marker: str):
     r"""Write the table of contents on a single file.
 
     :parameter filename: the file that needs to be read or modified.
@@ -73,7 +73,7 @@ def write_string_on_file_between_markers(filename, string, marker):
             append=False)
 
 
-def write_strings_on_files_between_markers(filenames, strings, marker):
+def write_strings_on_files_between_markers(filenames: list, strings: list, marker: str):
     r"""Write the table of contents on multiple files.
 
     :parameter filenames: the files that needs to be read or modified.
@@ -88,11 +88,10 @@ def write_strings_on_files_between_markers(filenames, strings, marker):
     :rtype: None
     :raises: one of the fpyutils exceptions or one of the built-in exceptions.
     """
-    assert isinstance(filenames, list)
+    assert len(filenames) == len(strings)
     if len(filenames) > 0:
         for f in filenames:
             assert isinstance(f, str)
-    assert isinstance(strings, list)
     if len(strings) > 0:
         for s in strings:
             assert isinstance(s, str)
@@ -103,13 +102,13 @@ def write_strings_on_files_between_markers(filenames, strings, marker):
         file_id += 1
 
 
-def build_multiple_tocs(filenames,
-                        ordered=False,
-                        no_links=False,
-                        no_indentation=False,
-                        keep_header_levels=3,
-                        parser='github',
-                        list_marker='-'):
+def build_multiple_tocs(filenames: list,
+                        ordered: bool = False,
+                        no_links: bool = False,
+                        no_indentation :bool = False,
+                        keep_header_levels: int = 3,
+                        parser: str = 'github',
+                        list_marker: str = '-'):
     r"""Parse file by line and build the table of contents.
 
     :parameter filenames: the file that needs to be read.
@@ -212,10 +211,10 @@ def build_multiple_tocs(filenames,
     return toc_struct
 
 
-def increase_index_ordered_list(header_type_count,
-                                header_type_prev,
-                                header_type_curr,
-                                parser='github'):
+def increase_index_ordered_list(header_type_count: dict,
+                                header_type_prev: int,
+                                header_type_curr: int,
+                                parser: str = 'github'):
     r"""Compute the current index for ordered list table of contents.
 
     :parameter header_type_count: the count of each header type.
@@ -231,12 +230,9 @@ def increase_index_ordered_list(header_type_count,
     :rtype: None
     :raises: one of the built-in exceptions.
     """
-    assert isinstance(header_type_count, dict)
-    assert isinstance(header_type_prev, int)
-    assert isinstance(header_type_curr, int)
     # header_type_prev might be 0 while header_type_curr can't.
-    assert header_type_curr > 0
-    assert isinstance(parser, str)
+    assert header_type_prev >= 0
+    assert header_type_curr >= 1
 
     # Base cases for a new table of contents or a new index type.
     if header_type_prev == 0:
@@ -254,7 +250,7 @@ def increase_index_ordered_list(header_type_count,
             raise GithubOverflowOrderedListMarker
 
 
-def build_list_marker_log(parser='github', list_marker='.'):
+def build_list_marker_log(parser: str = 'github', list_marker: str = '.') -> list:
     r"""Create a data structure that holds list marker information.
 
     :parameter parser: decides rules on how compute indentations.
@@ -268,8 +264,6 @@ def build_list_marker_log(parser='github', list_marker='.'):
     :raises: one of the built-in exceptions.
     :note: This function makes sense for ordered lists only.
     """
-    assert isinstance(parser, str)
-    assert isinstance(list_marker, str)
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
         assert list_marker in md_parser['github']['list']['ordered'][
@@ -294,15 +288,15 @@ def build_list_marker_log(parser='github', list_marker='.'):
     return list_marker_log
 
 
-def compute_toc_line_indentation_spaces(header_type_curr=1,
-                                        header_type_prev=0,
-                                        no_of_indentation_spaces_prev=0,
-                                        parser='github',
-                                        ordered=False,
-                                        list_marker='-',
+def compute_toc_line_indentation_spaces(header_type_curr: int = 1,
+                                        header_type_prev: int = 0,
+                                        no_of_indentation_spaces_prev: int = 0,
+                                        parser: str = 'github',
+                                        ordered: bool = False,
+                                        list_marker: str = '-',
                                         list_marker_log=build_list_marker_log(
                                             'github', '.'),
-                                        index=1):
+                                        index: int = 1) -> int:
     r"""Compute the number of indentation spaces for the TOC list element.
 
     :parameter header_type_curr: the current type of header (h[1-Inf]).
@@ -339,15 +333,9 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
          assumes that no_of_indentation_spaces_prev contains the correct
          number of spaces.
     """
-    assert isinstance(header_type_curr, int)
-    assert header_type_curr > 0
-    assert isinstance(header_type_prev, int)
+    assert header_type_curr >= 1
     assert header_type_prev >= 0
-    assert isinstance(no_of_indentation_spaces_prev, int)
     assert no_of_indentation_spaces_prev >= 0
-    assert isinstance(parser, str)
-    assert isinstance(ordered, bool)
-    assert isinstance(list_marker, str)
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
         if ordered:
@@ -371,8 +359,7 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
                 list_marker_log) == md_parser['github']['header']['max_levels']
             for e in list_marker_log:
                 assert isinstance(e, str)
-    assert isinstance(index, int)
-    assert index > 0
+    assert index >= 1
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
@@ -421,12 +408,12 @@ def compute_toc_line_indentation_spaces(header_type_curr=1,
     return no_of_indentation_spaces_curr
 
 
-def build_toc_line_without_indentation(header,
-                                       ordered=False,
-                                       no_links=False,
-                                       index=1,
-                                       parser='github',
-                                       list_marker='-'):
+def build_toc_line_without_indentation(header: dict,
+                                       ordered: bool = False,
+                                       no_links: bool = False,
+                                       index: int = 1,
+                                       parser: str = 'github',
+                                       list_marker: str = '-') -> str:
     r"""Return a list element of the table of contents.
 
     :parameter header: a data structure that contains the original
@@ -451,7 +438,6 @@ def build_toc_line_without_indentation(header,
     :rtype: str
     :raises: one of the built-in exceptions.
     """
-    assert isinstance(header, dict)
     assert 'type' in header
     assert 'text_original' in header
     assert 'text_anchor_link' in header
@@ -459,12 +445,7 @@ def build_toc_line_without_indentation(header,
     assert isinstance(header['text_original'], str)
     assert isinstance(header['text_anchor_link'], str)
     assert header['type'] > 0
-    assert isinstance(ordered, bool)
-    assert isinstance(no_links, bool)
-    assert isinstance(index, int)
-    assert index > 0
-    assert isinstance(parser, str)
-    assert isinstance(list_marker, str)
+    assert index >= 1
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
         if ordered:
@@ -499,7 +480,7 @@ def build_toc_line_without_indentation(header,
     return toc_line_no_indent
 
 
-def build_toc_line(toc_line_no_indent, no_of_indentation_spaces=0):
+def build_toc_line(toc_line_no_indent: str, no_of_indentation_spaces: int = 0) -> str:
     r"""Build the TOC line.
 
     :parameter toc_line_no_indent: the TOC line without indentation.
@@ -511,8 +492,6 @@ def build_toc_line(toc_line_no_indent, no_of_indentation_spaces=0):
     :rtype: str
     :raises: one of the built-in exceptions.
     """
-    assert isinstance(toc_line_no_indent, str)
-    assert isinstance(no_of_indentation_spaces, int)
     assert no_of_indentation_spaces >= 0
 
     indentation = no_of_indentation_spaces * ' '
@@ -521,9 +500,9 @@ def build_toc_line(toc_line_no_indent, no_of_indentation_spaces=0):
     return toc_line
 
 
-def build_anchor_link(header_text_trimmed,
-                      header_duplicate_counter,
-                      parser='github'):
+def build_anchor_link(header_text_trimmed: str,
+                      header_duplicate_counter: str,
+                      parser: str = 'github') -> str:
     r"""Apply the specified slug rule to build the anchor link.
 
     :parameter header_text_trimmed: the text that needs to be transformed
@@ -543,9 +522,6 @@ def build_anchor_link(header_text_trimmed,
     :note: The licenses of each markdown parser algorithm are reported on
         the 'Markdown spec' documentation page.
     """
-    assert isinstance(header_text_trimmed, str)
-    assert isinstance(header_duplicate_counter, dict)
-    assert isinstance(parser, str)
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
@@ -618,10 +594,10 @@ def build_anchor_link(header_text_trimmed,
         return header_text_trimmed_middle_stage
 
 
-def get_atx_heading(line,
-                    keep_header_levels=3,
-                    parser='github',
-                    no_links=False):
+def get_atx_heading(line: str,
+                    keep_header_levels: int = 3,
+                    parser: str = 'github',
+                    no_links: bool = False) -> tuple:
     r"""Given a line extract the link label and its type.
 
     :parameter line: the line to be examined.
@@ -644,11 +620,7 @@ def get_atx_heading(line,
          GithubOverflowCharsLinkLabel.
     :warning: the parameter keep_header_levels must be greater than 0.
     """
-    assert isinstance(line, str)
-    assert isinstance(keep_header_levels, int)
-    assert keep_header_levels > 0
-    assert isinstance(parser, str)
-    assert isinstance(no_links, bool)
+    assert keep_header_levels >= 1
 
     if len(line) == 0:
         return None
@@ -798,11 +770,11 @@ def get_atx_heading(line,
     return current_headers, final_line
 
 
-def get_md_header(header_text_line,
-                  header_duplicate_counter,
-                  keep_header_levels=3,
-                  parser='github',
-                  no_links=False):
+def get_md_header(header_text_line: str,
+                  header_duplicate_counter: dict,
+                  keep_header_levels: int = 3,
+                  parser: str = 'github',
+                  no_links: bool = False) -> dict:
     r"""Build a data structure with the elements needed to create a TOC line.
 
     :parameter header_text_line: a single markdown line that needs to be
@@ -845,7 +817,7 @@ def get_md_header(header_text_line,
         return header
 
 
-def _is_valid_code_fence_indent(line):
+def _is_valid_code_fence_indent(line: str) -> bool:
     r""" Determine if the given line has valid indentation for a code block
     fence.
 
@@ -855,10 +827,11 @@ def _is_valid_code_fence_indent(line):
     otherwise.
     :rtype: bool
     """
+
     return len(line) - len(line.lstrip(' ')) <= 3
 
 
-def is_opening_code_fence(line):
+def is_opening_code_fence(line: str) -> str:
     r"""Determine if the given line is possibly the opening of a fenced code
     block.
 
@@ -869,6 +842,7 @@ def is_opening_code_fence(line):
     string will be a sequence of at least 3 backticks (`) or tildes (~).
     :rtype: typing.Optional[str]
     """
+
     if not _is_valid_code_fence_indent(line):
         return None
 
@@ -877,14 +851,14 @@ def is_opening_code_fence(line):
         return None
 
     info_string = line.lstrip(line[0]) if line != len(line) * line[0] else ''
-    # Backticks in info string are explicitly forbidden
+    # Backticks in info string are explicitly forbidden.
     if '`' in info_string:
         return None
 
     return line.rstrip(info_string)
 
 
-def is_closing_code_fence(line, fence):
+def is_closing_code_fence(line: str, fence: str) -> bool:
     r"""Determine if the given line is the end of a fenced code block.
 
     :parameter line: a single markdown line to evaluate.

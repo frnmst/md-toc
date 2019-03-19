@@ -36,7 +36,7 @@ setup(
     author_email='franco.masotti@live.com',
     keywords='markdown toc',
     url='https://github.com/frnmst/md-toc',
-    python_requires='>=3',
+    python_requires='>=3.5, <4',
     entry_points={
         'console_scripts': [
             'md_toc=md_toc.__main__:main',
