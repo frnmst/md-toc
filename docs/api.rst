@@ -23,3 +23,6 @@ output types.
 .. autofunction:: build_list_marker_log
 .. autofunction:: compute_toc_line_indentation_spaces
 .. autofunction:: build_toc_line_without_indentation
+.. autofunction:: is_valid_code_fence_indent
+.. autofunction:: is_opening_code_fence
+.. autofunction:: is_closing_code_fence

@@ -26,5 +26,7 @@ from .api import (get_md_header, get_atx_heading, build_toc_line,
                   build_list_marker_log, compute_toc_line_indentation_spaces,
                   build_toc_line_without_indentation, build_multiple_tocs,
                   write_string_on_file_between_markers,
-                  write_strings_on_files_between_markers)
+                  write_strings_on_files_between_markers,
+                  is_valid_code_fence_indent, is_opening_code_fence,
+                  is_closing_code_fence)
 from .cli import (CliInterface)

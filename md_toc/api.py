@@ -127,7 +127,8 @@ def build_multiple_tocs(filenames: list,
     :type no_indentation: bool
     :type keep_header_levels: int
     :type parser: str
-    :returns: the corresponding table of contents for each input file.
+    :returns: toc_struct, the corresponding table of contents for each input
+         file.
     :rtype: list
     :raises: one of the built-in exceptions.
     """
@@ -253,7 +254,7 @@ def build_list_marker_log(parser: str = 'github',
          characters of the list element. Defaults to ``-``.
     :type parser: str
     :type list_marker: str
-    :returns: list_marker_log
+    :returns: list_marker_log, the data structure.
     :rtype: list
     :raises: one of the built-in exceptions.
     :note: This function makes sense for ordered lists only.
@@ -320,7 +321,8 @@ def compute_toc_line_indentation_spaces(
     :type list_marker: str
     :type list_marker_log: list
     :type index: int
-    :returns: no_of_indentation_spaces_curr
+    :returns: no_of_indentation_spaces_curr, the number of indentation spaces
+         for the list element.
     :rtype: int
     :raises: one of the built-in exceptions.
     :note: Please note that this function
@@ -427,7 +429,8 @@ def build_toc_line_without_indentation(header: dict,
     :type index: int
     :type parser: str
     :type list_marker: str
-    :returns: a single line of the table of contents without indentation.
+    :returns: toc_line_no_indent, a single line of the table of contents
+         without indentation.
     :rtype: str
     :raises: one of the built-in exceptions.
     """
@@ -482,7 +485,7 @@ def build_toc_line(toc_line_no_indent: str,
          Defaults to ``0``.
     :type toc_line_no_indent: str
     :type no_of_indentation_spaces: int
-    :returns: a single line of the table of contents.
+    :returns: toc_line, a single line of the table of contents.
     :rtype: str
     :raises: one of the built-in exceptions.
     """
@@ -811,14 +814,13 @@ def get_md_header(header_text_line: str,
         return header
 
 
-def _is_valid_code_fence_indent(line: str) -> bool:
-    r""" Determine if the given line has valid indentation for a code block
-    fence.
+def is_valid_code_fence_indent(line: str) -> bool:
+    r""" Determine if the given line has valid indentation for a code block fence.
 
     :parameter line: a single markdown line to evaluate.
     :type line: str
-    :returns: True if the given line has validat indentation or False
-    otherwise.
+    :returns: True if the given line has valid indentation or False
+         otherwise.
     :rtype: bool
     :raises: one of the built-in exceptions.
     """
@@ -826,14 +828,14 @@ def _is_valid_code_fence_indent(line: str) -> bool:
 
 
 def is_opening_code_fence(line: str, parser: str = 'github') -> str:
-    r"""Determine if the given line is possibly the opening of a fenced code
-    block.
+    r"""Determine if the given line is possibly the opening of a fenced code block.
 
     :parameter line: a single markdown line to evaluate.
     :type line: str
     :returns: None if the input line is not an opening code fence. Otherwise,
-    returns the string which will identify the closing code fence. The closing
-    string will be a sequence of at least 3 backticks (`) or tildes (~).
+         returns the string which will identify the closing code fence. The
+         closing string will be a sequence of at least 3 backticks (`) or
+         tildes (~).
     :rtype: typing.Optional[str]
     :raises: one of the built-in exceptions.
     """
@@ -841,7 +843,7 @@ def is_opening_code_fence(line: str, parser: str = 'github') -> str:
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
 
-        if not _is_valid_code_fence_indent(line):
+        if not is_valid_code_fence_indent(line):
             return None
 
         line = line.lstrip(' ').rstrip('\n')
@@ -863,7 +865,7 @@ def is_closing_code_fence(line: str, fence: str, parser: str = 'github') -> bool
 
     :parameter line: a single markdown line to evaluate.
     :paramter fence: a sequence of backticks or tildes marking the end of the
-    current code block
+         current code block.
     :type line: str
     :type fence: str
     :returns: True if the line ends the current code block. False otherwise.
@@ -872,7 +874,7 @@ def is_closing_code_fence(line: str, fence: str, parser: str = 'github') -> bool
     """
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
-        if not _is_valid_code_fence_indent(line):
+        if not is_valid_code_fence_indent(line):
             return False
 
         # Validate code fence.
