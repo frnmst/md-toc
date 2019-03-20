@@ -764,7 +764,8 @@ fences in order not to treat the ``#`` character as an ATX-style heading.
 - ``github``: 
   - https://github.github.com/gfm/#code-fence
 
-- ``redcarpet``: TODO
+- ``redcarpet``:
+  - https://github.com/vmg/redcarpet/blob/26c80f05e774b31cd01255b0fa62e883ac185bf3/ext/redcarpet/markdown.c#L1389
 
 Other markdown parsers
 ----------------------

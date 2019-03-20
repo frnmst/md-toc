@@ -850,7 +850,8 @@ def is_opening_code_fence(line: str, parser: str = 'github') -> str:
         if not line.startswith(("```", '~~~')):
             return None
 
-        info_string = line.lstrip(line[0]) if line != len(line) * line[0] else ''
+        info_string = line.lstrip(
+            line[0]) if line != len(line) * line[0] else ''
         # Backticks in info string are explicitly forbidden.
         if '`' in info_string:
             return None
@@ -860,7 +861,8 @@ def is_opening_code_fence(line: str, parser: str = 'github') -> str:
         pass
 
 
-def is_closing_code_fence(line: str, fence: str, parser: str = 'github') -> bool:
+def is_closing_code_fence(line: str, fence: str,
+                          parser: str = 'github') -> bool:
     r"""Determine if the given line is the end of a fenced code block.
 
     :parameter line: a single markdown line to evaluate.
@@ -899,6 +901,7 @@ def is_closing_code_fence(line: str, fence: str, parser: str = 'github') -> bool
         return True
     elif parser == 'redcarpet':
         pass
+
 
 if __name__ == '__main__':
     pass

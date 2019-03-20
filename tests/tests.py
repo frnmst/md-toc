@@ -403,19 +403,19 @@ class TestApi(unittest.TestCase):
             (6, GITHUB_LINE_FOO))
 
         # Example 33
-        self.assertEqual(
-            api.get_atx_heading(H7 + S1 + GITHUB_LINE_FOO, 7, 'github'), None)
+        self.assertIsNone(
+            api.get_atx_heading(H7 + S1 + GITHUB_LINE_FOO, 7, 'github'))
 
         # Example 34
-        self.assertEqual(
-            api.get_atx_heading(H1 + GITHUB_LINE_5_BOLT, 6, 'github'), None)
-        self.assertEqual(
-            api.get_atx_heading(H1 + GITHUB_LINE_HASHTAG, 6, 'github'), None)
+        self.assertIsNone(
+            api.get_atx_heading(H1 + GITHUB_LINE_5_BOLT, 6, 'github'))
+        self.assertIsNone(
+            api.get_atx_heading(H1 + GITHUB_LINE_HASHTAG, 6, 'github'))
 
         # Example 35
-        self.assertEqual(
+        self.assertIsNone(
             api.get_atx_heading(LINE_ESCAPE + H1 + S1 + GITHUB_LINE_FOO, 6,
-                                'github'), None)
+                                'github'))
 
         # Example 36
         self.assertEqual(
@@ -440,9 +440,8 @@ class TestApi(unittest.TestCase):
             (1, GITHUB_LINE_FOO))
 
         # Example 39 and 40
-        self.assertEqual(
-            api.get_atx_heading(S4 + H1 + S1 + GITHUB_LINE_FOO, 6, 'github'),
-            None)
+        self.assertIsNone(
+            api.get_atx_heading(S4 + H1 + S1 + GITHUB_LINE_FOO, 6, 'github'))
 
         # Example 41
         self.assertEqual(
@@ -456,7 +455,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.get_atx_heading(H1 + S1 + GITHUB_LINE_FOO + S1, 6, 'github'),
             (1, GITHUB_LINE_FOO))
-        self.assertEqual(api.get_atx_heading(H5 * 7, 6, 'github'), None)
+        self.assertIsNone(api.get_atx_heading(H5 * 7, 6, 'github'))
         self.assertEqual(
             api.get_atx_heading(H5 + S1 + GITHUB_LINE_FOO + S1 + H2, 6,
                                 'github'), (5, GITHUB_LINE_FOO))
@@ -538,7 +537,7 @@ class TestApi(unittest.TestCase):
             api.get_atx_heading(H1 + S1 + GITHUB_LINE_1000_CHARS, 6, 'github')
 
         # Test an empty line.
-        self.assertEqual(api.get_atx_heading(LINE_EMPTY, 6, 'github'), None)
+        self.assertIsNone(api.get_atx_heading(LINE_EMPTY, 6, 'github'))
 
         # Test line endings.
         self.assertEqual(
@@ -567,9 +566,9 @@ class TestApi(unittest.TestCase):
         # our own. See https://github.com/vmg/redcarpet/tree/master/test
         # for more information.
 
-        self.assertEqual(
+        self.assertIsNone(
             api.get_atx_heading(S1 + H1 + S1 + REDCARPET_LINE_FOO, 6,
-                                'redcarpet'), None)
+                                'redcarpet'))
 
         self.assertEqual(
             api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO, 6, 'redcarpet'),
@@ -612,18 +611,17 @@ class TestApi(unittest.TestCase):
                 'redcarpet'), (1, REDCARPET_LINE_FOO + S1 + LINE_ESCAPE + S1))
 
         # Test an empty line.
-        self.assertEqual(api.get_atx_heading(LINE_EMPTY, 6, 'redcarpet'), None)
+        self.assertIsNone(api.get_atx_heading(LINE_EMPTY, 6, 'redcarpet'))
 
         # Test newline.
-        self.assertEqual(
-            api.get_atx_heading(H1 + LINE_NEWLINE, 6, 'redcarpet'), None)
+        self.assertIsNone(
+            api.get_atx_heading(H1 + LINE_NEWLINE, 6, 'redcarpet'))
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + REDCARPET_LINE_FOO + LINE_NEWLINE +
                 REDCARPET_LINE_FOO, 6, 'redcarpet'), (1, REDCARPET_LINE_FOO))
-        self.assertEqual(
-            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'redcarpet'),
-            None)
+        self.assertIsNone(
+            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'redcarpet'))
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + REDCARPET_LINE_FOO + LINE_CARRIAGE_RETURN +
@@ -639,7 +637,9 @@ class TestApi(unittest.TestCase):
         returns None.
         """
 
+    # Examples 88 -> 115.
     def test_is_opening_code_fence(self):
+        # github.
         self.assertIsNone(api.is_opening_code_fence(LINE))
         self.assertIsNone(api.is_opening_code_fence(LINE_EMPTY))
 
