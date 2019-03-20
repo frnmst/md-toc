@@ -1,6 +1,8 @@
 Python PEP compliancy
 =====================
 
+FIXME, TODO: see the ``requirements.txt`` file on the root of the repository.
+
 To be able to test PEP compliancy you need to install the following packages:
 
 - flake8_
