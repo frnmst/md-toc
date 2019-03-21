@@ -13,8 +13,7 @@ Welcome to md-toc's documentation!
    install
    api
    markdown_specification
-   pep
-   test
+   contributing
    copyright_license
 
 Indices and tables
