@@ -691,20 +691,20 @@ class TestApi(unittest.TestCase):
             BACKTICK10)
 
         self.assertEqual(
-            api.is_opening_code_fence(3 * ' ' + BACKTICK3), BACKTICK3)
+            api.is_opening_code_fence(S3 + BACKTICK3), BACKTICK3)
         self.assertEqual(
-            api.is_opening_code_fence(3 * ' ' + BACKTICK4), BACKTICK4)
+            api.is_opening_code_fence(S3 + BACKTICK4), BACKTICK4)
         self.assertEqual(
-            api.is_opening_code_fence(3 * ' ' + BACKTICK10), BACKTICK10)
+            api.is_opening_code_fence(S3 + BACKTICK10), BACKTICK10)
 
         self.assertEqual(
-            api.is_opening_code_fence(3 * ' ' + BACKTICK3 + GITHUB_LINE_FOO),
+            api.is_opening_code_fence(S3 + BACKTICK3 + GITHUB_LINE_FOO),
             BACKTICK3)
         self.assertEqual(
-            api.is_opening_code_fence(3 * ' ' + BACKTICK4 + GITHUB_LINE_FOO),
+            api.is_opening_code_fence(S3 + BACKTICK4 + GITHUB_LINE_FOO),
             BACKTICK4)
         self.assertEqual(
-            api.is_opening_code_fence(3 * ' ' + BACKTICK10 + GITHUB_LINE_FOO),
+            api.is_opening_code_fence(S3 + BACKTICK10 + GITHUB_LINE_FOO),
             BACKTICK10)
 
         self.assertIsNone(
@@ -734,18 +734,18 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.is_opening_code_fence(TILDE10 + GITHUB_LINE_FOO), TILDE10)
 
-        self.assertEqual(api.is_opening_code_fence(3 * ' ' + TILDE3), TILDE3)
-        self.assertEqual(api.is_opening_code_fence(3 * ' ' + TILDE4), TILDE4)
-        self.assertEqual(api.is_opening_code_fence(3 * ' ' + TILDE10), TILDE10)
+        self.assertEqual(api.is_opening_code_fence(S3 + TILDE3), TILDE3)
+        self.assertEqual(api.is_opening_code_fence(S3 + TILDE4), TILDE4)
+        self.assertEqual(api.is_opening_code_fence(S3 + TILDE10), TILDE10)
 
         self.assertEqual(
-            api.is_opening_code_fence(3 * ' ' + TILDE3 + GITHUB_LINE_FOO),
+            api.is_opening_code_fence(S3 + TILDE3 + GITHUB_LINE_FOO),
             TILDE3)
         self.assertEqual(
-            api.is_opening_code_fence(3 * ' ' + TILDE4 + GITHUB_LINE_FOO),
+            api.is_opening_code_fence(S3 + TILDE4 + GITHUB_LINE_FOO),
             TILDE4)
         self.assertEqual(
-            api.is_opening_code_fence(3 * ' ' + TILDE10 + GITHUB_LINE_FOO),
+            api.is_opening_code_fence(S3 + TILDE10 + GITHUB_LINE_FOO),
             TILDE10)
 
         self.assertIsNone(
