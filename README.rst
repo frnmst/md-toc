@@ -59,12 +59,6 @@ to learn how this program parsers markdown files and builds a correct output.
 
 .. _Markdown specification: http://frnmst.github.io/md-toc/markdown_specification.html
 
-Conventions
------------
-
-- PEP 8.
-- 4 space indentation.
-
 Helps
 -----
 
