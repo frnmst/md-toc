@@ -814,24 +814,33 @@ def get_md_header(header_text_line: str,
         return header
 
 
-def is_valid_code_fence_indent(line: str) -> bool:
+def is_valid_code_fence_indent(line: str, parser: str = 'github') -> bool:
     r""" Determine if the given line has valid indentation for a code block fence.
 
     :parameter line: a single markdown line to evaluate.
+    :parameter parser: decides rules on how to generate the anchor text.
+         Defaults to ``github``.
     :type line: str
+    :type parser: str
     :returns: True if the given line has valid indentation or False
          otherwise.
     :rtype: bool
     :raises: one of the built-in exceptions.
     """
-    return len(line) - len(line.lstrip(' ')) <= 3
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker'):
+        return len(line) - len(line.lstrip(' ')) <= 3
+    elif parser == 'redcarpet':
+        pass
 
-
-def is_opening_code_fence(line: str, parser: str = 'github') -> str:
+def is_opening_code_fence(line: str, parser: str = 'github'):
     r"""Determine if the given line is possibly the opening of a fenced code block.
 
     :parameter line: a single markdown line to evaluate.
+    :parameter parser: decides rules on how to generate the anchor text.
+         Defaults to ``github``.
     :type line: str
+    :type parser: str
     :returns: None if the input line is not an opening code fence. Otherwise,
          returns the string which will identify the closing code fence. The
          closing string will be a sequence of at least 3 backticks (`) or
@@ -842,7 +851,6 @@ def is_opening_code_fence(line: str, parser: str = 'github') -> str:
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
-
         if not is_valid_code_fence_indent(line):
             return None
 
@@ -850,8 +858,10 @@ def is_opening_code_fence(line: str, parser: str = 'github') -> str:
         if not line.startswith(("```", '~~~')):
             return None
 
-        info_string = line.lstrip(
-            line[0]) if line != len(line) * line[0] else ''
+        if line == len(line) * line[0]:
+            info_string = str()
+        else:
+            info_string = line.lstrip(line[0])
         # Backticks in info string are explicitly forbidden.
         if '`' in info_string:
             return None
@@ -868,8 +878,11 @@ def is_closing_code_fence(line: str, fence: str,
     :parameter line: a single markdown line to evaluate.
     :paramter fence: a sequence of backticks or tildes marking the end of the
          current code block.
+    :parameter parser: decides rules on how to generate the anchor text.
+         Defaults to ``github``.
     :type line: str
     :type fence: str
+    :type parser: str
     :returns: True if the line ends the current code block. False otherwise.
     :rtype: bool
     :raises: one of the built-in exceptions.

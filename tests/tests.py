@@ -637,18 +637,24 @@ class TestApi(unittest.TestCase):
         returns None.
         """
 
-    # Examples 88 -> 115.
+    # Examples 88 -> 115. TODO.
     def test_is_opening_code_fence(self):
         # github.
+        # Generic.
         self.assertIsNone(api.is_opening_code_fence(LINE))
         self.assertIsNone(api.is_opening_code_fence(LINE_EMPTY))
+        self.assertIsNone(api.is_opening_code_fence(GITHUB_LINE_FOO))
+        self.assertIsNone(
+            api.is_opening_code_fence(GITHUB_LINE_FOO + LINE_NEWLINE))
 
+        # Spaces.
         self.assertIsNone(api.is_opening_code_fence(S1))
         self.assertIsNone(api.is_opening_code_fence(S2))
         self.assertIsNone(api.is_opening_code_fence(S3))
         self.assertIsNone(api.is_opening_code_fence(S4))
         self.assertIsNone(api.is_opening_code_fence(S10))
 
+        # Headings.
         self.assertIsNone(api.is_opening_code_fence(H1))
         self.assertIsNone(api.is_opening_code_fence(H2))
         self.assertIsNone(api.is_opening_code_fence(H3))
@@ -657,11 +663,7 @@ class TestApi(unittest.TestCase):
         self.assertIsNone(api.is_opening_code_fence(H6))
         self.assertIsNone(api.is_opening_code_fence(H7))
 
-        self.assertIsNone(api.is_opening_code_fence(GITHUB_LINE_FOO))
-        self.assertIsNone(api.is_opening_code_fence(GITHUB_LINE_BAR))
-        self.assertIsNone(
-            api.is_opening_code_fence(GITHUB_LINE_FOO + LINE_NEWLINE))
-
+        # Backticks.
         self.assertIsNone(api.is_opening_code_fence(BACKTICK1))
         self.assertIsNone(api.is_opening_code_fence(BACKTICK2))
         self.assertIsNone(
