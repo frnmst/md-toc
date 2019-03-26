@@ -855,15 +855,19 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
             return None
 
         line = line.lstrip(' ').rstrip('\n')
-        if not line.startswith(("```", '~~~')):
+        if not line.startswith(('```', '~~~')):
             return None
 
         if line == len(line) * line[0]:
             info_string = str()
         else:
             info_string = line.lstrip(line[0])
-        # Backticks in info string are explicitly forbidden.
-        if '`' in info_string:
+        # Backticks or tildes in info string are explicitly forbidden.
+        if '`' in info_string or '~' in info_string:
+            return None
+        # Solves example 107. See:
+        # https://github.github.com/gfm/#example-107
+        if line.rstrip('`') != line and line.rstrip('~') != line:
             return None
 
         return line.rstrip(info_string)
