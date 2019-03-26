@@ -641,10 +641,11 @@ class TestApi(unittest.TestCase):
         returns None.
         """
 
-    # Examples 88 -> 115. TODO.
     def test_is_opening_code_fence(self):
+        r"""Test detection of opening code fence.
+        """
         # github.
-         # Generic, spaces and headings. These are not code fences.
+        # Generic, spaces and headings. These are not code fences.
         self.assertIsNone(api.is_opening_code_fence(LINE))
         self.assertIsNone(api.is_opening_code_fence(LINE_EMPTY))
         self.assertIsNone(api.is_opening_code_fence(GITHUB_LINE_FOO))
@@ -694,13 +695,50 @@ class TestApi(unittest.TestCase):
         self.assertIsNone(
             api.is_opening_code_fence(TILDE2 + LINE_NEWLINE + TILDE1))
 
-        # Example 100, 101, 102, 103.
+        # Example 91->97 see test_is_closing_code_fence.
+
+        # Example 98.
+        # https://github.github.com/gfm/#example-98
+        self.assertEqual(
+            api.is_opening_code_fence(BACKTICK3 + LINE_NEWLINE + LINE_NEWLINE +
+                                      S2), BACKTICK3)
+
+        self.assertEqual(
+            api.is_opening_code_fence(TILDE3 + LINE_NEWLINE + LINE_NEWLINE +
+                                      S2), TILDE3)
+
+        # Example 99.
+        # https://github.github.com/gfm/#example-99
+        # See example 88.
+
         # Indentation.
+        # Example 100.
         # https://github.github.com/gfm/#example-100
-        self.assertEqual(
-            api.is_opening_code_fence(S3 + BACKTICK3), BACKTICK3)
-        self.assertEqual(
-            api.is_opening_code_fence(S3 + BACKTICK4), BACKTICK4)
+        self.assertEqual(api.is_opening_code_fence(S1 + BACKTICK3), BACKTICK3)
+
+        self.assertEqual(api.is_opening_code_fence(S1 + TILDE3), TILDE3)
+
+        # Example 101.
+        # https://github.github.com/gfm/#example-101
+        self.assertEqual(api.is_opening_code_fence(S2 + BACKTICK3), BACKTICK3)
+
+        self.assertEqual(api.is_opening_code_fence(S2 + TILDE3), TILDE3)
+
+        # Example 102.
+        # https://github.github.com/gfm/#example-102
+        self.assertEqual(api.is_opening_code_fence(S3 + BACKTICK3), BACKTICK3)
+
+        self.assertEqual(api.is_opening_code_fence(S3 + TILDE3), TILDE3)
+
+        # Example 103.
+        # https://github.github.com/gfm/#example-103
+        self.assertIsNone(api.is_opening_code_fence(S4 + BACKTICK3))
+
+        self.assertIsNone(api.is_opening_code_fence(S4 + TILDE3))
+
+        # An extension of examples 100 -> 103.
+        self.assertEqual(api.is_opening_code_fence(S3 + BACKTICK3), BACKTICK3)
+        self.assertEqual(api.is_opening_code_fence(S3 + BACKTICK4), BACKTICK4)
         self.assertEqual(
             api.is_opening_code_fence(S3 + BACKTICK10), BACKTICK10)
 
@@ -708,70 +746,75 @@ class TestApi(unittest.TestCase):
         self.assertEqual(api.is_opening_code_fence(S3 + TILDE4), TILDE4)
         self.assertEqual(api.is_opening_code_fence(S3 + TILDE10), TILDE10)
 
+        # Example 104 -> 106 see test_is_closing_code_fence.
+
         # Example 107.
         # https://github.github.com/gfm/#example-107
-        self.assertIsNone(api.is_opening_code_fence(BACKTICK3 + S1 + BACKTICK3))
+        self.assertIsNone(
+            api.is_opening_code_fence(BACKTICK3 + S1 + BACKTICK3))
 
         self.assertIsNone(api.is_opening_code_fence(TILDE3 + S1 + TILDE3))
 
-        # Example 102 and 111 combined.
-        # Indentation with info string.
-        # https://github.github.com/gfm/#example-102
-        self.assertEqual(
-            api.is_opening_code_fence(S3 + BACKTICK3 + GITHUB_INFO_STRING_FOO),
-            BACKTICK3)
-        self.assertEqual(
-            api.is_opening_code_fence(S3 + BACKTICK4 + GITHUB_INFO_STRING_FOO),
-            BACKTICK4)
-        self.assertEqual(
-            api.is_opening_code_fence(S3 + BACKTICK10 + GITHUB_INFO_STRING_FOO),
-            BACKTICK10)
+        # Example 108 see test_is_closing_code_fence.
 
-        self.assertEqual(
-            api.is_opening_code_fence(S3 + TILDE3 + GITHUB_INFO_STRING_FOO),
-            TILDE3)
-        self.assertEqual(
-            api.is_opening_code_fence(S3 + TILDE4 + GITHUB_INFO_STRING_FOO),
-            TILDE4)
-        self.assertEqual(
-            api.is_opening_code_fence(S3 + TILDE10 + GITHUB_INFO_STRING_FOO),
-            TILDE10)
+        # Example 109 -> 110 are not relevant.
 
         # Example 111.
-        # Info string.
         # https://github.github.com/gfm/#example-111
-        print(BACKTICK3 + GITHUB_INFO_STRING_FOO)
+        self.assertEqual(
+            api.is_opening_code_fence(BACKTICK3 + GITHUB_INFO_STRING_FOO),
+            BACKTICK3)
 
         self.assertEqual(
-            api.is_opening_code_fence(BACKTICK3 + GITHUB_INFO_STRING_FOO), BACKTICK3)
+            api.is_opening_code_fence(TILDE3 + GITHUB_INFO_STRING_FOO), TILDE3)
+
+        # Expansion of example 111.
+        # Info string.
+        # https://github.github.com/gfm/#example-111
         self.assertEqual(
-            api.is_opening_code_fence(BACKTICK4 + GITHUB_INFO_STRING_FOO), BACKTICK4)
+            api.is_opening_code_fence(BACKTICK4 + GITHUB_INFO_STRING_FOO),
+            BACKTICK4)
         self.assertEqual(
             api.is_opening_code_fence(BACKTICK10 + GITHUB_INFO_STRING_FOO),
             BACKTICK10)
 
         self.assertEqual(
-            api.is_opening_code_fence(TILDE3 + GITHUB_INFO_STRING_FOO), TILDE3)
-        self.assertEqual(
             api.is_opening_code_fence(TILDE4 + GITHUB_INFO_STRING_FOO), TILDE4)
         self.assertEqual(
-            api.is_opening_code_fence(TILDE10 + GITHUB_INFO_STRING_FOO), TILDE10)
+            api.is_opening_code_fence(TILDE10 + GITHUB_INFO_STRING_FOO),
+            TILDE10)
 
-        # Example 112 and 114.
+        # Example 112.
         # Info string with garbage and foreign character.
         # https://github.github.com/gfm/#example-112
+        self.assertEqual(
+            api.is_opening_code_fence(BACKTICK4 + S4 + GITHUB_INFO_STRING_FOO +
+                                      S1 + GITHUB_INFO_STRING_GARBAGE),
+            BACKTICK4)
+
+        self.assertEqual(
+            api.is_opening_code_fence(TILDE4 + S4 + GITHUB_INFO_STRING_FOO +
+                                      S1 + GITHUB_INFO_STRING_GARBAGE), TILDE4)
+
+        # Example 113.
+        # https://github.github.com/gfm/#example-113
+        self.assertEqual(api.is_opening_code_fence(BACKTICK4 + ';'), BACKTICK4)
+
+        self.assertEqual(api.is_opening_code_fence(TILDE4 + ';'), TILDE4)
+
+        # Example 114.
         # https://github.github.com/gfm/#example-114
-        # Technically it is a one line code fence but this does not pose
-        # a problem.
         self.assertIsNone(
-            api.is_opening_code_fence(BACKTICK3 + GITHUB_INFO_STRING_FOO + BACKTICK1 + S1 +
-                                      GITHUB_INFO_STRING_GARBAGE))
+            api.is_opening_code_fence(BACKTICK3 + S1 + 'aa' + S1 + BACKTICK3))
 
         self.assertIsNone(
-            api.is_opening_code_fence(TILDE1 + GITHUB_INFO_STRING_FOO + BACKTICK1 + S1 +
-                                      GITHUB_INFO_STRING_GARBAGE))
+            api.is_opening_code_fence(TILDE3 + S1 + 'aa' + S1 + TILDE3))
+
+        # Example 115 see test_is_closing_code_fence.
 
     def test_is_closing_code_fence(self):
+        r"""Test detection of closing code fence.
+        """
         self.assertFalse(api.is_closing_code_fence(BACKTICK1, BACKTICK3))
         self.assertFalse(api.is_closing_code_fence(BACKTICK2, BACKTICK3))
 

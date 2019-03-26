@@ -833,6 +833,7 @@ def is_valid_code_fence_indent(line: str, parser: str = 'github') -> bool:
     elif parser == 'redcarpet':
         pass
 
+
 def is_opening_code_fence(line: str, parser: str = 'github'):
     r"""Determine if the given line is possibly the opening of a fenced code block.
 
