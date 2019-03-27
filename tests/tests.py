@@ -81,12 +81,14 @@ BACKTICK1 = 1 * '`'
 BACKTICK2 = 2 * '`'
 BACKTICK3 = 3 * '`'
 BACKTICK4 = 4 * '`'
+BACKTICK6 = 6 * '`'
 BACKTICK10 = 10 * '`'
 
 TILDE1 = 1 * '~'
 TILDE2 = 2 * '~'
 TILDE3 = 3 * '~'
 TILDE4 = 4 * '~'
+TILDE6 = 6 * '~'
 TILDE10 = 10 * '~'
 
 GITHUB_INFO_STRING_FOO = 'ruby'
@@ -870,19 +872,36 @@ class TestApi(unittest.TestCase):
 
         # Example 105.
         # https://github.github.com/gfm/#example-105
-        self.assertTrue(api.is_closing_code_fence(S2 + BACKTICK3, S3 + BACKTICK3))
+        self.assertTrue(
+            api.is_closing_code_fence(S2 + BACKTICK3, S3 + BACKTICK3))
 
         self.assertTrue(api.is_closing_code_fence(S2 + TILDE3, S3 + TILDE3))
 
         # Example 106.
         # https://github.github.com/gfm/#example-106
+        self.assertFalse(
+            api.is_closing_code_fence(S4 + BACKTICK3, BACKTICK3))
+
+        self.assertFalse(
+            api.is_closing_code_fence(S4 + TILDE3, TILDE3))
 
         # Example 108.
         # https://github.github.com/gfm/#example-108
+        self.assertFalse(
+            api.is_closing_code_fence(TILDE3 + S1 + TILDE2, TILDE6))
+
+        self.assertFalse(
+            api.is_closing_code_fence(BACKTICK3 + S1 + BACKTICK2, BACKTICK6))
 
         # Example 115.
         # https://github.github.com/gfm/#example-115
+        self.assertFalse(
+            api.is_closing_code_fence(BACKTICK3 + S1 + 'aaa', BACKTICK3))
 
+        self.assertFalse(
+            api.is_closing_code_fence(TILDE3 + S1 + 'aaa', TILDE3))
+
+        # Generic tests. FIXME.
         self.assertFalse(api.is_closing_code_fence(BACKTICK1, BACKTICK3))
         self.assertFalse(api.is_closing_code_fence(BACKTICK2, BACKTICK3))
 

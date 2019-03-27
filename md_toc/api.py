@@ -851,7 +851,6 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
     :rtype: typing.Optional[str]
     :raises: one of the built-in exceptions.
     """
-
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
         markers = md_parser['github']['code fence']['marker']
@@ -903,11 +902,6 @@ def is_closing_code_fence(line: str, fence: str,
     """
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
-        for c in fence.lstrip().rstrip():
-            assert c in md_parser['github']['code fence']['marker']
-
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
         markers = md_parser['github']['code fence']['marker']
         marker_min_length = md_parser['github']['code fence'][
             'min_marker_characters']
@@ -917,6 +911,7 @@ def is_closing_code_fence(line: str, fence: str,
 
         # Remove opening fence indentation after it is known to be valid.
         fence = fence.lstrip(' ')
+        # Check if fence uses valid characters.
         if not fence.startswith((markers[0], markers[1])):
             return False
 
@@ -925,6 +920,7 @@ def is_closing_code_fence(line: str, fence: str,
 
         # Additional security.
         fence = fence.rstrip('\n').rstrip(' ')
+        # Check that all fence characters are equal.
         if fence != len(fence) * fence[0]:
             return False
 
