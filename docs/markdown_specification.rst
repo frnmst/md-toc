@@ -759,10 +759,17 @@ Code fences are sections of a markdown document where some parsers treat the
 text within them as verbatim. Usually the purpose of these sections is to 
 display source code. Some programming languages use the character ``#`` as a 
 way to comment a line in the code. For this reason md_toc needs to ignore code 
-fences in order not to treat the ``#`` character as an ATX-style heading.
+fences in order not to treat the ``#`` character as an ATX-style heading and thus
+get parsed as an element of the TOC.
 
 - ``github``: 
   - https://github.github.com/gfm/#code-fence
+
+  The end of a file necessarly marks the end of a code fence if this was left 
+  open. See:
+
+    - https://github.github.com/gfm/#example-95
+    - https://github.github.com/gfm/#example-96
 
 - ``redcarpet``:
   - https://github.com/vmg/redcarpet/blob/26c80f05e774b31cd01255b0fa62e883ac185bf3/ext/redcarpet/markdown.c#L1389

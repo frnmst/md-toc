@@ -836,19 +836,6 @@ class TestApi(unittest.TestCase):
         # https://github.github.com/gfm/#example-94
         self.assertFalse(api.is_closing_code_fence(TILDE3, TILDE4))
 
-        # See https://docs.python.org/3.8/tutorial/inputoutput.html#methods-of-file-objects
-        #
-        # main loop:
-        #   file_pointer_pos = line.tell()
-        #   if line.readline() == str()
-        #       is_document_end = True
-        #   fp.seek(file_pointer_pos)
-        #
-        #
-        # is_closing_code_fence:
-        #   if is_document_end:
-        #       return True
-
         # Example 95.
         # https://github.github.com/gfm/#example-95
         self.assertTrue(api.is_closing_code_fence(LINE_EMPTY, BACKTICK3, True))
