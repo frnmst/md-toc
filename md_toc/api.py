@@ -829,7 +829,8 @@ def is_valid_code_fence_indent(line: str, parser: str = 'github') -> bool:
     """
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
-        return len(line) - len(line.lstrip(' ')) <= 3
+        return len(line) - len(line.lstrip(
+            ' ')) <= md_parser['github']['code fence']['min_marker_characters']
     elif parser == 'redcarpet':
         pass
 
@@ -852,11 +853,16 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
+        markers = md_parser['github']['code fence']['marker']
+        marker_min_length = md_parser['github']['code fence'][
+            'min_marker_characters']
+
         if not is_valid_code_fence_indent(line):
             return None
 
         line = line.lstrip(' ').rstrip('\n')
-        if not line.startswith(('```', '~~~')):
+        if not line.startswith(
+            (markers[0] * marker_min_length, markers[1] * marker_min_length)):
             return None
 
         if line == len(line) * line[0]:
@@ -864,11 +870,11 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
         else:
             info_string = line.lstrip(line[0])
         # Backticks or tildes in info string are explicitly forbidden.
-        if '`' in info_string or '~' in info_string:
+        if markers[0] in info_string or markers[1] in info_string:
             return None
         # Solves example 107. See:
         # https://github.github.com/gfm/#example-107
-        if line.rstrip('`') != line and line.rstrip('~') != line:
+        if line.rstrip(markers[0]) != line and line.rstrip(markers[1]) != line:
             return None
 
         return line.rstrip(info_string)
@@ -882,7 +888,8 @@ def is_closing_code_fence(line: str, fence: str,
 
     :parameter line: a single markdown line to evaluate.
     :paramter fence: a sequence of backticks or tildes marking the end of the
-         current code block.
+         current code block. This is usually the result of the
+         is_opening_code_fence function.
     :parameter parser: decides rules on how to generate the anchor text.
          Defaults to ``github``.
     :type line: str
@@ -894,14 +901,18 @@ def is_closing_code_fence(line: str, fence: str,
     """
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
+        markers = md_parser['github']['code fence']['marker']
+        marker_min_length = md_parser['github']['code fence'][
+            'min_marker_characters']
+
         if not is_valid_code_fence_indent(line):
             return False
 
         # Validate code fence.
-        if not fence.startswith(('`', '~')):
+        if not fence.startswith((markers[0], markers[1])):
             return False
 
-        if not len(fence) >= 3:
+        if not len(fence) >= marker_min_length:
             return False
 
         if not fence == len(fence) * fence[0]:

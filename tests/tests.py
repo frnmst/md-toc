@@ -815,6 +815,11 @@ class TestApi(unittest.TestCase):
     def test_is_closing_code_fence(self):
         r"""Test detection of closing code fence.
         """
+        # github.
+        # Example 91.
+        # https://github.github.com/gfm/#example-91
+        self.assertFalse(api.is_closing_code_fence(BACKTICK3, TILDE3))
+
         self.assertFalse(api.is_closing_code_fence(BACKTICK1, BACKTICK3))
         self.assertFalse(api.is_closing_code_fence(BACKTICK2, BACKTICK3))
 

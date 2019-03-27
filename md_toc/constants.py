@@ -29,6 +29,8 @@ parser = dict()
 parser['github'] = dict()
 parser['github']['list'] = dict()
 parser['github']['link'] = dict()
+parser['github']['header'] = dict()
+parser['github']['code fence'] = dict()
 parser['redcarpet'] = dict()
 parser['redcarpet']['list'] = dict()
 
@@ -52,6 +54,11 @@ parser['github']['header'] = {
     'max_space_indentation': 3,
     'max_levels': 6,
     'default_keep_levels': 3
+}
+
+parser['github']['code fence'] = {
+    'marker': ['`', '~'],
+    'min_marker_characters': 3
 }
 
 parser['cmark'] = parser['github']
