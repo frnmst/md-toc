@@ -883,7 +883,9 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
         return None
 
 
-def is_closing_code_fence(line: str, fence: str,
+def is_closing_code_fence(line: str,
+                          fence: str,
+                          is_document_end: bool = False,
                           parser: str = 'github') -> bool:
     r"""Determine if the given line is the end of a fenced code block.
 
@@ -891,10 +893,14 @@ def is_closing_code_fence(line: str, fence: str,
     :paramter fence: a sequence of backticks or tildes marking the start of
          the current code block. This is usually the return value of the
          is_opening_code_fence function.
+    :parameter is_document_end: This variable tells the function that the
+         end of the file is reached.
+         Defaults to ``False``.
     :parameter parser: decides rules on how to generate the anchor text.
          Defaults to ``github``.
     :type line: str
     :type fence: str
+    :type is_document_end: bool
     :type parser: str
     :returns: True if the line ends the current code block. False otherwise.
     :rtype: bool
@@ -923,6 +929,14 @@ def is_closing_code_fence(line: str, fence: str,
         # Check that all fence characters are equal.
         if fence != len(fence) * fence[0]:
             return False
+
+        # We might be inside a code block if this is not closed
+        # by the end of the document, according to example 95 and 96.
+        # See:
+        # https://github.github.com/gfm/#example-95
+        # https://github.github.com/gfm/#example-96
+        if is_document_end:
+            return True
 
         # Check if line uses the same character as fence.
         line = line.lstrip(' ')

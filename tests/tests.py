@@ -81,16 +81,16 @@ BACKTICK1 = 1 * '`'
 BACKTICK2 = 2 * '`'
 BACKTICK3 = 3 * '`'
 BACKTICK4 = 4 * '`'
+BACKTICK5 = 5 * '`'
 BACKTICK6 = 6 * '`'
 BACKTICK10 = 10 * '`'
-
 TILDE1 = 1 * '~'
 TILDE2 = 2 * '~'
 TILDE3 = 3 * '~'
 TILDE4 = 4 * '~'
+TILDE5 = 5 * '~'
 TILDE6 = 6 * '~'
 TILDE10 = 10 * '~'
-
 GITHUB_INFO_STRING_FOO = 'ruby'
 GITHUB_INFO_STRING_GARBAGE = 'startline=3 $%@#$'
 
@@ -836,9 +836,6 @@ class TestApi(unittest.TestCase):
         # https://github.github.com/gfm/#example-94
         self.assertFalse(api.is_closing_code_fence(TILDE3, TILDE4))
 
-        # 95, 96: We might be inside a code block if it is not closed
-        #         by the end of the document.
-        #
         # See https://docs.python.org/3.8/tutorial/inputoutput.html#methods-of-file-objects
         #
         # main loop:
@@ -854,15 +851,21 @@ class TestApi(unittest.TestCase):
 
         # Example 95.
         # https://github.github.com/gfm/#example-95
-        # FIXME problem.
+        self.assertTrue(api.is_closing_code_fence(LINE_EMPTY, BACKTICK3, True))
+
+        self.assertTrue(api.is_closing_code_fence(LINE_EMPTY, TILDE3, True))
 
         # Example 96.
         # https://github.github.com/gfm/#example-96
-        # FIXME problem.
+        self.assertTrue(
+            api.is_closing_code_fence(LINE_NEWLINE + BACKTICK3 + 'aaa',
+                                      BACKTICK5, True))
 
-        # Example 97.
-        # https://github.github.com/gfm/#example-97
-        # Not relevant.
+        self.assertTrue(
+            api.is_closing_code_fence(LINE_NEWLINE + TILDE3 + 'aaa', TILDE5,
+                                      True))
+
+        # Example 97 not relevant.
 
         # Example 104.
         # https://github.github.com/gfm/#example-104
