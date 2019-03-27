@@ -820,6 +820,69 @@ class TestApi(unittest.TestCase):
         # https://github.github.com/gfm/#example-91
         self.assertFalse(api.is_closing_code_fence(BACKTICK3, TILDE3))
 
+        # Example 92.
+        # https://github.github.com/gfm/#example-92
+        self.assertFalse(api.is_closing_code_fence(TILDE3, BACKTICK3))
+
+        # Example 93.
+        # https://github.github.com/gfm/#example-93
+        # "The closing code fence must be at least as long as the opening
+        #  fence."
+        self.assertFalse(api.is_closing_code_fence(BACKTICK3, BACKTICK4))
+
+        # Example 94.
+        # https://github.github.com/gfm/#example-94
+        self.assertFalse(api.is_closing_code_fence(TILDE3, TILDE4))
+
+        # 95, 96: We might be inside a code block if it is not closed
+        #         by the end of the document.
+        #
+        # See https://docs.python.org/3.8/tutorial/inputoutput.html#methods-of-file-objects
+        #
+        # main loop:
+        #   file_pointer_pos = line.tell()
+        #   if line.readline() == str()
+        #       is_document_end = True
+        #   fp.seek(file_pointer_pos)
+        #
+        #
+        # is_closing_code_fence:
+        #   if is_document_end:
+        #       return True
+
+        # Example 95.
+        # https://github.github.com/gfm/#example-95
+        # FIXME problem.
+
+        # Example 96.
+        # https://github.github.com/gfm/#example-96
+        # FIXME problem.
+
+        # Example 97.
+        # https://github.github.com/gfm/#example-97
+        # Not relevant.
+
+        # Example 104.
+        # https://github.github.com/gfm/#example-104
+        self.assertTrue(api.is_closing_code_fence(S2 + BACKTICK3, BACKTICK3))
+
+        self.assertTrue(api.is_closing_code_fence(S2 + TILDE3, TILDE3))
+
+        # Example 105.
+        # https://github.github.com/gfm/#example-105
+        self.assertTrue(api.is_closing_code_fence(S2 + BACKTICK3, S3 + BACKTICK3))
+
+        self.assertTrue(api.is_closing_code_fence(S2 + TILDE3, S3 + TILDE3))
+
+        # Example 106.
+        # https://github.github.com/gfm/#example-106
+
+        # Example 108.
+        # https://github.github.com/gfm/#example-108
+
+        # Example 115.
+        # https://github.github.com/gfm/#example-115
+
         self.assertFalse(api.is_closing_code_fence(BACKTICK1, BACKTICK3))
         self.assertFalse(api.is_closing_code_fence(BACKTICK2, BACKTICK3))
 

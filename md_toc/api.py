@@ -832,7 +832,8 @@ def is_valid_code_fence_indent(line: str, parser: str = 'github') -> bool:
         return len(line) - len(line.lstrip(
             ' ')) <= md_parser['github']['code fence']['min_marker_characters']
     elif parser == 'redcarpet':
-        pass
+        # TODO.
+        return False
 
 
 def is_opening_code_fence(line: str, parser: str = 'github'):
@@ -879,7 +880,8 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
 
         return line.rstrip(info_string)
     elif parser == 'redcarpet':
-        pass
+        # TODO.
+        return None
 
 
 def is_closing_code_fence(line: str, fence: str,
@@ -887,8 +889,8 @@ def is_closing_code_fence(line: str, fence: str,
     r"""Determine if the given line is the end of a fenced code block.
 
     :parameter line: a single markdown line to evaluate.
-    :paramter fence: a sequence of backticks or tildes marking the end of the
-         current code block. This is usually the result of the
+    :paramter fence: a sequence of backticks or tildes marking the start of
+         the current code block. This is usually the return value of the
          is_opening_code_fence function.
     :parameter parser: decides rules on how to generate the anchor text.
          Defaults to ``github``.
@@ -901,6 +903,11 @@ def is_closing_code_fence(line: str, fence: str,
     """
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
+        for c in fence.lstrip().rstrip():
+            assert c in md_parser['github']['code fence']['marker']
+
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker'):
         markers = md_parser['github']['code fence']['marker']
         marker_min_length = md_parser['github']['code fence'][
             'min_marker_characters']
@@ -908,28 +915,39 @@ def is_closing_code_fence(line: str, fence: str,
         if not is_valid_code_fence_indent(line):
             return False
 
-        # Validate code fence.
+        # Remove opening fence indentation after it is known to be valid.
+        fence = fence.lstrip(' ')
         if not fence.startswith((markers[0], markers[1])):
             return False
 
-        if not len(fence) >= marker_min_length:
+        if len(fence) < marker_min_length:
             return False
 
-        if not fence == len(fence) * fence[0]:
+        # Additional security.
+        fence = fence.rstrip('\n').rstrip(' ')
+        if fence != len(fence) * fence[0]:
             return False
 
-        # Check line.
+        # Check if line uses the same character as fence.
         line = line.lstrip(' ')
         if not line.startswith(fence):
             return False
 
         line = line.rstrip('\n').rstrip(' ')
-        if not line == len(line) * fence[0]:
+        # Solves example 93 and 94. See:
+        # https://github.github.com/gfm/#example-93
+        # https://github.github.com/gfm/#example-94
+        if len(line) < len(fence):
+            return False
+
+        # Closing fence must not have alien characters.
+        if line != len(line) * line[0]:
             return False
 
         return True
     elif parser == 'redcarpet':
-        pass
+        # TODO.
+        False
 
 
 if __name__ == '__main__':
