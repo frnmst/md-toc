@@ -160,7 +160,7 @@ def build_multiple_tocs(filenames: list,
         else:
             list_marker_log = list()
         is_within_code_fence = False
-        code_fence = str()
+        code_fence = None
         is_document_end = False
         while line:
             # Document ending detection.
@@ -181,53 +181,62 @@ def build_multiple_tocs(filenames: list,
                 is_within_code_fence = not is_closing_code_fence(
                     line, code_fence, is_document_end, parser)
                 line = f.readline()
-                continue
             else:
                 code_fence = is_opening_code_fence(line, parser)
                 if code_fence is not None:
                     # Update the status of the next line.
                     is_within_code_fence = True
                     line = f.readline()
-                    continue
 
-            # Header detection and gathering.
-            header = get_md_header(line, header_duplicate_counter,
+            if not is_within_code_fence or code_fence is None:
+
+                # Header detection and gathering.
+                header = get_md_header(line, header_duplicate_counter,
                                    keep_header_levels, parser, no_links)
-            if header is not None:
-                header_type_curr = header['type']
+                if header is not None:
+                    header_type_curr = header['type']
 
-                # Take care of the ordered TOC.
-                if ordered:
-                    increase_index_ordered_list(header_type_counter,
-                                                header_type_prev,
-                                                header_type_curr, parser)
-                    index = header_type_counter[header_type_curr]
-                else:
-                    index = 1
+                    # Take care of the ordered TOC.
+                    if ordered:
+                        increase_index_ordered_list(header_type_counter,
+                                                    header_type_prev,
+                                                    header_type_curr, parser)
+                        index = header_type_counter[header_type_curr]
+                    else:
+                        index = 1
 
-                # Take care of list indentations.
-                if no_indentation:
-                    no_of_indentation_spaces_curr = 0
-                else:
-                    no_of_indentation_spaces_curr = compute_toc_line_indentation_spaces(
-                        header_type_curr, header_type_prev,
-                        no_of_indentation_spaces_prev, parser, ordered,
-                        list_marker, list_marker_log, index)
+                    # Take care of list indentations.
+                    if no_indentation:
+                        no_of_indentation_spaces_curr = 0
+                    else:
+                        no_of_indentation_spaces_curr = compute_toc_line_indentation_spaces(
+                            header_type_curr, header_type_prev,
+                            no_of_indentation_spaces_prev, parser, ordered,
+                            list_marker, list_marker_log, index)
 
-                # Build a single TOC line.
-                toc_line_no_indent = build_toc_line_without_indentation(
-                    header, ordered, no_links, index, parser, list_marker)
+                    # Build a single TOC line.
+                    toc_line_no_indent = build_toc_line_without_indentation(
+                        header, ordered, no_links, index, parser, list_marker)
 
-                # Save the TOC line with the indentation.
-                toc_struct[file_id] += build_toc_line(
-                    toc_line_no_indent, no_of_indentation_spaces_curr) + '\n'
+                    # Save the TOC line with the indentation.
+                    toc_struct[file_id] += build_toc_line(
+                        toc_line_no_indent, no_of_indentation_spaces_curr) + '\n'
 
-                header_type_prev = header_type_curr
-                no_of_indentation_spaces_prev = no_of_indentation_spaces_curr
+                    header_type_prev = header_type_curr
+                    no_of_indentation_spaces_prev = no_of_indentation_spaces_curr
+
+                # endif
+
+            # endif
+
             line = f.readline()
-        f.close()
 
+        # endwhile
+
+        f.close()
         file_id += 1
+
+    # endwhile
 
     return toc_struct
 
@@ -621,7 +630,7 @@ def build_anchor_link(header_text_trimmed: str,
 def get_atx_heading(line: str,
                     keep_header_levels: int = 3,
                     parser: str = 'github',
-                    no_links: bool = False) -> tuple:
+                    no_links: bool = False):
     r"""Given a line extract the link label and its type.
 
     :parameter line: the line to be examined.
@@ -639,7 +648,7 @@ def get_atx_heading(line: str,
          the rules of the selected markdown parser, or a tuple containing the
          header type and the trimmed header text, according to the selected
          parser rules, otherwise.
-    :rtype: tuple
+    :rtype: typing.Optional[tuple]
     :raises: one of the built in exceptions or GithubEmptyLinkLabel or
          GithubOverflowCharsLinkLabel.
     :warning: the parameter keep_header_levels must be greater than 0.
@@ -872,9 +881,8 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
     :type line: str
     :type parser: str
     :returns: None if the input line is not an opening code fence. Otherwise,
-         returns the string which will identify the closing code fence. The
-         closing string will be a sequence of at least 3 backticks (`) or
-         tildes (~).
+         returns the string which will identify the closing code fence
+         according to the input parsers' rules.
     :rtype: typing.Optional[str]
     :raises: one of the built-in exceptions.
     """
@@ -959,8 +967,10 @@ def is_closing_code_fence(line: str,
 
         # We might be inside a code block if this is not closed
         # by the end of the document, according to example 95 and 96.
-        # This means that the end of the document correponds to
+        # This means that the end of the document corresponds to
         # a closing code fence.
+        # Of course we first have to check that fence is a valid opening
+        # code fence marker.
         # See:
         # https://github.github.com/gfm/#example-95
         # https://github.github.com/gfm/#example-96
@@ -986,7 +996,7 @@ def is_closing_code_fence(line: str,
         return True
     elif parser == 'redcarpet':
         # TODO.
-        False
+        return False
 
 
 if __name__ == '__main__':
