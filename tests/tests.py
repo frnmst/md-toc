@@ -879,11 +879,9 @@ class TestApi(unittest.TestCase):
 
         # Example 106.
         # https://github.github.com/gfm/#example-106
-        self.assertFalse(
-            api.is_closing_code_fence(S4 + BACKTICK3, BACKTICK3))
+        self.assertFalse(api.is_closing_code_fence(S4 + BACKTICK3, BACKTICK3))
 
-        self.assertFalse(
-            api.is_closing_code_fence(S4 + TILDE3, TILDE3))
+        self.assertFalse(api.is_closing_code_fence(S4 + TILDE3, TILDE3))
 
         # Example 108.
         # https://github.github.com/gfm/#example-108
@@ -900,40 +898,6 @@ class TestApi(unittest.TestCase):
 
         self.assertFalse(
             api.is_closing_code_fence(TILDE3 + S1 + 'aaa', TILDE3))
-
-        # Generic tests. FIXME.
-        self.assertFalse(api.is_closing_code_fence(BACKTICK1, BACKTICK3))
-        self.assertFalse(api.is_closing_code_fence(BACKTICK2, BACKTICK3))
-
-        self.assertTrue(api.is_closing_code_fence(BACKTICK3, BACKTICK3))
-        self.assertTrue(api.is_closing_code_fence(BACKTICK4, BACKTICK3))
-        self.assertTrue(api.is_closing_code_fence(BACKTICK10, BACKTICK3))
-
-        self.assertFalse(api.is_closing_code_fence(BACKTICK3, BACKTICK4))
-        self.assertFalse(api.is_closing_code_fence(BACKTICK4, BACKTICK10))
-
-        self.assertFalse(
-            api.is_closing_code_fence(BACKTICK3 + GITHUB_LINE_FOO, BACKTICK3))
-
-        self.assertFalse(api.is_closing_code_fence(GITHUB_LINE_FOO, BACKTICK3))
-
-        self.assertFalse(api.is_closing_code_fence(TILDE1, TILDE3))
-        self.assertFalse(api.is_closing_code_fence(TILDE2, TILDE3))
-
-        self.assertTrue(api.is_closing_code_fence(TILDE3, TILDE3))
-        self.assertTrue(api.is_closing_code_fence(TILDE4, TILDE3))
-        self.assertTrue(api.is_closing_code_fence(TILDE10, TILDE3))
-
-        self.assertFalse(api.is_closing_code_fence(TILDE3, TILDE4))
-        self.assertFalse(api.is_closing_code_fence(TILDE4, TILDE10))
-
-        self.assertFalse(
-            api.is_closing_code_fence(TILDE3 + GITHUB_LINE_FOO, TILDE3))
-
-        self.assertFalse(api.is_closing_code_fence(GITHUB_LINE_FOO, TILDE3))
-
-        self.assertFalse(api.is_closing_code_fence(BACKTICK3, TILDE3))
-        self.assertFalse(api.is_closing_code_fence(TILDE3, BACKTICK3))
 
 
 if __name__ == '__main__':
