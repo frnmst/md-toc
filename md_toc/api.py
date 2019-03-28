@@ -192,7 +192,7 @@ def build_multiple_tocs(filenames: list,
 
                 # Header detection and gathering.
                 header = get_md_header(line, header_duplicate_counter,
-                                   keep_header_levels, parser, no_links)
+                                       keep_header_levels, parser, no_links)
                 if header is not None:
                     header_type_curr = header['type']
 
@@ -220,7 +220,8 @@ def build_multiple_tocs(filenames: list,
 
                     # Save the TOC line with the indentation.
                     toc_struct[file_id] += build_toc_line(
-                        toc_line_no_indent, no_of_indentation_spaces_curr) + '\n'
+                        toc_line_no_indent,
+                        no_of_indentation_spaces_curr) + '\n'
 
                     header_type_prev = header_type_curr
                     no_of_indentation_spaces_prev = no_of_indentation_spaces_curr
@@ -555,7 +556,6 @@ def build_anchor_link(header_text_trimmed: str,
     :note: The licenses of each markdown parser algorithm are reported on
         the 'Markdown spec' documentation page.
     """
-
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
         header_text_trimmed = header_text_trimmed.lower()
@@ -851,7 +851,7 @@ def get_md_header(header_text_line: str,
 
 
 def is_valid_code_fence_indent(line: str, parser: str = 'github') -> bool:
-    r""" Determine if the given line has valid indentation for a code block fence.
+    r"""Determine if the given line has valid indentation for a code block fence.
 
     :parameter line: a single markdown line to evaluate.
     :parameter parser: decides rules on how to generate the anchor text.

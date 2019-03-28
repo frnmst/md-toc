@@ -29,7 +29,7 @@ githook:
 
 pep:
 	yapf --style '{based_on_style: pep8; indent_width: 4}' -i md_toc/*.py tests/*.py
-	flake8 --ignore=F401,E501,W503,W504,W605 md_toc/*.py tests/*.py
+	flake8 --ignore=F401,E501,W503,W504,W605,E125 md_toc/*.py tests/*.py
 
 doc:
 	$(MAKE) -C docs html

@@ -22,7 +22,7 @@
 # along with md-toc.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-make test #&& make pep
+make test && make pep && make doc
 
 if [ $? -ne 0 ]; then
     exit 1

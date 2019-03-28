@@ -151,8 +151,7 @@ class TestApi(unittest.TestCase):
         """
 
     def test_compute_toc_line_indentation_spaces(self):
-        r"""Test that the TOC list indentation spaces are computed correctly.
-        """
+        r"""Test that the TOC list indentation spaces are computed correctly."""
         # github.
         # Unordered TOC. In this case there is no need to do specific tests
         # on the modified list marker log.
@@ -316,8 +315,7 @@ class TestApi(unittest.TestCase):
             LIST_INDENTATION * (GENERIC_HEADER_TYPE_PREV - 1))
 
     def test_build_toc_line_without_indentation(self):
-        r"""Test TOC line building for different types of inputs.
-        """
+        r"""Test TOC line building for different types of inputs."""
         # github and redcarpet.
         header = {
             'type': GENERIC_HEADER_TYPE_CURR,
@@ -644,8 +642,7 @@ class TestApi(unittest.TestCase):
         """
 
     def test_is_opening_code_fence(self):
-        r"""Test detection of opening code fence.
-        """
+        r"""Test detection of opening code fence."""
         # github.
         # Generic, spaces and headings. These are not code fences.
         self.assertIsNone(api.is_opening_code_fence(LINE))
@@ -815,8 +812,7 @@ class TestApi(unittest.TestCase):
         # Example 115 see test_is_closing_code_fence.
 
     def test_is_closing_code_fence(self):
-        r"""Test detection of closing code fence.
-        """
+        r"""Test detection of closing code fence."""
         # github.
         # Example 91.
         # https://github.github.com/gfm/#example-91
