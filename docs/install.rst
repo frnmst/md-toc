@@ -36,7 +36,7 @@ Distribution packages
 Dependencies
 ------------
 
-- Python 3.x
+- Python 3.5
 - fpyutils_
 
 .. _fpyutils: https://github.com/frnmst/fpyutils

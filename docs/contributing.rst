@@ -21,8 +21,8 @@ Branch                                  Description                             
 Dependencies
 ------------
 
-Install the software requirements from the ``requirements.txt`` file in the 
-repository's root:
+First of all install the software requirements from the ``requirements.txt`` file 
+in the repository's root:
 
 
 ::
@@ -71,6 +71,18 @@ To be able to lint and test for PEP compliancy you need to run:
 
 
     $ make pep
+
+
+Documentation
+-------------
+
+You can edit and rebuild all this documentation with:
+
+
+::
+
+
+    $ make doc
 
 
 TODO and FIXME
