@@ -1,7 +1,7 @@
 Markdown Table Of Contents
 ==========================
 
-|pypiver|    |license|    |pyver|    |downloads|    |gitter|
+|pypiver|    |license|    |pyver|    |downloads|    |gitter|    |dependentrepos|
 
 .. |pypiver| image:: https://img.shields.io/pypi/v/md-toc.svg
                :alt: PyPI md-toc version
@@ -21,6 +21,8 @@ Markdown Table Of Contents
               :alt: Gitter
               :target: https://gitter.im/md-toc/community
 
+.. |dependentrepos| image:: https://img.shields.io/librariesio/dependent-repos/pypi/md-toc.svg
+                      :alt: Dependent repos (via libraries.io)
 
 Automatically generate a compliant table of contents for a markdown file to 
 improve document readability.

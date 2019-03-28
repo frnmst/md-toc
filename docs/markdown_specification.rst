@@ -13,53 +13,50 @@ Supported markdown parsers
 
 - ``cmark``:
 
-  - https://github.com/commonmark/cmark
+  - "CommonMark parsing and rendering library and program in C".
 
-- ``commonmarker``
+- ``commonmarker``:
 
-  - https://github.com/gjtorikian/commonmarker
-  - https://www.gjtorikian.com/commonmarker/
+  - a "Ruby wrapper for libcmark (CommonMark parser)". 
 
-  A "Ruby wrapper for libcmark (CommonMark parser)". As described on their 
-  website: "It also includes extensions to the CommonMark spec as documented in 
-  the GitHub Flavored Markdown spec, such as support for tables, 
-  strikethroughs, and autolinking.". For this reason we assume that
-  ``commonmarker`` is an alias of ``github``.
+  - As described on their website: "It also includes extensions to 
+    the CommonMark spec as documented in the GitHub Flavored Markdown spec,
+    such as support for tables, strikethroughs, and autolinking.". For this 
+    reason we assume that ``commonmarker`` is an alias of ``github``.
 
-- ``github`` uses a forked version of ``cmark`` with some added extensions:
+- ``github``: 
 
-  - https://github.com/github/cmark
+  - uses a forked version of ``cmark`` with some added extensions
+    which should not concern md_toc. For this reason we assume that ``cmark`` 
+    and ``github`` represent the same parser in md_toc.
 
-  The extensions used in GitHub Flavored Markdown should not concern
-  md_toc. For this reason we assume that ``cmark`` is an alias of ``github``
-  in md_toc.
+- ``gitlab``: 
+  
+  - uses ``commonmarker``. Older versions of md_toc, prior to 
+    version ``3.0.0``, use ``gitlab`` as an alias of ``redcarpet`` while 
+    newer versions use ``github`` instead, because in the past GitLab used 
+    Redcarpet as markdown parser.
 
-- ``gitlab``:
-
-  Used ``redcarpet`` with minor modifications and now uses ``commonmarker``. 
-  Older versions of md_toc, prior to version 3.0.0, use ``gitlab`` as an alias 
-  of ``redcarpet`` while newer versions use ``github`` instead. The extensions 
-  used in GitLab Flavored Markdown (not to be confused with GitHub Flavored 
-  Markdown) should not concern md_toc. For this reason we assume that 
-  ``gitlab`` is an alias of ``github``.
+  - The extensions used in GitLab Flavored Markdown (not to be confused 
+    with GitHub Flavored Markdown) should not concern md_toc. For this 
+    reason we assume that ``gitlab`` is an alias of ``github``.
 
 - ``redcarpet``:
 
-  - https://github.com/vmg/redcarpet
-
+  - "The safe Markdown parser, reloaded."
 
 Parser Summary
 ``````````````
 
-   ===================   ============   ==================================================================================
-   Parser                Alias of       Supported parser version
-   ===================   ============   ==================================================================================
-   ``cmark``             ``github``
-   ``commonmarker``      ``github``
-   ``github``                           ``Version 0.28-gfm (2017-08-01)``
-   ``gitlab``            ``github``
-   ``redcarpet``                        ``https://github.com/vmg/redcarpet/tree/94f6e27bdf2395efa555a7c772a3d8b70fb84346``
-   ===================   ============   ==================================================================================
+   ===================   ============   ==================================================================================  =============================================
+   Parser                Alias of       Supported parser version                                                            Source
+   ===================   ============   ==================================================================================  =============================================
+   ``cmark``             ``github``                                                                                         https://github.com/commonmark/cmark
+   ``commonmarker``      ``github``                                                                                         https://github.com/gjtorikian/commonmarker
+   ``github``                           ``Version 0.28-gfm (2017-08-01)``                                                   https://github.com/github/cmark
+   ``gitlab``            ``github``                                                                                         https://docs.gitlab.com/ee/user/markdown.html
+   ``redcarpet``                        ``https://github.com/vmg/redcarpet/tree/94f6e27bdf2395efa555a7c772a3d8b70fb84346``  https://github.com/vmg/redcarpet
+   ===================   ============   ==================================================================================  =============================================
 
 What are headers and what are not
 ---------------------------------
@@ -88,9 +85,8 @@ Only ATX-style headings are supported in md_toc.
 
   Every other rule for ATX headings is applied.
 
-- ``redcarpet``:
+- ``redcarpet``: this is the license used in md_toc:
 
-  This is the license used in md_toc:
 
   ::
 
@@ -190,10 +186,9 @@ while the user might expect this:
 Indentation
 ```````````
 
-- ``github``: 
-
-  List indentation with this parser is always based on the previous state, as 
-  stated in the GitHub Flavored Markdown document, at section 5.2:
+- ``github``: list indentation with this parser is always based on the 
+  previous state, as stated in the GitHub Flavored Markdown document, at 
+  section 5.2:
 
     "The most important thing to notice is that the position of the text after the 
     list marker determines how much indentation is needed in subsequent blocks in 
@@ -479,21 +474,17 @@ Indentation
 Overflows
 `````````
 
-- ``github``: 
-
-  Ordered list markers cannot exceed ``99999999`` according to the following. 
-  If that is the case then a ``GithubOverflowOrderedListMarker`` exception 
-  is raised:
+- ``github``: ordered list markers cannot exceed ``99999999`` according to 
+  the following. If that is the case then a  ``GithubOverflowOrderedListMarker``
+  exception is raised:
 
   - https://github.github.com/gfm/#ordered-list-marker
   - https://spec.commonmark.org/0.28/#ordered-list-marker
 
-- ``redcarpet``:
-
-  Apparently there are no cases of ordered list marker overflows:
+- ``redcarpet``: apparently there are no cases of ordered list marker 
+  overflows:
 
   - https://github.com/vmg/redcarpet/blob/8db31cb83e7d81b19970466645e899b5ac3bc15d/ext/redcarpet/markdown.c#L1529  
-
 
 Link label rules
 ----------------
@@ -611,11 +602,15 @@ then link label rules will be applied.
 
   - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L998
 
-  Lets inspect this loop (from https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1017):
+  Let's inspect this loop:
+
+  - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1017):
 
   .. highlight:: c
 
+
   ::
+
 
         /* looking for the matching closing bracket */
         for (level = 1; i < size; i++) {
@@ -643,7 +638,9 @@ then link label rules will be applied.
 
   .. highlight:: c
 
+
   ::
+
 
             /* cleanup */
             cleanup:
@@ -714,8 +711,8 @@ Anchor link types and behaviours
         WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-- ``redcarpet``: Treats consecutive dash characters by tranforming them into a 
-  single dash character. A translated version of the C algorithm 
+- ``redcarpet``: treats consecutive dash characters by tranforming them 
+  into a single dash character. A translated version of the C algorithm 
   is used in md_toc. The original version is here:
 
   - https://github.com/vmg/redcarpet/blob/26c80f05e774b31cd01255b0fa62e883ac185bf3/ext/redcarpet/html.c#L274
@@ -762,16 +759,13 @@ way to comment a line in the code. For this reason md_toc needs to ignore code
 fences in order not to treat the ``#`` character as an ATX-style heading and thus
 get parsed as an element of the TOC.
 
-- ``github``: 
+- ``github``: the rules followed are the ones reported on the 
+  documentation:
+
   - https://github.github.com/gfm/#code-fence
 
-  The end of a file necessarly marks the end of a code fence if this was left 
-  open. See:
+- ``redcarpet``: needs to be implemented:
 
-    - https://github.github.com/gfm/#example-95
-    - https://github.github.com/gfm/#example-96
-
-- ``redcarpet``:
   - https://github.com/vmg/redcarpet/blob/26c80f05e774b31cd01255b0fa62e883ac185bf3/ext/redcarpet/markdown.c#L1389
 
 Other markdown parsers
