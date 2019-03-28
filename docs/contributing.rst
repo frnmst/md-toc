@@ -73,6 +73,17 @@ To be able to lint and test for PEP compliancy you need to run:
     $ make pep
 
 
+TODO and FIXME
+--------------
+
+Go in the repository's root and then:
+
+
+::
+
+    grep -e TODO -e FIXME -n */*.py
+
+
 Contribution Steps
 ------------------
 
