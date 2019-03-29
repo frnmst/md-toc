@@ -90,6 +90,12 @@ md_toc -l -i foo.md github
 printf "\n"
 sleep 5
 
+printf "Use stdin and ...\n"
+printf "$ cat foo.md | md_toc -l -i cmark -u '*'\n"
+cat foo.md | md_toc -l -i cmark -u '*'
+printf "\n"
+sleep 5
+
 printf "Editing the file in-place. As you can see, code fence \
 detection still needs to be implemented for redcarpet..\n"
 printf "$ md_toc -p foo.md redcarpet\n"

@@ -171,10 +171,12 @@ def build_multiple_tocs(filenames: list,
             #
             # See the unit tests (examples 95 and 96 of the github parser)
             # and the is_closing_code_fence function.
-            file_pointer_pos = f.tell()
-            if f.readline() == str():
-                is_document_end = True
-            f.seek(file_pointer_pos)
+            if filenames[file_id] != '-':
+                # stdin is not seekable.
+                file_pointer_pos = f.tell()
+                if f.readline() == str():
+                    is_document_end = True
+                f.seek(file_pointer_pos)
 
             # Code fence detection.
             if is_within_code_fence:
