@@ -100,16 +100,16 @@ def write_strings_on_files_between_markers(filenames: list, strings: list,
         file_id += 1
 
 
-def build_multiple_tocs(filenames: list,
-                        ordered: bool = False,
-                        no_links: bool = False,
-                        no_indentation: bool = False,
-                        keep_header_levels: int = 3,
-                        parser: str = 'github',
-                        list_marker: str = '-'):
+def build_toc(filename: str,
+              ordered: bool = False,
+              no_links: bool = False,
+              no_indentation: bool = False,
+              keep_header_levels: int = 3,
+              parser: str = 'github',
+              list_marker: str = '-') -> str:
     r"""Parse file by line and build the table of contents.
 
-    :parameter filenames: the file that needs to be read.
+    :parameter filename: the file that needs to be read.
     :parameter ordered: decides whether to build an ordered list or not.
          Defaults to ``False``.
     :parameter no_links: disables the use of links.
@@ -121,7 +121,135 @@ def build_multiple_tocs(filenames: list,
          Defaults to ``3``.
     :parameter parser: decides rules on how to generate anchor links.
          Defaults to ``github``.
-    :type filenames: str
+    :type filename: str
+    :type ordered: bool
+    :type no_links: bool
+    :type no_indentation: bool
+    :type keep_header_levels: int
+    :type parser: str
+    :returns: toc, the corresponding table of contents of the file.
+    :rtype: str
+    :raises: one of the built-in exceptions.
+    """
+    toc = str()
+    header_type_counter = dict()
+    header_type_curr = 0
+    header_type_prev = 0
+    header_duplicate_counter = dict()
+    no_of_indentation_spaces_prev = 0
+    if ordered:
+        list_marker_log = build_list_marker_log(parser, list_marker)
+    if filename == '-':
+        f = sys.stdin
+    else:
+        f = open(filename, 'r')
+    line = f.readline()
+    if ordered:
+        list_marker_log = build_list_marker_log(parser, list_marker)
+    else:
+        list_marker_log = list()
+    is_within_code_fence = False
+    code_fence = None
+    is_document_end = False
+    while line:
+        # Document ending detection.
+        # This changes the state of is_within_code_fence if the
+        # file has no closing fence markers. This serves no practial
+        # purpose since the code would run correctly anyway. It is
+        # however more sematically correct.
+        #
+        # See the unit tests (examples 95 and 96 of the github parser)
+        # and the is_closing_code_fence function.
+        if filename != '-':
+            # stdin is not seekable.
+            file_pointer_pos = f.tell()
+            if f.readline() == str():
+                is_document_end = True
+            f.seek(file_pointer_pos)
+
+        # Code fence detection.
+        if is_within_code_fence:
+            is_within_code_fence = not is_closing_code_fence(
+                line, code_fence, is_document_end, parser)
+            line = f.readline()
+        else:
+            code_fence = is_opening_code_fence(line, parser)
+            if code_fence is not None:
+                # Update the status of the next line.
+                is_within_code_fence = True
+                line = f.readline()
+
+        if not is_within_code_fence or code_fence is None:
+
+            # Header detection and gathering.
+            header = get_md_header(line, header_duplicate_counter,
+                                   keep_header_levels, parser, no_links)
+            if header is not None:
+                header_type_curr = header['type']
+
+                # Take care of the ordered TOC.
+                if ordered:
+                    increase_index_ordered_list(header_type_counter,
+                                                header_type_prev,
+                                                header_type_curr, parser)
+                    index = header_type_counter[header_type_curr]
+                else:
+                    index = 1
+
+                # Take care of list indentations.
+                if no_indentation:
+                    no_of_indentation_spaces_curr = 0
+                else:
+                    no_of_indentation_spaces_curr = compute_toc_line_indentation_spaces(
+                        header_type_curr, header_type_prev,
+                        no_of_indentation_spaces_prev, parser, ordered,
+                        list_marker, list_marker_log, index)
+
+                # Build a single TOC line.
+                toc_line_no_indent = build_toc_line_without_indentation(
+                    header, ordered, no_links, index, parser, list_marker)
+
+                # Save the TOC line with the indentation.
+                toc += build_toc_line(toc_line_no_indent,
+                                      no_of_indentation_spaces_curr) + '\n'
+
+                header_type_prev = header_type_curr
+                no_of_indentation_spaces_prev = no_of_indentation_spaces_curr
+
+            # endif
+
+        # endif
+
+        line = f.readline()
+
+    # endwhile
+    f.close()
+
+    return toc
+
+
+def build_multiple_tocs(filenames: list,
+                        ordered: bool = False,
+                        no_links: bool = False,
+                        no_indentation: bool = False,
+                        keep_header_levels: int = 3,
+                        parser: str = 'github',
+                        list_marker: str = '-') -> list:
+    r"""Parse files by line and build the table of contents of each file.
+
+    :parameter filenames: the files that needs to be read.
+    :parameter ordered: decides whether to build an ordered list or not.
+         Defaults to ``False``.
+    :parameter no_links: disables the use of links.
+         Defaults to ``False``.
+    :parameter no_indentation: disables indentation in the list.
+         Defaults to ``False``.
+    :parameter keep_header_levels: the maximum level of headers to be
+         considered as such when building the table of contents.
+         Defaults to ``3``.
+    :parameter parser: decides rules on how to generate anchor links.
+         Defaults to ``github``.
+    :type filenames: list
     :type ordered: bool
     :type no_links: bool
     :type no_indentation: bool
@@ -132,7 +260,6 @@ def build_multiple_tocs(filenames: list,
     :rtype: list
     :raises: one of the built-in exceptions.
     """
-    assert isinstance(filenames, list)
     if len(filenames) > 0:
         for f in filenames:
             assert isinstance(f, str)
@@ -142,104 +269,10 @@ def build_multiple_tocs(filenames: list,
     file_id = 0
     toc_struct = list()
     while file_id < len(filenames):
-        header_type_counter = dict()
-        header_type_curr = 0
-        header_type_prev = 0
-        header_duplicate_counter = dict()
-        no_of_indentation_spaces_prev = 0
-        if ordered:
-            list_marker_log = build_list_marker_log(parser, list_marker)
-        if filenames[file_id] == '-':
-            f = sys.stdin
-        else:
-            f = open(filenames[file_id], 'r')
-        line = f.readline()
-        toc_struct.append('')
-        if ordered:
-            list_marker_log = build_list_marker_log(parser, list_marker)
-        else:
-            list_marker_log = list()
-        is_within_code_fence = False
-        code_fence = None
-        is_document_end = False
-        while line:
-            # Document ending detection.
-            # This changes the state of is_within_code_fence if the
-            # file has no closing fence markers. This serves no practial
-            # purpose since the code would run correctly anyway. It is
-            # however more sematically correct.
-            #
-            # See the unit tests (examples 95 and 96 of the github parser)
-            # and the is_closing_code_fence function.
-            if filenames[file_id] != '-':
-                # stdin is not seekable.
-                file_pointer_pos = f.tell()
-                if f.readline() == str():
-                    is_document_end = True
-                f.seek(file_pointer_pos)
-
-            # Code fence detection.
-            if is_within_code_fence:
-                is_within_code_fence = not is_closing_code_fence(
-                    line, code_fence, is_document_end, parser)
-                line = f.readline()
-            else:
-                code_fence = is_opening_code_fence(line, parser)
-                if code_fence is not None:
-                    # Update the status of the next line.
-                    is_within_code_fence = True
-                    line = f.readline()
-
-            if not is_within_code_fence or code_fence is None:
-
-                # Header detection and gathering.
-                header = get_md_header(line, header_duplicate_counter,
-                                       keep_header_levels, parser, no_links)
-                if header is not None:
-                    header_type_curr = header['type']
-
-                    # Take care of the ordered TOC.
-                    if ordered:
-                        increase_index_ordered_list(header_type_counter,
-                                                    header_type_prev,
-                                                    header_type_curr, parser)
-                        index = header_type_counter[header_type_curr]
-                    else:
-                        index = 1
-
-                    # Take care of list indentations.
-                    if no_indentation:
-                        no_of_indentation_spaces_curr = 0
-                    else:
-                        no_of_indentation_spaces_curr = compute_toc_line_indentation_spaces(
-                            header_type_curr, header_type_prev,
-                            no_of_indentation_spaces_prev, parser, ordered,
-                            list_marker, list_marker_log, index)
-
-                    # Build a single TOC line.
-                    toc_line_no_indent = build_toc_line_without_indentation(
-                        header, ordered, no_links, index, parser, list_marker)
-
-                    # Save the TOC line with the indentation.
-                    toc_struct[file_id] += build_toc_line(
-                        toc_line_no_indent,
-                        no_of_indentation_spaces_curr) + '\n'
-
-                    header_type_prev = header_type_curr
-                    no_of_indentation_spaces_prev = no_of_indentation_spaces_curr
-
-                # endif
-
-            # endif
-
-            line = f.readline()
-
-        # endwhile
-
-        f.close()
+        toc_struct.append(
+            build_toc(filenames[file_id], ordered, no_links, no_indentation,
+                      keep_header_levels, parser, list_marker))
         file_id += 1
-
-    # endwhile
 
     return toc_struct
 

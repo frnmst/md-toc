@@ -110,13 +110,19 @@ class TestApi(unittest.TestCase):
         with self.assertRaises(exceptions.StdinIsNotAFileToBeWritten):
             api.write_string_on_file_between_markers('-', LINE, LINE)
 
-    def test_build_multiple_tocs(self):
+    def test_write_strings_on_files_between_markers(self):
+        r"""Test that the TOC is written correctly on the files."""
+
+    def test_build_toc(self):
         r"""Test that the TOC is built correctly.
 
         There is no need to test this since it is a wrapper for several
         other functions. Practically it is just an extended version
         of build_toc_line.
         """
+
+    def test_build_multiple_tocs(self):
+        r"""Test that the TOC is built correctly for multiple files."""
 
     def test_increase_index_ordered_list(self):
         r"""Test that the list index increases correctly.
