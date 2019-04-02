@@ -2,7 +2,6 @@
 # api.py
 #
 # Copyright (C) 2017-2018 frnmst (Franco Masotti) <franco.masotti@live.com>
-#                                            <franco.masotti@student.unife.it>
 #
 # This file is part of md-toc.
 #
@@ -107,7 +106,7 @@ def build_toc(filename: str,
               keep_header_levels: int = 3,
               parser: str = 'github',
               list_marker: str = '-') -> str:
-    r"""Parse file by line and build the table of contents.
+    r"""Build the table of contents of a single file.
 
     :parameter filename: the file that needs to be read.
     :parameter ordered: decides whether to build an ordered list or not.

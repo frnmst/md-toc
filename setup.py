@@ -2,7 +2,6 @@
 # setup.py
 #
 # Copyright (C) 2017-2018 frnmst (Franco Masotti) <franco.masotti@live.com>
-#                                            <franco.masotti@student.unife.it>
 #
 # This file is part of md-toc.
 #
@@ -24,10 +23,10 @@ from setuptools import setup, find_packages
 
 setup(
     name='md_toc',
-    version='3.1.0',
+    version='4.0.0',
     packages=find_packages(exclude=['*tests*']),
     license='GPL',
-    description='An utility that is able to generate a table of contents for a markdown file.',
+    description='A utility that is able to generate a table of contents for a markdown file.',
     long_description=open('README.rst').read(),
     package_data={
         '': ['*.txt', '*.rst'],
@@ -51,6 +50,6 @@ setup(
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Programming Language :: Python :: 3',
     ],
-    install_requires=['fpyutils>=0.0.2'],
+    install_requires=['fpyutils>=1.0.0'],
 )
 
