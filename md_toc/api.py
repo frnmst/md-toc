@@ -152,6 +152,7 @@ def build_toc(filename: str,
     is_document_end = False
     while line:
         # Document ending detection.
+        #
         # This changes the state of is_within_code_fence if the
         # file has no closing fence markers. This serves no practial
         # purpose since the code would run correctly anyway. It is
@@ -222,6 +223,7 @@ def build_toc(filename: str,
         line = f.readline()
 
     # endwhile
+
     f.close()
 
     return toc
@@ -293,7 +295,7 @@ def increase_index_ordered_list(header_type_count: dict,
     :type parser: str
     :returns: None
     :rtype: None
-    :raises: a built-in exception.
+    :raises: GithubOverflowOrderedListMarker or a built-in exception.
     """
     # header_type_prev might be 0 while header_type_curr can't.
     assert header_type_prev >= 0
@@ -689,9 +691,10 @@ def get_atx_heading(line: str,
          header type and the trimmed header text, according to the selected
          parser rules, otherwise.
     :rtype: typing.Optional[tuple]
-    :raises: one of the built in exceptions or GithubEmptyLinkLabel or
-         GithubOverflowCharsLinkLabel.
-    :warning: the parameter keep_header_levels must be greater than 0.
+    :raises: GithubEmptyLinkLabel or GithubOverflowCharsLinkLabel or a
+         built-in exception.
+
+    .. warning:: the parameter keep_header_levels must be greater than 0.
     """
     assert keep_header_levels >= 1
 

@@ -33,6 +33,7 @@ parser['github']['code fence'] = dict()
 parser['redcarpet'] = dict()
 parser['redcarpet']['list'] = dict()
 
+# github.
 parser['github']['link'] = {
     'max_chars_label': 999,
 }
@@ -64,6 +65,7 @@ parser['cmark'] = parser['github']
 parser['gitlab'] = parser['github']
 parser['commonmarker'] = parser['github']
 
+# redcarpet.
 parser['redcarpet']['list']['unordered'] = {
     'bullet_markers': ['-', '+', '*'],
 }
