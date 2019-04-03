@@ -44,8 +44,8 @@ def write_string_on_file_between_markers(filename: str, string: str,
     :type marker: str
     :returns: None
     :rtype: None
-    :raises: StdinIsNotAFileToBeWritten or one of the fpyutils exceptions
-         or one of the built-in exceptions.
+    :raises: StdinIsNotAFileToBeWritten or an fpyutils exception
+         or a built-in exception.
     """
     if filename == '-':
         raise StdinIsNotAFileToBeWritten
@@ -83,7 +83,7 @@ def write_strings_on_files_between_markers(filenames: list, strings: list,
     :type marker: str
     :returns: None
     :rtype: None
-    :raises: one of the fpyutils exceptions or one of the built-in exceptions.
+    :raises: an fpyutils exception or a built-in exception.
     """
     assert len(filenames) == len(strings)
     if len(filenames) > 0:
@@ -128,7 +128,7 @@ def build_toc(filename: str,
     :type parser: str
     :returns: toc, the corresponding table of contents of the file.
     :rtype: str
-    :raises: one of the built-in exceptions.
+    :raises: a built-in exception.
     """
     toc = str()
     header_type_counter = dict()
@@ -257,7 +257,7 @@ def build_multiple_tocs(filenames: list,
     :returns: toc_struct, the corresponding table of contents for each input
          file.
     :rtype: list
-    :raises: one of the built-in exceptions.
+    :raises: a built-in exception.
     """
     if len(filenames) > 0:
         for f in filenames:
@@ -293,7 +293,7 @@ def increase_index_ordered_list(header_type_count: dict,
     :type parser: str
     :returns: None
     :rtype: None
-    :raises: one of the built-in exceptions.
+    :raises: a built-in exception.
     """
     # header_type_prev might be 0 while header_type_curr can't.
     assert header_type_prev >= 0
@@ -327,7 +327,7 @@ def build_list_marker_log(parser: str = 'github',
     :type list_marker: str
     :returns: list_marker_log, the data structure.
     :rtype: list
-    :raises: one of the built-in exceptions.
+    :raises: a built-in exception.
     :note: This function makes sense for ordered lists only.
     """
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
@@ -395,7 +395,7 @@ def compute_toc_line_indentation_spaces(
     :returns: no_of_indentation_spaces_curr, the number of indentation spaces
          for the list element.
     :rtype: int
-    :raises: one of the built-in exceptions.
+    :raises: a built-in exception.
     :note: Please note that this function
          assumes that no_of_indentation_spaces_prev contains the correct
          number of spaces.
@@ -503,7 +503,7 @@ def build_toc_line_without_indentation(header: dict,
     :returns: toc_line_no_indent, a single line of the table of contents
          without indentation.
     :rtype: str
-    :raises: one of the built-in exceptions.
+    :raises: a built-in exception.
     """
     assert 'type' in header
     assert 'text_original' in header
@@ -558,7 +558,7 @@ def build_toc_line(toc_line_no_indent: str,
     :type no_of_indentation_spaces: int
     :returns: toc_line, a single line of the table of contents.
     :rtype: str
-    :raises: one of the built-in exceptions.
+    :raises: a built-in exception.
     """
     assert no_of_indentation_spaces >= 0
 
@@ -586,7 +586,7 @@ def build_anchor_link(header_text_trimmed: str,
     :returns: None if the specified parser is not recognized, or the anchor
          link, otherwise.
     :rtype: str
-    :raises: one of the built-in exceptions.
+    :raises: a built-in exception.
     :note: The licenses of each markdown parser algorithm are reported on
         the 'Markdown spec' documentation page.
     """
@@ -863,7 +863,7 @@ def get_md_header(header_text_line: str,
          designated cases or a data structure containing the necessary
          components to create a table of contents line, otherwise.
     :rtype: dict
-    :raises: one of the built-in exceptions.
+    :raises: a built-in exception.
     :note: this works like a wrapper to other functions.
     """
     result = get_atx_heading(header_text_line, keep_header_levels, parser,
@@ -895,7 +895,7 @@ def is_valid_code_fence_indent(line: str, parser: str = 'github') -> bool:
     :returns: True if the given line has valid indentation or False
          otherwise.
     :rtype: bool
-    :raises: one of the built-in exceptions.
+    :raises: a built-in exception.
     """
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
@@ -918,7 +918,7 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
          returns the string which will identify the closing code fence
          according to the input parsers' rules.
     :rtype: typing.Optional[str]
-    :raises: one of the built-in exceptions.
+    :raises: a built-in exception.
     """
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
@@ -973,7 +973,7 @@ def is_closing_code_fence(line: str,
     :type parser: str
     :returns: True if the line ends the current code block. False otherwise.
     :rtype: bool
-    :raises: one of the built-in exceptions.
+    :raises: a built-in exception.
     """
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
