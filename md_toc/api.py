@@ -693,8 +693,6 @@ def get_atx_heading(line: str,
     :rtype: typing.Optional[tuple]
     :raises: GithubEmptyLinkLabel or GithubOverflowCharsLinkLabel or a
          built-in exception.
-
-    .. warning:: the parameter keep_header_levels must be greater than 0.
     """
     assert keep_header_levels >= 1
 
