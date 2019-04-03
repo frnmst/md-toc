@@ -328,7 +328,9 @@ def build_list_marker_log(parser: str = 'github',
     :returns: list_marker_log, the data structure.
     :rtype: list
     :raises: a built-in exception.
-    :note: This function makes sense for ordered lists only.
+
+    .. note::
+         This function makes sense for ordered lists only.
     """
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
@@ -396,7 +398,9 @@ def compute_toc_line_indentation_spaces(
          for the list element.
     :rtype: int
     :raises: a built-in exception.
-    :note: Please note that this function
+
+    .. note::
+         Please note that this function
          assumes that no_of_indentation_spaces_prev contains the correct
          number of spaces.
     """
@@ -587,7 +591,9 @@ def build_anchor_link(header_text_trimmed: str,
          link, otherwise.
     :rtype: str
     :raises: a built-in exception.
-    :note: The licenses of each markdown parser algorithm are reported on
+
+    .. note::
+        The licenses of each markdown parser algorithm are reported on
         the 'Markdown spec' documentation page.
     """
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
@@ -864,7 +870,9 @@ def get_md_header(header_text_line: str,
          components to create a table of contents line, otherwise.
     :rtype: dict
     :raises: a built-in exception.
-    :note: this works like a wrapper to other functions.
+
+    .. note::
+         This works like a wrapper to other functions.
     """
     result = get_atx_heading(header_text_line, keep_header_levels, parser,
                              no_links)
