@@ -79,6 +79,9 @@ build a TOC within another Python program. The easiest way to build one
 for a markdown file is:
 
 
+::
+
+
     >>> import md_toc
     >>> f = open('foo.md')
     >>> print(f.read(), end='')
@@ -102,6 +105,7 @@ for a markdown file is:
       - [file](#file)
       - [bye](#bye)
     - [bye](#bye-1)
+
 
 .. _public API: https://frnmst.github.io/md-toc/api.html
 
