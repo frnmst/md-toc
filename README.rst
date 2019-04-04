@@ -45,21 +45,21 @@ occurrency of a marker. The default marker is ``[](TOC)``, which will
 result invisible after the markdown file has been translated.
 
 By default titles up to three indentation levels (in HTML: ``h1``, ``h2``, 
-``h3``) will be included in the TOC but the user can decide to keep any
-wanted level.
+``h3``) will be included in the TOC but the user can decide to keep all
+possible levels.
 
-md_toc makes it is possible to generate ordered or unordered TOCs.
+md_toc makes it is possible to generate ordered and unordered TOCs.
 In both cases each element of the TOC is by default a
-link to a paragraph in the web page. It is also possible to generate non-linked 
-version of the TOC. 
+link to a paragraph in the web page. It is also possible to generate 
+a non-linked version of the TOC. 
 
 If the user wants it, there is the possibility to ignore space indentations
 within the TOC.
 
 Rules for generating the TOC are determined by the selected 
-markdown parser. md-toc aimes to be as conformant as possible in respect to 
-each one of them. This was possible by studying the available 
-documentation and/or reverse engineering the source code.
+markdown parser. md-toc aimes infact to be as conformant as possible in 
+respect to each one of them. This was possible by studying the available 
+documentations and by reverse engineering the source codes.
 
 Documentation
 -------------
@@ -71,8 +71,42 @@ to learn how this program parsers markdown files and builds a correct output.
 
 .. _Markdown specification: http://frnmst.github.io/md-toc/markdown_specification.html
 
-Helps
------
+API examples
+------------
+
+md-toc has a `public API`_. This means for example that you can you easily 
+build a TOC within another Python program. The easiest way to build one 
+for a markdown file is:
+
+
+    >>> import md_toc
+    >>> f = open('foo.md')
+    >>> print(f.read(), end='')
+    # this
+    ## is
+    ## a
+    ### foo
+    #### booo
+    ### foo
+    ## file
+
+    ## bye
+
+    # bye
+    >>> print(md_toc.build_toc('foo.md'), end='')
+    - [this](#this)
+      - [is](#is)
+      - [a](#a)
+        - [foo](#foo)
+        - [foo](#foo-1)
+      - [file](#file)
+      - [bye](#bye)
+    - [bye](#bye-1)
+
+.. _public API: https://frnmst.github.io/md-toc/api.html
+
+CLI Helps
+---------
 
 
 ::
