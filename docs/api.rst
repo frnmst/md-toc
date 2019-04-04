@@ -27,3 +27,11 @@ output types.
 .. autofunction:: is_valid_code_fence_indent
 .. autofunction:: is_opening_code_fence
 .. autofunction:: is_closing_code_fence
+
+Exceptions
+----------
+
+.. autoexception:: GithubOverflowCharsLinkLabel
+.. autoexception:: GithubEmptyLinkLabel
+.. autoexception:: GithubOverflowOrderedListMarker
+.. autoexception:: StdinIsNotAFileToBeWritten

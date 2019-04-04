@@ -20,7 +20,7 @@
 #
 """The tests module."""
 
-from md_toc import api, exceptions
+from md_toc import (api, exceptions)
 import unittest
 
 # Some static generic variables.

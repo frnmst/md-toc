@@ -28,3 +28,6 @@ from .api import (
     write_strings_on_files_between_markers, is_valid_code_fence_indent,
     is_opening_code_fence, is_closing_code_fence)
 from .cli import (CliInterface)
+from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
+                         GithubOverflowOrderedListMarker,
+                         StdinIsNotAFileToBeWritten)
