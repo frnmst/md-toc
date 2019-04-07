@@ -52,7 +52,7 @@ parser['github']['list']['unordered'] = {
 
 parser['github']['header'] = {
     'max_space_indentation': 3,
-    'max_levels': 6,
+    'max_levels': 1,
     'default_keep_levels': 3
 }
 

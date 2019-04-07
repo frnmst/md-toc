@@ -1042,5 +1042,80 @@ def is_closing_code_fence(line: str,
         return False
 
 
+def build_indentation_list(parser: str = 'github'):
+    r"""Create a data structure that holds the state of indentations.
+
+    :parameter parser: decides the length of the list.
+         Defaults to ``github``.
+    :type parser: str
+    :returns: indentation_list, a list that contains the state of
+         indentations given a header type.
+    :rtype: list
+    :raises: one of the built in exceptions
+    """
+    indentation_list = list()
+
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker'):
+        for i in range(0, md_parser['github']['header']['max_levels']):
+            indentation_list.append(False)
+
+    elif parser == 'redcarpet':
+        pass
+        # TODO
+
+    return indentation_list
+
+
+def toc_renders_as_list(
+        header_type_curr: int = 1,
+        indentation_list: list = build_indentation_list('github'),
+        parser: str = 'github') -> bool:
+    r"""Check if the TOC will render as a working list.
+
+    :parameter header_type_curr: the current type of header (h[1-Inf]).
+    :parameter parser: decides rules on how to generate ordered list markers
+    :type header_type_curr: int
+    :type indentation_list: list
+    :type parser: str
+    :returns: renders_as_list
+    :rtype: bool
+    :raises: one of the built in exceptions
+    """
+    assert header_type_curr >= 1
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker'):
+        assert len(
+            indentation_list) == md_parser['github']['header']['max_levels']
+    for e in indentation_list:
+        assert isinstance(e, bool)
+
+    renders_as_list = True
+    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+            or parser == 'commonmarker'):
+        # Update with current information.
+        indentation_list[header_type_curr - 1] = True
+
+        # Reset next cells to False, as a detection mechanism.
+        for i in range(header_type_curr,
+                       md_parser['github']['header']['max_levels'] - 1):
+            indentation_list[i] = False
+
+        # Check for previous False cells. If there is a "hole" in the list
+        # it means that the TOC will have "wrong" indentation spaces, thus
+        # neither rendering as an HTML list nor as the user intended.
+        i = header_type_curr - 1
+        while i >= 0 and indentation_list[i]:
+            i -= 1
+        if i >= 0:
+            renders_as_list = False
+
+    elif parser == 'redcarpet':
+        pass
+        # TODO
+
+    return renders_as_list
+
+
 if __name__ == '__main__':
     pass

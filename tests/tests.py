@@ -20,7 +20,8 @@
 #
 """The tests module."""
 
-from md_toc import (api, exceptions)
+from md_toc import (api, exceptions, constants)
+from md_toc.constants import parser as md_parser
 import unittest
 
 # Some static generic variables.
@@ -93,6 +94,10 @@ TILDE10 = 10 * '~'
 GITHUB_INFO_STRING_FOO = 'ruby'
 GITHUB_INFO_STRING_GARBAGE = 'startline=3 $%@#$'
 
+# github rensers as list header types.
+GITHUB_GENERIC_RENDERS_AS_LIST_HEADER_TYPE_CURR = 3
+GITHUB_BASE_RENDERS_AS_LIST_HEADER_TYPE_CURR = 1
+
 # redcarpet test lines.
 REDCARPET_LINE_FOO = 'foo'
 
@@ -145,7 +150,8 @@ class TestApi(unittest.TestCase):
         self.assertEqual(ht[3], 1)
 
         # Check overflow rule for github.
-        ht[1] = 999999999
+        ht[1] = md_parser['github']['list']['ordered'][
+            'max_marker_number'] = 999999999
         with self.assertRaises(exceptions.GithubOverflowOrderedListMarker):
             api.increase_index_ordered_list(ht, 1, 1)
 
@@ -158,6 +164,8 @@ class TestApi(unittest.TestCase):
     def test_compute_toc_line_indentation_spaces(self):
         r"""Test that the TOC list indentation spaces are computed correctly."""
         # github.
+        md_parser['github']['header']['max_levels'] = 6
+
         # Unordered TOC. In this case there is no need to do specific tests
         # on the modified list marker log.
 
@@ -307,6 +315,8 @@ class TestApi(unittest.TestCase):
                          ['998.', '1000.', '0.', '0.', '0.', '0.'])
 
         # redcarpet.
+        md_parser['redcarpet']['header']['max_levels'] = 6
+
         self.assertEqual(
             api.compute_toc_line_indentation_spaces(
                 GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_PREV,
@@ -390,25 +400,26 @@ class TestApi(unittest.TestCase):
         in the test directory of the source code.
         """
         # github
+        m_github = md_parser['github']['header']['max_levels'] = 6
 
         # Example 32
         self.assertEqual(
-            api.get_atx_heading(H1 + S1 + GITHUB_LINE_FOO, 6, 'github'),
+            api.get_atx_heading(H1 + S1 + GITHUB_LINE_FOO, m_github, 'github'),
             (1, GITHUB_LINE_FOO))
         self.assertEqual(
-            api.get_atx_heading(H2 + S1 + GITHUB_LINE_FOO, 6, 'github'),
+            api.get_atx_heading(H2 + S1 + GITHUB_LINE_FOO, m_github, 'github'),
             (2, GITHUB_LINE_FOO))
         self.assertEqual(
-            api.get_atx_heading(H3 + S1 + GITHUB_LINE_FOO, 6, 'github'),
+            api.get_atx_heading(H3 + S1 + GITHUB_LINE_FOO, m_github, 'github'),
             (3, GITHUB_LINE_FOO))
         self.assertEqual(
-            api.get_atx_heading(H4 + S1 + GITHUB_LINE_FOO, 6, 'github'),
+            api.get_atx_heading(H4 + S1 + GITHUB_LINE_FOO, m_github, 'github'),
             (4, GITHUB_LINE_FOO))
         self.assertEqual(
-            api.get_atx_heading(H5 + S1 + GITHUB_LINE_FOO, 6, 'github'),
+            api.get_atx_heading(H5 + S1 + GITHUB_LINE_FOO, m_github, 'github'),
             (5, GITHUB_LINE_FOO))
         self.assertEqual(
-            api.get_atx_heading(H6 + S1 + GITHUB_LINE_FOO, 6, 'github'),
+            api.get_atx_heading(H6 + S1 + GITHUB_LINE_FOO, m_github, 'github'),
             (6, GITHUB_LINE_FOO))
 
         # Example 33
@@ -417,14 +428,14 @@ class TestApi(unittest.TestCase):
 
         # Example 34
         self.assertIsNone(
-            api.get_atx_heading(H1 + GITHUB_LINE_5_BOLT, 6, 'github'))
+            api.get_atx_heading(H1 + GITHUB_LINE_5_BOLT, m_github, 'github'))
         self.assertIsNone(
-            api.get_atx_heading(H1 + GITHUB_LINE_HASHTAG, 6, 'github'))
+            api.get_atx_heading(H1 + GITHUB_LINE_HASHTAG, m_github, 'github'))
 
         # Example 35
         self.assertIsNone(
-            api.get_atx_heading(LINE_ESCAPE + H1 + S1 + GITHUB_LINE_FOO, 6,
-                                'github'))
+            api.get_atx_heading(LINE_ESCAPE + H1 + S1 + GITHUB_LINE_FOO,
+                                m_github, 'github'))
 
         # Example 36
         self.assertEqual(
@@ -434,87 +445,91 @@ class TestApi(unittest.TestCase):
 
         # Example 37
         self.assertEqual(
-            api.get_atx_heading(H1 + S10 + GITHUB_LINE_FOO + S10, 6, 'github'),
-            (1, GITHUB_LINE_FOO))
+            api.get_atx_heading(H1 + S10 + GITHUB_LINE_FOO + S10, m_github,
+                                'github'), (1, GITHUB_LINE_FOO))
 
         # Example 38
         self.assertEqual(
-            api.get_atx_heading(S1 + H1 + S1 + GITHUB_LINE_FOO, 6, 'github'),
-            (1, GITHUB_LINE_FOO))
+            api.get_atx_heading(S1 + H1 + S1 + GITHUB_LINE_FOO, m_github,
+                                'github'), (1, GITHUB_LINE_FOO))
         self.assertEqual(
-            api.get_atx_heading(S2 + H1 + S1 + GITHUB_LINE_FOO, 6, 'github'),
-            (1, GITHUB_LINE_FOO))
+            api.get_atx_heading(S2 + H1 + S1 + GITHUB_LINE_FOO, m_github,
+                                'github'), (1, GITHUB_LINE_FOO))
         self.assertEqual(
-            api.get_atx_heading(S3 + H1 + S1 + GITHUB_LINE_FOO, 6, 'github'),
-            (1, GITHUB_LINE_FOO))
+            api.get_atx_heading(S3 + H1 + S1 + GITHUB_LINE_FOO, m_github,
+                                'github'), (1, GITHUB_LINE_FOO))
 
         # Example 39 and 40
         self.assertIsNone(
-            api.get_atx_heading(S4 + H1 + S1 + GITHUB_LINE_FOO, 6, 'github'))
+            api.get_atx_heading(S4 + H1 + S1 + GITHUB_LINE_FOO, m_github,
+                                'github'))
 
         # Example 41
         self.assertEqual(
-            api.get_atx_heading(H2 + S1 + GITHUB_LINE_FOO + S1 + H2, 6,
+            api.get_atx_heading(H2 + S1 + GITHUB_LINE_FOO + S1 + H2, m_github,
                                 'github'), (2, GITHUB_LINE_FOO))
         self.assertEqual(
-            api.get_atx_heading(S2 + H3 + S3 + GITHUB_LINE_BAR + S4 + H3, 6,
-                                'github'), (3, GITHUB_LINE_BAR))
+            api.get_atx_heading(S2 + H3 + S3 + GITHUB_LINE_BAR + S4 + H3,
+                                m_github, 'github'), (3, GITHUB_LINE_BAR))
 
         # Example 42
         self.assertEqual(
-            api.get_atx_heading(H1 + S1 + GITHUB_LINE_FOO + S1, 6, 'github'),
-            (1, GITHUB_LINE_FOO))
-        self.assertIsNone(api.get_atx_heading(H5 * 7, 6, 'github'))
+            api.get_atx_heading(H1 + S1 + GITHUB_LINE_FOO + S1, m_github,
+                                'github'), (1, GITHUB_LINE_FOO))
+        self.assertIsNone(api.get_atx_heading(H5 * 7, m_github, 'github'))
         self.assertEqual(
-            api.get_atx_heading(H5 + S1 + GITHUB_LINE_FOO + S1 + H2, 6,
+            api.get_atx_heading(H5 + S1 + GITHUB_LINE_FOO + S1 + H2, m_github,
                                 'github'), (5, GITHUB_LINE_FOO))
 
         # Example 43
         self.assertEqual(
-            api.get_atx_heading(H3 + S1 + GITHUB_LINE_FOO + S1 + H3 + S4, 6,
-                                'github'), (3, GITHUB_LINE_FOO))
+            api.get_atx_heading(H3 + S1 + GITHUB_LINE_FOO + S1 + H3 + S4,
+                                m_github, 'github'), (3, GITHUB_LINE_FOO))
 
         # Example 44
         self.assertEqual(
             api.get_atx_heading(
-                H3 + S1 + GITHUB_LINE_FOO + S1 + H3 + S1 + GITHUB_LINE_B, 6,
-                'github'), (3, GITHUB_LINE_FOO + S1 + H3 + S1 + GITHUB_LINE_B))
+                H3 + S1 + GITHUB_LINE_FOO + S1 + H3 + S1 + GITHUB_LINE_B,
+                m_github, 'github'),
+            (3, GITHUB_LINE_FOO + S1 + H3 + S1 + GITHUB_LINE_B))
 
         # Example 45
         self.assertEqual(
-            api.get_atx_heading(H1 + S1 + GITHUB_LINE_FOO + H1, 6, 'github'),
-            (1, GITHUB_LINE_FOO + H1))
+            api.get_atx_heading(H1 + S1 + GITHUB_LINE_FOO + H1, m_github,
+                                'github'), (1, GITHUB_LINE_FOO + H1))
 
         # Example 46
         self.assertEqual(
             api.get_atx_heading(
-                H3 + S1 + GITHUB_LINE_FOO + S1 + LINE_ESCAPE + H3, 6,
+                H3 + S1 + GITHUB_LINE_FOO + S1 + LINE_ESCAPE + H3, m_github,
                 'github'), (3, GITHUB_LINE_FOO + S1 + LINE_ESCAPE + H3))
         self.assertEqual(
             api.get_atx_heading(
-                H2 + S1 + GITHUB_LINE_FOO + S1 + H1 + LINE_ESCAPE + H2, 6,
-                'github'), (2, GITHUB_LINE_FOO + S1 + H1 + LINE_ESCAPE + H2))
+                H2 + S1 + GITHUB_LINE_FOO + S1 + H1 + LINE_ESCAPE + H2,
+                m_github, 'github'),
+            (2, GITHUB_LINE_FOO + S1 + H1 + LINE_ESCAPE + H2))
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + GITHUB_LINE_FOO + S1 + LINE_ESCAPE + H1, 6,
+                H1 + S1 + GITHUB_LINE_FOO + S1 + LINE_ESCAPE + H1, m_github,
                 'github'), (1, GITHUB_LINE_FOO + S1 + LINE_ESCAPE + H1))
 
         # Example 49
         self.assertEqual(
-            api.get_atx_heading(H2 + S1, 6, 'github', True), (2, LINE_EMPTY))
+            api.get_atx_heading(H2 + S1, m_github, 'github', True),
+            (2, LINE_EMPTY))
         self.assertEqual(
-            api.get_atx_heading(H1, 6, 'github', True), (1, LINE_EMPTY))
+            api.get_atx_heading(H1, m_github, 'github', True), (1, LINE_EMPTY))
         self.assertEqual(
-            api.get_atx_heading(H3 + S1 + H3, 6, 'github', True),
+            api.get_atx_heading(H3 + S1 + H3, m_github, 'github', True),
             (3, LINE_EMPTY))
 
         # Example 49 with link labels.
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
-            api.get_atx_heading(H2 + S1, 6, 'github', False)
+            api.get_atx_heading(H2 + S1, m_github, 'github', False)
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
-            api.get_atx_heading(H1, 6, 'github', False)
+            api.get_atx_heading(H1, m_github, 'github', False)
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
-            api.get_atx_heading(H3 + S1 + H3, 6, 'github', False)
+            api.get_atx_heading(H3 + S1 + H3, m_github, 'github', False)
 
         # Test escaping examples reported in the documentation.
         # A modified Example 302 and Example 496 (for square brackets).
@@ -522,8 +537,8 @@ class TestApi(unittest.TestCase):
             api.get_atx_heading(
                 H1 + S1 + LINE_SQUARE_BRACKET_OPEN + S1 + GITHUB_LINE_FOO + S1
                 + LINE_SQUARE_BRACKET_OPEN + GITHUB_LINE_BAR +
-                LINE_SQUARE_BRACKET_CLOSE + LINE_SQUARE_BRACKET_CLOSE, 6,
-                'github'),
+                LINE_SQUARE_BRACKET_CLOSE + LINE_SQUARE_BRACKET_CLOSE,
+                m_github, 'github'),
             (1, LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + S1 + GITHUB_LINE_FOO +
              S1 + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + GITHUB_LINE_BAR +
              LINE_ESCAPE + LINE_SQUARE_BRACKET_CLOSE + LINE_ESCAPE +
@@ -531,110 +546,118 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + LINE_ESCAPE + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN
-                + S1 + GITHUB_LINE_FOO, 6, 'github'),
+                + S1 + GITHUB_LINE_FOO, m_github, 'github'),
             (1, LINE_ESCAPE + LINE_ESCAPE + LINE_ESCAPE +
              LINE_SQUARE_BRACKET_OPEN + S1 + GITHUB_LINE_FOO))
 
         # Test escape character space workaround.
         self.assertEqual(
-            api.get_atx_heading(H2 + S1 + GITHUB_LINE_FOO + LINE_ESCAPE, 6,
-                                'github'),
+            api.get_atx_heading(H2 + S1 + GITHUB_LINE_FOO + LINE_ESCAPE,
+                                m_github, 'github'),
             (2, GITHUB_LINE_FOO + LINE_ESCAPE + S1))
 
         # Test MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL
         with self.assertRaises(exceptions.GithubOverflowCharsLinkLabel):
-            api.get_atx_heading(H1 + S1 + GITHUB_LINE_1000_CHARS, 6, 'github')
+            api.get_atx_heading(H1 + S1 + GITHUB_LINE_1000_CHARS, m_github,
+                                'github')
 
         # Test an empty line.
-        self.assertIsNone(api.get_atx_heading(LINE_EMPTY, 6, 'github'))
+        self.assertIsNone(api.get_atx_heading(LINE_EMPTY, m_github, 'github'))
 
         # Test line endings.
         self.assertEqual(
-            api.get_atx_heading(H1 + LINE_NEWLINE, 6, 'github', True),
+            api.get_atx_heading(H1 + LINE_NEWLINE, m_github, 'github', True),
             (1, LINE_EMPTY))
         self.assertEqual(
-            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'github', True),
-            (1, LINE_EMPTY))
+            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, m_github, 'github',
+                                True), (1, LINE_EMPTY))
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + GITHUB_LINE_FOO + LINE_NEWLINE + GITHUB_LINE_FOO, 6,
-                'github'), (1, GITHUB_LINE_FOO))
+                H1 + S1 + GITHUB_LINE_FOO + LINE_NEWLINE + GITHUB_LINE_FOO,
+                m_github, 'github'), (1, GITHUB_LINE_FOO))
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + GITHUB_LINE_FOO + LINE_CARRIAGE_RETURN +
-                GITHUB_LINE_FOO, 6, 'github'), (1, GITHUB_LINE_FOO))
+                GITHUB_LINE_FOO, m_github, 'github'), (1, GITHUB_LINE_FOO))
 
         # Test line endings with link labels.
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
-            api.get_atx_heading(H1 + LINE_NEWLINE, 6, 'github', False)
+            api.get_atx_heading(H1 + LINE_NEWLINE, m_github, 'github', False)
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
-            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'github', False)
+            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, m_github, 'github',
+                                False)
 
         # readcarpet
         # It does not seem that there are exaustive tests so we have to invent
         # our own. See https://github.com/vmg/redcarpet/tree/master/test
         # for more information.
+        m_redcarpet = md_parser['redcarpet']['header']['max_levels'] = 6
 
         self.assertIsNone(
-            api.get_atx_heading(S1 + H1 + S1 + REDCARPET_LINE_FOO, 6,
+            api.get_atx_heading(S1 + H1 + S1 + REDCARPET_LINE_FOO, m_redcarpet,
                                 'redcarpet'))
 
         self.assertEqual(
-            api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO, 6, 'redcarpet'),
+            api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO, m_redcarpet,
+                                'redcarpet'), (1, REDCARPET_LINE_FOO))
+
+        self.assertEqual(
+            api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO + S1 + H1,
+                                m_redcarpet, 'redcarpet'),
             (1, REDCARPET_LINE_FOO))
 
         self.assertEqual(
-            api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO + S1 + H1, 6,
-                                'redcarpet'), (1, REDCARPET_LINE_FOO))
-
-        self.assertEqual(
-            api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO + S1 + H3, 6,
-                                'redcarpet'), (1, REDCARPET_LINE_FOO))
+            api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO + S1 + H3,
+                                m_redcarpet, 'redcarpet'),
+            (1, REDCARPET_LINE_FOO))
 
         self.assertEqual(
             api.get_atx_heading(
-                H3 + S1 + REDCARPET_LINE_FOO + S1 + H3 + LINE_NEWLINE, 6,
-                'redcarpet'), (3, REDCARPET_LINE_FOO))
+                H3 + S1 + REDCARPET_LINE_FOO + S1 + H3 + LINE_NEWLINE,
+                m_redcarpet, 'redcarpet'), (3, REDCARPET_LINE_FOO))
 
         self.assertEqual(
-            api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO + S1 + H3 + S1, 6,
-                                'redcarpet'),
+            api.get_atx_heading(H1 + S1 + REDCARPET_LINE_FOO + S1 + H3 + S1,
+                                m_redcarpet, 'redcarpet'),
             (1, REDCARPET_LINE_FOO + S1 + H3))
 
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + REDCARPET_LINE_FOO + S1 + H1 + LINE_ESCAPE +
-                LINE_ESCAPE + H2, 6, 'redcarpet'),
+                LINE_ESCAPE + H2, m_redcarpet, 'redcarpet'),
             (1, REDCARPET_LINE_FOO + S1 + H1 + LINE_ESCAPE + LINE_ESCAPE))
 
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + REDCARPET_LINE_FOO + H1 + LINE_ESCAPE + H1 + S1 + H1,
-                6, 'redcarpet'),
+                m_redcarpet, 'redcarpet'),
             (1, REDCARPET_LINE_FOO + H1 + LINE_ESCAPE + H1))
 
         # Test escape character space workaround.
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + REDCARPET_LINE_FOO + S1 + LINE_ESCAPE, 6,
+                H1 + S1 + REDCARPET_LINE_FOO + S1 + LINE_ESCAPE, m_redcarpet,
                 'redcarpet'), (1, REDCARPET_LINE_FOO + S1 + LINE_ESCAPE + S1))
 
         # Test an empty line.
-        self.assertIsNone(api.get_atx_heading(LINE_EMPTY, 6, 'redcarpet'))
+        self.assertIsNone(
+            api.get_atx_heading(LINE_EMPTY, m_redcarpet, 'redcarpet'))
 
         # Test newline.
         self.assertIsNone(
-            api.get_atx_heading(H1 + LINE_NEWLINE, 6, 'redcarpet'))
+            api.get_atx_heading(H1 + LINE_NEWLINE, m_redcarpet, 'redcarpet'))
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + REDCARPET_LINE_FOO + LINE_NEWLINE +
-                REDCARPET_LINE_FOO, 6, 'redcarpet'), (1, REDCARPET_LINE_FOO))
+                REDCARPET_LINE_FOO, m_redcarpet, 'redcarpet'),
+            (1, REDCARPET_LINE_FOO))
         self.assertIsNone(
-            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, 6, 'redcarpet'))
+            api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, m_redcarpet,
+                                'redcarpet'))
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + REDCARPET_LINE_FOO + LINE_CARRIAGE_RETURN +
-                REDCARPET_LINE_FOO, 6, 'redcarpet'),
+                REDCARPET_LINE_FOO, m_redcarpet, 'redcarpet'),
             (1,
              REDCARPET_LINE_FOO + LINE_CARRIAGE_RETURN + REDCARPET_LINE_FOO))
 
@@ -889,6 +912,27 @@ class TestApi(unittest.TestCase):
 
         self.assertFalse(
             api.is_closing_code_fence(TILDE3 + S1 + 'aaa', TILDE3))
+
+    def test_build_indentation_list(self):
+        r"""TODO."""
+
+    def test_toc_renders_as_list(self):
+        r"""TODO."""
+        # github.
+        md_parser['github']['header']['max_levels'] = 6
+
+        # Base case.
+        indentation_list = api.build_indentation_list()
+        self.assertTrue(api.toc_renders_as_list(1, indentation_list))
+
+        # Generic case.
+        indentation_list = api.build_indentation_list()
+        self.assertFalse(
+            api.toc_renders_as_list(GENERIC_HEADER_TYPE_PREV,
+                                    indentation_list))
+
+        # redcarpet.
+        # TODO
 
 
 if __name__ == '__main__':
