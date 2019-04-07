@@ -335,11 +335,8 @@ def build_list_marker_log(parser: str = 'github',
          This function makes sense for ordered lists only.
     """
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
-        assert list_marker in md_parser['github']['list']['ordered'][
-            'closing_markers']
-    elif parser == 'redcarpet':
-        assert list_marker in md_parser['redcarpet']['list']['ordered'][
+            or parser == 'commonmarker' or parser == 'redcarpet'):
+        assert list_marker in md_parser[parser]['list']['ordered'][
             'closing_markers']
 
     list_marker_log = list()
@@ -410,19 +407,12 @@ def compute_toc_line_indentation_spaces(
     assert header_type_prev >= 0
     assert no_of_indentation_spaces_prev >= 0
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
+            or parser == 'commonmarker' or parser == 'redcarpet'):
         if ordered:
-            assert list_marker in md_parser['github']['list']['ordered'][
+            assert list_marker in md_parser[parser]['list']['ordered'][
                 'closing_markers']
         else:
-            assert list_marker in md_parser['github']['list']['unordered'][
-                'bullet_markers']
-    elif parser == 'redcarpet':
-        if ordered:
-            assert list_marker in md_parser['redcarpet']['list']['ordered'][
-                'closing_markers']
-        else:
-            assert list_marker in md_parser['redcarpet']['list']['unordered'][
+            assert list_marker in md_parser[parser]['list']['unordered'][
                 'bullet_markers']
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
@@ -520,19 +510,12 @@ def build_toc_line_without_indentation(header: dict,
     assert header['type'] >= 1
     assert index >= 1
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
+            or parser == 'commonmarker' or parser == 'redcarpet'):
         if ordered:
-            assert list_marker in md_parser['github']['list']['ordered'][
+            assert list_marker in md_parser[parser]['list']['ordered'][
                 'closing_markers']
         else:
-            assert list_marker in md_parser['github']['list']['unordered'][
-                'bullet_markers']
-    elif parser == 'redcarpet':
-        if ordered:
-            assert list_marker in md_parser['redcarpet']['list']['ordered'][
-                'closing_markers']
-        else:
-            assert list_marker in md_parser['redcarpet']['list']['unordered'][
+            assert list_marker in md_parser[parser]['list']['unordered'][
                 'bullet_markers']
 
     toc_line_no_indent = str()
@@ -1056,13 +1039,9 @@ def build_indentation_list(parser: str = 'github'):
     indentation_list = list()
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
-        for i in range(0, md_parser['github']['header']['max_levels']):
+            or parser == 'commonmarker' or parser == 'redcarpet'):
+        for i in range(0, md_parser[parser]['header']['max_levels']):
             indentation_list.append(False)
-
-    elif parser == 'redcarpet':
-        pass
-        # TODO
 
     return indentation_list
 
@@ -1084,15 +1063,15 @@ def toc_renders_as_list(
     """
     assert header_type_curr >= 1
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
+            or parser == 'commonmarker' or parser == 'redcarpet'):
         assert len(
-            indentation_list) == md_parser['github']['header']['max_levels']
+            indentation_list) == md_parser[parser]['header']['max_levels']
     for e in indentation_list:
         assert isinstance(e, bool)
 
     renders_as_list = True
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
+            or parser == 'commonmarker' or parser == 'redcarpet'):
         # Update with current information.
         indentation_list[header_type_curr - 1] = True
 
@@ -1109,10 +1088,6 @@ def toc_renders_as_list(
             i -= 1
         if i >= 0:
             renders_as_list = False
-
-    elif parser == 'redcarpet':
-        pass
-        # TODO
 
     return renders_as_list
 

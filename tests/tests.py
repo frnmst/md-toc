@@ -925,11 +925,19 @@ class TestApi(unittest.TestCase):
         indentation_list = api.build_indentation_list()
         self.assertTrue(api.toc_renders_as_list(1, indentation_list))
 
-        # Generic case.
+        # Generic cases.
         indentation_list = api.build_indentation_list()
         self.assertFalse(
             api.toc_renders_as_list(GENERIC_HEADER_TYPE_PREV,
                                     indentation_list))
+
+        indentation_list = api.build_indentation_list()
+        for i in range(0, md_parser['github']['header']['max_levels']):
+            self.assertTrue(api.toc_renders_as_list(i + 1, indentation_list))
+
+        indentation_list = api.build_indentation_list()
+        for i in range(md_parser['github']['header']['max_levels'], 1, -1):
+            self.assertFalse(api.toc_renders_as_list(i, indentation_list))
 
         # redcarpet.
         # TODO
