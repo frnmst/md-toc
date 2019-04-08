@@ -53,20 +53,15 @@ class CliToApi():
         elif args.unordered_list_marker is not None:
             list_marker = args.unordered_list_marker
         else:
-            if (args.parser == 'github' or args.parser == 'cmark'
-                    or args.parser == 'gitlab'
-                    or args.parser == 'commonmarker'):
-                list_marker = md_parser['github']['list']['unordered'][
-                    'default_marker']
-            if args.parser == 'redcarpet':
-                list_marker = md_parser['redcarpet']['list']['unordered'][
-                    'default_marker']
+            list_marker = md_parser[
+                args.parser]['list']['unordered']['default_marker']
 
         toc_struct = build_multiple_tocs(
             filenames=args.filename,
             ordered=ordered,
             no_links=args.no_links,
             no_indentation=args.no_indentation,
+            no_list_coherence=args.no_list_coherence,
             keep_header_levels=int(args.header_levels),
             parser=args.parser,
             list_marker=list_marker)
@@ -194,20 +189,20 @@ class CliInterface():
                                ['default_keep_levels'])
 
         parser.add_argument(
-            '-p',
-            '--in-place',
+            '-c',
+            '--no-list-coherence',
             action='store_true',
-            help='overwrite the input file')
-        parser.add_argument(
-            '-l',
-            '--no-links',
-            action='store_true',
-            help='avoids adding links to the corresponding content')
+            help='avoids checking for TOC list coherence')
         parser.add_argument(
             '-i',
             '--no-indentation',
             action='store_true',
-            help='avoids adding indentations to the corresponding content')
+            help='avoids adding indentations to the TOC')
+        parser.add_argument(
+            '-l',
+            '--no-links',
+            action='store_true',
+            help='avoids adding links to the TOC')
         parser.add_argument(
             '-m',
             '--toc-marker',
@@ -215,14 +210,18 @@ class CliInterface():
             help='set the string to be used as the marker for positioning the \
                   table of contents. Defaults to ' +
             common_defaults['toc_marker'])
-        parser.set_defaults(toc_marker=common_defaults['toc_marker'])
-
+        parser.add_argument(
+            '-p',
+            '--in-place',
+            action='store_true',
+            help='overwrite the input file')
         parser.add_argument(
             '-v',
             '--version',
             action='version',
             version=VERSION_NAME + ' ' + VERSION_NUMBER)
 
+        parser.set_defaults(toc_marker=common_defaults['toc_marker'])
         parser.set_defaults(func=CliToApi().write_toc)
 
         return parser

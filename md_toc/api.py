@@ -26,7 +26,8 @@ import curses.ascii
 import sys
 from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
                          GithubOverflowOrderedListMarker,
-                         StdinIsNotAFileToBeWritten)
+                         StdinIsNotAFileToBeWritten,
+                         TocDoesNotRenderAsCoherentList)
 from .constants import common_defaults
 from .constants import parser as md_parser
 
@@ -103,6 +104,7 @@ def build_toc(filename: str,
               ordered: bool = False,
               no_links: bool = False,
               no_indentation: bool = False,
+              no_list_coherence: bool = False,
               keep_header_levels: int = 3,
               parser: str = 'github',
               list_marker: str = '-') -> str:
@@ -150,6 +152,10 @@ def build_toc(filename: str,
     is_within_code_fence = False
     code_fence = None
     is_document_end = False
+    if no_indentation or no_list_coherence:
+        indentation_list = list()
+    else:
+        indentation_list = build_indentation_list(parser)
     while line:
         # Document ending detection.
         #
@@ -200,6 +206,10 @@ def build_toc(filename: str,
                 if no_indentation:
                     no_of_indentation_spaces_curr = 0
                 else:
+                    if not no_list_coherence:
+                        if not toc_renders_as_list(header_type_curr,
+                                                   indentation_list, parser):
+                            raise TocDoesNotRenderAsCoherentList
                     no_of_indentation_spaces_curr = compute_toc_line_indentation_spaces(
                         header_type_curr, header_type_prev,
                         no_of_indentation_spaces_prev, parser, ordered,
@@ -233,6 +243,7 @@ def build_multiple_tocs(filenames: list,
                         ordered: bool = False,
                         no_links: bool = False,
                         no_indentation: bool = False,
+                        no_list_coherence: bool = False,
                         keep_header_levels: int = 3,
                         parser: str = 'github',
                         list_marker: str = '-') -> list:
@@ -272,7 +283,8 @@ def build_multiple_tocs(filenames: list,
     while file_id < len(filenames):
         toc_struct.append(
             build_toc(filenames[file_id], ordered, no_links, no_indentation,
-                      keep_header_levels, parser, list_marker))
+                      no_list_coherence, keep_header_levels, parser,
+                      list_marker))
         file_id += 1
 
     return toc_struct
