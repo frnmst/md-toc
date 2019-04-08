@@ -3,8 +3,7 @@
 #
 # pre-commit
 #
-# Copyright (C) 2017-2018 frnmst (Franco Masotti) <franco.masotti@live.com>
-#                                            <franco.masotti@student.unife.it>
+# Copyright (C) 2017-2019 frnmst (Franco Masotti) <franco.masotti@live.com>
 #
 # This file is part of md-toc.
 #
@@ -23,10 +22,11 @@
 #
 
 make test && make pep && make doc
-
 if [ $? -ne 0 ]; then
     exit 1
 else
     exit 0
 fi
+git add .
+
 

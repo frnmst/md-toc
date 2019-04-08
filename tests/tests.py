@@ -923,13 +923,21 @@ class TestApi(unittest.TestCase):
 
         # Base case.
         indentation_list = api.build_indentation_list()
-        self.assertTrue(api.toc_renders_as_list(1, indentation_list))
+        self.assertTrue(
+            api.toc_renders_as_list(
+                GITHUB_BASE_RENDERS_AS_LIST_HEADER_TYPE_CURR,
+                indentation_list))
+        self.assertEqual(indentation_list,
+                         [True, False, False, False, False, False])
 
         # Generic cases.
         indentation_list = api.build_indentation_list()
         self.assertFalse(
-            api.toc_renders_as_list(GENERIC_HEADER_TYPE_PREV,
-                                    indentation_list))
+            api.toc_renders_as_list(
+                GITHUB_GENERIC_RENDERS_AS_LIST_HEADER_TYPE_CURR,
+                indentation_list))
+        self.assertEqual(indentation_list,
+                         [False, False, True, False, False, False])
 
         indentation_list = api.build_indentation_list()
         for i in range(0, md_parser['github']['header']['max_levels']):
@@ -938,7 +946,8 @@ class TestApi(unittest.TestCase):
                          [True, True, True, True, True, True])
 
         indentation_list = api.build_indentation_list()
-        for i in range(md_parser['github']['header']['max_levels'], 1, -1):
+        for i in range(md_parser['github']['header']['max_levels'],
+                       GITHUB_BASE_RENDERS_AS_LIST_HEADER_TYPE_CURR, -1):
             self.assertFalse(api.toc_renders_as_list(i, indentation_list))
         self.assertEqual(indentation_list,
                          [False, True, False, False, False, False])
