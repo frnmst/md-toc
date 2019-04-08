@@ -914,11 +914,11 @@ class TestApi(unittest.TestCase):
             api.is_closing_code_fence(TILDE3 + S1 + 'aaa', TILDE3))
 
     def test_build_indentation_list(self):
-        r"""TODO."""
+        r"""Test building of the indentation data structure."""
 
     def test_toc_renders_as_list(self):
-        r"""TODO."""
-        # github.
+        r"""Test if the TOC renders as a list the user intended."""
+        # github and redcarpet.
         md_parser['github']['header']['max_levels'] = 6
 
         # Base case.
@@ -934,13 +934,14 @@ class TestApi(unittest.TestCase):
         indentation_list = api.build_indentation_list()
         for i in range(0, md_parser['github']['header']['max_levels']):
             self.assertTrue(api.toc_renders_as_list(i + 1, indentation_list))
+        self.assertEqual(indentation_list,
+                         [True, True, True, True, True, True])
 
         indentation_list = api.build_indentation_list()
         for i in range(md_parser['github']['header']['max_levels'], 1, -1):
             self.assertFalse(api.toc_renders_as_list(i, indentation_list))
-
-        # redcarpet.
-        # TODO
+        self.assertEqual(indentation_list,
+                         [False, True, False, False, False, False])
 
 
 if __name__ == '__main__':

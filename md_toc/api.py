@@ -1077,7 +1077,7 @@ def toc_renders_as_list(
 
         # Reset next cells to False, as a detection mechanism.
         for i in range(header_type_curr,
-                       md_parser['github']['header']['max_levels'] - 1):
+                       md_parser['github']['header']['max_levels']):
             indentation_list[i] = False
 
         # Check for previous False cells. If there is a "hole" in the list
