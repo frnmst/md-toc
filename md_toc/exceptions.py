@@ -35,3 +35,7 @@ class GithubOverflowOrderedListMarker(Exception):
 
 class StdinIsNotAFileToBeWritten(Exception):
     """stdin cannot be written onto."""
+
+
+class TocDoesNotRenderAsCoherentList(Exception):
+    """TOC list indentations are either wrong or not what the user intended."""

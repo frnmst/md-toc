@@ -26,7 +26,8 @@ from .api import (
     compute_toc_line_indentation_spaces, build_toc_line_without_indentation,
     build_toc, build_multiple_tocs, write_string_on_file_between_markers,
     write_strings_on_files_between_markers, is_valid_code_fence_indent,
-    is_opening_code_fence, is_closing_code_fence)
+    is_opening_code_fence, is_closing_code_fence, build_indentation_list,
+    toc_renders_as_list)
 from .cli import (CliInterface)
 from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
                          GithubOverflowOrderedListMarker,
