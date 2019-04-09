@@ -152,9 +152,8 @@ def build_toc(filename: str,
     is_within_code_fence = False
     code_fence = None
     is_document_end = False
-    if no_indentation or no_list_coherence:
-        indentation_list = list()
-    else:
+    if not no_indentation and not no_list_coherence:
+        # if indentation and list coherence.
         indentation_list = build_indentation_list(parser)
     while line:
         # Document ending detection.
@@ -205,10 +204,12 @@ def build_toc(filename: str,
                 # Take care of list indentations.
                 if no_indentation:
                     no_of_indentation_spaces_curr = 0
+                    # TOC list coherence checks are not necessary
+                    # without indentation.
                 else:
                     if not no_list_coherence:
-                        if not toc_renders_as_list(header_type_curr,
-                                                   indentation_list, parser):
+                        if not toc_renders_as_coherent_list(
+                                header_type_curr, indentation_list, parser):
                             raise TocDoesNotRenderAsCoherentList
                     no_of_indentation_spaces_curr = compute_toc_line_indentation_spaces(
                         header_type_curr, header_type_prev,
@@ -1058,7 +1059,7 @@ def build_indentation_list(parser: str = 'github'):
     return indentation_list
 
 
-def toc_renders_as_list(
+def toc_renders_as_coherent_list(
         header_type_curr: int = 1,
         indentation_list: list = build_indentation_list('github'),
         parser: str = 'github') -> bool:
@@ -1094,7 +1095,7 @@ def toc_renders_as_list(
 
         # Check for previous False cells. If there is a "hole" in the list
         # it means that the TOC will have "wrong" indentation spaces, thus
-        # neither rendering as an HTML list nor as the user intended.
+        # either not rendering as an HTML list or not as the user intended.
         i = header_type_curr - 1
         while i >= 0 and indentation_list[i]:
             i -= 1
