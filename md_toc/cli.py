@@ -188,16 +188,18 @@ class CliInterface():
         redcarpet.set_defaults(header_levels=md_parser['redcarpet']['header']
                                ['default_keep_levels'])
 
-        parser.add_argument(
+        c_or_i = parser.add_mutually_exclusive_group()
+        c_or_i.add_argument(
             '-c',
             '--no-list-coherence',
             action='store_true',
             help='avoids checking for TOC list coherence')
-        parser.add_argument(
+        c_or_i.add_argument(
             '-i',
             '--no-indentation',
             action='store_true',
             help='avoids adding indentations to the TOC')
+
         parser.add_argument(
             '-l',
             '--no-links',
