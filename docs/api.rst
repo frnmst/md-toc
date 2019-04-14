@@ -27,6 +27,8 @@ output types.
 .. autofunction:: is_valid_code_fence_indent
 .. autofunction:: is_opening_code_fence
 .. autofunction:: is_closing_code_fence
+.. autofunction:: build_indentation_list
+.. autofunction:: toc_renders_as_coherent_list
 
 Exceptions
 ----------
