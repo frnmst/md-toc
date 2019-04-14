@@ -1047,7 +1047,7 @@ def build_indentation_list(parser: str = 'github'):
     :returns: indentation_list, a list that contains the state of
          indentations given a header type.
     :rtype: list
-    :raises: one of the built in exceptions
+    :raises: a built-in exception.
     """
     indentation_list = list()
 
@@ -1072,7 +1072,7 @@ def toc_renders_as_coherent_list(
     :type parser: str
     :returns: renders_as_list
     :rtype: bool
-    :raises: one of the built in exceptions
+    :raises: a built-in exception.
     """
     assert header_type_curr >= 1
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
