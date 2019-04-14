@@ -4,4 +4,4 @@ yapf==0.26.0
 alabaster==0.7.12
 Sphinx==1.8.4
 twine==1.13.0
-fpyutils==1.0.0
+fpyutils==1.0.1
