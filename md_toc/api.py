@@ -176,13 +176,11 @@ def build_toc(filename: str,
         if is_within_code_fence:
             is_within_code_fence = not is_closing_code_fence(
                 line, code_fence, is_document_end, parser)
-            line = f.readline()
         else:
             code_fence = is_opening_code_fence(line, parser)
             if code_fence is not None:
                 # Update the status of the next line.
                 is_within_code_fence = True
-                line = f.readline()
 
         if not is_within_code_fence or code_fence is None:
 
