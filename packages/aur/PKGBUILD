@@ -1,7 +1,7 @@
 # Maintainer: Franco Masotti <franco dot masotti at live dot com>
 # Contributor: Franco Masotti <franco dot masotti at live dot com>
 pkgname=python-md_toc
-pkgver=5.0.0
+pkgver=5.0.1
 pkgrel=1
 pkgdesc="Automatically generate a compliant table of contents for a markdown file to improve document readability"
 arch=('any')
