@@ -169,18 +169,27 @@ class TestApi(unittest.TestCase):
         # Unordered TOC. In this case there is no need to do specific tests
         # on the modified list marker log.
 
-        # First TOC line.
-        self.assertEqual(
-            api.compute_toc_line_indentation_spaces(
-                GENERIC_HEADER_TYPE_CURR, BASE_CASE_HEADER_TYPE_PREV, 0,
-                'github'), 0)
+        # 1. First TOC line.
+        log_1 = api.build_indentation_log('github', '-', False)
+        api.compute_toc_line_indentation_spaces(GENERIC_HEADER_TYPE_CURR,
+                                                BASE_CASE_HEADER_TYPE_PREV,
+                                                'github', False, '-', log_1)
+        self.assertEqual(log_1[GENERIC_HEADER_TYPE_CURR]['indentation spaces'],
+                         0)
 
-        # First TOC line with the incorrect number of indentation spaces.
-        self.assertEqual(
-            api.compute_toc_line_indentation_spaces(
-                GENERIC_HEADER_TYPE_CURR, BASE_CASE_HEADER_TYPE_PREV,
-                GENERIC_NUMBER_OF_INDENTATION_SPACES, 'github'), 0)
+        # 2. First TOC line with the incorrect number of indentation spaces.
+        log_2 = api.build_indentation_log('github', '-', False)
+        # FIXME:::
+        log_2[GENERIC_HEADER_TYPE_CURR][
+            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+        api.compute_toc_line_indentation_spaces(GENERIC_HEADER_TYPE_CURR,
+                                                BASE_CASE_HEADER_TYPE_PREV,
+                                                'github', False, '-', log_2)
+        self.assertEqual(log_2[GENERIC_HEADER_TYPE_CURR]['indentation spaces'],
+                         0)
 
+        # 3. A generic TOC line with no_of_indentation_spaces_prev=0.
+        """
         # A generic TOC line with no_of_indentation_spaces_prev=0.
         self.assertEqual(
             api.compute_toc_line_indentation_spaces(GENERIC_HEADER_TYPE_CURR,
@@ -328,6 +337,8 @@ class TestApi(unittest.TestCase):
                 GENERIC_HEADER_TYPE_PREV, GENERIC_HEADER_TYPE_CURR,
                 GENERIC_NUMBER_OF_INDENTATION_SPACES, 'redcarpet'),
             LIST_INDENTATION * (GENERIC_HEADER_TYPE_PREV - 1))
+
+        """
 
     def test_build_toc_line_without_indentation(self):
         r"""Test TOC line building for different types of inputs."""

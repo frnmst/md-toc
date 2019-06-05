@@ -137,24 +137,17 @@ def build_toc(filename: str,
     header_type_curr = 0
     header_type_prev = 0
     header_duplicate_counter = dict()
-    no_of_indentation_spaces_prev = 0
-    if ordered:
-        list_marker_log = build_list_marker_log(parser, list_marker)
     if filename == '-':
         f = sys.stdin
     else:
         f = open(filename, 'r')
     line = f.readline()
-    if ordered:
-        list_marker_log = build_list_marker_log(parser, list_marker)
-    else:
-        list_marker_log = list()
+    indentation_log = build_indentation_log(parser, list_marker, ordered)
+    if not no_indentation and not no_list_coherence:
+        indentation_list = build_indentation_list(parser)
     is_within_code_fence = False
     code_fence = None
     is_document_end = False
-    if not no_indentation and not no_list_coherence:
-        # if indentation and list coherence.
-        indentation_list = build_indentation_list(parser)
     while line:
         # Document ending detection.
         #
@@ -209,10 +202,12 @@ def build_toc(filename: str,
                         if not toc_renders_as_coherent_list(
                                 header_type_curr, indentation_list, parser):
                             raise TocDoesNotRenderAsCoherentList
-                    no_of_indentation_spaces_curr = compute_toc_line_indentation_spaces(
-                        header_type_curr, header_type_prev,
-                        no_of_indentation_spaces_prev, parser, ordered,
-                        list_marker, list_marker_log, index)
+
+                    compute_toc_line_indentation_spaces(
+                        header_type_curr, header_type_prev, parser, ordered,
+                        list_marker, indentation_log, index)
+                    no_of_indentation_spaces_curr = indentation_log[
+                        header_type_curr]['indentation spaces']
 
                 # Build a single TOC line.
                 toc_line_no_indent = build_toc_line_without_indentation(
@@ -223,7 +218,6 @@ def build_toc(filename: str,
                                       no_of_indentation_spaces_curr) + '\n'
 
                 header_type_prev = header_type_curr
-                no_of_indentation_spaces_prev = no_of_indentation_spaces_curr
 
             # endif
 
@@ -328,60 +322,64 @@ def increase_index_ordered_list(header_type_count: dict,
             raise GithubOverflowOrderedListMarker
 
 
-def build_list_marker_log(parser: str = 'github',
-                          list_marker: str = '.') -> list:
+def build_indentation_log(parser: str = 'github',
+                          list_marker: str = '-',
+                          ordered: bool = False) -> dict:
     r"""Create a data structure that holds list marker information.
 
     :parameter parser: decides rules on how compute indentations.
          Defaults to ``github``.
     :parameter list_marker: a string that contains some of the first
          characters of the list element. Defaults to ``-``.
+    :paramerer ordered: sets the index parameter of indentation_log to 0
+         instead of an empty string.
     :type parser: str
     :type list_marker: str
-    :returns: list_marker_log, the data structure.
-    :rtype: list
+    :type ordered: bool
+    :returns: indentation_log, the data structure.
+    :rtype: dict
     :raises: a built-in exception.
-
-    .. note::
-         This function makes sense for ordered lists only.
     """
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker' or parser == 'redcarpet'):
-        assert list_marker in md_parser[parser]['list']['ordered'][
-            'closing_markers']
+        if ordered:
+            assert list_marker in md_parser[parser]['list']['ordered'][
+                'closing_markers']
+        else:
+            assert list_marker in md_parser[parser]['list']['unordered'][
+                'bullet_markers']
 
-    list_marker_log = list()
+    indentation_log = dict()
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
-        list_marker_log = [
-            str(md_parser['github']['list']['ordered']['min_marker_number']) +
-            list_marker
-            for i in range(0, md_parser['github']['header']['max_levels'])
-        ]
+            or parser == 'commonmarker' or parser == 'redcarpet'):
+        # assert list_marker in md_parser[parser]['list']['ordered']['closing_markers']
+        for i in range(1, md_parser['github']['header']['max_levels'] + 1):
+            indentation_log[i] = {
+                'index': 0,
+                'list marker': list_marker,
+                'indentation spaces': 0
+            }
 
     elif parser == 'redcarpet':
         pass
 
-    return list_marker_log
+    return indentation_log
 
 
 def compute_toc_line_indentation_spaces(
         header_type_curr: int = 1,
         header_type_prev: int = 0,
-        no_of_indentation_spaces_prev: int = 0,
         parser: str = 'github',
         ordered: bool = False,
         list_marker: str = '-',
-        list_marker_log: list = build_list_marker_log('github', '.'),
-        index: int = 1) -> int:
+        indentation_log: dict = build_indentation_log('github', '-', False),
+        index: int = 1):
     r"""Compute the number of indentation spaces for the TOC list element.
 
     :parameter header_type_curr: the current type of header (h[1-Inf]).
          Defaults to ``1``.
     :parameter header_type_prev: the previous type of header (h[1-Inf]).
-         Defaults to ``0``.
-    :parameter no_of_indentation_spaces_prev: the number of previous indentation spaces.
          Defaults to ``0``.
     :parameter parser: decides rules on how compute indentations.
          Defaults to ``github``.
@@ -391,32 +389,24 @@ def compute_toc_line_indentation_spaces(
     :parameter list_marker: a string that contains some of the first
          characters of the list element.
          Defaults to ``-``.
-    :parameter list_marker_log: a data structure that holds list marker
+    :parameter indentation_log: a data structure that holds list marker
          information for ordered lists.
-         Defaults to ``build_list_marker_log('github', '.')``.
+         Defaults to ``build_indentation_log('github', '.')``.
     :parameter index: a number that will be used as list id in case of an
          ordered table of contents. Defaults to ``1``.
     :type header_type_curr: int
     :type header_type_prev: int
-    :type no_of_indentation_spaces_prev: int
     :type parser: str
     :type ordered: bool
     :type list_marker: str
-    :type list_marker_log: list
+    :type indentation_log: dict
     :type index: int
-    :returns: no_of_indentation_spaces_curr, the number of indentation spaces
-         for the list element.
-    :rtype: int
+    :returns: None
+    :rtype: None
     :raises: a built-in exception.
-
-    .. note::
-         Please note that this function
-         assumes that no_of_indentation_spaces_prev contains the correct
-         number of spaces.
     """
     assert header_type_curr >= 1
     assert header_type_prev >= 0
-    assert no_of_indentation_spaces_prev >= 0
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker' or parser == 'redcarpet'):
         if ordered:
@@ -427,58 +417,58 @@ def compute_toc_line_indentation_spaces(
                 'bullet_markers']
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
-        if ordered:
-            assert len(
-                list_marker_log) == md_parser['github']['header']['max_levels']
-            for e in list_marker_log:
-                assert isinstance(e, str)
+        assert len(
+            indentation_log) == md_parser['github']['header']['max_levels']
+        for i in range(1, md_parser['github']['header']['max_levels'] + 1):
+            assert 'index' in indentation_log[i]
+            assert 'list marker' in indentation_log[i]
+            assert 'indentation spaces' in indentation_log[i]
+            assert isinstance(indentation_log[i]['list marker'], str)
+            assert isinstance(indentation_log[i]['index'], int)
+            assert isinstance(indentation_log[i]['indentation spaces'], int)
     assert index >= 1
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
+        if ordered:
+            if header_type_prev == 0:
+                index_length = 0
+            else:
+                index_length = len(
+                    str(indentation_log[header_type_prev]['index']))
+        else:
+            index_length = 0
+
         if header_type_prev == 0:
             # Base case for the first toc line.
-            no_of_indentation_spaces_curr = 0
-        elif header_type_curr == header_type_prev:
-            # Base case for same indentation.
-            no_of_indentation_spaces_curr = no_of_indentation_spaces_prev
-        else:
-            if ordered:
-                list_marker_prev = str(list_marker_log[header_type_curr - 1])
-            else:
-                # list_marker for unordered lists will always be 1 character.
-                list_marker_prev = list_marker
+            indentation_log[header_type_curr]['indentation spaces'] = 0
+        elif header_type_curr > header_type_prev:
+            # More indentation.
+            indentation_log[header_type_curr]['indentation spaces'] = (
+                indentation_log[header_type_prev]['indentation spaces'] + len(
+                    indentation_log[header_type_prev]['list marker']) +
+                index_length + len(' '))
+        elif header_type_curr < header_type_prev:
+            # Less indentation. Since we went "back" we must reset
+            # all the sublists in the data structure. The indentation spaces are the ones
+            # computed before.
+            for i in range(header_type_curr + 1,
+                           md_parser['github']['header']['max_levels'] + 1):
+                indentation_log[i]['index'] = md_parser['github']['list'][
+                    'ordered']['min_marker_number']
+                indentation_log[i]['indentation spaces'] = 0
+                indentation_log[i]['list marker'] = list_marker
+        # And finally, in case of same indentation we have: header_type_curr = header_type_prev
+        # so indentation_log[header_type_curr]['indentation spaces'] = indentation_log[header_type_prev]['indentation spaces']
+        # which is an identity.
 
-            # Generic cases.
-            if header_type_curr > header_type_prev:
-                # More indentation.
-                no_of_indentation_spaces_curr = (
-                    no_of_indentation_spaces_prev + len(list_marker_prev) +
-                    len(' '))
-            elif header_type_curr < header_type_prev:
-                # Less indentation.
-                no_of_indentation_spaces_curr = (
-                    no_of_indentation_spaces_prev -
-                    (len(list_marker_prev) + len(' ')))
-
-            # Reset older nested list indices. If this is not performed then
-            # future nested ordered lists will rely on incorrect data to
-            # compute indentations.
-            if ordered:
-                for i in range((header_type_curr - 1) + 1,
-                               md_parser['github']['header']['max_levels']):
-                    list_marker_log[i] = str(
-                        md_parser['github']['list']['ordered']
-                        ['min_marker_number']) + list_marker
-
-        # Update the data structure.
         if ordered:
-            list_marker_log[header_type_curr - 1] = str(index) + list_marker
+            indentation_log[header_type_curr]['index'] = index
+        indentation_log[header_type_curr]['list_marker'] = list_marker
 
     elif parser == 'redcarpet':
-        no_of_indentation_spaces_curr = 4 * (header_type_curr - 1)
-
-    return no_of_indentation_spaces_curr
+        indentation_log[header_type_curr]['indentation spaces'] = 4 * (
+            header_type_curr - 1)
 
 
 def build_toc_line_without_indentation(header: dict,
