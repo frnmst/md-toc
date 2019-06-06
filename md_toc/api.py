@@ -132,6 +132,8 @@ def build_toc(filename: str,
     :type no_indentation: bool
     :type keep_header_levels: int
     :type parser: str
+    :type list_marker: str
+    :type skip_lines: int
     :returns: toc, the corresponding table of contents of the file.
     :rtype: str
     :raises: a built-in exception.
