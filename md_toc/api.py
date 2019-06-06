@@ -353,6 +353,7 @@ def build_indentation_log(parser: str = 'github',
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker' or parser == 'redcarpet'):
+        # FIXME
         # assert list_marker in md_parser[parser]['list']['ordered']['closing_markers']
         for i in range(1, md_parser['github']['header']['max_levels'] + 1):
             indentation_log[i] = {
