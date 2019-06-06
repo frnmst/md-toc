@@ -123,9 +123,9 @@ def build_toc(filename: str,
          Defaults to ``3``.
     :parameter parser: decides rules on how to generate anchor links.
          Defaults to ``github``.
-    :parameter skip_lines: the number of lines to be skipped from 
-        the start of file before parsing for table of contents.
-        Defaults to ``0```.
+    :parameter skip_lines: the number of lines to be skipped from
+         the start of file before parsing for table of contents.
+         Defaults to ``0```.
     :type filename: str
     :type ordered: bool
     :type no_links: bool
@@ -148,7 +148,7 @@ def build_toc(filename: str,
         f = sys.stdin
     else:
         f = open(filename, 'r')
-        # Skip initial lines from parsing if configured
+        # Skip initial lines from parsing if configured.
         if skip_lines > 0:
             for i in range(skip_lines):
                 next(f)
