@@ -107,7 +107,8 @@ def build_toc(filename: str,
               no_list_coherence: bool = False,
               keep_header_levels: int = 3,
               parser: str = 'github',
-              list_marker: str = '-') -> str:
+              list_marker: str = '-',
+              skip_lines: int = 0) -> str:
     r"""Build the table of contents of a single file.
 
     :parameter filename: the file that needs to be read.
@@ -122,6 +123,9 @@ def build_toc(filename: str,
          Defaults to ``3``.
     :parameter parser: decides rules on how to generate anchor links.
          Defaults to ``github``.
+    :parameter skip_lines: the number of lines to be skipped from 
+        the start of file before parsing for table of contents.
+        Defaults to ``0```.
     :type filename: str
     :type ordered: bool
     :type no_links: bool
@@ -144,6 +148,10 @@ def build_toc(filename: str,
         f = sys.stdin
     else:
         f = open(filename, 'r')
+        # Skip initial lines from parsing if configured
+        if skip_lines > 0:
+            for i in range(skip_lines):
+                next(f)
     line = f.readline()
     if ordered:
         list_marker_log = build_list_marker_log(parser, list_marker)
