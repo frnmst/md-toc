@@ -142,7 +142,7 @@ def build_toc(filename: str,
     else:
         f = open(filename, 'r')
     line = f.readline()
-    indentation_log = build_indentation_log(parser, list_marker, ordered)
+    indentation_log = build_indentation_log(parser, list_marker)
     if not no_indentation and not no_list_coherence:
         indentation_list = build_indentation_list(parser)
     is_within_code_fence = False
@@ -323,43 +323,34 @@ def increase_index_ordered_list(header_type_count: dict,
 
 
 def build_indentation_log(parser: str = 'github',
-                          list_marker: str = '-',
-                          ordered: bool = False) -> dict:
+                          list_marker: str = '-') -> dict:
     r"""Create a data structure that holds list marker information.
 
     :parameter parser: decides rules on how compute indentations.
          Defaults to ``github``.
     :parameter list_marker: a string that contains some of the first
          characters of the list element. Defaults to ``-``.
-    :paramerer ordered: sets the index parameter of indentation_log to 0
-         instead of an empty string.
     :type parser: str
     :type list_marker: str
-    :type ordered: bool
     :returns: indentation_log, the data structure.
     :rtype: dict
     :raises: a built-in exception.
-    """
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker' or parser == 'redcarpet'):
-        if ordered:
-            assert list_marker in md_parser[parser]['list']['ordered'][
-                'closing_markers']
-        else:
-            assert list_marker in md_parser[parser]['list']['unordered'][
-                'bullet_markers']
 
+    .. warning: this function does not make distinctions between ordered and unordered
+         TOCs.
+    """
     indentation_log = dict()
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker' or parser == 'redcarpet'):
-        # FIXME
-        # assert list_marker in md_parser[parser]['list']['ordered']['closing_markers']
         for i in range(1, md_parser['github']['header']['max_levels'] + 1):
             indentation_log[i] = {
-                'index': 0,
-                'list marker': list_marker,
-                'indentation spaces': 0
+                'index':
+                md_parser['github']['list']['ordered']['min_marker_number'],
+                'list marker':
+                list_marker,
+                'indentation spaces':
+                0
             }
 
     elif parser == 'redcarpet':
@@ -374,7 +365,7 @@ def compute_toc_line_indentation_spaces(
         parser: str = 'github',
         ordered: bool = False,
         list_marker: str = '-',
-        indentation_log: dict = build_indentation_log('github', '-', False),
+        indentation_log: dict = build_indentation_log('github', '-'),
         index: int = 1):
     r"""Compute the number of indentation spaces for the TOC list element.
 
@@ -580,8 +571,8 @@ def build_anchor_link(header_text_trimmed: str,
     :raises: a built-in exception.
 
     .. note::
-        The licenses of each markdown parser algorithm are reported on
-        the 'Markdown spec' documentation page.
+         The licenses of each markdown parser algorithm are reported on
+         the 'Markdown spec' documentation page.
     """
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):

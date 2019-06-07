@@ -162,13 +162,22 @@ class TestApi(unittest.TestCase):
         """
 
     def _test_helper_assert_compute_toc_line_indentation_spaces(
-            self, log, header_type_curr, header_type_prev,
+            self, parser, log, header_type_curr, header_type_prev,
             expected_indentation_spaces, expected_index, expected_list_marker):
         self.assertEqual(log[header_type_curr]['indentation spaces'],
                          expected_indentation_spaces)
         self.assertEqual(log[header_type_curr]['index'], expected_index)
         self.assertEqual(log[header_type_curr]['list marker'],
                          expected_list_marker)
+        if parser == 'github':
+            if header_type_curr < header_type_prev:
+                for i in range(
+                        header_type_curr + 1,
+                        md_parser['github']['header']['max_levels'] + 1):
+                    self.assertEqual(log[i]['index'], 0)
+                    self.assertEqual(log[i]['indentation spaces'], 0)
+                    self.assertEqual(log[i]['list marker'],
+                                     expected_list_marker)
 
     def test_compute_toc_line_indentation_spaces(self):
         r"""Test that the TOC list indentation spaces are computed correctly."""
@@ -178,140 +187,132 @@ class TestApi(unittest.TestCase):
         # Unordered TOC.
 
         # 1. First TOC line.
-        log_1 = api.build_indentation_log('github', '-', False)
+        log_1 = api.build_indentation_log('github', '-')
         api.compute_toc_line_indentation_spaces(GENERIC_HEADER_TYPE_CURR,
                                                 BASE_CASE_HEADER_TYPE_PREV,
                                                 'github', False, '-', log_1)
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            log_1, GENERIC_HEADER_TYPE_CURR, BASE_CASE_HEADER_TYPE_PREV, 0, 0,
-            '-')
+            'github', log_1, GENERIC_HEADER_TYPE_CURR,
+            BASE_CASE_HEADER_TYPE_PREV, 0, 0, '-')
 
         # 2. First TOC line with the incorrect number of indentation spaces.
-        log_2 = api.build_indentation_log('github', '-', False)
+        log_2 = api.build_indentation_log('github', '-')
         log_2[GENERIC_HEADER_TYPE_CURR][
             'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(GENERIC_HEADER_TYPE_CURR,
                                                 BASE_CASE_HEADER_TYPE_PREV,
                                                 'github', False, '-', log_2)
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            log_2, GENERIC_HEADER_TYPE_CURR, BASE_CASE_HEADER_TYPE_PREV, 0, 0,
-            '-')
+            'github', log_2, GENERIC_HEADER_TYPE_CURR,
+            BASE_CASE_HEADER_TYPE_PREV, 0, 0, '-')
 
         # 3. A generic TOC line with number of previous indentation spaces = 0.
-        log_3 = api.build_indentation_log('github', '-', False)
+        log_3 = api.build_indentation_log('github', '-')
         log_3[GENERIC_HEADER_TYPE_CURR]['indentation spaces'] = 0
         api.compute_toc_line_indentation_spaces(GENERIC_HEADER_TYPE_CURR,
                                                 GENERIC_HEADER_TYPE_PREV,
                                                 'github', False, '-', log_3)
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            log_3, GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_PREV,
+            'github', log_3, GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_PREV,
             len(UNORDERED_LIST_SYMBOL) + len(S1), 0, '-')
 
         # 4. Base case same indentation.
-        log_4 = api.build_indentation_log('github', '-', False)
+        log_4 = api.build_indentation_log('github', '-')
         log_4[GENERIC_HEADER_TYPE_CURR][
             'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(GENERIC_HEADER_TYPE_CURR,
                                                 GENERIC_HEADER_TYPE_CURR,
                                                 'github', False, '-', log_4)
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            log_4, GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_CURR,
-            GENERIC_NUMBER_OF_INDENTATION_SPACES, 0, '-')
+            'github', log_4, GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_CURR, GENERIC_NUMBER_OF_INDENTATION_SPACES, 0,
+            '-')
 
         # 5. Generic case more indentation.
-        log_5 = api.build_indentation_log('github', '-', False)
+        log_5 = api.build_indentation_log('github', '-')
         log_5[GENERIC_HEADER_TYPE_PREV][
             'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(GENERIC_HEADER_TYPE_CURR,
                                                 GENERIC_HEADER_TYPE_PREV,
                                                 'github', False, '-', log_5)
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            log_5, GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_PREV,
-            GENERIC_NUMBER_OF_INDENTATION_SPACES + len(UNORDERED_LIST_SYMBOL) +
-            len(S1), 0, '-')
+            'github', log_5, GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_PREV, GENERIC_NUMBER_OF_INDENTATION_SPACES +
+            len(UNORDERED_LIST_SYMBOL) + len(S1), 0, '-')
 
         # 6. Generic case less indentation.
         # Note: the parameters GENERIC_HEADER_TYPE_PREV and GENERIC_HEADER_TYPE_CURR
         #       are inverted as the api.compute_toc_line_indentation_spaces
         #       function input, in respect to the usual positions.
-        log_6 = api.build_indentation_log('github', '-', False)
+        log_6 = api.build_indentation_log('github', '-')
         log_6[GENERIC_HEADER_TYPE_PREV][
             'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(GENERIC_HEADER_TYPE_PREV,
                                                 GENERIC_HEADER_TYPE_CURR,
                                                 'github', False, '-', log_6)
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            log_6, GENERIC_HEADER_TYPE_PREV, GENERIC_HEADER_TYPE_CURR,
-            GENERIC_NUMBER_OF_INDENTATION_SPACES, 0, '-')
-        """
+            'github', log_6, GENERIC_HEADER_TYPE_PREV,
+            GENERIC_HEADER_TYPE_CURR, GENERIC_NUMBER_OF_INDENTATION_SPACES, 0,
+            '-')
 
         # Ordered TOC.
 
-        # First TOC line.
-        list_marker_log = ['0.', '0.', '0.', '0.', '0.', '0.']
-        self.assertEqual(
-            api.compute_toc_line_indentation_spaces(
-                GENERIC_HEADER_TYPE_CURR,
-                BASE_CASE_HEADER_TYPE_PREV,
-                0,
-                'github',
-                ordered=True,
-                list_marker='.',
-                list_marker_log=list_marker_log,
-                index=GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX), 0)
-        self.assertEqual(list_marker_log,
-                         ['0.', '0.', '0.', '0.', '0.', '1000.'])
+        # 7. First TOC line.
+        log_7 = api.build_indentation_log('github', '.')
+        log_7[GENERIC_HEADER_TYPE_CURR]['indentation spaces'] = 0
+        api.compute_toc_line_indentation_spaces(
+            GENERIC_HEADER_TYPE_CURR, BASE_CASE_HEADER_TYPE_PREV, 'github',
+            True, '.', log_7, GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX)
+        self._test_helper_assert_compute_toc_line_indentation_spaces(
+            'github', log_7, GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_PREV, 0,
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX, '.')
 
-        # First TOC line with the incorrect number of indentation spaces.
-        list_marker_log = ['0.', '0.', '0.', '0.', '0.', '0.']
-        self.assertEqual(
-            api.compute_toc_line_indentation_spaces(
-                GENERIC_HEADER_TYPE_CURR,
-                BASE_CASE_HEADER_TYPE_PREV,
-                GENERIC_NUMBER_OF_INDENTATION_SPACES,
-                'github',
-                ordered=True,
-                list_marker='.',
-                list_marker_log=list_marker_log,
-                index=GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX), 0)
-        self.assertEqual(list_marker_log,
-                         ['0.', '0.', '0.', '0.', '0.', '1000.'])
+        # 8. First TOC line with the incorrect number of indentation spaces.
+        log_8 = api.build_indentation_log('github', '.')
+        log_8[GENERIC_HEADER_TYPE_CURR][
+            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+        api.compute_toc_line_indentation_spaces(
+            GENERIC_HEADER_TYPE_CURR, BASE_CASE_HEADER_TYPE_PREV, 'github',
+            True, '.', log_8, GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX)
+        self._test_helper_assert_compute_toc_line_indentation_spaces(
+            'github', log_8, GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_PREV, 0,
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX, '.')
 
-        # A generic TOC line with no_of_indentation_spaces_prev=0.
-        list_marker_log = ['998.', '999.', '1001.', '0.', '0.', '0.']
-        list_marker_log_cpy = list_marker_log.copy()
-        self.assertEqual(
-            api.compute_toc_line_indentation_spaces(
-                GENERIC_HEADER_TYPE_CURR,
-                GENERIC_HEADER_TYPE_PREV,
-                0,
-                'github',
-                ordered=True,
-                list_marker='.',
-                list_marker_log=list_marker_log,
-                index=GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX),
-            len(list_marker_log_cpy[GENERIC_HEADER_TYPE_CURR - 1]) + len(S1))
-        self.assertEqual(list_marker_log,
-                         ['998.', '999.', '1001.', '0.', '0.', '1000.'])
+        # 9. A generic TOC line with no_of_indentation_spaces_prev=0.
+        log_9 = api.build_indentation_log('github', '.')
+        log_9[1]['index'] = 998
+        log_9[2]['index'] = 999
+        log_9[3]['index'] = 1001
+        expected_indentation_spaces = len(
+            str(log_9[GENERIC_HEADER_TYPE_PREV]['index'])) + len('.') + len(S1)
+        api.compute_toc_line_indentation_spaces(
+            GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_PREV, 'github', True,
+            '.', log_9, GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX)
+        self._test_helper_assert_compute_toc_line_indentation_spaces(
+            'github', log_9, GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_PREV, expected_indentation_spaces,
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX, '.')
 
-        # Another base case.
-        list_marker_log = ['998.', '999.', '1001.', '0.', '0.', '0.']
-        list_marker_log_cpy = list_marker_log.copy()
-        self.assertEqual(
-            api.compute_toc_line_indentation_spaces(
-                GENERIC_HEADER_TYPE_CURR,
-                GENERIC_HEADER_TYPE_CURR,
-                GENERIC_NUMBER_OF_INDENTATION_SPACES,
-                'github',
-                ordered=True,
-                list_marker='.',
-                list_marker_log=list_marker_log,
-                index=GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX),
-            GENERIC_NUMBER_OF_INDENTATION_SPACES)
-        self.assertEqual(list_marker_log,
-                         ['998.', '999.', '1001.', '0.', '0.', '1000.'])
+        # 10. Another base case.
+        log_10 = api.build_indentation_log('github', '.')
+        log_10[1]['index'] = 998
+        log_10[2]['index'] = 999
+        log_10[3]['index'] = 1001
+        log_10[GENERIC_HEADER_TYPE_CURR][
+            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+        api.compute_toc_line_indentation_spaces(
+            GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_CURR, 'github', True,
+            '.', log_10, GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX)
+        self._test_helper_assert_compute_toc_line_indentation_spaces(
+            'github', log_10, GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_CURR, GENERIC_NUMBER_OF_INDENTATION_SPACES,
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX, '.')
 
-        # Generic case more indentation.
+        # 11. Generic case more indentation.
+        """
         list_marker_log = ['998.', '999.', '1001.', '0.', '0.', '0.']
         list_marker_log_cpy = list_marker_log.copy()
         self.assertEqual(
@@ -348,9 +349,11 @@ class TestApi(unittest.TestCase):
         self.assertEqual(list_marker_log,
                          ['998.', '1000.', '0.', '0.', '0.', '0.'])
 
+        """
+
         # redcarpet.
         md_parser['redcarpet']['header']['max_levels'] = 6
-
+        """
         self.assertEqual(
             api.compute_toc_line_indentation_spaces(
                 GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_PREV,
