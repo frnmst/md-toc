@@ -67,6 +67,8 @@ parser['commonmarker'] = parser['github']
 
 # redcarpet.
 parser['redcarpet']['list']['ordered'] = {
+    # FIXME
+    'min marker number': 0,
     'closing markers': ['.'],
     'default closing marker': '.'
 }

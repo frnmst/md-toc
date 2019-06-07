@@ -341,20 +341,12 @@ def build_indentation_log(parser: str = 'github',
     """
     indentation_log = dict()
 
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker' or parser == 'redcarpet'):
-        for i in range(1, md_parser['github']['header']['max levels'] + 1):
-            indentation_log[i] = {
-                'index':
-                md_parser['github']['list']['ordered']['min marker number'],
-                'list marker':
-                list_marker,
-                'indentation spaces':
-                0
-            }
-
-    elif parser == 'redcarpet':
-        pass
+    for i in range(1, md_parser[parser]['header']['max levels'] + 1):
+        indentation_log[i] = {
+            'index': md_parser[parser]['list']['ordered']['min marker number'],
+            'list marker': list_marker,
+            'indentation spaces': 0
+        }
 
     return indentation_log
 
