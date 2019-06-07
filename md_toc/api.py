@@ -142,9 +142,9 @@ def build_toc(filename: str,
     else:
         f = open(filename, 'r')
     line = f.readline()
-    indentation_log = build_indentation_log(parser, list_marker)
+    indentation_log = init_indentation_log(parser, list_marker)
     if not no_indentation and not no_list_coherence:
-        indentation_list = build_indentation_list(parser)
+        indentation_list = init_indentation_status_list(parser)
     is_within_code_fence = False
     code_fence = None
     is_document_end = False
@@ -322,8 +322,8 @@ def increase_index_ordered_list(header_type_count: dict,
             raise GithubOverflowOrderedListMarker
 
 
-def build_indentation_log(parser: str = 'github',
-                          list_marker: str = '-') -> dict:
+def init_indentation_log(parser: str = 'github',
+                         list_marker: str = '-') -> dict:
     r"""Create a data structure that holds list marker information.
 
     :parameter parser: decides rules on how compute indentations.
@@ -339,8 +339,9 @@ def build_indentation_log(parser: str = 'github',
     .. warning: this function does not make distinctions between ordered and unordered
          TOCs.
     """
-    indentation_log = dict()
+    assert parser in md_parser
 
+    indentation_log = dict()
     for i in range(1, md_parser[parser]['header']['max levels'] + 1):
         indentation_log[i] = {
             'index': md_parser[parser]['list']['ordered']['min marker number'],
@@ -357,7 +358,7 @@ def compute_toc_line_indentation_spaces(
         parser: str = 'github',
         ordered: bool = False,
         list_marker: str = '-',
-        indentation_log: dict = build_indentation_log('github', '-'),
+        indentation_log: dict = init_indentation_log('github', '-'),
         index: int = 1):
     r"""Compute the number of indentation spaces for the TOC list element.
 
@@ -375,7 +376,7 @@ def compute_toc_line_indentation_spaces(
          Defaults to ``-``.
     :parameter indentation_log: a data structure that holds list marker
          information for ordered lists.
-         Defaults to ``build_indentation_log('github', '.')``.
+         Defaults to ``init_indentation_log('github', '.')``.
     :parameter index: a number that will be used as list id in case of an
          ordered table of contents. Defaults to ``1``.
     :type header_type_curr: int
@@ -1010,7 +1011,7 @@ def is_closing_code_fence(line: str,
         return False
 
 
-def build_indentation_list(parser: str = 'github'):
+def init_indentation_status_list(parser: str = 'github'):
     r"""Create a data structure that holds the state of indentations.
 
     :parameter parser: decides the length of the list.
@@ -1033,7 +1034,7 @@ def build_indentation_list(parser: str = 'github'):
 
 def toc_renders_as_coherent_list(
         header_type_curr: int = 1,
-        indentation_list: list = build_indentation_list('github'),
+        indentation_list: list = init_indentation_status_list('github'),
         parser: str = 'github') -> bool:
     r"""Check if the TOC will render as a working list.
 

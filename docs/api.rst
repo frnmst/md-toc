@@ -21,13 +21,13 @@ output types.
 .. autofunction:: build_multiple_tocs
 .. autofunction:: write_string_on_file_between_markers
 .. autofunction:: write_strings_on_files_between_markers
-.. autofunction:: build_list_marker_log
+.. autofunction:: init_indentation_log
 .. autofunction:: compute_toc_line_indentation_spaces
 .. autofunction:: build_toc_line_without_indentation
 .. autofunction:: is_valid_code_fence_indent
 .. autofunction:: is_opening_code_fence
 .. autofunction:: is_closing_code_fence
-.. autofunction:: build_indentation_list
+.. autofunction:: init_indentation_status_list
 .. autofunction:: toc_renders_as_coherent_list
 
 Exceptions

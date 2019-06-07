@@ -22,11 +22,11 @@
 
 from .api import (
     get_md_header, get_atx_heading, build_toc_line,
-    increase_index_ordered_list, build_anchor_link, build_indentation_log,
+    increase_index_ordered_list, build_anchor_link, init_indentation_log,
     compute_toc_line_indentation_spaces, build_toc_line_without_indentation,
     build_toc, build_multiple_tocs, write_string_on_file_between_markers,
     write_strings_on_files_between_markers, is_valid_code_fence_indent,
-    is_opening_code_fence, is_closing_code_fence, build_indentation_list,
+    is_opening_code_fence, is_closing_code_fence, init_indentation_status_list,
     toc_renders_as_coherent_list)
 from .cli import (CliInterface)
 from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
