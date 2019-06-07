@@ -45,7 +45,6 @@ class CliToApi():
 
     def write_toc(self, args):
         """Write the table of contents."""
-        # FIXME: Can this logic be moved into the create_parser function?
         ordered = False
         if args.ordered_list_marker is not None:
             list_marker = args.ordered_list_marker
@@ -54,7 +53,7 @@ class CliToApi():
             list_marker = args.unordered_list_marker
         else:
             list_marker = md_parser[
-                args.parser]['list']['unordered']['default_marker']
+                args.parser]['list']['unordered']['default marker']
 
         toc_struct = build_multiple_tocs(
             filenames=args.filename,
@@ -111,35 +110,35 @@ class CliInterface():
         megroup.add_argument(
             '-u',
             '--unordered-list-marker',
-            choices=md_parser['github']['list']['unordered']['bullet_markers'],
+            choices=md_parser['github']['list']['unordered']['bullet markers'],
             nargs='?',
-            const=md_parser['github']['list']['unordered']['default_marker'],
+            const=md_parser['github']['list']['unordered']['default marker'],
             help='set the marker and enables unordered list. Defaults to ' +
-            md_parser['github']['list']['unordered']['default_marker'])
+            md_parser['github']['list']['unordered']['default marker'])
         megroup.add_argument(
             '-o',
             '--ordered-list-marker',
-            choices=md_parser['github']['list']['ordered']['closing_markers'],
+            choices=md_parser['github']['list']['ordered']['closing markers'],
             nargs='?',
             const=md_parser['github']['list']['ordered']
-            ['default_closing_marker'],
+            ['default closing marker'],
             help='set the marker and enables ordered lists. Defaults to ' +
-            md_parser['github']['list']['ordered']['default_closing_marker'])
+            md_parser['github']['list']['ordered']['default closing marker'])
         github.add_argument(
             '-l',
             '--header-levels',
             choices=[
                 str(i)
-                for i in range(1, md_parser['github']['header']['max_levels'] +
+                for i in range(1, md_parser['github']['header']['max levels'] +
                                1)
             ],
             nargs='?',
-            const=str(md_parser['github']['header']['default_keep_levels']),
+            const=str(md_parser['github']['header']['default keep levels']),
             help='set the maximum level of headers to be considered as part \
                   of the TOC. Defaults to ' + str(
-                md_parser['github']['header']['default_keep_levels']))
+                md_parser['github']['header']['default keep levels']))
         github.set_defaults(
-            header_levels=md_parser['github']['header']['default_keep_levels'])
+            header_levels=md_parser['github']['header']['default keep levels'])
 
         # Redcarpet.
         redcarpet = subparsers.add_parser(
@@ -156,37 +155,37 @@ class CliInterface():
             '-u',
             '--unordered-list-marker',
             choices=md_parser['redcarpet']['list']['unordered']
-            ['bullet_markers'],
+            ['bullet markers'],
             nargs='?',
             const=md_parser['redcarpet']['list']['unordered']
-            ['default_marker'],
+            ['default marker'],
             help='set the marker and enables unordered list. Defaults to ' +
-            md_parser['redcarpet']['list']['unordered']['default_marker'])
+            md_parser['redcarpet']['list']['unordered']['default marker'])
         megroup.add_argument(
             '-o',
             '--ordered-list-marker',
             choices=md_parser['redcarpet']['list']['ordered']
-            ['closing_markers'],
+            ['closing markers'],
             nargs='?',
             const=md_parser['redcarpet']['list']['ordered']
-            ['default_closing_marker'],
+            ['default closing marker'],
             help='set the marker and enables ordered lists. Defaults to ' +
-            md_parser['redcarpet']['list']['ordered']['default_closing_marker']
+            md_parser['redcarpet']['list']['ordered']['default closing marker']
         )
         redcarpet.add_argument(
             '-l',
             '--header-levels',
             choices=[
                 str(i) for i in range(
-                    1, md_parser['redcarpet']['header']['max_levels'] + 1)
+                    1, md_parser['redcarpet']['header']['max levels'] + 1)
             ],
             nargs='?',
-            const=str(md_parser['redcarpet']['header']['default_keep_levels']),
+            const=str(md_parser['redcarpet']['header']['default keep levels']),
             help='set the maximum level of headers to be considered as part \
                   of the TOC. Defaults to ' + str(
-                md_parser['redcarpet']['header']['default_keep_levels']))
+                md_parser['redcarpet']['header']['default keep levels']))
         redcarpet.set_defaults(header_levels=md_parser['redcarpet']['header']
-                               ['default_keep_levels'])
+                               ['default keep levels'])
 
         c_or_i = parser.add_mutually_exclusive_group()
         c_or_i.add_argument(
@@ -208,10 +207,10 @@ class CliInterface():
         parser.add_argument(
             '-m',
             '--toc-marker',
-            metavar='TOC_MARKER',
+            metavar='toc marker',
             help='set the string to be used as the marker for positioning the \
                   table of contents. Defaults to ' +
-            common_defaults['toc_marker'])
+            common_defaults['toc marker'])
         parser.add_argument(
             '-p',
             '--in-place',
@@ -223,7 +222,7 @@ class CliInterface():
             action='version',
             version=VERSION_NAME + ' ' + VERSION_NUMBER)
 
-        parser.set_defaults(toc_marker=common_defaults['toc_marker'])
+        parser.set_defaults(toc_marker=common_defaults['toc marker'])
         parser.set_defaults(func=CliToApi().write_toc)
 
         return parser
