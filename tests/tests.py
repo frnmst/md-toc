@@ -286,8 +286,10 @@ class TestApi(unittest.TestCase):
         log_9[1]['index'] = 998
         log_9[2]['index'] = 999
         log_9[3]['index'] = 1001
-        expected_indentation_spaces = len(
-            str(log_9[GENERIC_HEADER_TYPE_PREV]['index'])) + len('.') + len(S1)
+        expected_indentation_spaces = log_9[GENERIC_HEADER_TYPE_PREV][
+            'indentation spaces'] + len(
+                str(log_9[GENERIC_HEADER_TYPE_PREV]['index'])) + len(
+                    '.') + len(S1)
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_PREV, 'github', True,
             '.', log_9, GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX)
@@ -311,27 +313,28 @@ class TestApi(unittest.TestCase):
             GENERIC_HEADER_TYPE_CURR, GENERIC_NUMBER_OF_INDENTATION_SPACES,
             GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX, '.')
 
-        # 11. Generic case more indentation.
-        """
-        list_marker_log = ['998.', '999.', '1001.', '0.', '0.', '0.']
-        list_marker_log_cpy = list_marker_log.copy()
-        self.assertEqual(
-            api.compute_toc_line_indentation_spaces(
-                GENERIC_HEADER_TYPE_CURR,
-                GENERIC_HEADER_TYPE_PREV,
-                GENERIC_NUMBER_OF_INDENTATION_SPACES,
-                'github',
-                ordered=True,
-                list_marker='.',
-                list_marker_log=list_marker_log,
-                index=GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX),
-            GENERIC_NUMBER_OF_INDENTATION_SPACES +
-            (len(list_marker_log_cpy[GENERIC_HEADER_TYPE_CURR - 1]) + len(S1)))
-        self.assertEqual(list_marker_log,
-                         ['998.', '999.', '1001.', '0.', '0.', '1000.'])
+        # 11. Generic case more indentation. This is very similar to example 9.
+        log_11 = api.build_indentation_log('github', '.')
+        log_11[1]['index'] = 998
+        log_11[2]['index'] = 999
+        log_11[3]['index'] = 1001
+        log_11[GENERIC_HEADER_TYPE_PREV][
+            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+        expected_indentation_spaces = log_11[GENERIC_HEADER_TYPE_PREV][
+            'indentation spaces'] + len(
+                str(log_11[GENERIC_HEADER_TYPE_PREV]['index'])) + len(
+                    '.') + len(S1)
+        api.compute_toc_line_indentation_spaces(
+            GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_PREV, 'github', True,
+            '.', log_11, GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX)
+        self._test_helper_assert_compute_toc_line_indentation_spaces(
+            'github', log_11, GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_PREV, expected_indentation_spaces,
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX, '.')
 
-        # Generic case less indentation.
+        # 12. Generic case less indentation.
         # Note that the prev and curr variables are use in the opposite way.
+        """
         list_marker_log = ['998.', '999.', '1001.', '0.', '0.', '0.']
         list_marker_log_cpy = list_marker_log.copy()
         self.assertEqual(
