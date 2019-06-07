@@ -22,7 +22,7 @@
 
 common_defaults = dict()
 
-common_defaults = {'toc_marker': '[](TOC)'}
+common_defaults = {'toc marker': '[](TOC)'}
 
 parser = dict()
 parser['github'] = dict()
@@ -35,30 +35,30 @@ parser['redcarpet']['list'] = dict()
 
 # github.
 parser['github']['link'] = {
-    'max_chars_label': 999,
+    'max chars label': 999,
 }
 
 parser['github']['list']['ordered'] = {
-    'closing_markers': ['.', ')'],
-    'default_marker_number': 1,
-    'min_marker_number': 0,
-    'max_marker_number': 999999999,
-    'default_closing_marker': '.'
+    'closing markers': ['.', ')'],
+    'default marker number': 1,
+    'min marker number': 0,
+    'max marker number': 999999999,
+    'default closing marker': '.'
 }
 parser['github']['list']['unordered'] = {
-    'bullet_markers': ['-', '+', '*'],
-    'default_marker': '-'
+    'bullet markers': ['-', '+', '*'],
+    'default marker': '-'
 }
 
 parser['github']['header'] = {
-    'max_space_indentation': 3,
-    'max_levels': 6,
-    'default_keep_levels': 3
+    'max space indentation': 3,
+    'max levels': 6,
+    'default keep levels': 3
 }
 
 parser['github']['code fence'] = {
     'marker': ['`', '~'],
-    'min_marker_characters': 3
+    'min marker characters': 3
 }
 
 parser['cmark'] = parser['github']
@@ -66,23 +66,19 @@ parser['gitlab'] = parser['github']
 parser['commonmarker'] = parser['github']
 
 # redcarpet.
-parser['redcarpet']['list']['unordered'] = {
-    'bullet_markers': ['-', '+', '*'],
-}
-
 parser['redcarpet']['list']['ordered'] = {
-    'closing_markers': ['.'],
-    'default_closing_marker': '.'
+    'closing markers': ['.'],
+    'default closing marker': '.'
 }
 parser['redcarpet']['list']['unordered'] = {
-    'bullet_markers': ['-', '+', '*'],
-    'default_marker': '-'
+    'bullet markers': ['-', '+', '*'],
+    'default marker': '-'
 }
 
 parser['redcarpet']['header'] = {
-    'max_space_indentation': 0,
-    'max_levels': 6,
-    'default_keep_levels': 3
+    'max space indentation': 0,
+    'max levels': 6,
+    'default keep levels': 3
 }
 
 if __name__ == '__main__':

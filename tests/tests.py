@@ -151,7 +151,7 @@ class TestApi(unittest.TestCase):
 
         # Check overflow rule for github.
         ht[1] = md_parser['github']['list']['ordered'][
-            'max_marker_number'] = 999999999
+            'max marker number'] = 999999999
         with self.assertRaises(exceptions.GithubOverflowOrderedListMarker):
             api.increase_index_ordered_list(ht, 1, 1)
 
@@ -173,7 +173,7 @@ class TestApi(unittest.TestCase):
             if header_type_curr < header_type_prev:
                 for i in range(
                         header_type_curr + 1,
-                        md_parser['github']['header']['max_levels'] + 1):
+                        md_parser['github']['header']['max levels'] + 1):
                     self.assertEqual(log[i]['index'], 0)
                     self.assertEqual(log[i]['indentation spaces'], 0)
                     self.assertEqual(log[i]['list marker'],
@@ -182,7 +182,7 @@ class TestApi(unittest.TestCase):
     def test_compute_toc_line_indentation_spaces(self):
         r"""Test that the TOC list indentation spaces are computed correctly."""
         # github.
-        md_parser['github']['header']['max_levels'] = 6
+        md_parser['github']['header']['max levels'] = 6
 
         # Unordered TOC.
 
@@ -352,7 +352,7 @@ class TestApi(unittest.TestCase):
         """
 
         # redcarpet.
-        md_parser['redcarpet']['header']['max_levels'] = 6
+        md_parser['redcarpet']['header']['max levels'] = 6
         """
         self.assertEqual(
             api.compute_toc_line_indentation_spaces(
@@ -439,7 +439,7 @@ class TestApi(unittest.TestCase):
         in the test directory of the source code.
         """
         # github
-        m_github = md_parser['github']['header']['max_levels'] = 6
+        m_github = md_parser['github']['header']['max levels'] = 6
 
         # Example 32
         self.assertEqual(
@@ -630,7 +630,7 @@ class TestApi(unittest.TestCase):
         # It does not seem that there are exaustive tests so we have to invent
         # our own. See https://github.com/vmg/redcarpet/tree/master/test
         # for more information.
-        m_redcarpet = md_parser['redcarpet']['header']['max_levels'] = 6
+        m_redcarpet = md_parser['redcarpet']['header']['max levels'] = 6
 
         self.assertIsNone(
             api.get_atx_heading(S1 + H1 + S1 + REDCARPET_LINE_FOO, m_redcarpet,
@@ -961,8 +961,8 @@ class TestApi(unittest.TestCase):
     def test_toc_renders_as_coherent_list(self):
         r"""Test if the TOC renders as a list the user intended."""
         # github and redcarpet.
-        md_parser['github']['header']['max_levels'] = md_parser['redcarpet'][
-            'header']['max_levels'] = 6
+        md_parser['github']['header']['max levels'] = md_parser['redcarpet'][
+            'header']['max levels'] = 6
 
         # Base case.
         indentation_list = api.build_indentation_list()
@@ -983,14 +983,14 @@ class TestApi(unittest.TestCase):
                          [False, False, True, False, False, False])
 
         indentation_list = api.build_indentation_list()
-        for i in range(0, md_parser['github']['header']['max_levels']):
+        for i in range(0, md_parser['github']['header']['max levels']):
             self.assertTrue(
                 api.toc_renders_as_coherent_list(i + 1, indentation_list))
         self.assertEqual(indentation_list,
                          [True, True, True, True, True, True])
 
         indentation_list = api.build_indentation_list()
-        for i in range(md_parser['github']['header']['max_levels'],
+        for i in range(md_parser['github']['header']['max levels'],
                        GITHUB_BASE_RENDERS_AS_LIST_HEADER_TYPE_CURR, -1):
             self.assertFalse(
                 api.toc_renders_as_coherent_list(i, indentation_list))

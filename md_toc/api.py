@@ -318,7 +318,7 @@ def increase_index_ordered_list(header_type_count: dict,
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
         if header_type_count[header_type_curr] > md_parser['github']['list'][
-                'ordered']['max_marker_number']:
+                'ordered']['max marker number']:
             raise GithubOverflowOrderedListMarker
 
 
@@ -343,10 +343,10 @@ def build_indentation_log(parser: str = 'github',
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker' or parser == 'redcarpet'):
-        for i in range(1, md_parser['github']['header']['max_levels'] + 1):
+        for i in range(1, md_parser['github']['header']['max levels'] + 1):
             indentation_log[i] = {
                 'index':
-                md_parser['github']['list']['ordered']['min_marker_number'],
+                md_parser['github']['list']['ordered']['min marker number'],
                 'list marker':
                 list_marker,
                 'indentation spaces':
@@ -403,15 +403,15 @@ def compute_toc_line_indentation_spaces(
             or parser == 'commonmarker' or parser == 'redcarpet'):
         if ordered:
             assert list_marker in md_parser[parser]['list']['ordered'][
-                'closing_markers']
+                'closing markers']
         else:
             assert list_marker in md_parser[parser]['list']['unordered'][
-                'bullet_markers']
+                'bullet markers']
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
         assert len(
-            indentation_log) == md_parser['github']['header']['max_levels']
-        for i in range(1, md_parser['github']['header']['max_levels'] + 1):
+            indentation_log) == md_parser['github']['header']['max levels']
+        for i in range(1, md_parser['github']['header']['max levels'] + 1):
             assert 'index' in indentation_log[i]
             assert 'list marker' in indentation_log[i]
             assert 'indentation spaces' in indentation_log[i]
@@ -445,9 +445,9 @@ def compute_toc_line_indentation_spaces(
             # all the sublists in the data structure. The indentation spaces are the ones
             # computed before.
             for i in range(header_type_curr + 1,
-                           md_parser['github']['header']['max_levels'] + 1):
+                           md_parser['github']['header']['max levels'] + 1):
                 indentation_log[i]['index'] = md_parser['github']['list'][
-                    'ordered']['min_marker_number']
+                    'ordered']['min marker number']
                 indentation_log[i]['indentation spaces'] = 0
                 indentation_log[i]['list marker'] = list_marker
         # And finally, in case of same indentation we have: header_type_curr = header_type_prev
@@ -506,10 +506,10 @@ def build_toc_line_without_indentation(header: dict,
             or parser == 'commonmarker' or parser == 'redcarpet'):
         if ordered:
             assert list_marker in md_parser[parser]['list']['ordered'][
-                'closing_markers']
+                'closing markers']
         else:
             assert list_marker in md_parser[parser]['list']['unordered'][
-                'bullet_markers']
+                'bullet markers']
 
     toc_line_no_indent = str()
 
@@ -683,17 +683,17 @@ def get_atx_heading(line: str,
 
         i = 0
         while i < len(line) and line[i] == ' ' and i <= md_parser['github'][
-                'header']['max_space_indentation']:
+                'header']['max space indentation']:
             i += 1
-        if i > md_parser['github']['header']['max_space_indentation']:
+        if i > md_parser['github']['header']['max space indentation']:
             return None
 
         offset = i
         while i < len(line) and line[i] == '#' and i <= md_parser['github'][
-                'header']['max_levels'] + offset:
+                'header']['max levels'] + offset:
             i += 1
         if i - offset > md_parser['github']['header'][
-                'max_levels'] or i - offset > keep_header_levels or i - offset == 0:
+                'max levels'] or i - offset > keep_header_levels or i - offset == 0:
             return None
         current_headers = i - offset
 
@@ -754,7 +754,7 @@ def get_atx_heading(line: str,
                     strip('\u000b').strip('\u000c').strip('\u000d')) == 0:
                 raise GithubEmptyLinkLabel
             if len(final_line
-                   ) > md_parser['github']['link']['max_chars_label']:
+                   ) > md_parser['github']['link']['max chars label']:
                 raise GithubOverflowCharsLinkLabel
             # Escape square brackets if not already escaped.
             i = 0
@@ -784,7 +784,7 @@ def get_atx_heading(line: str,
 
         i = 0
         while (i < len(line)
-               and i < md_parser['redcarpet']['header']['max_levels']
+               and i < md_parser['redcarpet']['header']['max levels']
                and line[i] == '#'):
             i += 1
         current_headers = i
@@ -885,7 +885,7 @@ def is_valid_code_fence_indent(line: str, parser: str = 'github') -> bool:
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker'):
         return len(line) - len(line.lstrip(
-            ' ')) <= md_parser['github']['code fence']['min_marker_characters']
+            ' ')) <= md_parser['github']['code fence']['min marker characters']
     elif parser == 'redcarpet':
         # TODO.
         return False
@@ -909,7 +909,7 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
             or parser == 'commonmarker'):
         markers = md_parser['github']['code fence']['marker']
         marker_min_length = md_parser['github']['code fence'][
-            'min_marker_characters']
+            'min marker characters']
 
         if not is_valid_code_fence_indent(line):
             return None
@@ -964,7 +964,7 @@ def is_closing_code_fence(line: str,
             or parser == 'commonmarker'):
         markers = md_parser['github']['code fence']['marker']
         marker_min_length = md_parser['github']['code fence'][
-            'min_marker_characters']
+            'min marker characters']
 
         if not is_valid_code_fence_indent(line):
             return False
@@ -1033,7 +1033,7 @@ def build_indentation_list(parser: str = 'github'):
 
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker' or parser == 'redcarpet'):
-        for i in range(0, md_parser[parser]['header']['max_levels']):
+        for i in range(0, md_parser[parser]['header']['max levels']):
             indentation_list.append(False)
 
     return indentation_list
@@ -1058,7 +1058,7 @@ def toc_renders_as_coherent_list(
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker' or parser == 'redcarpet'):
         assert len(
-            indentation_list) == md_parser[parser]['header']['max_levels']
+            indentation_list) == md_parser[parser]['header']['max levels']
     for e in indentation_list:
         assert isinstance(e, bool)
 
@@ -1070,7 +1070,7 @@ def toc_renders_as_coherent_list(
 
         # Reset next cells to False, as a detection mechanism.
         for i in range(header_type_curr,
-                       md_parser['github']['header']['max_levels']):
+                       md_parser['github']['header']['max levels']):
             indentation_list[i] = False
 
         # Check for previous False cells. If there is a "hole" in the list
