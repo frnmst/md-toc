@@ -153,7 +153,9 @@ def build_toc(filename: str,
         # Skip initial lines from parsing if configured.
         if skip_lines > 0:
             for i in range(skip_lines):
-                next(f)
+                # Use an alternative way instead of "next(f)" to avoid
+                # raising: "OSError: telling position disabled by next() call"
+                line = f.readline()
     line = f.readline()
     if ordered:
         list_marker_log = build_list_marker_log(parser, list_marker)
@@ -255,7 +257,8 @@ def build_multiple_tocs(filenames: list,
                         no_list_coherence: bool = False,
                         keep_header_levels: int = 3,
                         parser: str = 'github',
-                        list_marker: str = '-') -> list:
+                        list_marker: str = '-',
+                        skip_lines: int = 0) -> list:
     r"""Parse files by line and build the table of contents of each file.
 
     :parameter filenames: the files that needs to be read.
@@ -293,7 +296,7 @@ def build_multiple_tocs(filenames: list,
         toc_struct.append(
             build_toc(filenames[file_id], ordered, no_links, no_indentation,
                       no_list_coherence, keep_header_levels, parser,
-                      list_marker))
+                      list_marker, skip_lines))
         file_id += 1
 
     return toc_struct
