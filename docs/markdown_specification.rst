@@ -778,9 +778,9 @@ A TOC marker is a string that marks that the start and the end of the table
 of contents in a markdown file.
 
 By default it was decided to use ``[](TOC)`` as the default TOC marker because
-it would result invisible in some markdown parsers. In other however, such as the
-one used by Gitea, that particular TOC marker was still visible. HTML comments 
-seem to be a better solution.
+it would result invisible in some markdown parsers. In other cases, however, such
+as the one used by Gitea, that particular TOC marker was still visible. HTML 
+comments seem to be a better solution.
 
 - ``github``:
 
