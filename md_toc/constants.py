@@ -22,7 +22,7 @@
 
 common_defaults = dict()
 
-common_defaults = {'toc marker': '[](TOC)'}
+common_defaults = {'toc marker': '<!--TOC-->'}
 
 parser = dict()
 parser['github'] = dict()

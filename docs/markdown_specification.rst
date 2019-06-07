@@ -58,8 +58,11 @@ Parser Summary
    ``redcarpet``                        ``https://github.com/vmg/redcarpet/tree/94f6e27bdf2395efa555a7c772a3d8b70fb84346``  https://github.com/vmg/redcarpet
    ===================   ============   ==================================================================================  =============================================
 
-What are headers and what are not
----------------------------------
+Rules
+-----
+
+Headers
+```````
 
 Only ATX-style headings are supported in md_toc.
 
@@ -117,10 +120,10 @@ Only ATX-style headings are supported in md_toc.
 
 
 List item rules
----------------
+```````````````
 
 Problems
-````````
+^^^^^^^^
 
 We are interested in sublists indentation rules for all types of lists, and 
 integer overflows in case of ordered lists.
@@ -184,7 +187,7 @@ while the user might expect this:
     - [bar](#bar)
 
 Indentation
-```````````
+^^^^^^^^^^^
 
 - ``github``: list indentation with this parser is always based on the 
   previous state, as stated in the GitHub Flavored Markdown document, at 
@@ -472,7 +475,7 @@ Indentation
 
 
 Overflows
-`````````
+^^^^^^^^^
 
 - ``github``: ordered list markers cannot exceed ``99999999`` according to 
   the following. If that is the case then a  ``GithubOverflowOrderedListMarker``
@@ -486,8 +489,8 @@ Overflows
 
   - https://github.com/vmg/redcarpet/blob/8db31cb83e7d81b19970466645e899b5ac3bc15d/ext/redcarpet/markdown.c#L1529  
 
-Link label rules
-----------------
+Link label
+``````````
 
 If the user decides to generate the table of contents with the anchor links,
 then link label rules will be applied.
@@ -668,7 +671,7 @@ then link label rules will be applied.
 
 
 Anchor link types and behaviours
---------------------------------
+````````````````````````````````
 
 - ``github``: a translated version of the Ruby algorithm is used in md_toc. 
   The original one is repored here: 
@@ -750,7 +753,7 @@ Anchor link types and behaviours
 
 
 Code fence
-----------
+``````````
 
 Code fences are sections of a markdown document where some parsers treat the 
 text within them as verbatim. Usually the purpose of these sections is to 
@@ -767,6 +770,27 @@ get parsed as an element of the TOC.
 - ``redcarpet``: needs to be implemented:
 
   - https://github.com/vmg/redcarpet/blob/26c80f05e774b31cd01255b0fa62e883ac185bf3/ext/redcarpet/markdown.c#L1389
+
+TOC marker
+``````````
+
+A TOC marker is a string that marks that the start and the end of the table
+of contents in a markdown file.
+
+By default it was decided to use ``[](TOC)`` as the default TOC marker because
+it would result invisible in some markdown parsers. In other cases, however, such
+as the one used by Gitea, that particular TOC marker was still visible. HTML 
+comments seem to be a better solution.
+
+- ``github``:
+
+  - https://spec.commonmark.org/0.28/#html-comment
+
+- ``redcarpet``:
+
+  I cannot find the corresponding code, but I found this:
+
+  - https://github.com/vmg/redcarpet/blob/master/test/MarkdownTest_1.0.3/Tests/Inline%20HTML%20comments.html
 
 Other markdown parsers
 ----------------------
@@ -799,7 +823,6 @@ And it's not just about anchor links, as you have read before. For example:
 - Kramdown: It is unclear if this feature is available. See:
 
   - https://github.com/gettalong/kramdown/search?q=anchor&type=Issues&utf8=%E2%9C%93
-
 
 Steps to add an unsupported markdown parser
 ```````````````````````````````````````````
