@@ -189,7 +189,7 @@ while the user might expect this:
 Indentation
 ^^^^^^^^^^^
 
-- ``github``: list indentation with this parser is always based on the 
+- ``github``: list indentation for sublists with this parser is based on the 
   previous state, as stated in the GitHub Flavored Markdown document, at 
   section 5.2:
 
@@ -200,6 +200,10 @@ Indentation
     blocks must be indented five spaces in order to fall under the list item."
 
   - https://github.github.com/gfm/#list-items
+
+  This is also true with the specular case: if our new list element needs less 
+  indentation than the one processed currently, we have to use the same number
+  of indentation spaces used somewhere earlier in the list.
 
 - ``redcarpet``:
 
