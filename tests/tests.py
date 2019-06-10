@@ -94,9 +94,12 @@ TILDE10 = 10 * '~'
 GITHUB_INFO_STRING_FOO = 'ruby'
 GITHUB_INFO_STRING_GARBAGE = 'startline=3 $%@#$'
 
-# github rensers as list header types.
-GITHUB_GENERIC_RENDERS_AS_LIST_HEADER_TYPE_CURR = 3
-GITHUB_BASE_RENDERS_AS_LIST_HEADER_TYPE_CURR = 1
+# github rensers as list header types. Do not change these values.
+BASE_CASE_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR = 1
+GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR = 4
+GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS = 5
+BASE_CASE_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_FIRST = 1
+GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_FIRST = 4
 
 # redcarpet test lines.
 REDCARPET_LINE_FOO = 'foo'
@@ -957,45 +960,73 @@ class TestApi(unittest.TestCase):
         There is no need to test this since it is a trivial function.
         """
 
-    @unittest.skip("Needs to be fixed")
+    def _test_helper_toc_renders_as_coherent_list(
+            self, header_type_curr, header_type_first, indentation_list,
+            expected_indentation_list, expected_result):
+        result = api.toc_renders_as_coherent_list(
+            header_type_curr, header_type_first, indentation_list)
+        self.assertEqual(result, expected_result)
+        self.assertEqual(indentation_list, expected_indentation_list)
+
     def test_toc_renders_as_coherent_list(self):
         r"""Test if the TOC renders as a list the user intended."""
         # github and redcarpet.
-        md_parser['github']['header']['max levels'] = md_parser['redcarpet'][
-            'header']['max levels'] = 6
 
-        # Base case.
-        indentation_list = api.init_indentation_status_list()
-        self.assertTrue(
-            api.toc_renders_as_coherent_list(
-                GITHUB_BASE_RENDERS_AS_LIST_HEADER_TYPE_CURR,
-                indentation_list))
-        self.assertEqual(indentation_list,
-                         [True, False, False, False, False, False])
+        # 1. header_type_first = 1; header_type_curr = 1.
+        expected_indentation_list = [True, False, False, False, False, False]
+        self._test_helper_toc_renders_as_coherent_list(
+            BASE_CASE_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR,
+            BASE_CASE_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_FIRST,
+            api.init_indentation_status_list('github'),
+            expected_indentation_list, True)
 
-        # Generic cases.
-        indentation_list = api.init_indentation_status_list()
-        self.assertFalse(
-            api.toc_renders_as_coherent_list(
-                GITHUB_GENERIC_RENDERS_AS_LIST_HEADER_TYPE_CURR,
-                indentation_list))
-        self.assertEqual(indentation_list,
-                         [False, False, True, False, False, False])
+        # 2. header_type_first = 1; header_type_curr = generic > 1.
+        indentation_list = api.init_indentation_status_list('github')
+        for i in range(0, GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR - 1):
+            indentation_list[i] = True
+        expected_indentation_list = [True, True, True, True, False, False]
+        self._test_helper_toc_renders_as_coherent_list(
+            GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR,
+            BASE_CASE_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_FIRST,
+            indentation_list, expected_indentation_list, True)
 
-        indentation_list = api.init_indentation_status_list()
-        for i in range(0, md_parser['github']['header']['max levels']):
-            self.assertTrue(
-                api.toc_renders_as_coherent_list(i + 1, indentation_list))
-        self.assertEqual(indentation_list,
-                         [True, True, True, True, True, True])
+        # 3. header_type_first = generic > 1; header_type_curr = 1.
+        indentation_list = api.init_indentation_status_list('github')
+        expected_indentation_list = [True, False, False, False, False, False]
+        self._test_helper_toc_renders_as_coherent_list(
+            BASE_CASE_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR,
+            GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_FIRST, indentation_list,
+            expected_indentation_list, False)
 
-        indentation_list = api.init_indentation_status_list()
-        for i in range(md_parser['github']['header']['max levels'],
-                       GITHUB_BASE_RENDERS_AS_LIST_HEADER_TYPE_CURR, -1):
-            self.assertFalse(
-                api.toc_renders_as_coherent_list(i, indentation_list))
-        self.assertEqual(indentation_list,
-                         [False, True, False, False, False, False])
+        # 4. header_type_first = generic > 1; header_type_curr = generic > 1; header_type_curr > header_type_first.
+        indentation_list = api.init_indentation_status_list('github')
+        indentation_list[GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_FIRST -
+                         1] = True
+        expected_indentation_list = [False, False, False, True, True, False]
+        self._test_helper_toc_renders_as_coherent_list(
+            GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS,
+            GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_FIRST, indentation_list,
+            expected_indentation_list, True)
+
+        # 4. header_type_first = generic > 1; header_type_curr = generic > 1; header_type_curr == header_type_first.
+        indentation_list = api.init_indentation_status_list('github')
+        indentation_list[GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR -
+                         1] = True
+        expected_indentation_list = [False, False, False, True, False, False]
+        self._test_helper_toc_renders_as_coherent_list(
+            GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR,
+            GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR, indentation_list,
+            expected_indentation_list, True)
+
+        # 5. header_type_first = generic > 1; header_type_curr = generic > 1; header_type_curr < header_type_first.
+        indentation_list = api.init_indentation_status_list('github')
+        indentation_list[GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS -
+                         1] = True
+        expected_indentation_list = [False, False, False, True, False, False]
+        self._test_helper_toc_renders_as_coherent_list(
+            GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_FIRST,
+            GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS,
+            indentation_list, expected_indentation_list, False)
 
 
 if __name__ == '__main__':

@@ -1069,6 +1069,8 @@ def toc_renders_as_coherent_list(
     :returns: renders_as_list
     :rtype: bool
     :raises: a built-in exception.
+
+    .. note: this function modifies the input list.
     """
     assert header_type_curr >= 1
     assert header_type_first >= 1
