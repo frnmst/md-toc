@@ -107,7 +107,8 @@ def build_toc(filename: str,
               no_list_coherence: bool = False,
               keep_header_levels: int = 3,
               parser: str = 'github',
-              list_marker: str = '-') -> str:
+              list_marker: str = '-',
+              skip_lines: int = 0) -> str:
     r"""Build the table of contents of a single file.
 
     :parameter filename: the file that needs to be read.
@@ -122,12 +123,17 @@ def build_toc(filename: str,
          Defaults to ``3``.
     :parameter parser: decides rules on how to generate anchor links.
          Defaults to ``github``.
+    :parameter skip_lines: the number of lines to be skipped from
+         the start of file before parsing for table of contents.
+         Defaults to ``0```.
     :type filename: str
     :type ordered: bool
     :type no_links: bool
     :type no_indentation: bool
     :type keep_header_levels: int
     :type parser: str
+    :type list_marker: str
+    :type skip_lines: int
     :returns: toc, the corresponding table of contents of the file.
     :rtype: str
     :raises: a built-in exception.
@@ -141,6 +147,14 @@ def build_toc(filename: str,
         f = sys.stdin
     else:
         f = open(filename, 'r')
+        # Skip lines only makes sense from a file.
+        if skip_lines > 0:
+            loop = True
+            line_counter = 1
+            while loop:
+                if line_counter > skip_lines or f.readline() == str():
+                    loop = False
+                line_counter += 1
     line = f.readline()
     indentation_log = init_indentation_log(parser, list_marker)
     if not no_indentation and not no_list_coherence:
@@ -239,7 +253,8 @@ def build_multiple_tocs(filenames: list,
                         no_list_coherence: bool = False,
                         keep_header_levels: int = 3,
                         parser: str = 'github',
-                        list_marker: str = '-') -> list:
+                        list_marker: str = '-',
+                        skip_lines: int = 0) -> list:
     r"""Parse files by line and build the table of contents of each file.
 
     :parameter filenames: the files that needs to be read.
@@ -277,7 +292,7 @@ def build_multiple_tocs(filenames: list,
         toc_struct.append(
             build_toc(filenames[file_id], ordered, no_links, no_indentation,
                       no_list_coherence, keep_header_levels, parser,
-                      list_marker))
+                      list_marker, skip_lines))
         file_id += 1
 
     return toc_struct
@@ -449,7 +464,7 @@ def compute_toc_line_indentation_spaces(
 
         if ordered:
             indentation_log[header_type_curr]['index'] = index
-        indentation_log[header_type_curr]['list_marker'] = list_marker
+        indentation_log[header_type_curr]['list marker'] = list_marker
 
     elif parser == 'redcarpet':
         indentation_log[header_type_curr]['indentation spaces'] = 4 * (

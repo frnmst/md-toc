@@ -61,9 +61,10 @@ class CliToApi():
             no_links=args.no_links,
             no_indentation=args.no_indentation,
             no_list_coherence=args.no_list_coherence,
-            keep_header_levels=int(args.header_levels),
+            keep_header_levels=args.header_levels,
             parser=args.parser,
-            list_marker=list_marker)
+            list_marker=list_marker,
+            skip_lines=args.skip_lines)
         if args.in_place:
             write_strings_on_files_between_markers(
                 filenames=args.filename,
@@ -127,13 +128,10 @@ class CliInterface():
         github.add_argument(
             '-l',
             '--header-levels',
-            choices=[
-                str(i)
-                for i in range(1, md_parser['github']['header']['max levels'] +
-                               1)
-            ],
+            type=int,
+            choices=range(1, md_parser['github']['header']['max_levels'] + 1),
             nargs='?',
-            const=str(md_parser['github']['header']['default keep levels']),
+            const=md_parser['github']['header']['default_keep_levels'],
             help='set the maximum level of headers to be considered as part \
                   of the TOC. Defaults to ' + str(
                 md_parser['github']['header']['default keep levels']))
@@ -175,12 +173,11 @@ class CliInterface():
         redcarpet.add_argument(
             '-l',
             '--header-levels',
-            choices=[
-                str(i) for i in range(
-                    1, md_parser['redcarpet']['header']['max levels'] + 1)
-            ],
+            type=int,
+            choices=range(1,
+                          md_parser['redcarpet']['header']['max_levels'] + 1),
             nargs='?',
-            const=str(md_parser['redcarpet']['header']['default keep levels']),
+            const=md_parser['redcarpet']['header']['default_keep_levels'],
             help='set the maximum level of headers to be considered as part \
                   of the TOC. Defaults to ' + str(
                 md_parser['redcarpet']['header']['default keep levels']))
@@ -207,7 +204,8 @@ class CliInterface():
         parser.add_argument(
             '-m',
             '--toc-marker',
-            metavar='toc marker',
+            metavar='TOC_MARKER',
+            default=common_defaults['toc_marker'],
             help='set the string to be used as the marker for positioning the \
                   table of contents. Defaults to ' +
             common_defaults['toc marker'])
@@ -217,12 +215,19 @@ class CliInterface():
             action='store_true',
             help='overwrite the input file')
         parser.add_argument(
+            '-s',
+            '--skip-lines',
+            metavar='SKIP_LINES',
+            type=int,
+            default=0,
+            help='skip parsing of the first selected number of lines. \
+                  Defaults to 0, i.e. do not skip any lines')
+        parser.add_argument(
             '-v',
             '--version',
             action='version',
             version=VERSION_NAME + ' ' + VERSION_NUMBER)
 
-        parser.set_defaults(toc_marker=common_defaults['toc marker'])
         parser.set_defaults(func=CliToApi().write_toc)
 
         return parser
