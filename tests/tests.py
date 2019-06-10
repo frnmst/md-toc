@@ -94,7 +94,7 @@ TILDE10 = 10 * '~'
 GITHUB_INFO_STRING_FOO = 'ruby'
 GITHUB_INFO_STRING_GARBAGE = 'startline=3 $%@#$'
 
-# github rensers as list header types. Do not change these values.
+# github renders as list header types. Do not change these values.
 BASE_CASE_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR = 1
 GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR = 4
 GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS = 5
