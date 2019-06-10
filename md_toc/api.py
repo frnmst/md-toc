@@ -138,6 +138,7 @@ def build_toc(filename: str,
     :rtype: str
     :raises: a built-in exception.
     """
+    assert skip_lines >= 0
     toc = str()
     header_type_counter = dict()
     header_type_curr = 0
