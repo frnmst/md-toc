@@ -142,6 +142,7 @@ def build_toc(filename: str,
     header_type_counter = dict()
     header_type_curr = 0
     header_type_prev = 0
+    header_type_first = 0
     header_duplicate_counter = dict()
     if filename == '-':
         f = sys.stdin
@@ -213,8 +214,11 @@ def build_toc(filename: str,
                     # without indentation.
                 else:
                     if not no_list_coherence:
+                        if header_type_first == 0:
+                            header_type_first = header_type_curr
                         if not toc_renders_as_coherent_list(
-                                header_type_curr, indentation_list, parser):
+                                header_type_curr, header_type_first,
+                                indentation_list, parser):
                             raise TocDoesNotRenderAsCoherentList
 
                     compute_toc_line_indentation_spaces(
@@ -305,8 +309,8 @@ def increase_index_ordered_list(header_type_count: dict,
     r"""Compute the current index for ordered list table of contents.
 
     :parameter header_type_count: the count of each header type.
-    :parameter header_type_prev: the previous type of header (h[1-Inf]).
-    :parameter header_type_curr: the current type of header (h[1-Inf]).
+    :parameter header_type_prev: the previous type of header (h[1,...,Inf]).
+    :parameter header_type_curr: the current type of header (h[1,...,Inf]).
     :parameter parser: decides rules on how to generate ordered list markers.
          Defaults to ``github``.
     :type header_type_count: dict
@@ -377,9 +381,9 @@ def compute_toc_line_indentation_spaces(
         index: int = 1):
     r"""Compute the number of indentation spaces for the TOC list element.
 
-    :parameter header_type_curr: the current type of header (h[1-Inf]).
+    :parameter header_type_curr: the current type of header (h[1,...,Inf]).
          Defaults to ``1``.
-    :parameter header_type_prev: the previous type of header (h[1-Inf]).
+    :parameter header_type_prev: the previous type of header (h[1,...,Inf]).
          Defaults to ``0``.
     :parameter parser: decides rules on how compute indentations.
          Defaults to ``github``.
@@ -1049,13 +1053,17 @@ def init_indentation_status_list(parser: str = 'github'):
 
 def toc_renders_as_coherent_list(
         header_type_curr: int = 1,
+        header_type_first: int = 1,
         indentation_list: list = init_indentation_status_list('github'),
         parser: str = 'github') -> bool:
     r"""Check if the TOC will render as a working list.
 
-    :parameter header_type_curr: the current type of header (h[1-Inf]).
-    :parameter parser: decides rules on how to generate ordered list markers
+    :parameter header_type_curr: the current type of header (h[1,...,Inf]).
+    :parameter header_type_first: the type of header first encountered (h[1,...,Inf]).
+         This must correspond to the one with the least indentation.
+    :parameter parser: decides rules on how to generate ordered list markers.
     :type header_type_curr: int
+    :type header_type_first: int
     :type indentation_list: list
     :type parser: str
     :returns: renders_as_list
@@ -1063,6 +1071,7 @@ def toc_renders_as_coherent_list(
     :raises: a built-in exception.
     """
     assert header_type_curr >= 1
+    assert header_type_first >= 1
     if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
             or parser == 'commonmarker' or parser == 'redcarpet'):
         assert len(
@@ -1085,9 +1094,11 @@ def toc_renders_as_coherent_list(
         # it means that the TOC will have "wrong" indentation spaces, thus
         # either not rendering as an HTML list or not as the user intended.
         i = header_type_curr - 1
-        while i >= 0 and indentation_list[i]:
+        while i >= header_type_first - 1 and indentation_list[i]:
             i -= 1
-        if i >= 0:
+        if i >= header_type_first - 1:
+            renders_as_list = False
+        if header_type_curr < header_type_first:
             renders_as_list = False
 
     return renders_as_list
