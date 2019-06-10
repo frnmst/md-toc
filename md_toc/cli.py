@@ -129,9 +129,9 @@ class CliInterface():
             '-l',
             '--header-levels',
             type=int,
-            choices=range(1, md_parser['github']['header']['max_levels'] + 1),
+            choices=range(1, md_parser['github']['header']['max levels'] + 1),
             nargs='?',
-            const=md_parser['github']['header']['default_keep_levels'],
+            const=md_parser['github']['header']['default keep levels'],
             help='set the maximum level of headers to be considered as part \
                   of the TOC. Defaults to ' + str(
                 md_parser['github']['header']['default keep levels']))
@@ -175,9 +175,9 @@ class CliInterface():
             '--header-levels',
             type=int,
             choices=range(1,
-                          md_parser['redcarpet']['header']['max_levels'] + 1),
+                          md_parser['redcarpet']['header']['max levels'] + 1),
             nargs='?',
-            const=md_parser['redcarpet']['header']['default_keep_levels'],
+            const=md_parser['redcarpet']['header']['default keep levels'],
             help='set the maximum level of headers to be considered as part \
                   of the TOC. Defaults to ' + str(
                 md_parser['redcarpet']['header']['default keep levels']))
@@ -205,7 +205,7 @@ class CliInterface():
             '-m',
             '--toc-marker',
             metavar='TOC_MARKER',
-            default=common_defaults['toc_marker'],
+            default=common_defaults['toc marker'],
             help='set the string to be used as the marker for positioning the \
                   table of contents. Defaults to ' +
             common_defaults['toc marker'])
