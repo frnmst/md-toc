@@ -150,12 +150,14 @@ def build_toc(filename: str,
         f = sys.stdin
     else:
         f = open(filename, 'r')
-        # Skip initial lines from parsing if configured.
+        # Skip lines only makes sense from a file.
         if skip_lines > 0:
-            for i in range(skip_lines):
-                # Use an alternative way instead of "next(f)" to avoid
-                # raising: "OSError: telling position disabled by next() call"
-                line = f.readline()
+            loop = True
+            line_counter = 1
+            while loop:
+                if line_counter > skip_lines or f.readline() == str():
+                    loop = False
+                line_counter += 1
     line = f.readline()
     if ordered:
         list_marker_log = build_list_marker_log(parser, list_marker)
