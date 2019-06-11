@@ -37,3 +37,5 @@ Exceptions
 .. autoexception:: GithubEmptyLinkLabel
 .. autoexception:: GithubOverflowOrderedListMarker
 .. autoexception:: StdinIsNotAFileToBeWritten
+.. autoexception:: TocDoesNotRenderAsCoherentList
+.. autoexception:: CannotSkipLinesOnStdin
