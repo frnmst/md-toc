@@ -29,6 +29,7 @@ from .api import (
     is_opening_code_fence, is_closing_code_fence, init_indentation_status_list,
     toc_renders_as_coherent_list)
 from .cli import (CliInterface)
-from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
-                         GithubOverflowOrderedListMarker,
-                         StdinIsNotAFileToBeWritten)
+from .exceptions import (
+    GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
+    GithubOverflowOrderedListMarker, StdinIsNotAFileToBeWritten,
+    TocDoesNotRenderAsCoherentList, CannotSkipLinesOnStdin)

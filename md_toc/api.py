@@ -24,10 +24,10 @@ import fpyutils
 import re
 import curses.ascii
 import sys
-from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
-                         GithubOverflowOrderedListMarker,
-                         StdinIsNotAFileToBeWritten,
-                         TocDoesNotRenderAsCoherentList)
+from .exceptions import (
+    GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
+    GithubOverflowOrderedListMarker, StdinIsNotAFileToBeWritten,
+    TocDoesNotRenderAsCoherentList, CannotSkipLinesOnStdin)
 from .constants import common_defaults
 from .constants import parser as md_parser
 
@@ -139,6 +139,9 @@ def build_toc(filename: str,
     :raises: a built-in exception.
     """
     assert skip_lines >= 0
+
+    if filename == '-' and skip_lines > 0:
+        raise CannotSkipLinesOnStdin
 
     toc = str()
     header_type_counter = dict()
