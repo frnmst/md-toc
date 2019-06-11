@@ -51,10 +51,6 @@ class CliToApi():
             ordered = True
         elif args.unordered_list_marker is not None:
             list_marker = args.unordered_list_marker
-        else:
-            list_marker = md_parser[
-                args.parser]['list']['unordered']['default marker']
-
         toc_struct = build_multiple_tocs(
             filenames=args.filename,
             ordered=ordered,
@@ -114,6 +110,7 @@ class CliInterface():
             choices=md_parser['github']['list']['unordered']['bullet markers'],
             nargs='?',
             const=md_parser['github']['list']['unordered']['default marker'],
+            default=md_parser['github']['list']['unordered']['default marker'],
             help='set the marker and enables unordered list. Defaults to ' +
             md_parser['github']['list']['unordered']['default marker'])
         megroup.add_argument(
@@ -156,6 +153,8 @@ class CliInterface():
             ['bullet markers'],
             nargs='?',
             const=md_parser['redcarpet']['list']['unordered']
+            ['default marker'],
+            default=md_parser['redcarpet']['list']['unordered']
             ['default marker'],
             help='set the marker and enables unordered list. Defaults to ' +
             md_parser['redcarpet']['list']['unordered']['default marker'])
