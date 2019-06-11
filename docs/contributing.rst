@@ -61,6 +61,12 @@ You can also add this command before every git commit as by running:
     $ make githook
 
 
+Benchmarks
+----------
+
+Time-related benchmarks are useful to understand how different code versions performs.
+A benchmark script which calls the unit tests is present in the tests directory.
+
 Python PEP compliancy
 ---------------------
 

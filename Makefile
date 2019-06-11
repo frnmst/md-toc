@@ -51,6 +51,6 @@ upload:
 	twine upload dist/*
 
 clean:
-	rm -rf build dist *.egg-info
+	rm -rf build dist *.egg-info tests/benchmark-results
 
 .PHONY: default pep doc install test uninstall dist upload clean
