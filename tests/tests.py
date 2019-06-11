@@ -117,9 +117,11 @@ class TestApi(unittest.TestCase):
         with self.assertRaises(exceptions.StdinIsNotAFileToBeWritten):
             api.write_string_on_file_between_markers('-', LINE, LINE)
 
+    @unittest.skip("empty test")
     def test_write_strings_on_files_between_markers(self):
         r"""Test that the TOC is written correctly on the files."""
 
+    @unittest.skip("empty test")
     def test_build_toc(self):
         r"""Test that the TOC is built correctly.
 
@@ -128,6 +130,7 @@ class TestApi(unittest.TestCase):
         of build_toc_line.
         """
 
+    @unittest.skip("empty test")
     def test_build_multiple_tocs(self):
         r"""Test that the TOC is built correctly for multiple files."""
 
@@ -158,6 +161,7 @@ class TestApi(unittest.TestCase):
         with self.assertRaises(exceptions.GithubOverflowOrderedListMarker):
             api.increase_index_ordered_list(ht, 1, 1)
 
+    @unittest.skip("empty test")
     def test_build_list_marker_log(self):
         r"""Test that the list_marker_log data structure is built correctly.
 
@@ -408,6 +412,7 @@ class TestApi(unittest.TestCase):
                 parser='github'), '1' + ORDERED_LIST_SYMBOL + S1 + '[' + LINE +
             ']' + '(#' + LINE + ')')
 
+    @unittest.skip("empty test")
     def test_build_toc_line(self):
         r"""Test that the TOC line is built correctly.
 
@@ -702,6 +707,7 @@ class TestApi(unittest.TestCase):
             (1,
              REDCARPET_LINE_FOO + LINE_CARRIAGE_RETURN + REDCARPET_LINE_FOO))
 
+    @unittest.skip("empty test")
     def test_get_md_header(self):
         r"""Test building of the header data structure.
 
@@ -954,6 +960,7 @@ class TestApi(unittest.TestCase):
         self.assertFalse(
             api.is_closing_code_fence(TILDE3 + S1 + 'aaa', TILDE3))
 
+    @unittest.skip("empty test")
     def test_init_indentation_status_list(self):
         r"""Test building of the indentation data structure.
 
