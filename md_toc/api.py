@@ -24,10 +24,10 @@ import fpyutils
 import re
 import curses.ascii
 import sys
-from .exceptions import (
-    GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
-    GithubOverflowOrderedListMarker, StdinIsNotAFileToBeWritten,
-    TocDoesNotRenderAsCoherentList, CannotSkipLinesOnStdin)
+from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
+                         GithubOverflowOrderedListMarker,
+                         StdinIsNotAFileToBeWritten,
+                         TocDoesNotRenderAsCoherentList)
 from .constants import common_defaults
 from .constants import parser as md_parser
 
@@ -140,27 +140,26 @@ def build_toc(filename: str,
     """
     assert skip_lines >= 0
 
-    if filename == '-' and skip_lines > 0:
-        raise CannotSkipLinesOnStdin
-
     toc = str()
     header_type_counter = dict()
     header_type_curr = 0
     header_type_prev = 0
     header_type_first = 0
     header_duplicate_counter = dict()
+
     if filename == '-':
         f = sys.stdin
     else:
         f = open(filename, 'r')
-        # Skip lines only makes sense from a file.
-        if skip_lines > 0:
-            loop = True
-            line_counter = 1
-            while loop:
-                if line_counter > skip_lines or f.readline() == str():
-                    loop = False
-                line_counter += 1
+
+    if skip_lines > 0:
+        loop = True
+        line_counter = 1
+        while loop:
+            if line_counter > skip_lines or f.readline() == str():
+                loop = False
+            line_counter += 1
+
     line = f.readline()
     indentation_log = init_indentation_log(parser, list_marker)
     if not no_indentation and not no_list_coherence:
