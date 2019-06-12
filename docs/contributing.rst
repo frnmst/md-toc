@@ -64,8 +64,16 @@ You can also add this command before every git commit as by running:
 Benchmarks
 ----------
 
-Time-related benchmarks are useful to understand how different code versions performs.
+Time-related benchmarks are useful to understand how different code versions perform.
 A benchmark script which calls the unit tests is present in the tests directory.
+You can call it with:
+
+
+::
+
+
+    $ make benchmark
+
 
 Python PEP compliancy
 ---------------------

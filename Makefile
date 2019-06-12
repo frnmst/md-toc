@@ -40,6 +40,9 @@ install:
 test:
 	python setup.py test
 
+benchmark:
+	pushd tests && ./benchmark.sh 10 && popd
+
 uninstall:
 	pip uninstall md_toc
 
