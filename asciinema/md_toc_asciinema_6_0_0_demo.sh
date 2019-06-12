@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# md_toc_asciinema_5_0_0_demo.sh
+# python -m md_toc_asciinema_6_0_0_demo.sh
 #
 # Copyright (C) 2019 frnmst (Franco Masotti) <franco.masotti@live.com>
 #
@@ -21,23 +21,23 @@
 # along with md-toc.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# Discover md_toc of this repository not the one installed on the system.
+# Discover python -m md_toc of this repository not the one installed on the system.
 export PYTHONPATH='..'
 TIMEOUT=1
 
-printf "Running a demo to show some of md_toc's capabilities...\n"
+printf "Running a demo to show some of python -m md_toc's capabilities...\n"
 printf "\n"
 sleep ${TIMEOUT}
 
-printf "$ md_toc -h\n"
-md_toc -h
+printf "$ python -m md_toc -h\n"
+python -m md_toc -h
 printf "\n"
 sleep ${TIMEOUT}
 
 cat <<-EOF > foo.md
 # Hi
 
-[](TOC)
+<!--TOC-->
 
 hey
 
@@ -65,6 +65,19 @@ cat <<-EOF > foo_noncoherent.md
 ### boo
 EOF
 
+cat <<-EOF > foo_skiplines.md
+# I want this line to be a comment
+#### And this as well
+## And this
+###### ByeBye
+
+# Hi
+## How
+### Are
+## You
+# Today ?
+EOF
+
 printf "Inspecting the file...\n"
 printf "$ cat foo.md\n"
 cat foo.md
@@ -72,26 +85,26 @@ printf "\n"
 sleep ${TIMEOUT}
 
 printf "Run with default options...\n"
-printf "$ md_toc foo.md github\n"
-md_toc foo.md github
+printf "$ python -m md_toc foo.md github\n"
+python -m md_toc foo.md github
 printf "\n"
 sleep ${TIMEOUT}
 
 printf "Ordered list...\n"
-printf "$ md_toc foo.md gitlab -o\n"
-md_toc foo.md gitlab -o
+printf "$ python -m md_toc foo.md gitlab -o\n"
+python -m md_toc foo.md gitlab -o
 printf "\n"
 sleep ${TIMEOUT}
 
 printf "No links...\n"
-printf "$ md_toc -l foo.md github\n"
-md_toc -l foo.md github
+printf "$ python -m md_toc -l foo.md github\n"
+python -m md_toc -l foo.md github
 printf "\n"
 sleep ${TIMEOUT}
 
 printf "No links and no indentation...\n"
-printf "$ md_toc -l -i foo.md github\n"
-md_toc -l -i foo.md github
+printf "$ python -m md_toc -l -i foo.md github\n"
+python -m md_toc -l -i foo.md github
 printf "\n"
 sleep ${TIMEOUT}
 
@@ -102,28 +115,40 @@ printf "\n"
 sleep ${TIMEOUT}
 
 printf "Trying to parse a non coherent markdown file will raise an exception...\n"
-printf "$ md_toc foo_noncoherent.md github\n"
-md_toc foo_noncoherent.md github
+printf "$ python -m md_toc foo_noncoherent.md github\n"
+python -m md_toc foo_noncoherent.md github
 printf "\n"
 sleep ${TIMEOUT}
 
 printf "Try to parse a non coherent markdown file without checking for coherence...\n"
-printf "$ md_toc -c foo_noncoherent.md github\n"
-md_toc -c foo_noncoherent.md github
+printf "$ python -m md_toc -c foo_noncoherent.md github\n"
+python -m md_toc -c foo_noncoherent.md github
 printf "\n"
 sleep ${TIMEOUT}
 
 printf "Use stdin, no links and no indentation...\n"
-printf "$ cat foo.md | md_toc -l -i cmark -u '*'\n"
-cat foo.md | md_toc -l -i cmark -u '*'
+printf "$ cat foo.md | python -m md_toc -l -i cmark -u '*'\n"
+cat foo.md | python -m md_toc -l -i cmark -u '*'
+printf "\n"
+sleep ${TIMEOUT}
+
+printf "Inspecting a file where the first 5 lines need to be skipped...\n"
+printf "$ cat foo_skiplines.md\n"
+cat foo_skiplines.md
+printf "\n"
+sleep ${TIMEOUT}
+
+printf "Using the skip lines option...\n"
+printf "$ python -m md_toc -s 5 foo_skiplines.md github\n"
+python -m md_toc -s 5 foo_skiplines.md github
 printf "\n"
 sleep ${TIMEOUT}
 
 printf "Editing the file in-place. As you can see, code fence \
-detection still needs to be implemented for redcarpet..\n"
-printf "$ md_toc -p foo.md redcarpet\n"
-md_toc -p foo.md redcarpet
+detection still needs to be implemented for redcarpet...\n"
+printf "$ python -m md_toc -p foo.md redcarpet\n"
+python -m md_toc -p foo.md redcarpet
 printf "$ cat foo.md\n"
 cat foo.md
 
-rm foo.md foo_noncoherent.md
+rm foo.md foo_noncoherent.md foo_skiplines.md

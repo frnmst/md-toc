@@ -1,6 +1,13 @@
 Contributing
 ============
 
+Talk
+----
+
+Suggestions, improvements and discussion:
+
+- https://gitter.im/md-toc/community
+
 Git branches
 ------------
 

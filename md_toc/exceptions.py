@@ -39,7 +39,3 @@ class StdinIsNotAFileToBeWritten(Exception):
 
 class TocDoesNotRenderAsCoherentList(Exception):
     """TOC list indentations are either wrong or not what the user intended."""
-
-
-class CannotSkipLinesOnStdin(Exception):
-    """It does not make sense to skip lines on stdin."""
