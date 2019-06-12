@@ -30,6 +30,7 @@ parser['github']['list'] = dict()
 parser['github']['link'] = dict()
 parser['github']['header'] = dict()
 parser['github']['code fence'] = dict()
+parser['github']['version'] = dict()
 parser['redcarpet'] = dict()
 parser['redcarpet']['list'] = dict()
 
@@ -59,6 +60,11 @@ parser['github']['header'] = {
 parser['github']['code fence'] = {
     'marker': ['`', '~'],
     'min marker characters': 3
+}
+
+parser['github']['version'] = {
+    'supported': ['0.28', '0.29'],
+    'default': '0.29'
 }
 
 parser['cmark'] = parser['github']

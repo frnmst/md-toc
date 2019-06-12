@@ -107,6 +107,7 @@ def build_toc(filename: str,
               no_list_coherence: bool = False,
               keep_header_levels: int = 3,
               parser: str = 'github',
+              parser_version: str = '',
               list_marker: str = '-',
               skip_lines: int = 0) -> str:
     r"""Build the table of contents of a single file.
@@ -262,6 +263,7 @@ def build_multiple_tocs(filenames: list,
                         no_list_coherence: bool = False,
                         keep_header_levels: int = 3,
                         parser: str = 'github',
+                        parser_version: str = '',
                         list_marker: str = '-',
                         skip_lines: int = 0) -> list:
     r"""Parse files by line and build the table of contents of each file.
@@ -301,7 +303,7 @@ def build_multiple_tocs(filenames: list,
         toc_struct.append(
             build_toc(filenames[file_id], ordered, no_links, no_indentation,
                       no_list_coherence, keep_header_levels, parser,
-                      list_marker, skip_lines))
+                      parser_version, list_marker, skip_lines))
         file_id += 1
 
     return toc_struct
@@ -941,6 +943,7 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
         else:
             info_string = line.lstrip(line[0])
         # Backticks or tildes in info string are explicitly forbidden.
+        # FIXME see https://spec.commonmark.org/0.29/changes.html#part-10
         if markers[0] in info_string or markers[1] in info_string:
             return None
         # Solves example 107. See:

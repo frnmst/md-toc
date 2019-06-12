@@ -716,7 +716,7 @@ class TestApi(unittest.TestCase):
         returns None.
         """
 
-    def test_is_opening_code_fence(self):
+    def test_is_opening_code_fence_common(self):
         r"""Test detection of opening code fence."""
         # github.
         # Generic, spaces and headings. These are not code fences.

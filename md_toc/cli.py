@@ -59,6 +59,7 @@ class CliToApi():
             no_list_coherence=args.no_list_coherence,
             keep_header_levels=args.header_levels,
             parser=args.parser,
+            parser_version=args.parser_version,
             list_marker=list_marker,
             skip_lines=args.skip_lines)
         if args.in_place:
@@ -126,14 +127,23 @@ class CliInterface():
             '-l',
             '--header-levels',
             type=int,
+            default=md_parser['github']['header']['default keep levels'],
             choices=range(1, md_parser['github']['header']['max levels'] + 1),
             nargs='?',
             const=md_parser['github']['header']['default keep levels'],
             help='set the maximum level of headers to be considered as part \
                   of the TOC. Defaults to ' + str(
                 md_parser['github']['header']['default keep levels']))
-        github.set_defaults(
-            header_levels=md_parser['github']['header']['default keep levels'])
+
+        github.add_argument(
+            '-v',
+            '--parser-version',
+            default=md_parser['github']['version']['default'],
+            choices=md_parser['github']['version']['supported'],
+            nargs='?',
+            const=md_parser['github']['version']['default'],
+            help='select the parser version. Defaults to ' +
+            md_parser['github']['version']['default'])
 
         # Redcarpet.
         redcarpet = subparsers.add_parser(
@@ -176,12 +186,11 @@ class CliInterface():
             choices=range(1,
                           md_parser['redcarpet']['header']['max levels'] + 1),
             nargs='?',
+            default=md_parser['redcarpet']['header']['default keep levels'],
             const=md_parser['redcarpet']['header']['default keep levels'],
             help='set the maximum level of headers to be considered as part \
                   of the TOC. Defaults to ' + str(
                 md_parser['redcarpet']['header']['default keep levels']))
-        redcarpet.set_defaults(header_levels=md_parser['redcarpet']['header']
-                               ['default keep levels'])
 
         c_or_i = parser.add_mutually_exclusive_group()
         c_or_i.add_argument(

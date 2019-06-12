@@ -49,11 +49,11 @@ Parser Summary
 ``````````````
 
    ===================   ============   ==================================================================================  =============================================
-   Parser                Alias of       Supported parser version                                                            Source
+   Parser                Alias of       Supported parser versions                                                           Source
    ===================   ============   ==================================================================================  =============================================
    ``cmark``             ``github``                                                                                         https://github.com/commonmark/cmark
    ``commonmarker``      ``github``                                                                                         https://github.com/gjtorikian/commonmarker
-   ``github``                           ``Version 0.28-gfm (2017-08-01)``                                                   https://github.com/github/cmark
+   ``github``                           ``0.28``, ``0.29``                                                                  https://github.com/github/cmark
    ``gitlab``            ``github``                                                                                         https://docs.gitlab.com/ee/user/markdown.html
    ``redcarpet``                        ``https://github.com/vmg/redcarpet/tree/94f6e27bdf2395efa555a7c772a3d8b70fb84346``  https://github.com/vmg/redcarpet
    ===================   ============   ==================================================================================  =============================================
