@@ -4,7 +4,6 @@
 # md_toc_asciinema_3_1_0_demo.sh
 #
 # Copyright (C) 2019 frnmst (Franco Masotti) <franco.masotti@live.com>
-#                                            <franco.masotti@student.unife.it>
 #
 # This file is part of md-toc.
 #
