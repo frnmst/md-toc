@@ -12,8 +12,9 @@ Git branches
 ------------
 
 What follows is a table of the git branches used in md-toc's repository.
-Please, do NOT open pull requests on the ``master``, ``dev`` or ``gh-pages`` branches.
-Use ``bugfix-${fix_name}`` or ``newfeature-${new_feature_name}`` instead.
+
+.. important:: Please, do NOT open pull requests on the ``master``, ``dev`` or ``gh-pages`` branches. 
+               Use ``bugfix-${fix_name}`` or ``newfeature-${new_feature_name}`` instead.
 
 =====================================   ====================================================   ==============================
 Branch                                  Description                                            Update schedule
@@ -28,14 +29,14 @@ Branch                                  Description                             
 Dependencies
 ------------
 
-First of all install the software requirements from the ``requirements.txt`` file 
+First of all install the software requirements from the Pipfile
 in the repository's root:
 
 
 ::
 
 
-    $ pip install -r requirements.txt
+    $ pipenv install
 
 
 Unit tests
@@ -44,15 +45,6 @@ Unit tests
 If you have changed parts of the source code you MUST take care of adding  
 the corresponding unit tests. Once you have done that run the following command 
 in a terminal:
-
-
-::
-
-
-    $ python setup.py test
-
-
-or simply:
 
 
 ::

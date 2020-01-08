@@ -55,5 +55,6 @@ upload:
 
 clean:
 	rm -rf build dist *.egg-info tests/benchmark-results
+	pipenv run $(MAKE) -C docs clean
 
 .PHONY: default pep doc install test uninstall dist upload clean

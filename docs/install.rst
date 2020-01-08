@@ -4,15 +4,12 @@ Installation
 Run the following command in either a root or normal terminal (depending on 
 your Python setup) from the root directory of the project's cloned repository,
 
-::
-
-    pip install .
-
-or simply
+First of all install `pipenv <https://pipenv.readthedocs.io/en/latest/>`_ and then:
 
 ::
 
-    make install
+
+    $ make install
 
 
 You can also install md_toc via pip (i.e: without having to download the source 
@@ -20,7 +17,7 @@ code):
 
 ::
 
-    pip install md_toc
+    $ pip3 install md_toc --user
 
 
 All the necessary dependencies should be installed automatically along with the 
@@ -36,9 +33,7 @@ Distribution packages
 Dependencies
 ------------
 
-- Python 3.5
+- Python >= 3.5
 - fpyutils_
 
 .. _fpyutils: https://github.com/frnmst/fpyutils
-
-
