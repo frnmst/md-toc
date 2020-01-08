@@ -1,3 +1,4 @@
+Pipfile.lock
 *.md
 *.MD
 tests/benchmark-results

@@ -28,17 +28,17 @@ githook:
 	git config core.hooksPath .githooks
 
 pep:
-	yapf --style '{based_on_style: pep8; indent_width: 4}' -i md_toc/*.py tests/*.py
-	flake8 --ignore=F401,E501,W503,W504,W605,E125 md_toc/*.py tests/*.py
+	pipenv run yapf --style '{based_on_style: pep8; indent_width: 4}' -i md_toc/*.py tests/*.py
+	pipenv run flake8 --ignore=F401,E501,W503,W504,W605,E125 md_toc/*.py tests/*.py
 
 doc:
-	$(MAKE) -C docs html
+	pipenv run $(MAKE) -C docs html
 
 install:
 	pip install .
 
 test:
-	python setup.py test
+	pipenv run python setup.py test
 
 benchmark:
 	pushd tests && ./benchmark.sh 10 && popd
@@ -47,11 +47,11 @@ uninstall:
 	pip uninstall md_toc
 
 dist:
-	python setup.py sdist
-	python setup.py bdist_wheel
+	pipenv run python setup.py sdist
+	pipenv run python setup.py bdist_wheel
 
 upload:
-	twine upload dist/*
+	pipenv run twine upload dist/*
 
 clean:
 	rm -rf build dist *.egg-info tests/benchmark-results

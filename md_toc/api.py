@@ -30,14 +30,25 @@ from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
 from .constants import common_defaults
 from .constants import parser as md_parser
 
-# _ctoi and _isascii taken from cpython source Lib/curses/ascii.py
 
-def _ctoi(c):
-    if type(c) == type(""):
-        return ord(c)
-    else:
-        return c
-      
+# _ctoi and _isascii taken from cpython source Lib/curses/ascii.py
+# See:
+# https://github.com/python/cpython/blob/283de2b9c18e38c9a573526d6c398ade7dd6f8e9/Lib/curses/ascii.py#L48
+# https://github.com/python/cpython/blob/283de2b9c18e38c9a573526d6c398ade7dd6f8e9/Lib/curses/ascii.py#L56
+#
+# These 2 functions are released under the
+# PYTHON SOFTWARE FOUNDATION LICENSE VERSION 2
+# See https://directory.fsf.org/wiki/License:Python-2.0.1
+def _ctoi(c: str):
+    assert len(c) == 1
+
+    retval = c
+    if isinstance(c, str):
+        retval = ord(c)
+
+    return retval
+
+
 def _isascii(c):
     return 0 <= _ctoi(c) <= 127
 
@@ -640,7 +651,7 @@ def build_anchor_link(header_text_trimmed: str,
             # str.find() == -1 if character is not found in str.
             # https://docs.python.org/3.6/library/stdtypes.html?highlight=find#str.find
             elif not _isascii(header_text_trimmed[i]) or STRIPPED.find(
-                        header_text_trimmed[i]) != -1:
+                    header_text_trimmed[i]) != -1:
                 if inserted and not stripped:
                     header_text_trimmed_middle_stage += '-'
                 stripped = 1
