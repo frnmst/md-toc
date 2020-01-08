@@ -22,7 +22,6 @@
 
 import fpyutils
 import re
-import curses.ascii
 import sys
 from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
                          GithubOverflowOrderedListMarker,
@@ -30,6 +29,17 @@ from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
                          TocDoesNotRenderAsCoherentList)
 from .constants import common_defaults
 from .constants import parser as md_parser
+
+# _ctoi and _isascii taken from cpython source Lib/curses/ascii.py
+
+def _ctoi(c):
+    if type(c) == type(""):
+        return ord(c)
+    else:
+        return c
+      
+def _isascii(c):
+    return 0 <= _ctoi(c) <= 127
 
 
 def write_string_on_file_between_markers(filename: str, string: str,
@@ -629,8 +639,7 @@ def build_anchor_link(header_text_trimmed: str,
                     i += 1
             # str.find() == -1 if character is not found in str.
             # https://docs.python.org/3.6/library/stdtypes.html?highlight=find#str.find
-            elif not curses.ascii.isascii(
-                    header_text_trimmed[i]) or STRIPPED.find(
+            elif not _isascii(header_text_trimmed[i]) or STRIPPED.find(
                         header_text_trimmed[i]) != -1:
                 if inserted and not stripped:
                     header_text_trimmed_middle_stage += '-'
