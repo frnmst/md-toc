@@ -1,7 +1,7 @@
 #
 # exceptions.py
 #
-# Copyright (C) 2017-2019 frnmst (Franco Masotti) <franco.masotti@live.com>
+# Copyright (C) 2017-2020 frnmst (Franco Masotti) <franco.masotti@live.com>
 #
 # This file is part of md-toc.
 #

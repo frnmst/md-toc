@@ -3,8 +3,7 @@
 #
 # Makefile
 #
-# Copyright (C) 2017-2018 frnmst (Franco Masotti) <franco.masotti@live.com>
-#                                            <franco.masotti@student.unife.it>
+# Copyright (C) 2017-2020 frnmst (Franco Masotti) <franco.masotti@live.com>
 #
 # This file is part of md-toc.
 #
