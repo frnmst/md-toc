@@ -1,26 +1,14 @@
 Installation
 ============
 
-Run the following command in either a root or normal terminal (depending on 
-your Python setup) from the root directory of the project's cloned repository,
-
-First of all install `pipenv <https://pipenv.readthedocs.io/en/latest/>`_ and then:
-
-::
-
-
-    $ make install
-
-
-You can also install md_toc via pip (i.e: without having to download the source 
-code):
+Install md_toc via pip:
 
 ::
 
     $ pip3 install md_toc --user
 
 
-All the necessary dependencies should be installed automatically along with the 
+All the necessary dependencies are installed automatically along with the 
 program.
 
 Distribution packages

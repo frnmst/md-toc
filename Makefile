@@ -34,16 +34,22 @@ doc:
 	pipenv run $(MAKE) -C docs html
 
 install:
-	pip install .
+	pip3 install . --user
+
+uninstall:
+	pip3 install md_toc
+
+install-dev:
+	pipenv install
+
+uninstall-dev:
+	pipenv --rm
 
 test:
 	pipenv run python setup.py test
 
 benchmark:
 	pushd tests && ./benchmark.sh 10 && popd
-
-uninstall:
-	pip uninstall md_toc
 
 dist:
 	pipenv run python setup.py sdist

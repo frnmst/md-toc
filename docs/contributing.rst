@@ -29,15 +29,28 @@ Branch                                  Description                             
 Dependencies
 ------------
 
-First of all install the software requirements from the Pipfile
-in the repository's root:
+First of all install `pipenv <https://pipenv.readthedocs.io/en/latest/>`_ and then
+install the software requirements from the Pipfile in the repository's root:
 
 
 ::
 
 
-    $ pipenv install
+    $ make install-dev
 
+
+
+Once you make changes you can install md_toc to have access to its executable file.
+Install `pip <https://pypi.org/project/pip/>`_ and then:
+
+
+::
+
+
+    $ make install
+
+
+.. note:: don't forget to add ``~/.local/bin`` to ``PATH``.
 
 Unit tests
 ----------
