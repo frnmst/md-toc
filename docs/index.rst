@@ -14,6 +14,7 @@ Welcome to md-toc's documentation!
    api
    markdown_specification
    contributing
+   source_code
    copyright_license
 
 Indices and tables

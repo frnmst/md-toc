@@ -119,7 +119,7 @@ Go in the repository's root and then:
 
 ::
 
-    grep -e TODO -e FIXME -n */*.py
+    $ grep -e TODO -e FIXME -n */*.py
 
 
 Contribution Steps

@@ -30,7 +30,7 @@ verify_ssl = true
 flake8 = "==3.7.9"
 flake8-docstrings = "==1.5.0"
 yapf = "==0.26.0"
-alabaster = "==0.7.12"
+sphinx-rtd-theme = '==0.4.3'
 twine = "==1.13"
 fpyutils = "==1.1.0"
 nose = "==1.3"
