@@ -173,6 +173,16 @@ def build_toc(filename: str,
     else:
         f = open(filename, 'r')
 
+    # Help the developers: override the list_marker in case
+    # this function is called with the default unordered list marker,
+    # for example like this:
+    # print(md_toc.build_toc('test.md', ordered=True))
+    # This avoids an AssertionError later on.
+    if (ordered and list_marker == md_parser[parser]['list']['unordered']
+        ['default marker']):
+        list_marker = md_parser[parser]['list']['ordered'][
+            'default closing marker']
+
     if skip_lines > 0:
         loop = True
         line_counter = 1
@@ -308,6 +318,9 @@ def build_multiple_tocs(filenames: list,
          file.
     :rtype: list
     :raises: a built-in exception.
+
+    .. warning:: In case of ordered TOCs you must explicitly pass one of the
+        supported ordered list markers.
     """
     if len(filenames) > 0:
         for f in filenames:
@@ -413,7 +426,7 @@ def compute_toc_line_indentation_spaces(
     :parameter parser: decides rules on how compute indentations.
          Defaults to ``github``.
     :parameter ordered: if set to ``True``, numbers will be used
-         as list ids or otherwise a dash character, otherwise.
+         as list ids instead of dash characters.
          Defaults to ``False``.
     :parameter list_marker: a string that contains some of the first
          characters of the list element.
@@ -433,6 +446,9 @@ def compute_toc_line_indentation_spaces(
     :returns: None
     :rtype: None
     :raises: a built-in exception.
+
+    .. warning:: In case of ordered TOCs you must explicitly pass one of the
+        supported ordered list markers.
     """
     assert header_type_curr >= 1
     assert header_type_prev >= 0
@@ -530,6 +546,9 @@ def build_toc_line_without_indentation(header: dict,
          without indentation.
     :rtype: str
     :raises: a built-in exception.
+
+    .. warning:: In case of ordered TOCs you must explicitly pass one of the
+        supported ordered list markers.
     """
     assert 'type' in header
     assert 'text_original' in header
