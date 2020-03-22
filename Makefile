@@ -45,6 +45,9 @@ install-dev:
 uninstall-dev:
 	pipenv --rm
 
+demo:
+	asciinema/md_toc_asciinema_2_0_0_demo.sh
+
 test:
 	pipenv run python setup.py test
 
@@ -62,4 +65,4 @@ clean:
 	rm -rf build dist *.egg-info tests/benchmark-results
 	pipenv run $(MAKE) -C docs clean
 
-.PHONY: default pep doc install install-dev uninstall uninstall-dev test benchmark dist upload clean
+.PHONY: default pep doc install install-dev uninstall uninstall-dev test benchmark dist upload clean demo

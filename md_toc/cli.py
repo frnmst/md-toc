@@ -85,14 +85,12 @@ class CliInterface():
             formatter_class=argparse.RawDescriptionHelpFormatter,
             epilog=textwrap.dedent(PROGRAM_EPILOG))
 
-        parser.add_argument(
-            'filename',
-            metavar='FILE_NAME',
-            nargs='*',
-            help='the I/O file name')
-
+        # markdown parser is first positional argument.
+        # File names are arguments to the subparser.
         subparsers = parser.add_subparsers(
-            dest='parser', title='markdown parser')
+            dest='parser',
+            title='markdown parser',
+            help='<markdown parser> --help')
         subparsers.required = True
 
         # github + cmark + gitlab + commonmarker.
@@ -103,6 +101,12 @@ class CliInterface():
                          option is selected, the default output will be an \
                          unordered list with the respective default values \
                          as listed below')
+        github.add_argument(
+            'filename',
+            metavar='FILE_NAME',
+            nargs='*',
+            help='the I/O file name')
+
         megroup = github.add_mutually_exclusive_group()
         megroup.add_argument(
             '-u',
@@ -144,6 +148,11 @@ class CliInterface():
                          as listed below. Gitlab rules are the same as \
                          Redcarpet except that conflicts are avoided with \
                          duplicate headers.')
+        redcarpet.add_argument(
+            'filename',
+            metavar='FILE_NAME',
+            nargs='*',
+            help='the I/O file name')
 
         megroup = redcarpet.add_mutually_exclusive_group()
         megroup.add_argument(
