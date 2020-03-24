@@ -46,7 +46,7 @@ uninstall-dev:
 	pipenv --rm
 
 demo:
-	asciinema/md_toc_asciinema_2_0_0_demo.sh
+	asciinema/md_toc_asciinema_$$(git describe --tags $$(git rev-list --tags --max-count=1) | tr '.' '_')_demo.sh
 
 test:
 	pipenv run python setup.py test
