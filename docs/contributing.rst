@@ -133,3 +133,5 @@ Contribution Steps
 6. run PEP linter and check
 7. update relevant documentation, if necessary
 8. pull request
+
+.. note:: Have a look at `this post <https://frnmst.gitlab.io/notes/my-python-release-workflow.html>`_ as well.
