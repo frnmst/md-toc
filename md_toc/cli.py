@@ -33,7 +33,7 @@ try:
     VERSION_NUMBER = str(get_distribution('md_toc').version)
 except DistributionNotFound:
     VERSION_NUMBER = 'vDevel'
-VERSION_COPYRIGHT = 'Copyright (C) 2018-2019 Franco Masotti, frnmst'
+VERSION_COPYRIGHT = 'Copyright (C) 2017-2020 Franco Masotti, frnmst'
 VERSION_LICENSE = 'License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.'
 RETURN_VALUES = 'Return values: 0 ok, 1 error, 2 invalid command'
 ADVICE = 'Please read the documentation to understand how each parser works'
@@ -78,6 +78,18 @@ class CliInterface():
         """Set the parser variable that will be used instead of using create_parser."""
         self.parser = self.create_parser()
 
+    def add_filename_argument(self, parser):
+        """Add the filename argument to the pecified parser.
+
+        The filename argument is common to all markdown parsers.
+        See commit b65cf32.
+        """
+        parser.add_argument(
+            'filename',
+            metavar='FILE_NAME',
+            nargs='*',
+            help='the I/O file name')
+
     def create_parser(self):
         """Create the CLI parser."""
         parser = argparse.ArgumentParser(
@@ -101,11 +113,7 @@ class CliInterface():
                          option is selected, the default output will be an \
                          unordered list with the respective default values \
                          as listed below')
-        github.add_argument(
-            'filename',
-            metavar='FILE_NAME',
-            nargs='*',
-            help='the I/O file name')
+        self.add_filename_argument(github)
 
         megroup = github.add_mutually_exclusive_group()
         megroup.add_argument(
@@ -148,11 +156,7 @@ class CliInterface():
                          as listed below. Gitlab rules are the same as \
                          Redcarpet except that conflicts are avoided with \
                          duplicate headers.')
-        redcarpet.add_argument(
-            'filename',
-            metavar='FILE_NAME',
-            nargs='*',
-            help='the I/O file name')
+        self.add_filename_argument(redcarpet)
 
         megroup = redcarpet.add_mutually_exclusive_group()
         megroup.add_argument(
@@ -192,13 +196,14 @@ class CliInterface():
         redcarpet.set_defaults(header_levels=md_parser['redcarpet']['header']
                                ['default keep levels'])
 
-        c_or_i = parser.add_mutually_exclusive_group()
-        c_or_i.add_argument(
+        no_list_coherence_or_no_indentation = parser.add_mutually_exclusive_group(
+        )
+        no_list_coherence_or_no_indentation.add_argument(
             '-c',
             '--no-list-coherence',
             action='store_true',
             help='avoids checking for TOC list coherence')
-        c_or_i.add_argument(
+        no_list_coherence_or_no_indentation.add_argument(
             '-i',
             '--no-indentation',
             action='store_true',
