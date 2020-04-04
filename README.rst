@@ -126,6 +126,39 @@ CLI Helps
     $ md_toc redcarpet --help
 
 
+Pre-commit hook
+---------------
+
+This repo provides a plugin for use with the `Pre-commit framework`_.
+
+Sample ``.pre-commit-config.yaml`` within your git repo
+to use the default plugin settings:
+
+
+::
+
+    repos:
+    - repo: https://github.com/frnmst/md-toc
+      rev: master  # or a specific git tag from md-toc
+      hooks:
+      - id: md-toc
+
+
+Override the defaults via the ``args`` parameter, such as:
+
+
+::
+
+    repos:
+    - repo: https://github.com/frnmst/md-toc
+      rev: master  # or a specific git tag from md-toc
+      hooks:
+      - id: md-toc
+        args: [-p, --skip-lines, '1', redcarpet]  # CLI options
+
+
+.. _Pre-commit framework: https://pre-commit.com/
+
 License
 -------
 
