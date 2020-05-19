@@ -57,6 +57,7 @@ benchmark:
 dist:
 	pipenv run python setup.py sdist
 	pipenv run python setup.py bdist_wheel
+	pipenv run twine check dist/*
 
 upload:
 	pipenv run twine upload dist/*

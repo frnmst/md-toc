@@ -28,6 +28,7 @@ setup(
     license='GPL',
     description='A utility that is able to generate a table of contents for a markdown file.',
     long_description=open('README.rst').read(),
+    long_description_content_type='text/x-rst',
     package_data={
         '': ['*.txt', '*.rst'],
     },
