@@ -13,6 +13,7 @@ Welcome to md-toc's documentation!
    install
    api
    markdown_specification
+   pre_commit_hook
    contributing
    source_code
    copyright_license
