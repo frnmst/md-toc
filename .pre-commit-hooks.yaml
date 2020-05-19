@@ -1,0 +1,11 @@
+---
+# Define plugins (hooks) provided by this repo.
+# How to test: https://pre-commit.com/#developing-hooks-interactively
+
+- id: md-toc
+  name: Update markdown table-of-contents
+  description: 'Replace TOC marker with a table of contents'
+  language: python
+  types: [markdown]  # as detected by pre-commit with identify-cli
+  entry: md_toc
+  args: [-p, github]
