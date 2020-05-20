@@ -8,8 +8,8 @@ This repo provides the following plugin for use with the `Pre-commit framework <
    :name: .pre-commit-hooks.yaml
    :language: yaml
 
-Add a ``.pre-commit-config.yaml`` file in your git repo
-to use the default plugin settings:
+Add a ``.pre-commit-config.yaml`` file in the root of your git repo.
+These are the default plugin settings:
 
 
 .. code-block:: yaml
@@ -24,7 +24,7 @@ to use the default plugin settings:
 
 
 
-You can override the default settings via the ``args`` parameter, such as:
+You can override the defaults via the ``args`` parameter, such as:
 
 
 .. code-block:: yaml
@@ -37,3 +37,6 @@ You can override the default settings via the ``args`` parameter, such as:
       hooks:
       - id: md-toc
         args: [-p, --skip-lines, '1', redcarpet]  # CLI options
+
+
+Finally run ``$ pre-commit install`` to enable the hook.
