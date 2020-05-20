@@ -23,7 +23,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='md_toc',
-    version='7.0.1',
+    version='7.0.2',
     packages=find_packages(exclude=['*tests*']),
     license='GPL',
     description='A utility that is able to generate a table of contents for a markdown file.',
@@ -51,6 +51,6 @@ setup(
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Programming Language :: Python :: 3',
     ],
-    install_requires=['fpyutils==1.1.0'],
+    install_requires=['fpyutils==1.1.2'],
 )
 
