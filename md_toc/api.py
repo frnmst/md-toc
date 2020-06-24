@@ -73,17 +73,19 @@ def write_string_on_file_between_markers(filename: str, string: str,
         raise StdinIsNotAFileToBeWritten
 
     final_string = marker + '\n\n' + string.rstrip() + '\n\n' + marker + '\n'
-    marker_line_positions = fpyutils.get_line_matches(
+    marker_line_positions = fpyutils.filelines.get_line_matches(
         filename, marker, 2, loose_matching=True)
 
     if 1 in marker_line_positions:
         if 2 in marker_line_positions:
-            fpyutils.remove_line_interval(filename, marker_line_positions[1],
-                                          marker_line_positions[2], filename)
+            fpyutils.filelines.remove_line_interval(
+                filename, marker_line_positions[1], marker_line_positions[2],
+                filename)
         else:
-            fpyutils.remove_line_interval(filename, marker_line_positions[1],
-                                          marker_line_positions[1], filename)
-        fpyutils.insert_string_at_line(
+            fpyutils.filelines.remove_line_interval(
+                filename, marker_line_positions[1], marker_line_positions[1],
+                filename)
+        fpyutils.filelines.insert_string_at_line(
             filename,
             final_string,
             marker_line_positions[1],
