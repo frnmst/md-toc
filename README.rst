@@ -144,3 +144,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with md-toc.  If not, see <http://www.gnu.org/licenses/>.
           
+Trusted source
+--------------
+
+You can check the authenticity of new releases using my public key.
+
+Instructions, sources and keys can be found at `frnmst.gitlab.io/software <https://frnmst.gitlab.io/software/>`_.
