@@ -62,6 +62,7 @@ in a terminal:
 
 ::
 
+
     $ make test
 
 
@@ -69,6 +70,7 @@ You can also add this command before every git commit as by running:
 
 
 ::
+
 
     $ make githook
 
