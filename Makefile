@@ -20,14 +20,9 @@
 # along with md-toc.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-default: pep doc test
+export PACKAGE_NAME=md_toc
 
-githook:
-	git config core.hooksPath .githooks
-
-pep:
-	pipenv run yapf --style '{based_on_style: pep8; indent_width: 4}' -i md_toc/*.py tests/*.py
-	pipenv run flake8 --ignore=F401,E501,W503,W504,W605,E125,E129 md_toc/*.py tests/*.py
+default: doc
 
 doc:
 	pipenv run $(MAKE) -C docs html
@@ -36,10 +31,11 @@ install:
 	pip3 install . --user
 
 uninstall:
-	pip3 install md_toc
+	pip3 uninstall $(PACKAGE_NAME)
 
 install-dev:
-	pipenv install
+	pipenv install --dev
+	pipenv run pre-commit install
 
 uninstall-dev:
 	pipenv --rm
@@ -65,4 +61,4 @@ clean:
 	rm -rf build dist *.egg-info tests/benchmark-results
 	pipenv run $(MAKE) -C docs clean
 
-.PHONY: default pep doc install install-dev uninstall uninstall-dev test benchmark dist upload clean demo
+.PHONY: default doc install uninstall install-dev uninstall-dev test clean demo benchmark

@@ -15,6 +15,7 @@ Welcome to md-toc's documentation!
    markdown_specification
    pre_commit_hook
    contributing
+   workflow
    source_code
    copyright_license
 
