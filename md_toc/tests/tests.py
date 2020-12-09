@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #
 # tests.py
 #
@@ -18,10 +19,10 @@
 # You should have received a copy of the GNU General Public License
 # along with md-toc.  If not, see <http://www.gnu.org/licenses/>.
 #
-"""The tests module."""
+r"""The tests module."""
 
-from md_toc import (api, exceptions, constants)
-from md_toc.constants import parser as md_parser
+from .. import (api, exceptions)
+from ..constants import parser as md_parser
 import unittest
 
 # Some static generic variables.
@@ -72,7 +73,7 @@ GITHUB_LINE_FOO = 'foo'
 GITHUB_LINE_BAR = 'bar'
 GITHUB_LINE_5_BOLT = '5 bolt'
 GITHUB_LINE_HASHTAG = 'hashtag'
-GITHUB_LINE_BAR_BAZ = '*bar* \*baz\*'
+GITHUB_LINE_BAR_BAZ = '*bar* ' + LINE_ESCAPE + '*baz' + LINE_ESCAPE + '*'
 GITHUB_LINE_B = 'b'
 GITHUB_LINE_1000_CHARS = 1000 * 'c'
 
