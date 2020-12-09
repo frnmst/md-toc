@@ -55,7 +55,7 @@ upload:
 	pipenv run twine upload dist/*
 
 clean:
-	rm -rf build dist *.egg-info tests/benchmark-results
+	rm -rf build dist *.egg-info tests/benchmark-results *.md
 	pipenv run $(MAKE) -C docs clean
 
 .PHONY: default doc install uninstall install-dev uninstall-dev test clean demo benchmark
