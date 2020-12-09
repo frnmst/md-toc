@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with md-toc.  If not, see <http://www.gnu.org/licenses/>.
 #
+r"""setup.py."""
 
 from setuptools import setup, find_packages
 
@@ -42,7 +43,6 @@ setup(
             'md_toc=md_toc.__main__:main',
         ],
     },
-    test_suite='tests',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Topic :: Utilities',
@@ -51,6 +51,7 @@ setup(
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Programming Language :: Python :: 3',
     ],
-    install_requires=['fpyutils==1.2.0'],
+    install_requires=[
+        'fpyutils>=1.2,<1.3'
+    ],
 )
-
