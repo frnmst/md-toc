@@ -46,9 +46,6 @@ demo:
 test:
 	python -m unittest md_toc.tests.tests --failfast --locals --verbose
 
-benchmark:
-	pushd md_toc && ./benchmark.sh 10 && popd
-
 dist:
 	pipenv run python setup.py sdist
 	pipenv run python setup.py bdist_wheel
