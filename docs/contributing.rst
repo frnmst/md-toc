@@ -1,7 +1,7 @@
 Contributing
 ============
 
-`Contributing [common] <https://frnmst.github.io/fpydocs/>`_ version `0.0.1 <https://github.com/frnmst/fpydocs/releases/tag/0.0.1>`_
+`Contributing [common] <https://frnmst.github.io/fpydocs/>`_ version `1.0.0 <https://github.com/frnmst/fpydocs/releases/tag/1.0.0>`_
 
 Talk
 ----
