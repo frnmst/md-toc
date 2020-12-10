@@ -17,10 +17,10 @@ These are the default plugin settings:
    :name: .pre-commit-config.yaml simple
 
     repos:
-    - repo: https://github.com/frnmst/md-toc
-      rev: master  # or a specific git tag from md-toc
-      hooks:
-      - id: md-toc
+    -   repo: https://github.com/frnmst/md-toc
+        rev: master  # or a specific git tag from md-toc
+        hooks:
+        -   id: md-toc
 
 
 
@@ -32,11 +32,33 @@ You can override the defaults via the ``args`` parameter, such as:
    :name: .pre-commit-config.yaml args
 
     repos:
-    - repo: https://github.com/frnmst/md-toc
-      rev: master  # or a specific git tag from md-toc
-      hooks:
-      - id: md-toc
-        args: [-p, --skip-lines, '1', redcarpet]  # CLI options
+    -   repo: https://github.com/frnmst/md-toc
+        rev: master  # or a specific git tag from md-toc
+        hooks:
+        -   id: md-toc
+            args: [-p, --skip-lines, '1', redcarpet]  # CLI options
+
+
+This is what I use in some repositories:
+
+.. code-block:: yaml
+
+    # See https://pre-commit.com for more information
+    # See https://pre-commit.com/hooks.html for more hooks
+    repos:
+    -   repo: https://github.com/pre-commit/pre-commit-hooks
+        rev: v2.4.0
+        hooks:
+        -   id: trailing-whitespace
+        -   id: end-of-file-fixer
+        -   id: check-yaml
+        -   id: check-added-large-files
+
+    -  repo: https://github.com/frnmst/md-toc
+       rev: 'master'  # or a specific git tag from md-toc
+       hooks:
+       -    id: md-toc
+            args: [-p, 'github', '-l6']  # CLI options
 
 
 Finally run ``$ pre-commit install`` to enable the hook.
