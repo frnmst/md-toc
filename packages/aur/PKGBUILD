@@ -16,7 +16,7 @@ sha512sums=('SKIP' 'SKIP')
 
 check() {
   cd "${srcdir}"/md-toc-"${pkgver}"
-  python setup.py test
+  python -m unittest discover --failfast --locals --verbose
 }
 
 package() {
