@@ -27,7 +27,6 @@ from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
                          GithubOverflowOrderedListMarker,
                          StdinIsNotAFileToBeWritten,
                          TocDoesNotRenderAsCoherentList)
-from .constants import common_defaults
 from .constants import parser as md_parser
 
 
@@ -40,7 +39,8 @@ from .constants import parser as md_parser
 # PYTHON SOFTWARE FOUNDATION LICENSE VERSION 2
 # See https://directory.fsf.org/wiki/License:Python-2.0.1
 def _ctoi(c: str):
-    assert len(c) == 1
+    if not len(c) == 1:
+        raise ValueError
 
     retval = c
     if isinstance(c, str):
@@ -109,13 +109,16 @@ def write_strings_on_files_between_markers(filenames: list, strings: list,
     :rtype: None
     :raises: an fpyutils exception or a built-in exception.
     """
-    assert len(filenames) == len(strings)
+    if not len(filenames) == len(strings):
+        raise ValueError
     if len(filenames) > 0:
         for f in filenames:
-            assert isinstance(f, str)
+            if not isinstance(f, str):
+                raise TypeError
     if len(strings) > 0:
         for s in strings:
-            assert isinstance(s, str)
+            if not isinstance(s, str):
+                raise TypeError
 
     file_id = 0
     for f in filenames:
@@ -161,7 +164,8 @@ def build_toc(filename: str,
     :rtype: str
     :raises: a built-in exception.
     """
-    assert skip_lines >= 0
+    if not skip_lines >= 0:
+        raise ValueError
 
     toc = str()
     header_type_counter = dict()
@@ -180,8 +184,7 @@ def build_toc(filename: str,
     # for example like this:
     # print(md_toc.build_toc('test.md', ordered=True))
     # This avoids an AssertionError later on.
-    if (ordered and list_marker == md_parser[parser]['list']['unordered']
-        ['default marker']):
+    if (ordered and list_marker == md_parser[parser]['list']['unordered']['default marker']):
         list_marker = md_parser[parser]['list']['ordered'][
             'default closing marker']
 
@@ -326,7 +329,8 @@ def build_multiple_tocs(filenames: list,
     """
     if len(filenames) > 0:
         for f in filenames:
-            assert isinstance(f, str)
+            if not isinstance(f, str):
+                raise TypeError
 
     if len(filenames) == 0:
         filenames.append('-')
@@ -362,8 +366,10 @@ def increase_index_ordered_list(header_type_count: dict,
     :raises: GithubOverflowOrderedListMarker or a built-in exception.
     """
     # header_type_prev might be 0 while header_type_curr can't.
-    assert header_type_prev >= 0
-    assert header_type_curr >= 1
+    if not header_type_prev >= 0:
+        raise ValueError
+    if not header_type_curr >= 1:
+        raise ValueError
 
     # Base cases for a new table of contents or a new index type.
     if header_type_prev == 0:
@@ -398,7 +404,8 @@ def init_indentation_log(parser: str = 'github',
     .. warning: this function does not make distinctions between ordered and unordered
          TOCs.
     """
-    assert parser in md_parser
+    if parser not in md_parser:
+        raise ValueError
 
     indentation_log = dict()
     for i in range(1, md_parser[parser]['header']['max levels'] + 1):
@@ -452,31 +459,37 @@ def compute_toc_line_indentation_spaces(
     .. warning:: In case of ordered TOCs you must explicitly pass one of the
         supported ordered list markers.
     """
-    assert header_type_curr >= 1
-    assert header_type_prev >= 0
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker' or parser == 'redcarpet'):
+    if not header_type_curr >= 1:
+        raise ValueError
+    if not header_type_prev >= 0:
+        raise ValueError
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'redcarpet']:
         if ordered:
-            assert list_marker in md_parser[parser]['list']['ordered'][
-                'closing markers']
+            if list_marker not in md_parser[parser]['list']['ordered']['closing markers']:
+                raise ValueError
         else:
-            assert list_marker in md_parser[parser]['list']['unordered'][
-                'bullet markers']
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
-        assert len(
-            indentation_log) == md_parser['github']['header']['max levels']
+            if list_marker not in md_parser[parser]['list']['unordered']['bullet markers']:
+                raise ValueError
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
+        if not len(indentation_log) == md_parser['github']['header']['max levels']:
+            raise ValueError
         for i in range(1, md_parser['github']['header']['max levels'] + 1):
-            assert 'index' in indentation_log[i]
-            assert 'list marker' in indentation_log[i]
-            assert 'indentation spaces' in indentation_log[i]
-            assert isinstance(indentation_log[i]['list marker'], str)
-            assert isinstance(indentation_log[i]['index'], int)
-            assert isinstance(indentation_log[i]['indentation spaces'], int)
-    assert index >= 1
+            if 'index' not in indentation_log[i]:
+                raise ValueError
+            if 'list marker' not in indentation_log[i]:
+                raise ValueError
+            if 'indentation spaces' not in indentation_log[i]:
+                raise ValueError
+            if not isinstance(indentation_log[i]['list marker'], str):
+                raise TypeError
+            if not isinstance(indentation_log[i]['index'], int):
+                raise TypeError
+            if not isinstance(indentation_log[i]['indentation spaces'], int):
+                raise TypeError
+    if not index >= 1:
+        raise TypeError
 
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
         if ordered:
             if header_type_prev == 0:
                 index_length = 0
@@ -513,7 +526,7 @@ def compute_toc_line_indentation_spaces(
             indentation_log[header_type_curr]['index'] = index
         indentation_log[header_type_curr]['list marker'] = list_marker
 
-    elif parser == 'redcarpet':
+    elif parser in ['redcarpet']:
         indentation_log[header_type_curr]['indentation spaces'] = 4 * (
             header_type_curr - 1)
 
@@ -552,31 +565,40 @@ def build_toc_line_without_indentation(header: dict,
     .. warning:: In case of ordered TOCs you must explicitly pass one of the
         supported ordered list markers.
     """
-    assert 'type' in header
-    assert 'text_original' in header
-    assert 'text_anchor_link' in header
-    assert isinstance(header['type'], int)
-    assert isinstance(header['text_original'], str)
-    assert isinstance(header['text_anchor_link'], str)
-    assert header['type'] >= 1
-    assert index >= 1
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker' or parser == 'redcarpet'):
+    if 'type' not in header:
+        raise ValueError
+    if 'text_original' not in header:
+        raise ValueError
+    if 'text_anchor_link' not in header:
+        raise ValueError
+    if not isinstance(header['type'], int):
+        raise TypeError
+    if not isinstance(header['text_original'], str):
+        raise TypeError
+    if not isinstance(header['text_anchor_link'], str):
+        raise TypeError
+    if not header['type'] >= 1:
+        raise ValueError
+    if not index >= 1:
+        raise ValueError
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'redcarpet']:
         if ordered:
-            assert list_marker in md_parser[parser]['list']['ordered'][
-                'closing markers']
+            if list_marker not in md_parser[parser]['list']['ordered']['closing markers']:
+                raise ValueError
         else:
-            assert list_marker in md_parser[parser]['list']['unordered'][
-                'bullet markers']
+            if list_marker not in md_parser[parser]['list']['unordered']['bullet markers']:
+                raise ValueError
 
     toc_line_no_indent = str()
 
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker' or parser == 'redcarpet'):
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'redcarpet']:
         if ordered:
             list_marker = str(index) + list_marker
 
-        # FIXME: is this always correct?
+        # See
+        # https://spec.commonmark.org/0.28/#example-472
+        # and
+        # https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L998
         if no_links:
             line = header['text_original']
         else:
@@ -600,7 +622,8 @@ def build_toc_line(toc_line_no_indent: str,
     :rtype: str
     :raises: a built-in exception.
     """
-    assert no_of_indentation_spaces >= 0
+    if not no_of_indentation_spaces >= 0:
+        raise ValueError
 
     indentation = no_of_indentation_spaces * ' '
     toc_line = indentation + toc_line_no_indent
@@ -632,12 +655,12 @@ def build_anchor_link(header_text_trimmed: str,
          The licenses of each markdown parser algorithm are reported on
          the 'Markdown spec' documentation page.
     """
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
         header_text_trimmed = header_text_trimmed.lower()
         # Remove punctuation: Keep spaces, hypens and "word characters"
         # only.
         header_text_trimmed = re.sub(r'[^\w\s\- ]', '', header_text_trimmed)
+        # Replace spaces with dash.
         header_text_trimmed = header_text_trimmed.replace(' ', '-')
 
         # Check for duplicates.
@@ -652,7 +675,7 @@ def build_anchor_link(header_text_trimmed: str,
                 header_duplicate_counter[header_text_trimmed])
         header_duplicate_counter[ht] += 1
         return header_text_trimmed
-    elif parser == 'redcarpet':
+    elif parser in ['redcarpet']:
         # To ensure full compatibility what follows is a direct translation
         # of the rndr_header_anchor C function used in redcarpet.
         STRIPPED = " -&+$,/:;=?@\"#{}|^~[]`\\*()%.!'"
@@ -727,14 +750,15 @@ def get_atx_heading(line: str,
     :raises: GithubEmptyLinkLabel or GithubOverflowCharsLinkLabel or a
          built-in exception.
     """
-    assert keep_header_levels >= 1
+    if not keep_header_levels >= 1:
+        raise ValueError
 
     if len(line) == 0:
         return None
 
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
 
+        # Backslash.
         if line[0] == '\u005c':
             return None
 
@@ -765,44 +789,49 @@ def get_atx_heading(line: str,
         while i < len(line) and line[i] == ' ':
             i += 1
 
-        # An algorithm to find the start and the end of the closing sequence.
+        # An algorithm to find the start and the end of the closing sequence (cs).
         # The closing sequence includes all the significant part of the
         # string. This algorithm has a complexity of O(n) with n being the
         # length of the line.
         cs_start = i
         cs_end = cs_start
+        # line_prime =~ l'.
         line_prime = line[::-1]
+        len_line = len(line)
         hash_char_rounds = 0
-        go_on = True
+        go = True
         i = 0
-        i_prev = i
-        while i < len(line) - cs_start - 1 and go_on:
-            if ((line_prime[i] != ' ' and line_prime[i] != '#')
-                    or hash_char_rounds > 1):
-                if i > i_prev:
-                    cs_end = len(line_prime) - i_prev
-                else:
-                    cs_end = len(line_prime) - i
-                go_on = False
-            while go_on and line_prime[i] == ' ':
-                i += 1
-            i_prev = i
-            while go_on and line_prime[i] == '#':
-                i += 1
-            if i > i_prev:
-                hash_char_rounds += 1
+        hash_round_start = i
 
-        # Instead of changing the whole algorithm to check for line
-        # endings, this seems cleaner.
-        find_newline = line.find('\u000a')
-        find_carriage_return = line.find('\u000d')
-        if find_newline != -1:
-            cs_end = min(cs_end, find_newline)
-        if find_carriage_return != -1:
-            cs_end = min(cs_end, find_carriage_return)
+        # Ignore all characters after newlines and carrage returns which
+        # are not at the end of the line.
+        # See the two CRLF marker tests.
+        crlf_marker = 0
+        while i < len_line - cs_start - 1:
+            if line_prime[i] in ['\u000a', '\u000d']:
+                crlf_marker = i
+            i += 1
+
+        i = crlf_marker
+        while i < len_line - cs_start - 1 and go:
+            if (line_prime[i] not in [' ', '#', '\u000a', '\u000d']
+                    or hash_char_rounds > 1):
+                if i > hash_round_start:
+                    cs_end = len_line - hash_round_start
+                else:
+                    cs_end = len_line - i
+                go = False
+            while go and line_prime[i] in [' ', '\u000a', '\u000d']:
+                i += 1
+            hash_round_start = i
+            while go and line_prime[i] == '#':
+                i += 1
+            if i > hash_round_start:
+                hash_char_rounds += 1
 
         final_line = line[cs_start:cs_end]
 
+        # Add escaping.
         if not no_links:
             if len(final_line) > 0 and final_line[-1] == '\u005c':
                 final_line += ' '
@@ -813,9 +842,10 @@ def get_atx_heading(line: str,
             if len(final_line
                    ) > md_parser['github']['link']['max chars label']:
                 raise GithubOverflowCharsLinkLabel
-            # Escape square brackets if not already escaped.
+
             i = 0
             while i < len(final_line):
+                # Escape square brackets if not already escaped.
                 if (final_line[i] == '[' or final_line[i] == ']'):
                     j = i - 1
                     consecutive_escape_characters = 0
@@ -834,7 +864,7 @@ def get_atx_heading(line: str,
                 else:
                     i += 1
 
-    elif parser == 'redcarpet':
+    elif parser in ['redcarpet']:
 
         if line[0] != '#':
             return None
@@ -939,11 +969,10 @@ def is_valid_code_fence_indent(line: str, parser: str = 'github') -> bool:
     :rtype: bool
     :raises: a built-in exception.
     """
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
         return len(line) - len(line.lstrip(
             ' ')) <= md_parser['github']['code fence']['min marker characters']
-    elif parser == 'redcarpet':
+    elif parser in ['redcarpet']:
         # TODO.
         return False
 
@@ -962,8 +991,7 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
     :rtype: typing.Optional[str]
     :raises: a built-in exception.
     """
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
         markers = md_parser['github']['code fence']['marker']
         marker_min_length = md_parser['github']['code fence'][
             'min marker characters']
@@ -972,8 +1000,7 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
             return None
 
         line = line.lstrip(' ').rstrip('\n')
-        if not line.startswith(
-            (markers[0] * marker_min_length, markers[1] * marker_min_length)):
+        if not line.startswith((markers[0] * marker_min_length, markers[1] * marker_min_length)):
             return None
 
         if line == len(line) * line[0]:
@@ -989,7 +1016,7 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
             return None
 
         return line.rstrip(info_string)
-    elif parser == 'redcarpet':
+    elif parser in ['redcarpet']:
         # TODO.
         return None
 
@@ -1017,8 +1044,7 @@ def is_closing_code_fence(line: str,
     :rtype: bool
     :raises: a built-in exception.
     """
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
         markers = md_parser['github']['code fence']['marker']
         marker_min_length = md_parser['github']['code fence'][
             'min marker characters']
@@ -1070,7 +1096,7 @@ def is_closing_code_fence(line: str,
             return False
 
         return True
-    elif parser == 'redcarpet':
+    elif parser in ['redcarpet']:
         # TODO.
         return False
 
@@ -1088,8 +1114,7 @@ def init_indentation_status_list(parser: str = 'github'):
     """
     indentation_list = list()
 
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker' or parser == 'redcarpet'):
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'redcarpet']:
         for i in range(0, md_parser[parser]['header']['max levels']):
             indentation_list.append(False)
 
@@ -1117,18 +1142,19 @@ def toc_renders_as_coherent_list(
 
     .. note: this function modifies the input list.
     """
-    assert header_type_curr >= 1
-    assert header_type_first >= 1
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker' or parser == 'redcarpet'):
-        assert len(
-            indentation_list) == md_parser[parser]['header']['max levels']
+    if not header_type_curr >= 1:
+        raise ValueError
+    if not header_type_first >= 1:
+        raise ValueError
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'redcarpet']:
+        if not len(indentation_list) == md_parser[parser]['header']['max levels']:
+            raise ValueError
     for e in indentation_list:
-        assert isinstance(e, bool)
+        if not isinstance(e, bool):
+            raise TypeError
 
     renders_as_list = True
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker' or parser == 'redcarpet'):
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'redcarpet']:
         # Update with current information.
         indentation_list[header_type_curr - 1] = True
 

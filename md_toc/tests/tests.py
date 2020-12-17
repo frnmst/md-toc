@@ -41,7 +41,10 @@ S1 = 1 * ' '
 S2 = 2 * ' '
 S3 = 3 * ' '
 S4 = 4 * ' '
+S5 = 5 * ' '
 S10 = 10 * ' '
+S18 = 18 * ' '
+S21 = 21 * ' '
 
 # ATX headers.
 H1 = 1 * '#'
@@ -51,6 +54,7 @@ H4 = 4 * '#'
 H5 = 5 * '#'
 H6 = 6 * '#'
 H7 = 7 * '#'
+H34 = 34 * '#'
 
 # Lists.
 LIST_INDENTATION = 4
@@ -492,7 +496,7 @@ class TestApi(unittest.TestCase):
 
         # Example 37
         self.assertEqual(
-            api.get_atx_heading(H1 + S10 + GITHUB_LINE_FOO + S10, m_github,
+            api.get_atx_heading(H1 + S18 + GITHUB_LINE_FOO + S21, m_github,
                                 'github'), (1, GITHUB_LINE_FOO))
 
         # Example 38
@@ -506,9 +510,14 @@ class TestApi(unittest.TestCase):
             api.get_atx_heading(S3 + H1 + S1 + GITHUB_LINE_FOO, m_github,
                                 'github'), (1, GITHUB_LINE_FOO))
 
-        # Example 39 and 40
+        # Example 39
         self.assertIsNone(
             api.get_atx_heading(S4 + H1 + S1 + GITHUB_LINE_FOO, m_github,
+                                'github'))
+
+        # Example 40
+        self.assertIsNone(
+            api.get_atx_heading(GITHUB_LINE_FOO + LINE_NEWLINE + S4 + H1 + S1 + GITHUB_LINE_BAR, m_github,
                                 'github'))
 
         # Example 41
@@ -521,16 +530,18 @@ class TestApi(unittest.TestCase):
 
         # Example 42
         self.assertEqual(
-            api.get_atx_heading(H1 + S1 + GITHUB_LINE_FOO + S1, m_github,
+            api.get_atx_heading(H1 + S1 + GITHUB_LINE_FOO + S1 + H34, m_github,
                                 'github'), (1, GITHUB_LINE_FOO))
-        self.assertIsNone(api.get_atx_heading(H5 * 7, m_github, 'github'))
         self.assertEqual(
             api.get_atx_heading(H5 + S1 + GITHUB_LINE_FOO + S1 + H2, m_github,
                                 'github'), (5, GITHUB_LINE_FOO))
 
+        # Extra test.
+        self.assertIsNone(api.get_atx_heading(H5 * 7, m_github, 'github'))
+
         # Example 43
         self.assertEqual(
-            api.get_atx_heading(H3 + S1 + GITHUB_LINE_FOO + S1 + H3 + S4,
+            api.get_atx_heading(H3 + S1 + GITHUB_LINE_FOO + S1 + H3 + S5,
                                 m_github, 'github'), (3, GITHUB_LINE_FOO))
 
         # Example 44
@@ -546,6 +557,12 @@ class TestApi(unittest.TestCase):
                                 'github'), (1, GITHUB_LINE_FOO + H1))
 
         # Example 46
+        # Preserve the backslashes unlike the original example so that they
+        # conform to the original ATX header.
+        # See
+        # https://github.com/github/cmark-gfm/blob/6b101e33ba1637e294076c46c69cd6a262c7539f/src/inlines.c#L756
+        # and
+        # https://spec.commonmark.org/0.28/#ascii-punctuation-character
         self.assertEqual(
             api.get_atx_heading(
                 H3 + S1 + GITHUB_LINE_FOO + S1 + LINE_ESCAPE + H3, m_github,
@@ -559,6 +576,8 @@ class TestApi(unittest.TestCase):
             api.get_atx_heading(
                 H1 + S1 + GITHUB_LINE_FOO + S1 + LINE_ESCAPE + H1, m_github,
                 'github'), (1, GITHUB_LINE_FOO + S1 + LINE_ESCAPE + H1))
+
+        # Example 47 and 48 are not relevant for this function.
 
         # Example 49
         self.assertEqual(
@@ -618,6 +637,8 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.get_atx_heading(H1 + LINE_CARRIAGE_RETURN, m_github, 'github',
                                 True), (1, LINE_EMPTY))
+
+        # CRLF marker tests.
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + GITHUB_LINE_FOO + LINE_NEWLINE + GITHUB_LINE_FOO,
