@@ -33,3 +33,13 @@ repos:
     hooks:
     -   id: skjold
         args: ['-s', 'gemnasium', '-s', 'pyup']
+
+-   repo: local
+    hooks:
+    -   id: unit-tests
+        name: unit tests
+        language: system
+        entry: make test
+        verbose: true
+        always_run: true
+        pass_filenames: false
