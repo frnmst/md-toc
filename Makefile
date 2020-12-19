@@ -31,7 +31,7 @@ install:
 	pip3 install . --user
 
 uninstall:
-	pip3 uninstall $(PACKAGE_NAME)
+	 pip3 uninstall --yes $(PACKAGE_NAME)
 
 install-dev:
 	pipenv install --dev
