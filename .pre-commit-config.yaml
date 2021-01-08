@@ -43,3 +43,10 @@ repos:
         verbose: true
         always_run: true
         pass_filenames: false
+    -   id: build-docs
+        name: build docs
+        language: system
+        entry: make doc
+        verbose: true
+        always_run: true
+        pass_filenames: false
