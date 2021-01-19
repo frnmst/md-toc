@@ -4,7 +4,7 @@ Markdown spec
 Introduction
 ------------
 
-md_toc aimes to be as conformant as possible to each supported markdown 
+md_toc aimes to be as conformant as possible to each supported markdown
 parser. What follows is a list of parameters and rules used by md_toc to decide
 how to parse markdown files and to generate the table of contents.
 
@@ -17,28 +17,28 @@ Supported markdown parsers
 
 - ``commonmarker``:
 
-  - a "Ruby wrapper for libcmark (CommonMark parser)". 
+  - a "Ruby wrapper for libcmark (CommonMark parser)".
 
-  - As described on their website: "It also includes extensions to 
+  - As described on their website: "It also includes extensions to
     the CommonMark spec as documented in the GitHub Flavored Markdown spec,
-    such as support for tables, strikethroughs, and autolinking.". For this 
+    such as support for tables, strikethroughs, and autolinking.". For this
     reason we assume that ``commonmarker`` is an alias of ``github``.
 
-- ``github``: 
+- ``github``:
 
   - uses a forked version of ``cmark`` with some added extensions
-    which should not concern md_toc. For this reason we assume that ``cmark`` 
+    which should not concern md_toc. For this reason we assume that ``cmark``
     and ``github`` represent the same parser in md_toc.
 
-- ``gitlab``: 
-  
-  - uses ``commonmarker``. Older versions of md_toc, prior to 
-    version ``3.0.0``, use ``gitlab`` as an alias of ``redcarpet`` while 
-    newer versions use ``github`` instead, because in the past GitLab used 
+- ``gitlab``:
+
+  - uses ``commonmarker``. Older versions of md_toc, prior to
+    version ``3.0.0``, use ``gitlab`` as an alias of ``redcarpet`` while
+    newer versions use ``github`` instead, because in the past GitLab used
     Redcarpet as markdown parser.
 
-  - The extensions used in GitLab Flavored Markdown (not to be confused 
-    with GitHub Flavored Markdown) should not concern md_toc. For this 
+  - The extensions used in GitLab Flavored Markdown (not to be confused
+    with GitHub Flavored Markdown) should not concern md_toc. For this
     reason we assume that ``gitlab`` is an alias of ``github``.
 
 - ``redcarpet``:
@@ -48,15 +48,15 @@ Supported markdown parsers
 Parser Summary
 ``````````````
 
-   ===================   ============   ==================================================================================  =============================================
-   Parser                Alias of       Supported parser version                                                            Source
-   ===================   ============   ==================================================================================  =============================================
-   ``cmark``             ``github``                                                                                         https://github.com/commonmark/cmark
-   ``commonmarker``      ``github``                                                                                         https://github.com/gjtorikian/commonmarker
-   ``github``                           ``Version 0.28-gfm (2017-08-01)``                                                   https://github.com/github/cmark
-   ``gitlab``            ``github``                                                                                         https://docs.gitlab.com/ee/user/markdown.html
-   ``redcarpet``                        ``https://github.com/vmg/redcarpet/tree/94f6e27bdf2395efa555a7c772a3d8b70fb84346``  https://github.com/vmg/redcarpet
-   ===================   ============   ==================================================================================  =============================================
+   ===================   ============   ========================================================================================================  =============================================
+   Parser                Alias of       Supported parser version                                                                                  Source
+   ===================   ============   ========================================================================================================  =============================================
+   ``cmark``             ``github``                                                                                                               https://github.com/commonmark/cmark
+   ``commonmarker``      ``github``                                                                                                               https://github.com/gjtorikian/commonmarker
+   ``github``                           Version 0.28-gfm (2017-08-01)                                                                             https://github.com/github/cmark
+   ``gitlab``            ``github``                                                                                                               https://docs.gitlab.com/ee/user/markdown.html
+   ``redcarpet``                        `Redcarpet v3.5.0 <https://github.com/vmg/redcarpet/tree/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae>`_      https://github.com/vmg/redcarpet
+   ===================   ============   ========================================================================================================  =============================================
 
 Rules
 -----
@@ -66,12 +66,12 @@ Headers
 
 Only ATX-style headings are supported in md_toc.
 
-- ``github``: the code used in md_toc is a reverse engineering of the 
+- ``github``: the code used in md_toc is a reverse engineering of the
   behavour described in the following:
 
   - https://github.github.com/gfm/#atx-heading
 
-  The escape character ``\`` will be left as-is since they are parsed by 
+  The escape character ``\`` will be left as-is since they are parsed by
   Github's markdown parser already:
 
   - https://github.github.com/gfm/#backslash-escapes
@@ -103,7 +103,7 @@ Only ATX-style headings are supported in md_toc.
         to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
         copies of the Software, and to permit persons to whom the Software is
         furnished to do so, subject to the following conditions:
-        
+
         The above copyright notice and this permission notice shall be included in
         all copies or substantial portions of the Software.
         THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -115,8 +115,8 @@ Only ATX-style headings are supported in md_toc.
         THE SOFTWARE.
 
 
-  - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1444
-  - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1981
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1444
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1981
 
 
 List item rules
@@ -125,15 +125,15 @@ List item rules
 Problems
 ^^^^^^^^
 
-We are interested in sublists indentation rules for all types of lists, and 
+We are interested in sublists indentation rules for all types of lists, and
 integer overflows in case of ordered lists.
 
-For ordered lists, we are not concerned about using ``0`` or negative numbers 
-as list markers so these cases will not be considered. Infact ordred lists 
+For ordered lists, we are not concerned about using ``0`` or negative numbers
+as list markers so these cases will not be considered. Infact ordred lists
 generated by md_toc will always start from ``1``.
 
-Talking about indentation rules, I need to mention that the user is responsible 
-for generating a correct markdown list according to the parser's rules. Let's 
+Talking about indentation rules, I need to mention that the user is responsible
+for generating a correct markdown list according to the parser's rules. Let's
 see this example:
 
 
@@ -144,7 +144,7 @@ see this example:
      ### baz
 
 
-no problem here because this is rendered by md_toc, using ``github`` as parser, 
+no problem here because this is rendered by md_toc, using ``github`` as parser,
 with:
 
 
@@ -189,30 +189,30 @@ while the user might expect this:
 Indentation
 ^^^^^^^^^^^
 
-- ``github``: list indentation for sublists with this parser is based on the 
-  previous state, as stated in the GitHub Flavored Markdown document, at 
+- ``github``: list indentation for sublists with this parser is based on the
+  previous state, as stated in the GitHub Flavored Markdown document, at
   section 5.2:
 
-    "The most important thing to notice is that the position of the text after the 
-    list marker determines how much indentation is needed in subsequent blocks in 
-    the list item. If the list marker takes up two spaces, and there are three 
-    spaces between the list marker and the next non-whitespace character, then 
+    "The most important thing to notice is that the position of the text after the
+    list marker determines how much indentation is needed in subsequent blocks in
+    the list item. If the list marker takes up two spaces, and there are three
+    spaces between the list marker and the next non-whitespace character, then
     blocks must be indented five spaces in order to fall under the list item."
 
   - https://github.github.com/gfm/#list-items
 
-  This is also true with the specular case: if our new list element needs less 
+  This is also true with the specular case: if our new list element needs less
   indentation than the one processed currently, we have to use the same number
   of indentation spaces used somewhere earlier in the list.
 
 - ``redcarpet``:
 
-  - https://github.com/vmg/redcarpet/blob/94f6e27bdf2395efa555a7c772a3d8b70fb84346/ext/redcarpet/markdown.c#L1553
-  - https://github.com/vmg/redcarpet/blob/94f6e27bdf2395efa555a7c772a3d8b70fb84346/ext/redcarpet/markdown.c#L1528
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1553
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1528
 
   The following C function returns the first non-whitespace character
   after the list marker. The value of ``0`` is returned if the input
-  line is not a list element. List item rules are explained in the 
+  line is not a list element. List item rules are explained in the
   single line comments.
 
   .. highlight:: c
@@ -248,17 +248,17 @@ Indentation
       }
 
 
-  As far as I can tell from the previous and other functions, on a new list 
+  As far as I can tell from the previous and other functions, on a new list
   block the 4 spaces indentation rule applies:
 
-  - https://github.com/vmg/redcarpet/blob/94f6e27bdf2395efa555a7c772a3d8b70fb84346/ext/redcarpet/markdown.c#L1822
-  - https://github.com/vmg/redcarpet/blob/94f6e27bdf2395efa555a7c772a3d8b70fb84346/ext/redcarpet/markdown.c#L1873
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1822
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1873
 
-  This means that anything that has more than 3 whitespaces is considered as 
-  sublist. The only exception seems to be for the first sublist in a list 
-  block, in which that case even a single whitespace counts as a sublist. 
-  The 4 spaces indentation rule appllies nontheless, so to keep things simple 
-  md_toc will always use 4 whitespaces for sublists. Apparently, ordered and 
+  This means that anything that has more than 3 whitespaces is considered as
+  sublist. The only exception seems to be for the first sublist in a list
+  block, in which that case even a single whitespace counts as a sublist.
+  The 4 spaces indentation rule appllies nontheless, so to keep things simple
+  md_toc will always use 4 whitespaces for sublists. Apparently, ordered and
   unordered lists share the same proprieties.
 
   Let's see this example:
@@ -273,7 +273,7 @@ Indentation
 
       stop
 
-      - I 
+      - I
           - am
               - foo
 
@@ -311,7 +311,7 @@ Indentation
       </ul>
 
 
-  What follows is an extract of a C function in redcarpet that parses list 
+  What follows is an extract of a C function in redcarpet that parses list
   items. I have added all the single line comments.
 
 
@@ -324,7 +324,7 @@ Indentation
         /* parse_listitem • parsing of a single list item */
         /*  assuming initial prefix is already removed */
         static size_t
-        parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, 
+        parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data,
         size_t size, int *flags)
         {
             struct buf *work = 0, *inter = 0;
@@ -332,13 +332,13 @@ Indentation
             int in_empty = 0, has_inside_empty = 0, in_fence = 0;
 
             // This is the base case, usually of indentation 0 but it can be
-            // from 0 to 3 spaces. If it was 4 spaces it would be a code 
+            // from 0 to 3 spaces. If it was 4 spaces it would be a code
             // block.
             /* keeping track of the first indentation prefix */
             while (orgpre < 3 && orgpre < size && data[orgpre] == ' ')
                 orgpre++;
 
-            // Get the first index of string after the list marker. Try both 
+            // Get the first index of string after the list marker. Try both
             // ordered and unordered lists
             beg = prefix_uli(data, size);
             if (!beg)
@@ -407,12 +407,12 @@ Indentation
                     if (in_empty)
                         has_inside_empty = 1;
 
-                    // The next list item's indentation (pre) must be the same as 
-                    // the previous one (orgpre), otherwise it might be a 
+                    // The next list item's indentation (pre) must be the same as
+                    // the previous one (orgpre), otherwise it might be a
                     // sublist.
                     if (pre == orgpre) /* the following item must have */
                         break;             /* the same indentation */
-    
+
                     // If the indentation does not match the previous one then
                     // assume that it is a sublist. Check later whether it is
                     // or not.
@@ -445,16 +445,16 @@ Indentation
         }
 
 
-  According to the code, ``parse_listitem`` is called indirectly by 
-  ``parse_block`` (via ``parse_list``), but ``parse_block`` is called directly 
-  by ``parse_listitem`` so the code analysis 
-  is not trivial. For this reason I might be mistaken about the 4 spaces 
+  According to the code, ``parse_listitem`` is called indirectly by
+  ``parse_block`` (via ``parse_list``), but ``parse_block`` is called directly
+  by ``parse_listitem`` so the code analysis
+  is not trivial. For this reason I might be mistaken about the 4 spaces
   indentation rule.
 
-  - https://github.com/vmg/redcarpet/blob/94f6e27bdf2395efa555a7c772a3d8b70fb84346/ext/redcarpet/markdown.c#L2418
-  - https://github.com/vmg/redcarpet/blob/94f6e27bdf2395efa555a7c772a3d8b70fb84346/ext/redcarpet/markdown.c#L1958
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L2418
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1958
 
-  Here is an extract of the ``parse_block`` function with the calls to 
+  Here is an extract of the ``parse_block`` function with the calls to
   ``parse_list``:
 
   .. highlight:: c
@@ -464,7 +464,7 @@ Indentation
 
       /* parse_block • parsing of one block, returning next uint8_t to parse */
       static void
-      parse_block(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
+      parse_block(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t
       size)
       {
           while (beg < size) {
@@ -475,23 +475,41 @@ Indentation
               else if (prefix_oli(txt_data, end))
                 beg += parse_list(ob, rndr, txt_data, end, MKD_LIST_ORDERED);
           }
-      } 
+      }
 
 
 Overflows
 ^^^^^^^^^
 
-- ``github``: ordered list markers cannot exceed ``99999999`` according to 
+- ``github``: ordered list markers cannot exceed ``99999999`` according to
   the following. If that is the case then a  ``GithubOverflowOrderedListMarker``
   exception is raised:
 
   - https://github.github.com/gfm/#ordered-list-marker
   - https://spec.commonmark.org/0.28/#ordered-list-marker
 
-- ``redcarpet``: apparently there are no cases of ordered list marker 
+- ``redcarpet``: apparently there are no cases of ordered list marker
   overflows:
 
-  - https://github.com/vmg/redcarpet/blob/8db31cb83e7d81b19970466645e899b5ac3bc15d/ext/redcarpet/markdown.c#L1529  
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1529
+
+Notes on ordered lists
+^^^^^^^^^^^^^^^^^^^^^^
+
+- ``github``: ordered list markers may start with any integer (except special cases).
+  any following number is ignored and subsequent numeration is progressive:
+
+  - https://spec.commonmark.org/0.28/#start-number
+
+  However, when you try this in practice this is not always true: nested lists
+  do not follow the specifications. See:
+
+  - https://github.com/frnmst/md-toc/issues/23
+
+- ``redcarpet``: ordered lists do not use the ``start`` HTML attribute:
+  any number is ignored and lists starts from 1. See:
+
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/test/MarkdownTest_1.0/Tests/Markdown%20Documentation%20-%20Syntax.html#L323
 
 Link label
 ``````````
@@ -504,19 +522,19 @@ then link label rules will be applied.
   - https://github.github.com/gfm/#link-label
 
   If a line ends in 1 or more '\' characters, this disrupts the anchor
-  title. For example ``- [xdmdmsdm\](#xdmdmsdm)`` becomes 
-  ``<ul><li>[xdmdmsdm](#xdmdmsdm)</li></ul>`` instead of 
+  title. For example ``- [xdmdmsdm\](#xdmdmsdm)`` becomes
+  ``<ul><li>[xdmdmsdm](#xdmdmsdm)</li></ul>`` instead of
   ``<ul><li><a href="xdmdmsdm">xdmdmsdm\</a></li></ul>``.
-  The workaround used in md_toc is to add a space character at the end of the 
+  The workaround used in md_toc is to add a space character at the end of the
   string, so it becomes: ``<ul><li><a href="xdmdmsdm">xdmdmsdm\ </a></li></ul>``
 
   If the link label contains only whitespace characters a ``GithubEmptyLinkLabel``
   exception is raised.
 
-  If the number of characters inside the link label is over 999 a 
+  If the number of characters inside the link label is over 999 a
   ``GithubOverflowCharsLinkLabel`` is raised.
 
-  If the headers contains ``[`` or ``]``, these characters 
+  If the headers contains ``[`` or ``]``, these characters
   are treated with the following rules.
 
   - https://github.github.com/gfm/#link-text
@@ -524,8 +542,8 @@ then link label rules will be applied.
   - https://github.github.com/gfm/#example-496
 
   According to a function in the source code, balanced square brackets do not
-  work, however they do when interpeted by the web interface. It is however 
-  possible that they are supported within the ``handle_close_bracket`` 
+  work, however they do when interpeted by the web interface. It is however
+  possible that they are supported within the ``handle_close_bracket``
   function.
 
   - https://github.com/github/cmark/blob/6b101e33ba1637e294076c46c69cd6a262c7539f/src/inlines.c#L881
@@ -559,7 +577,7 @@ then link label rules will be applied.
           }
 
           while ((c = peek_char(subj)) && c != '[' && c != ']') {
-            // If there is an escape and the next character is (for example) 
+            // If there is an escape and the next character is (for example)
             // '[' or ']' then,
             // ignore the loop conditions.
             // If there are nested balanced square brakets this loop ends.
@@ -584,7 +602,7 @@ then link label rules will be applied.
             }
           }
 
-          // If the loop terminates when the current character is ']' then 
+          // If the loop terminates when the current character is ']' then
           // everything between '[' and ']' is the link label...
           if (c == ']') { // match found
             *raw_label =
@@ -607,11 +625,11 @@ then link label rules will be applied.
 
 - ``redcarpet``:
 
-  - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L998
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L998
 
   Let's inspect this loop:
 
-  - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1017):
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1017):
 
   .. highlight:: c
 
@@ -660,16 +678,16 @@ then link label rules will be applied.
   An example: ``[test \](test \)`` becomes ``[test ](test )`` instead of
   ``<a href="test \">test \</a>``
 
-  Infact, you can see that if the current character is ``\\`` then the the 
-  current iteration is skipped. If for any chance the next character is ``]`` 
+  Infact, you can see that if the current character is ``\\`` then the the
+  current iteration is skipped. If for any chance the next character is ``]``
   then the inline link closing parenthesis detection is ignored. ``i`` becomes
   equal to ``size`` eventually and so we jump to the ``cleanup`` label.
-  That lable contains a return statement so that string is not treated as 
+  That lable contains a return statement so that string is not treated as
   inline link anymore. A similar code is implemented also for
   detecting ``(`` and ``)``. See:
 
-  - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1088
-  - https://github.com/vmg/redcarpet/blob/e3a1d0b00a77fa4e2d3c37322bea66b82085486f/ext/redcarpet/markdown.c#L1099
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1088
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1099
 
   To solve this we use the same workaround used for ``github``.
 
@@ -677,9 +695,9 @@ then link label rules will be applied.
 Anchor link types and behaviours
 ````````````````````````````````
 
-- ``github``: a translated version of the Ruby algorithm is used in md_toc. 
-  The original one is repored here: 
-  
+- ``github``: a translated version of the Ruby algorithm is used in md_toc.
+  The original one is repored here:
+
   - https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb
 
   I could not find the code directly responsable for the anchor link generation.
@@ -718,11 +736,11 @@ Anchor link types and behaviours
         WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-- ``redcarpet``: treats consecutive dash characters by tranforming them 
-  into a single dash character. A translated version of the C algorithm 
+- ``redcarpet``: treats consecutive dash characters by tranforming them
+  into a single dash character. A translated version of the C algorithm
   is used in md_toc. The original version is here:
 
-  - https://github.com/vmg/redcarpet/blob/26c80f05e774b31cd01255b0fa62e883ac185bf3/ext/redcarpet/html.c#L274
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/html.c#L274
 
   This is the license used in md_toc:
 
@@ -738,7 +756,7 @@ Anchor link types and behaviours
         to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
         copies of the Software, and to permit persons to whom the Software is
         furnished to do so, subject to the following conditions:
-        
+
         The above copyright notice and this permission notice shall be included in
         all copies or substantial portions of the Software.
         THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -759,14 +777,14 @@ Anchor link types and behaviours
 Code fence
 ``````````
 
-Code fences are sections of a markdown document where some parsers treat the 
-text within them as verbatim. Usually the purpose of these sections is to 
-display source code. Some programming languages use the character ``#`` as a 
-way to comment a line in the code. For this reason md_toc needs to ignore code 
+Code fences are sections of a markdown document where some parsers treat the
+text within them as verbatim. Usually the purpose of these sections is to
+display source code. Some programming languages use the character ``#`` as a
+way to comment a line in the code. For this reason md_toc needs to ignore code
 fences in order not to treat the ``#`` character as an ATX-style heading and thus
 get parsed as an element of the TOC.
 
-- ``github``: the rules followed are the ones reported on the 
+- ``github``: the rules followed are the ones reported on the
   documentation:
 
   - https://github.github.com/gfm/#code-fence
@@ -783,7 +801,7 @@ of contents in a markdown file.
 
 By default it was decided to use ``[](TOC)`` as the default TOC marker because
 it would result invisible in some markdown parsers. In other cases, however, such
-as the one used by Gitea, that particular TOC marker was still visible. HTML 
+as the one used by Gitea, that particular TOC marker was still visible. HTML
 comments seem to be a better solution.
 
 - ``github``:
@@ -799,17 +817,17 @@ comments seem to be a better solution.
 Other markdown parsers
 ----------------------
 
-If you have a look at 
+If you have a look at
 https://www.w3.org/community/markdown/wiki/MarkdownImplementations
 you will see that there are a ton of different markdown parsers out there.
 Moreover, that list has not been updated in a while.
 
-Markdown parsers have different behaviours regarding anchor links. Some of them 
-implement them while others don't; some act on the duplicate entry problem 
+Markdown parsers have different behaviours regarding anchor links. Some of them
+implement them while others don't; some act on the duplicate entry problem
 while others don't; some strip consecutive dash characters while others don't.
 And it's not just about anchor links, as you have read before. For example:
 
-- Gogs, Marked, Notabug, Gitea: Gogs uses marked as the markdown 
+- Gogs, Marked, Notabug, Gitea: Gogs uses marked as the markdown
   parser while *NotABug.org is powered by a liberated version of gogs*.
   Gitea, a fork of Gogs, probably uses a custom parser. See link below.
   Situation is unclear. Here are some links:
@@ -832,8 +850,8 @@ Steps to add an unsupported markdown parser
 ```````````````````````````````````````````
 
 1. Find the source code and/or documents.
-2. Find the rules for each section, such as anchor link generation, title 
-   detection, etc... Rely more on the source code than on the documentation (if 
+2. Find the rules for each section, such as anchor link generation, title
+   detection, etc... Rely more on the source code than on the documentation (if
    possible)
 3. Add the relevant information on this page.
 4. Write or adapt an algorithm for that section.
