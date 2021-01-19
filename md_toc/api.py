@@ -838,8 +838,15 @@ def get_atx_heading(line: str,
                 crlf_marker = i
             i += 1
 
+        # crlf_marker is the first CR LF character in the string.
         i = crlf_marker
-        while i < len_line - cs_start - 1 and go:
+
+        # Handle single character titles.
+        if len_line - cs_start - 1 == 1:
+            go = False
+            cs_end = len_line - i - 1
+
+        while go and i < len_line - cs_start - 1:
             if (line_prime[i] not in [' ', '#', '\u000a', '\u000d']
                     or hash_char_rounds > 1):
                 if i > hash_round_start:
