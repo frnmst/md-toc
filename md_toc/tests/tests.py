@@ -133,6 +133,9 @@ class TestApi(unittest.TestCase):
         There is no need to test this since it is a wrapper for several
         other functions. Practically it is just an extended version
         of build_toc_line.
+
+        TODO: tests will be needed eventually because the complexity of
+        this function is growing.
         """
 
     @unittest.skip("empty test")
