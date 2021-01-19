@@ -134,7 +134,8 @@ def build_toc(filename: str,
               keep_header_levels: int = 3,
               parser: str = 'github',
               list_marker: str = '-',
-              skip_lines: int = 0) -> str:
+              skip_lines: int = 0,
+              constant_ordered_list: bool = False) -> str:
     r"""Build the table of contents of a single file.
 
     :parameter filename: the file that needs to be read.
@@ -187,6 +188,10 @@ def build_toc(filename: str,
     if (ordered and list_marker == md_parser[parser]['list']['unordered']['default marker']):
         list_marker = md_parser[parser]['list']['ordered'][
             'default closing marker']
+    if constant_ordered_list and list_marker is None:
+        ordered = True
+    if ordered and list_marker is None:
+        list_marker = md_parser[parser]['list']['ordered']['default closing marker']
 
     if skip_lines > 0:
         loop = True
@@ -239,11 +244,14 @@ def build_toc(filename: str,
                 header_type_curr = header['type']
 
                 # Take care of the ordered TOC.
-                if ordered:
+                if ordered and not constant_ordered_list:
                     increase_index_ordered_list(header_type_counter,
                                                 header_type_prev,
                                                 header_type_curr, parser)
                     index = header_type_counter[header_type_curr]
+                elif constant_ordered_list:
+                    # This value should work on most parsers.
+                    index = 1
                 else:
                     index = 1
 
@@ -298,7 +306,8 @@ def build_multiple_tocs(filenames: list,
                         keep_header_levels: int = 3,
                         parser: str = 'github',
                         list_marker: str = '-',
-                        skip_lines: int = 0) -> list:
+                        skip_lines: int = 0,
+                        constant_ordered_list: bool = False) -> list:
     r"""Parse files by line and build the table of contents of each file.
 
     :parameter filenames: the files that needs to be read.
@@ -340,7 +349,7 @@ def build_multiple_tocs(filenames: list,
         toc_struct.append(
             build_toc(filenames[file_id], ordered, no_links, no_indentation,
                       no_list_coherence, keep_header_levels, parser,
-                      list_marker, skip_lines))
+                      list_marker, skip_lines, constant_ordered_list))
         file_id += 1
 
     return toc_struct

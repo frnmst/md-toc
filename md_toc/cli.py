@@ -33,7 +33,7 @@ try:
     VERSION_NUMBER = str(get_distribution('md_toc').version)
 except DistributionNotFound:
     VERSION_NUMBER = 'vDevel'
-VERSION_COPYRIGHT = 'Copyright (C) 2017-2020 Franco Masotti, frnmst'
+VERSION_COPYRIGHT = 'Copyright (C) 2017-2021 Franco Masotti, frnmst'
 VERSION_LICENSE = 'License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.'
 RETURN_VALUES = 'Return values: 0 ok, 1 error, 2 invalid command'
 ADVICE = 'Please read the documentation to understand how each parser works'
@@ -51,6 +51,7 @@ class CliToApi():
             ordered = True
         elif args.unordered_list_marker is not None:
             list_marker = args.unordered_list_marker
+
         toc_struct = build_multiple_tocs(
             filenames=args.filename,
             ordered=ordered,
@@ -60,7 +61,8 @@ class CliToApi():
             keep_header_levels=args.header_levels,
             parser=args.parser,
             list_marker=list_marker,
-            skip_lines=args.skip_lines)
+            skip_lines=args.skip_lines,
+            constant_ordered_list=args.constant_ordered_list)
         if args.in_place:
             write_strings_on_files_between_markers(
                 filenames=args.filename,
@@ -130,10 +132,16 @@ class CliInterface():
             '--ordered-list-marker',
             choices=md_parser['github']['list']['ordered']['closing markers'],
             nargs='?',
-            const=md_parser['github']['list']['ordered']
-            ['default closing marker'],
-            help='set the marker and enables ordered lists. Defaults to ' +
-            md_parser['github']['list']['ordered']['default closing marker'])
+            const=md_parser['github']['list']['ordered']['default closing marker'],
+            help='set the marker and enable ordered lists. Defaults to ' +
+            md_parser['github']['list']['ordered']['default closing marker']
+        )
+        github.add_argument(
+            '-c',
+            '--constant-ordered-list',
+            action='store_true',
+            help='intead of progressive numbers use a single integer as list marker. This options enables ordered lists'
+        )
         github.add_argument(
             '-l',
             '--header-levels',
@@ -177,10 +185,15 @@ class CliInterface():
             choices=md_parser['redcarpet']['list']['ordered']
             ['closing markers'],
             nargs='?',
-            const=md_parser['redcarpet']['list']['ordered']
-            ['default closing marker'],
+            const=md_parser['redcarpet']['list']['ordered']['default closing marker'],
             help='set the marker and enables ordered lists. Defaults to ' +
             md_parser['redcarpet']['list']['ordered']['default closing marker']
+        )
+        redcarpet.add_argument(
+            '-c',
+            '--constant-ordered-list',
+            action='store_true',
+            help='intead of progressive numbers use a single integer as list marker. This options enables ordered lists'
         )
         redcarpet.add_argument(
             '-l',
