@@ -506,6 +506,10 @@ Notes on ordered lists
 
   - https://github.com/frnmst/md-toc/issues/23
 
+  Markers cannot be negative:
+
+  - https://spec.commonmark.org/0.28/#example-232
+
 - ``redcarpet``: ordered lists do not use the ``start`` HTML attribute:
   any number is ignored and lists starts from 1. See:
 
