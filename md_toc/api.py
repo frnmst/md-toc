@@ -150,9 +150,14 @@ def build_toc(filename: str,
          Defaults to ``3``.
     :parameter parser: decides rules on how to generate anchor links.
          Defaults to ``github``.
+    :parameter list_marker: a string that contains some of the first
+         characters of the list element.
+         Defaults to ``-``.
     :parameter skip_lines: the number of lines to be skipped from
          the start of file before parsing for table of contents.
          Defaults to ``0```.
+    :parameter constant_ordered_list: use a single integer
+        as list marker. This sets ordered to ``True``.
     :type filename: str
     :type ordered: bool
     :type no_links: bool
@@ -161,6 +166,7 @@ def build_toc(filename: str,
     :type parser: str
     :type list_marker: str
     :type skip_lines: int
+    :type constant_ordered_list: bool
     :returns: toc, the corresponding table of contents of the file.
     :rtype: str
     :raises: a built-in exception.
@@ -322,12 +328,23 @@ def build_multiple_tocs(filenames: list,
          Defaults to ``3``.
     :parameter parser: decides rules on how to generate anchor links.
          Defaults to ``github``.
+    :parameter skip_lines: the number of lines to be skipped from
+         the start of file before parsing for table of contents.
+         Defaults to ``0```.
+    :parameter list_marker: a string that contains some of the first
+         characters of the list element.
+         Defaults to ``-``.
+    :parameter constant_ordered_list: use a single integer
+        as list marker. This sets ordered to ``True``.
     :type filenames: list
     :type ordered: bool
     :type no_links: bool
     :type no_indentation: bool
     :type keep_header_levels: int
     :type parser: str
+    :type list_marker: str
+    :type skip_lines: int
+    :type constant_ordered_list: bool
     :returns: toc_struct, the corresponding table of contents for each input
          file.
     :rtype: list
