@@ -1,9 +1,9 @@
 #!/bin/bash
 
 #
-# python -m md_toc_asciinema_7_0_0_demo.sh
+# python -m md_toc_asciinema_7_1_0_demo.sh
 #
-# Copyright (C) 2020 frnmst (Franco Masotti) <franco.masotti@live.com>
+# Copyright (C) 2021 frnmst (Franco Masotti) <franco.masotti@live.com>
 #
 # This file is part of md-toc.
 #
@@ -97,6 +97,12 @@ sleep ${TIMEOUT}
 printf "Ordered list...\n"
 printf "$ python -m md_toc gitlab -o '.' foo.md\n"
 python -m md_toc gitlab -o '.' foo.md
+printf "\n"
+sleep ${TIMEOUT}
+
+printf "Constant ordered list...\n"
+printf "$ python -m md_toc github -c -o '.' foo.md\n"
+python -m md_toc github -c -o '.' foo.md
 printf "\n"
 sleep ${TIMEOUT}
 
