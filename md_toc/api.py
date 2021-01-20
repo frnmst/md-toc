@@ -194,9 +194,9 @@ def build_toc(filename: str,
     if (ordered and list_marker == md_parser[parser]['list']['unordered']['default marker']):
         list_marker = md_parser[parser]['list']['ordered'][
             'default closing marker']
-    if constant_ordered_list and list_marker is None:
+    if constant_ordered_list:
         ordered = True
-    if ordered and list_marker is None:
+    if ordered and (list_marker is None or list_marker not in md_parser[parser]['list']['ordered']['closing markers']):
         list_marker = md_parser[parser]['list']['ordered']['default closing marker']
 
     if skip_lines > 0:
