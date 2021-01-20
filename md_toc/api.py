@@ -833,34 +833,40 @@ def get_atx_heading(line: str,
         # are not at the end of the line.
         # See the two CRLF marker tests.
         crlf_marker = 0
-        while i < len_line - cs_start - 1:
+        stripped_crlf = False
+        while i < len_line - cs_start:
             if line_prime[i] in ['\u000a', '\u000d']:
                 crlf_marker = i
+                stripped_crlf = True
             i += 1
 
         # crlf_marker is the first CR LF character in the string.
         i = crlf_marker
+        if stripped_crlf:
+            # Skip last character only if is '\u000a', '\u000d'.
+            i += 1
 
-        # Handle single character titles.
-        if len_line - cs_start - 1 == 1:
-            go = False
-            cs_end = len_line - i - 1
+        # We know for sure that from now '\u000a', '\u000d' will not be
+        # considered.
+        cs_end = i
 
-        while go and i < len_line - cs_start - 1:
-            if (line_prime[i] not in [' ', '#', '\u000a', '\u000d']
+        # Cut spaces and hashes.
+        while go and i < len_line - cs_start:
+            if (line_prime[i] not in [' ', '#']
                     or hash_char_rounds > 1):
-                if i > hash_round_start:
+                if i > hash_round_start and hash_char_rounds > 0:
                     cs_end = len_line - hash_round_start
                 else:
                     cs_end = len_line - i
                 go = False
-            while go and line_prime[i] in [' ', '\u000a', '\u000d']:
-                i += 1
-            hash_round_start = i
-            while go and line_prime[i] == '#':
-                i += 1
-            if i > hash_round_start:
-                hash_char_rounds += 1
+            if go:
+                while line_prime[i] == ' ':
+                    i += 1
+                hash_round_start = i
+                while line_prime[i] == '#':
+                    i += 1
+                if i > hash_round_start:
+                    hash_char_rounds += 1
 
         final_line = line[cs_start:cs_end]
 
