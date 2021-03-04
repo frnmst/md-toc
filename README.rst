@@ -1,7 +1,7 @@
 Markdown Table Of Contents
 ==========================
 
-|pypiver|    |license|    |pyver|    |downloads|    |gitter|    |dependentrepos|    |buymeacoffee|
+|pypiver|    |license|    |pyver|    |downloads|    |dependentrepos|    |buymeacoffee|
 
 .. |pypiver| image:: https://img.shields.io/pypi/v/md-toc.svg
                :alt: PyPI md-toc version
@@ -17,10 +17,6 @@ Markdown Table Of Contents
 .. |downloads| image:: https://pepy.tech/badge/md-toc
                  :alt: Downloads
                  :target: https://pepy.tech/project/md-toc
-
-.. |gitter| image:: https://badges.gitter.im/md-toc/community.svg
-              :alt: Gitter
-              :target: https://gitter.im/md-toc/community
 
 .. |dependentrepos| image:: https://img.shields.io/librariesio/dependent-repos/pypi/md-toc.svg
                       :alt: Dependent repos (via libraries.io)
@@ -71,12 +67,12 @@ documentations and by reverse engineering the source codes.
 Documentation
 -------------
 
-http://frnmst.github.io/md-toc
+https://docs.franco.net.eu.org/md-toc/
 
 Please read carefully the `Markdown specification`_ section of the documentation
 to learn how this program parsers markdown files and builds a correct output.
 
-.. _Markdown specification: http://frnmst.github.io/md-toc/markdown_specification.html
+.. _Markdown specification: https://docs.franco.net.eu.org/md-toc/markdown_specification.html
 
 API examples
 ------------
@@ -114,7 +110,7 @@ for a markdown file is:
     - [bye](#bye-1)
 
 
-.. _public API: https://frnmst.github.io/md-toc/api.html
+.. _public API: https://docs.franco.net.eu.org/md-toc/api.html
 
 CLI Helps
 ---------
@@ -151,4 +147,4 @@ Trusted source
 
 You can check the authenticity of new releases using my public key.
 
-Instructions, sources and keys can be found at `frnmst.gitlab.io/software <https://frnmst.gitlab.io/software/>`_.
+Instructions, sources and keys can be found at `blog.franco.net.eu.org/software <https://blog.franco.net.eu.org/software/>`_.
