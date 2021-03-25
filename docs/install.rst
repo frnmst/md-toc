@@ -8,7 +8,7 @@ Install md_toc via pip:
     $ pip3 install md_toc --user
 
 
-All the necessary dependencies are installed automatically along with the 
+All the necessary dependencies are installed automatically along with the
 program.
 
 Distribution packages
@@ -23,4 +23,4 @@ Dependencies
 - Python >= 3.5
 - fpyutils_
 
-.. _fpyutils: https://github.com/frnmst/fpyutils
+.. _fpyutils: https://software.franco.net.eu.org/frnmst/fpyutils

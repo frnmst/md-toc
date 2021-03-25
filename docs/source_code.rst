@@ -1,4 +1,4 @@
 Source code
 ===========
 
-https://github.com/frnmst/md-toc
+https://software.franco.net.eu.org/frnmst/md-toc
