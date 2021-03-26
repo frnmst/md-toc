@@ -657,6 +657,81 @@ def build_toc_line(toc_line_no_indent: str,
     return toc_line
 
 
+def remove_html_tags(line: str, parser: str = 'github') -> str:
+    r"""Remove HTML tags.
+
+    :parameter line: a string.
+    :parameter parser: decides rules on how to remove HTML tags.
+         Defaults to ``github``.
+    :type line: str
+    :type parser: str
+    :returns: the input string without HTML tags.
+    :rtype: str
+    :raises: a built-in exception.
+    """
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
+        # See https://spec.commonmark.org/0.28/#raw-html
+        DQAV = '"[^"]*"'
+        SQAV = "'[^']*'"
+        UAV = "[^\u0020\"'=<>`]+"
+        AV = '(' + UAV + '|' + SQAV + '|' + DQAV + ')'
+        WS = '(\u0020|\u0009|\u000a|\u000b|\u000c|\u000d)'
+        AVS = WS + '*' + '=' + WS + '*' + AV
+        AN = r'([A-Za-z]|_|:)([A-Za-z]|[0-9]|_|\.|:|-)*'
+        AT = WS + '+' + AN + '(' + AVS + ')?'
+        TN = '[A-Za-z]([A-Za-z]|[0-9]|-)*'
+
+        # 1. Open tag.
+        OT = '<' + TN + '(' + AT + ')*' + '(' + WS + ')*' + '(/)?' + '>'
+
+        # 2. Close tag.
+        CT = '</' + TN + WS + '?' + '>'
+
+        # 3. HTML comment.
+        COS = '<!--'
+        COT = '(?!>|->).*(?<!--)(?!-).?-->'
+        COE = '-->'
+        CO = COS + COT + COE
+
+        # 4. Processing instruction.
+        PIS = r'<\?'
+        PIT = r'(?:(?!\?>).)*'
+        PIE = r'\?>'
+        PI = PIS + PIT + PIE
+
+        # 5. Declarations.
+        DES = '<!'
+        # name.
+        DEN = '[A-Z]+'
+        # whitespace
+        DEW = WS + '+'
+        # body
+        DEB = '(?:(?!>).)+'
+        DEE = '>'
+        DE = DES + DEN + DEW + DEB + DEE
+
+        # 6. CDATA
+        CDS = r'<!\[CDATA\['
+        CDB = r'(?:(?!\]\]>).)+'
+        CDE = r'\]\]>'
+        CD = CDS + CDB + CDE
+
+        # Github Flavored Markdown Disallowed Raw HTML
+        # What to do about these ?
+        # FIXME.
+        # GDRH = '<(title|textarea|style|xmpi|frame|noembed|noframes|script|plaintext)>'
+        # Tagfilter GFM: https://github.github.com/gfm/#disallowed-raw-html-extension-
+
+        line = re.sub(OT, str(), line)
+        line = re.sub(CT, str(), line)
+        line = re.sub(CO, str(), line)
+        line = re.sub(PI, str(), line)
+        line = re.sub(DE, str(), line)
+        line = re.sub(CD, str(), line)
+
+    return line
+
+
 def build_anchor_link(header_text_trimmed: str,
                       header_duplicate_counter: str,
                       parser: str = 'github') -> str:
@@ -683,6 +758,13 @@ def build_anchor_link(header_text_trimmed: str,
     """
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
         header_text_trimmed = header_text_trimmed.lower()
+
+        # Filter HTML tags.
+        header_text_trimmed = remove_html_tags(header_text_trimmed, parser)
+
+        # Filter "emphasis and strong emphasis".
+        # TODO
+
         # Remove punctuation: Keep spaces, hypens and "word characters"
         # only.
         header_text_trimmed = re.sub(r'[^\w\s\- ]', '', header_text_trimmed)
