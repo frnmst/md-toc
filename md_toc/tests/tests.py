@@ -540,6 +540,19 @@ class TestApi(unittest.TestCase):
             api.remove_html_tags('<a href="\"">', 'github'), '<a href="\"">'
         )
 
+        # GitHub Flavored Markdown Disallowed Raw HTML (extension).
+        # See https://github.github.com/gfm/#disallowed-raw-html-extension-
+        self.assertEqual(api.remove_html_tags('<title>', 'github'), '<title>')
+        self.assertEqual(api.remove_html_tags('<textarea>', 'github'), '<textarea>')
+        self.assertEqual(api.remove_html_tags('<style>', 'github'), '<style>')
+        self.assertEqual(api.remove_html_tags('<xmp>', 'github'), '<xmp>')
+        self.assertEqual(api.remove_html_tags('<iframe>', 'github'), '<iframe>')
+        self.assertEqual(api.remove_html_tags('<noembed>', 'github'), '<noembed>')
+        self.assertEqual(api.remove_html_tags('<noembed>', 'github'), '<noembed>')
+        self.assertEqual(api.remove_html_tags('<noframes>', 'github'), '<noframes>')
+        self.assertEqual(api.remove_html_tags('<script>', 'github'), '<script>')
+        self.assertEqual(api.remove_html_tags('<plaintext>', 'github'), '<plaintext>')
+
     def test_build_anchor_link(self):
         r"""Test anchor link generation.
 

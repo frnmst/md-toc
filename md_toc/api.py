@@ -679,7 +679,16 @@ def remove_html_tags(line: str, parser: str = 'github') -> str:
         AVS = WS + '*' + '=' + WS + '*' + AV
         AN = r'([A-Za-z]|_|:)([A-Za-z]|[0-9]|_|\.|:|-)*'
         AT = WS + '+' + AN + '(' + AVS + ')?'
-        TN = '[A-Za-z]([A-Za-z]|[0-9]|-)*'
+        TN_prime = '[A-Za-z]([A-Za-z]|[0-9]|-)*'
+        if parser == 'github':
+            # Remember: https://developmentality.wordpress.com/2011/09/22/python-gotcha-word-boundaries-in-regular-expressions/
+            # Github Flavored Markdown Disallowed Raw HTML
+            # See https://github.github.com/gfm/#disallowed-raw-html-extension-
+            GDRH = r'''(\b[tT][iI][tT][lL][eE]\b|\b[tT][eE][xX][tT][aA][rR][eE][aA]\b|\b[sS][tT][yY][lL][eE]\b|\b[xX][mM][pP]\b|\b[iI][fF][rR][aA][mM][eE]\b|\b[nN][oO][eE][mM][bB][eE][dD]\b|\b[nN][oO][fF][rR][aA][mM][eE][sS]\b|\b[sS][cC][rR][iI][pP][tT]\b|\b[pP][lL][aA][iI][nN][tT][eE][xX][tT]\b)'''
+
+            TN = '(?!' + GDRH + ')' + TN_prime
+        else:
+            TN = TN_prime
 
         # 1. Open tag.
         OT = '<' + TN + '(' + AT + ')*' + '(' + WS + ')*' + '(/)?' + '>'
@@ -695,17 +704,14 @@ def remove_html_tags(line: str, parser: str = 'github') -> str:
 
         # 4. Processing instruction.
         PIS = r'<\?'
-        PIT = r'(?:(?!\?>).)*'
+        PIB = r'(?:(?!\?>).)*'
         PIE = r'\?>'
-        PI = PIS + PIT + PIE
+        PI = PIS + PIB + PIE
 
         # 5. Declarations.
         DES = '<!'
-        # name.
         DEN = '[A-Z]+'
-        # whitespace
         DEW = WS + '+'
-        # body
         DEB = '(?:(?!>).)+'
         DEE = '>'
         DE = DES + DEN + DEW + DEB + DEE
@@ -715,12 +721,6 @@ def remove_html_tags(line: str, parser: str = 'github') -> str:
         CDB = r'(?:(?!\]\]>).)+'
         CDE = r'\]\]>'
         CD = CDS + CDB + CDE
-
-        # Github Flavored Markdown Disallowed Raw HTML
-        # What to do about these ?
-        # FIXME.
-        # GDRH = '<(title|textarea|style|xmpi|frame|noembed|noframes|script|plaintext)>'
-        # Tagfilter GFM: https://github.github.com/gfm/#disallowed-raw-html-extension-
 
         # We need to match newline as well because it is a WS, so we
         # must use re.DOTALL.
