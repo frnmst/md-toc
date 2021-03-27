@@ -19,25 +19,27 @@ Supported markdown parsers
 
   - a "Ruby wrapper for libcmark (CommonMark parser)".
 
-  - As described on their website: "It also includes extensions to
+  - as described on their website: "It also includes extensions to
     the CommonMark spec as documented in the GitHub Flavored Markdown spec,
     such as support for tables, strikethroughs, and autolinking.". For this
     reason we assume that ``commonmarker`` is an alias of ``github``.
 
 - ``github``:
 
-  - uses a forked version of ``cmark`` with some added extensions
-    which should not concern md_toc. For this reason we assume that ``cmark``
-    and ``github`` represent the same parser in md_toc.
+  - uses a forked version of ``cmark`` with some added extensions,
+    called GitHub Flavored Markdown.
+
+  - there are subtle differences such as
+    the disallowed raw HTML extension which affects md-toc.
 
 - ``gitlab``:
 
   - uses ``commonmarker``. Older versions of md_toc, prior to
     version ``3.0.0``, use ``gitlab`` as an alias of ``redcarpet`` while
-    newer versions use ``github`` instead, because in the past GitLab used
+    newer versions use ``github`` instead. In the past GitLab used
     Redcarpet as markdown parser.
 
-  - The extensions used in GitLab Flavored Markdown (not to be confused
+  - the extensions used in GitLab Flavored Markdown (not to be confused
     with GitHub Flavored Markdown) should not concern md_toc. For this
     reason we assume that ``gitlab`` is an alias of ``github``.
 
@@ -51,10 +53,10 @@ Parser Summary
    ===================   ============   ========================================================================================================  =============================================
    Parser                Alias of       Supported parser version                                                                                  Source
    ===================   ============   ========================================================================================================  =============================================
-   ``cmark``             ``github``                                                                                                               https://github.com/commonmark/cmark
+   ``cmark``                            Version 0.28 (2017-08-01)                                                                                 https://github.com/commonmark/cmark
    ``commonmarker``      ``github``                                                                                                               https://github.com/gjtorikian/commonmarker
    ``github``                           Version 0.28-gfm (2017-08-01)                                                                             https://github.com/github/cmark
-   ``gitlab``            ``github``                                                                                                               https://docs.gitlab.com/ee/user/markdown.html
+   ``gitlab``                                                                                                                                     https://docs.gitlab.com/ee/user/markdown.html
    ``redcarpet``                        `Redcarpet v3.5.0 <https://github.com/vmg/redcarpet/tree/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae>`_      https://github.com/vmg/redcarpet
    ===================   ============   ========================================================================================================  =============================================
 
@@ -740,6 +742,46 @@ Anchor link types and behaviours
         WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+  Apparently GitHub (and possibly others) filter HTML tags in the anchor links.
+  This is an undocumented feature (?) so the ``remove_html_tags`` function was
+  added to address this problem. Due to the complexity of the task of designing
+  an algorithm to detect HTML tags, regular expressions came in handy. All the rules
+  present in https://spec.commonmark.org/0.28/#raw-html have been followed by the
+  letter. Regular expressions are divided by type and are composed at the end
+  by concatenating all the strings. For example:
+
+
+  ::
+
+
+        # Comment start.
+        COS = '<!--'
+        # Comment text.
+        COT = '((?!>|->)(?:(?!--).))+(?!-).?'
+        # Comment end.
+        COE = '-->'
+        # Comment.
+        CO = COS + COT + COE
+
+
+  HTML tags are stripped using the ``re.sub`` replace function, for example:
+
+
+  ::
+
+
+       line = re.sub(CO, str(), line, flags=re.DOTALL)
+
+
+  GitHub added an extension in GFM to ignore certain HTML tags, valid at least from versions `0.27.1.gfm.3` to `0.29.0.gfm.0`:
+
+  - https://github.github.com/gfm/#disallowed-raw-html-extension-
+  - https://github.com/github/cmark-gfm/blob/fca380ca85c046233c39523717073153e2458c1e/extensions/tagfilter.c
+
+- ``gitlab``: new rules have been written:
+
+  - https://docs.gitlab.com/ee/user/markdown.html#header-ids-and-links
+
 - ``redcarpet``: treats consecutive dash characters by tranforming them
   into a single dash character. A translated version of the C algorithm
   is used in md_toc. The original version is here:
@@ -861,3 +903,12 @@ Steps to add an unsupported markdown parser
 4. Write or adapt an algorithm for that section.
 5. Write unit tests for it.
 6. Add the new parser to the CLI interface.
+
+Curiosities
+-----------
+
+- GitLab added an extension called ``Table of contents`` to
+  its `Gitlab Flavored Mardown`. See:
+  https://docs.gitlab.com/ee/user/markdown.html#table-of-contents
+- in March 2021 GitHub added an interactive TOC button on the readme files of repositories which works
+  works for markdown and other systems.
