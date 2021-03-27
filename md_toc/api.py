@@ -689,7 +689,7 @@ def remove_html_tags(line: str, parser: str = 'github') -> str:
 
         # 3. HTML comment.
         COS = '<!--'
-        COT = '(?!>|->).*(?<!--)(?!-).?-->'
+        COT = '((?!>|->)(?:(?!--).))+(?!-).?'
         COE = '-->'
         CO = COS + COT + COE
 
@@ -722,12 +722,14 @@ def remove_html_tags(line: str, parser: str = 'github') -> str:
         # GDRH = '<(title|textarea|style|xmpi|frame|noembed|noframes|script|plaintext)>'
         # Tagfilter GFM: https://github.github.com/gfm/#disallowed-raw-html-extension-
 
-        line = re.sub(OT, str(), line)
-        line = re.sub(CT, str(), line)
-        line = re.sub(CO, str(), line)
-        line = re.sub(PI, str(), line)
-        line = re.sub(DE, str(), line)
-        line = re.sub(CD, str(), line)
+        # We need to match newline as well because it is a WS, so we
+        # must use re.DOTALL.
+        line = re.sub(OT, str(), line, flags=re.DOTALL)
+        line = re.sub(CT, str(), line, flags=re.DOTALL)
+        line = re.sub(CO, str(), line, flags=re.DOTALL)
+        line = re.sub(PI, str(), line, flags=re.DOTALL)
+        line = re.sub(DE, str(), line, flags=re.DOTALL)
+        line = re.sub(CD, str(), line, flags=re.DOTALL)
 
     return line
 

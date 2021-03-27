@@ -430,6 +430,116 @@ class TestApi(unittest.TestCase):
         Refer to those two functions for the unit tests.
         """
 
+    def test_remove_html_tags(self):
+        r"""Test remove html tags."""
+        # Example 584
+        self.assertEqual(
+            api.remove_html_tags('<a><bab><c2c>', 'github'), str()
+        )
+
+        # Example 585
+        self.assertEqual(
+            api.remove_html_tags('<a/><b2/>', 'github'), str()
+        )
+
+        # Example 586
+        self.assertEqual(
+            api.remove_html_tags('<a  /><b2\ndata="foo" >', 'github'), str()
+        )
+
+        # Example 587
+        self.assertEqual(
+            api.remove_html_tags('<a foo="bar" bam = \'baz <em>"</em>\'\n_boolean zoop:33=zoop:33 />', 'github'), str()
+        )
+
+        # Example 588
+        self.assertEqual(
+            api.remove_html_tags('Foo <responsive-image src="foo.jpg" />', 'github'), 'Foo '
+        )
+
+        # Example 589
+        self.assertEqual(
+            api.remove_html_tags('<33> <__>', 'github'), '<33> <__>'
+        )
+
+        # Example 590
+        self.assertEqual(
+            api.remove_html_tags('<a h*#ref="hi">', 'github'), '<a h*#ref="hi">'
+        )
+
+        # Example 591
+        self.assertEqual(
+            api.remove_html_tags('<a href="hi\'> <a href=hi\'>', 'github'), '<a href="hi\'> <a href=hi\'>'
+        )
+
+        # Example 592
+        self.assertEqual(
+            api.remove_html_tags('< a><\nfoo><bar/ >', 'github'), '< a><\nfoo><bar/ >'
+        )
+
+        # Example 593
+        self.assertEqual(
+            api.remove_html_tags('<a href=\'bar\'title=title>', 'github'), '<a href=\'bar\'title=title>'
+        )
+
+        # Example 594
+        self.assertEqual(
+            api.remove_html_tags('</a></foo >', 'github'), str()
+        )
+
+        # Example 595
+        self.assertEqual(
+            api.remove_html_tags('</a href="foo">', 'github'), '</a href="foo">'
+        )
+
+        # Example 596
+        self.assertEqual(
+            api.remove_html_tags('foo <!-- this is a\ncomment - with hyphen -->', 'github'), 'foo '
+        )
+
+        # Example 597
+        self.assertEqual(
+            api.remove_html_tags('foo <!-- not a comment -- two hyphens -->', 'github'), 'foo <!-- not a comment -- two hyphens -->'
+        )
+
+        # Example 598
+        self.assertEqual(
+            api.remove_html_tags('foo <!--> foo -->'), 'foo <!--> foo -->'
+        )
+        self.assertEqual(
+            api.remove_html_tags('foo <!-- foo--->'), 'foo <!-- foo--->'
+        )
+
+        # Example 599
+        self.assertEqual(
+            api.remove_html_tags('foo <?php echo $a; ?>', 'github'), 'foo '
+        )
+
+        # Example 600
+        self.assertEqual(
+            api.remove_html_tags('foo <!ELEMENT br EMPTY>', 'github'), 'foo '
+        )
+
+        # Example 601
+        self.assertEqual(
+            api.remove_html_tags('foo <![CDATA[>&<]]>', 'github'), 'foo '
+        )
+
+        # Example 602
+        self.assertEqual(
+            api.remove_html_tags('foo <a href="&ouml;">', 'github'), 'foo '
+        )
+
+        # Example 603
+        self.assertEqual(
+            api.remove_html_tags(r'foo <a href="\*">', 'github'), 'foo '
+        )
+
+        # Example 604
+        self.assertEqual(
+            api.remove_html_tags('<a href="\"">', 'github'), '<a href="\"">'
+        )
+
     def test_build_anchor_link(self):
         r"""Test anchor link generation.
 
