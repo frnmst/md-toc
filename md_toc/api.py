@@ -670,68 +670,81 @@ def remove_html_tags(line: str, parser: str = 'github') -> str:
     :raises: a built-in exception.
     """
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
-        # See https://spec.commonmark.org/0.28/#raw-html
-        DQAV = '"[^"]*"'
-        SQAV = "'[^']*'"
-        UAV = "[^\u0020\"'=<>`]+"
-        AV = '(' + UAV + '|' + SQAV + '|' + DQAV + ')'
-        WS = '(\u0020|\u0009|\u000a|\u000b|\u000c|\u000d)'
-        AVS = WS + '*' + '=' + WS + '*' + AV
-        AN = r'([A-Za-z]|_|:)([A-Za-z]|[0-9]|_|\.|:|-)*'
-        AT = WS + '+' + AN + '(' + AVS + ')?'
-        TN_prime = '[A-Za-z]([A-Za-z]|[0-9]|-)*'
-        if parser == 'github':
-            # Remember: https://developmentality.wordpress.com/2011/09/22/python-gotcha-word-boundaries-in-regular-expressions/
-            # Github Flavored Markdown Disallowed Raw HTML
-            # See https://github.github.com/gfm/#disallowed-raw-html-extension-
-            GDRH = r'''(\b[tT][iI][tT][lL][eE]\b|\b[tT][eE][xX][tT][aA][rR][eE][aA]\b|\b[sS][tT][yY][lL][eE]\b|\b[xX][mM][pP]\b|\b[iI][fF][rR][aA][mM][eE]\b|\b[nN][oO][eE][mM][bB][eE][dD]\b|\b[nN][oO][fF][rR][aA][mM][eE][sS]\b|\b[sS][cC][rR][iI][pP][tT]\b|\b[pP][lL][aA][iI][nN][tT][eE][xX][tT]\b)'''
-
-            TN = '(?!' + GDRH + ')' + TN_prime
-        else:
-            TN = TN_prime
-
-        # 1. Open tag.
-        OT = '<' + TN + '(' + AT + ')*' + '(' + WS + ')*' + '(/)?' + '>'
-
-        # 2. Close tag.
-        CT = '</' + TN + WS + '?' + '>'
-
-        # 3. HTML comment.
-        COS = '<!--'
-        COT = '((?!>|->)(?:(?!--).))+(?!-).?'
-        COE = '-->'
-        CO = COS + COT + COE
-
-        # 4. Processing instruction.
-        PIS = r'<\?'
-        PIB = r'(?:(?!\?>).)*'
-        PIE = r'\?>'
-        PI = PIS + PIB + PIE
-
-        # 5. Declarations.
-        DES = '<!'
-        DEN = '[A-Z]+'
-        DEW = WS + '+'
-        DEB = '(?:(?!>).)+'
-        DEE = '>'
-        DE = DES + DEN + DEW + DEB + DEE
-
-        # 6. CDATA
-        CDS = r'<!\[CDATA\['
-        CDB = r'(?:(?!\]\]>).)+'
-        CDE = r'\]\]>'
-        CD = CDS + CDB + CDE
-
         # We need to match newline as well because it is a WS, so we
         # must use re.DOTALL.
-        line = re.sub(OT, str(), line, flags=re.DOTALL)
-        line = re.sub(CT, str(), line, flags=re.DOTALL)
-        line = re.sub(CO, str(), line, flags=re.DOTALL)
-        line = re.sub(PI, str(), line, flags=re.DOTALL)
-        line = re.sub(DE, str(), line, flags=re.DOTALL)
-        line = re.sub(CD, str(), line, flags=re.DOTALL)
+        line = re.sub(md_parser[parser]['re']['OT'], str(), line, flags=re.DOTALL)
+        line = re.sub(md_parser[parser]['re']['CT'], str(), line, flags=re.DOTALL)
+        line = re.sub(md_parser[parser]['re']['CO'], str(), line, flags=re.DOTALL)
+        line = re.sub(md_parser[parser]['re']['PI'], str(), line, flags=re.DOTALL)
+        line = re.sub(md_parser[parser]['re']['DE'], str(), line, flags=re.DOTALL)
+        line = re.sub(md_parser[parser]['re']['CD'], str(), line, flags=re.DOTALL)
 
     return line
+
+
+def get_generic_lfdr_indices(i: int, line: str, char: str, mem: dict, parser='github') -> int:
+    r"""Apply the specified slug rule to build the anchor link.
+
+    :parameter i: the current iterating index of the line.
+    """
+    if char not in ['*', '_']:
+        raise ValueError
+    if '*' not in mem:
+        raise ValueError
+    if '_' not in mem:
+        raise ValueError
+    if not isinstance(mem['*'], list):
+        raise TypeError
+    if not isinstance(mem['_'], list):
+        raise TypeError
+
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
+        is_lfdr = False
+        was_char = False
+
+        char_start = i
+        while i < len(line) and line[i] == char:
+            i += 1
+            was_char = True
+
+        # Go back 1.
+        char_end = i - 1
+        if char_end > char_start or was_char:
+            if char_end < len(line) - 1:
+                if line[char_end + 1] not in md_parser[parser]['pseudo-re']['UWC']:
+                    is_lfdr = True
+            if is_lfdr:
+                if char_end < len(line) - 1:
+                    if line[char_end + 1] not in md_parser[parser]['pseudo-re']['PC']:
+                        is_lfdr = True
+                if char_start > 0:
+                    if line[char_start - 1] not in md_parser[parser]['pseudo-re']['UWC'] and line[char_start - 1] not in md_parser[parser]['pseudo-re']['PC']:
+                        is_lfdr = True
+
+            if is_lfdr:
+                mem[char].append([char_start, char_end])
+
+    return i
+
+
+def get_lfdr_indices(line: str, parser: str = 'github') -> dict:
+    r"""Find LFDR indices."""
+    i = 0
+
+    # A data structure containing the lfdr indices by type ,divided into couples start-end:
+    # '*': [[s0,e0], [s1,e1], ..., [sn,en]]
+    # '_': [[s0,e0], [s1,e1], ..., [sn,en]]
+    m = {
+        '*': list(),
+        '_': list(),
+    }
+
+    while i < len(line):
+        i = get_generic_lfdr_indices(i, line, '*', m, parser)
+        i = get_generic_lfdr_indices(i, line, '_', m, parser)
+        i += 1
+
+    return m
 
 
 def build_anchor_link(header_text_trimmed: str,
