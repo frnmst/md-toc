@@ -22,6 +22,7 @@
 
 from .api import (
     get_md_header, get_atx_heading, build_toc_line, remove_html_tags,
+    get_generic_fdr_indices, get_fdr_indices,
     increase_index_ordered_list, build_anchor_link, init_indentation_log,
     compute_toc_line_indentation_spaces, build_toc_line_without_indentation,
     build_toc, build_multiple_tocs, write_string_on_file_between_markers,
