@@ -682,8 +682,8 @@ def remove_html_tags(line: str, parser: str = 'github') -> str:
     return line
 
 
-def get_generic_lfdr_indices(i: int, line: str, char: str, mem: dict, parser='github') -> int:
-    r"""Apply the specified slug rule to build the anchor link.
+def get_generic_fdr_indices(i: int, line: str, char: str, mem: dict, type: str = 'left', parser='github') -> int:
+    r"""get_generic_fdr_indices.
 
     :parameter i: the current iterating index of the line.
     """
@@ -697,9 +697,11 @@ def get_generic_lfdr_indices(i: int, line: str, char: str, mem: dict, parser='gi
         raise TypeError
     if not isinstance(mem['_'], list):
         raise TypeError
+    if type != 'left' and type != 'right':
+        raise ValueError
 
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
-        is_lfdr = False
+        is_fdr = False
         was_char = False
 
         char_start = i
@@ -712,23 +714,39 @@ def get_generic_lfdr_indices(i: int, line: str, char: str, mem: dict, parser='gi
         if char_end > char_start or was_char:
             if char_end < len(line) - 1:
                 if line[char_end + 1] not in md_parser[parser]['pseudo-re']['UWC']:
-                    is_lfdr = True
-            if is_lfdr:
+                    is_fdr = True
+            if is_fdr:
                 if char_end < len(line) - 1:
                     if line[char_end + 1] not in md_parser[parser]['pseudo-re']['PC']:
-                        is_lfdr = True
+                        is_fdr = True
                 if char_start > 0:
                     if line[char_start - 1] not in md_parser[parser]['pseudo-re']['UWC'] and line[char_start - 1] not in md_parser[parser]['pseudo-re']['PC']:
-                        is_lfdr = True
+                        is_fdr = True
 
-            if is_lfdr:
-                mem[char].append([char_start, char_end])
+            if is_fdr:
+                # LFDR and RFDR are very similar.
+                # RFDR is just the reverse of LFDR.
+                if type == 'left':
+                    alpha = char_start
+                    bravo = char_end
+                elif type == 'right':
+                    alpha = len(line) - 1 - char_end
+                    bravo = len(line) - 1 - char_start
+                mem[char].append([alpha, bravo])
 
     return i
 
 
-def get_lfdr_indices(line: str, parser: str = 'github') -> dict:
-    r"""Find LFDR indices."""
+def get_fdr_indices(line: str, type: str = 'left', parser: str = 'github') -> dict:
+    r"""Find FDR indices."""
+    if type != 'left' and type != 'right':
+        raise ValueError
+
+    if type == 'right':
+        # To be able to find RFDRs we need to reverse the line before giving it to
+        # the get_generic_fdr_indices function.
+        line = line[::-1]
+
     i = 0
 
     # A data structure containing the lfdr indices by type ,divided into couples start-end:
@@ -740,8 +758,8 @@ def get_lfdr_indices(line: str, parser: str = 'github') -> dict:
     }
 
     while i < len(line):
-        i = get_generic_lfdr_indices(i, line, '*', m, parser)
-        i = get_generic_lfdr_indices(i, line, '_', m, parser)
+        i = get_generic_fdr_indices(i, line, '*', m, type, parser)
+        i = get_generic_fdr_indices(i, line, '_', m, type, parser)
         i += 1
 
     return m

@@ -430,26 +430,41 @@ class TestApi(unittest.TestCase):
         Refer to those two functions for the unit tests.
         """
 
-    def test_get_lfdr_indices(self):
+    def test_get_fdr_indices(self):
         r"""Test get left-flanking delimiter run indices."""
         # Star character.
-        self.assertEqual(api.get_lfdr_indices('***abc', 'github'), {'*': [[0, 2]], '_': list(), })
-        self.assertEqual(api.get_lfdr_indices('**"abc"', 'github'), {'*': [[0, 1]], '_': list(), })
-        self.assertEqual(api.get_lfdr_indices(' abc***def', 'github'), {'*': [[4, 6]], '_': list(), })
+        self.assertEqual(api.get_fdr_indices('***abc', 'left', 'github'), {'*': [[0, 2]], '_': list(), })
+        self.assertEqual(api.get_fdr_indices('**"abc"', 'left', 'github'), {'*': [[0, 1]], '_': list(), })
+        self.assertEqual(api.get_fdr_indices(' abc***def', 'left', 'github'), {'*': [[4, 6]], '_': list(), })
 
-        self.assertEqual(api.get_lfdr_indices('***abc **def', 'github'), {'*': [[0, 2], [7, 8]], '_': list(), })
+        self.assertEqual(api.get_fdr_indices('***abc **def', 'left', 'github'), {'*': [[0, 2], [7, 8]], '_': list(), })
 
-        self.assertEqual(api.get_lfdr_indices('abc***', 'github'), {'*': list(), '_': list(), })
-        self.assertEqual(api.get_lfdr_indices('"abc"***', 'github'), {'*': list(), '_': list(), })
+        self.assertEqual(api.get_fdr_indices('abc***', 'left', 'github'), {'*': list(), '_': list(), })
+        self.assertEqual(api.get_fdr_indices('"abc"***', 'left', 'github'), {'*': list(), '_': list(), })
 
         # Underscore character.
-        self.assertEqual(api.get_lfdr_indices('  _abc', 'github'), {'*': list(), '_': [[2, 2]], })
-        self.assertEqual(api.get_lfdr_indices(' _"abc"', 'github'), {'*': list(), '_': [[1, 1]], })
-        self.assertEqual(api.get_lfdr_indices('"abc"_"def"', 'github'), {'*': list(), '_': [[5, 5]], })
+        self.assertEqual(api.get_fdr_indices('  _abc', 'left', 'github'), {'*': list(), '_': [[2, 2]], })
+        self.assertEqual(api.get_fdr_indices(' _"abc"', 'left', 'github'), {'*': list(), '_': [[1, 1]], })
+        self.assertEqual(api.get_fdr_indices('"abc"_"def"', 'left', 'github'), {'*': list(), '_': [[5, 5]], })
 
         # Neither left nor right-flanking.
-        self.assertEqual(api.get_lfdr_indices('abc *** def', 'github'), {'*': list(), '_': list(), })
-        self.assertEqual(api.get_lfdr_indices('a _ b', 'github'), {'*': list(), '_': list(), })
+        self.assertEqual(api.get_fdr_indices('abc *** def', 'left', 'github'), {'*': list(), '_': list(), })
+        self.assertEqual(api.get_fdr_indices('a _ b', 'left', 'github'), {'*': list(), '_': list(), })
+
+        # Star character.
+        self.assertEqual(api.get_fdr_indices(' abc***', 'right', 'github'), {'*': [[4, 6]], '_': list(), })
+        self.assertEqual(api.get_fdr_indices('"abc"**', 'right', 'github'), {'*': [[5, 6]], '_': list(), })
+
+        self.assertEqual(api.get_fdr_indices(' abc***def', 'right', 'github'), {'*': [[4, 6]], '_': list(), })
+
+        # Underscore character.
+        self.assertEqual(api.get_fdr_indices(' abc_', 'right', 'github'), {'*': list(), '_': [[4, 4]], })
+        self.assertEqual(api.get_fdr_indices('"abc"_', 'right', 'github'), {'*': list(), '_': [[5, 5]], })
+        self.assertEqual(api.get_fdr_indices('"abc"_"def"', 'right', 'github'), {'*': list(), '_': [[5, 5]], })
+
+        # Neither left nor right-flanking.
+        self.assertEqual(api.get_fdr_indices('abc *** def', 'right', 'github'), {'*': list(), '_': list(), })
+        self.assertEqual(api.get_fdr_indices('a _ b', 'right', 'github'), {'*': list(), '_': list(), })
 
     def test_remove_html_tags(self):
         r"""Test remove html tags."""
