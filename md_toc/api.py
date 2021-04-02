@@ -702,6 +702,9 @@ def get_generic_fdr_indices(i: int, line: str, char: str, mem: dict, type: str =
 
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
         is_fdr = False
+        is_fdr_b = False
+        is_fdr_c = False
+        is_fdr_d = False
         was_char = False
 
         char_start = i
@@ -711,19 +714,51 @@ def get_generic_fdr_indices(i: int, line: str, char: str, mem: dict, type: str =
 
         # Go back 1.
         char_end = i - 1
-        if char_end > char_start or was_char:
+
+        # Using definition from 0.29 which is much clearer than the one from 0.28:
+        #
+        # "
+        # A left-flanking delimiter run is a delimiter run that is
+        #       (1) not followed by Unicode whitespace,
+        #           AND
+        #               either (2a) not followed by a punctuation character,
+        #               OR
+        #               (2b) followed by a punctuation character
+        #                   AND preceded by Unicode whitespace or a punctuation character.
+        # For purposes of this definition, the beginning and the end of the line count as Unicode whitespace.
+        # "
+        if was_char:
             if char_end < len(line) - 1:
+                # (1)
                 if line[char_end + 1] not in md_parser[parser]['pseudo-re']['UWC']:
                     is_fdr = True
+            else:
+                # End of the line.
+                # For purposes of this definition, the beginning and the end of the line count as Unicode whitespace.
+                is_fdr = True
+            # AND.
             if is_fdr:
                 if char_end < len(line) - 1:
+                    # (2a)
                     if line[char_end + 1] not in md_parser[parser]['pseudo-re']['PC']:
-                        is_fdr = True
-                if char_start > 0:
-                    if line[char_start - 1] not in md_parser[parser]['pseudo-re']['UWC'] and line[char_start - 1] not in md_parser[parser]['pseudo-re']['PC']:
-                        is_fdr = True
+                        is_fdr_b = True
+                # OR
+                if not is_fdr_b:
+                    # (2b)
+                    if char_end < len(line) - 1:
+                        if line[char_end + 1] in md_parser[parser]['pseudo-re']['PC']:
+                            is_fdr_c = True
+                    # AND.
+                    if is_fdr_c:
+                        if char_start > 0:
+                            if line[char_start - 1] in md_parser[parser]['pseudo-re']['UWC'] or line[char_start - 1] in md_parser[parser]['pseudo-re']['PC']:
+                                is_fdr_d = True
+                        else:
+                            # Beginning of the line.
+                            # For purposes of this definition, the beginning and the end of the line count as Unicode whitespace.
+                            is_fdr_d = True
 
-            if is_fdr:
+            if is_fdr and (is_fdr_b or (is_fdr_c and is_fdr_d)):
                 # LFDR and RFDR are very similar.
                 # RFDR is just the reverse of LFDR.
                 if type == 'left':
@@ -763,6 +798,70 @@ def get_fdr_indices(line: str, type: str = 'left', parser: str = 'github') -> di
         i += 1
 
     return m
+
+
+def get_remove_emphasis_indices(line: str):
+    r"""get_remove_emphasis_indices."""
+    i = 0
+    j = len(line) - 1
+    ignore_list = list()
+    no_fdr = {
+        '*': list(),
+        '_': list(),
+    }
+
+    while i < len(line) and j >= 0 and i < j:
+        Si = i
+        has_open = False
+        has_close = False
+        is_lfdr = True
+
+        while i < len(line) and line[i] == '*':
+            i += 1
+
+        if Si > 0:
+            start_inspect = Si - 1
+        else:
+            start_inspect = Si
+
+        lfdr_indices = get_fdr_indices(line=line[start_inspect:i + 1], type='left')
+        if lfdr_indices == no_fdr:
+            is_lfdr = False
+
+        iter = i - Si
+
+        if iter > 0 and is_lfdr:
+            has_open = True
+            has_close = False
+
+            while i < j and iter > 0:
+                Sj = j
+
+                while line[j] != '*' and j > i:
+                    j -= 1
+
+                # Last position of a star character.
+                last_j = j
+
+                # Check if characters are part of RFDR to determine if they might be closing emphasis.
+                while j > 0 and line[j] == '*' and last_j - j < iter and line[j - 1] != '\\':
+                    j -= 1
+
+                closing_emph = False
+                if get_fdr_indices(line=line[j:Sj + 1], type='right') != no_fdr:
+                    closing_emph = True
+
+                if j < Sj and closing_emph:
+                    total_closed = last_j - j
+                    iter -= total_closed
+                    ignore_list.append([j + 1, last_j])
+                    has_close = True
+
+        if has_open and has_close:
+            ignore_list.append([Si, i - 1])
+        i += 1
+
+    return ignore_list
 
 
 def build_anchor_link(header_text_trimmed: str,

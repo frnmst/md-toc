@@ -431,13 +431,17 @@ class TestApi(unittest.TestCase):
         """
 
     def test_get_fdr_indices(self):
-        r"""Test get left-flanking delimiter run indices."""
+        r"""Test get flanking delimiter run indices.
+
+        ..note: some examples in the documentation appear to be contradicting.
+        """
         # Star character.
         self.assertEqual(api.get_fdr_indices('***abc', 'left', 'github'), {'*': [[0, 2]], '_': list(), })
         self.assertEqual(api.get_fdr_indices('**"abc"', 'left', 'github'), {'*': [[0, 1]], '_': list(), })
         self.assertEqual(api.get_fdr_indices(' abc***def', 'left', 'github'), {'*': [[4, 6]], '_': list(), })
-
         self.assertEqual(api.get_fdr_indices('***abc **def', 'left', 'github'), {'*': [[0, 2], [7, 8]], '_': list(), })
+
+        self.assertEqual(api.get_fdr_indices('a*"foo"*', 'left', 'github'), {'*': list(), '_': list(), })
 
         self.assertEqual(api.get_fdr_indices('abc***', 'left', 'github'), {'*': list(), '_': list(), })
         self.assertEqual(api.get_fdr_indices('"abc"***', 'left', 'github'), {'*': list(), '_': list(), })
@@ -465,6 +469,146 @@ class TestApi(unittest.TestCase):
         # Neither left nor right-flanking.
         self.assertEqual(api.get_fdr_indices('abc *** def', 'right', 'github'), {'*': list(), '_': list(), })
         self.assertEqual(api.get_fdr_indices('a _ b', 'right', 'github'), {'*': list(), '_': list(), })
+
+    def test_get_remove_emphasis_indices(self):
+        r"""Test get remove emphasis indices."""
+        # Example 331
+        self.assertEqual(api.get_remove_emphasis_indices('*foo bar*'), [[8, 8], [0, 0]])
+
+        # Example 332
+        self.assertEqual(api.get_remove_emphasis_indices('a * foo bar*'), list())
+
+        # Example 333
+        self.assertEqual(api.get_remove_emphasis_indices('a*"foo"*'), list())
+
+        # Example 334
+        self.assertEqual(api.get_remove_emphasis_indices('* a *'), list())
+
+        # Example 335
+        self.assertEqual(api.get_remove_emphasis_indices('foo*bar*'), [[7, 7], [3, 3]])
+
+        # Example 336
+        self.assertEqual(api.get_remove_emphasis_indices('5*6*78'), [[3, 3], [1, 1]])
+
+        # Example 337
+        # self.assertEqual(api.get_remove_emphasis_indices('_foo bar_'), [[3, 3], [1, 1]])
+        # Example 338
+        # Example 339
+        # Example 340
+        # Example 341
+        # Example 342
+        # Example 343
+        # Example 344
+        # Example 345
+
+        # Example 346
+        self.assertEqual(api.get_remove_emphasis_indices('*foo bar *'), list())
+
+        # Example 347
+        self.assertEqual(api.get_remove_emphasis_indices('*foo bar\n*'), list())
+
+        # Example 348
+        self.assertEqual(api.get_remove_emphasis_indices('*(*foo)'), list())
+
+        # Example 349
+        self.assertEqual(api.get_remove_emphasis_indices('*(*foo*)*'), [[8, 8], [0, 0], [6, 6], [2, 2]])
+
+        # Example 350
+        self.assertEqual(api.get_remove_emphasis_indices('*foo*bar'), [[4, 4], [0, 0]])
+
+        # Example 351
+        # Example 352
+        # Example 353
+        # Example 354
+        # Example 355
+        # Example 356
+        # Example 357
+
+        # Example 358
+        self.assertEqual(api.get_remove_emphasis_indices('**foo bar**'), [[9, 10], [0, 1]])
+
+        # Example 359
+        self.assertEqual(api.get_remove_emphasis_indices('** foo bar**'), list())
+
+        # Example 360
+        self.assertEqual(api.get_remove_emphasis_indices('a**"foo"**'), list())
+
+        # Example 361
+        self.assertEqual(api.get_remove_emphasis_indices('foo**bar**'), [[8, 9], [3, 4]])
+
+        # Example 362
+        # Example 363
+        # Example 364
+        # Example 365
+        # Example 366
+        # Example 367
+        # Example 368
+        # Example 369
+        # Example 370
+
+        # Example 371
+        self.assertEqual(api.get_remove_emphasis_indices('**foo bar **'), list())
+
+        # Example 372
+        self.assertEqual(api.get_remove_emphasis_indices('**(**foo)'), list())
+
+        # Example 373
+        self.assertEqual(api.get_remove_emphasis_indices('*(**foo**)*'), [[10, 10], [0, 0], [7, 8], [2, 3]])
+
+        # Example 374
+#        self.assertEqual(api.get_remove_emphasis_indices('**Gomphocarpus (*Gomphocarpus physocarpus*, syn.\n*Asclepias physocarpa*)**'), [[0, 1], [16, 16], [41, 41], [49, 49], [70, 70], [72, 73]])
+
+        # Example 375
+        self.assertEqual(api.get_remove_emphasis_indices('**foo "*bar*" foo**'), [[17, 18], [0, 1], [11, 11], [7, 7]])
+
+        # Example 376
+        self.assertEqual(api.get_remove_emphasis_indices('**foo**bar'), [[5, 6], [0, 1]])
+
+        # Example 377
+        # Example 378
+        # Example 379
+        # Example 380
+        # Example 381
+        # Example 382
+        # Example 383
+
+        # Example 384
+        self.assertEqual(api.get_remove_emphasis_indices('*foo [bar](/url)*'), [[16, 16], [0, 0]])
+
+        # Example 385
+        self.assertEqual(api.get_remove_emphasis_indices('*foo\nbar*'), [[8, 8], [0, 0]])
+
+        # Example 386
+        # Example 387
+        # Example 388
+
+        # Example 389
+#        self.assertEqual(api.get_remove_emphasis_indices('*foo *bar**'), [[9, 10], [5, 5], [0, 0]])
+
+        # Example 390
+        self.assertEqual(api.get_remove_emphasis_indices('*foo **bar** baz*'), [[16, 16], [0, 0], [10, 11], [5, 6]])
+
+        # Example 391
+
+        # Example 392
+
+        # Example 393
+
+        # Example 394
+
+        # Example 395
+
+        # Example 396
+
+        # Example 397
+
+        # Example 398
+
+        # Example 399
+
+        # Example 400
+
+        # Example 458
 
     def test_remove_html_tags(self):
         r"""Test remove html tags."""
