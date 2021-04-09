@@ -56,7 +56,7 @@ Parser Summary
    ``cmark``                            Version 0.28 (2017-08-01)                                                                                 https://github.com/commonmark/cmark
    ``commonmarker``      ``github``                                                                                                               https://github.com/gjtorikian/commonmarker
    ``github``                           Version 0.28-gfm (2017-08-01)                                                                             https://github.com/github/cmark
-   ``gitlab``                                                                                                                                     https://docs.gitlab.com/ee/user/markdown.html
+   ``gitlab``            ``github``                                                                                                               https://docs.gitlab.com/ee/user/markdown.html
    ``redcarpet``                        `Redcarpet v3.5.0 <https://github.com/vmg/redcarpet/tree/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae>`_      https://github.com/vmg/redcarpet
    ===================   ============   ========================================================================================================  =============================================
 
@@ -744,8 +744,8 @@ Anchor link types and behaviours
 
   Apparently GitHub (and possibly others) filter HTML tags in the anchor links.
   This is an undocumented feature (?) so the ``remove_html_tags`` function was
-  added to address this problem. Due to the complexity of the task of designing
-  an algorithm to detect HTML tags, regular expressions came in handy. All the rules
+  added to address this problem. Instead of designing an algorithm to detect HTML tags,
+  regular expressions came in handy. All the rules
   present in https://spec.commonmark.org/0.28/#raw-html have been followed by the
   letter. Regular expressions are divided by type and are composed at the end
   by concatenating all the strings. For example:
@@ -777,6 +777,12 @@ Anchor link types and behaviours
 
   - https://github.github.com/gfm/#disallowed-raw-html-extension-
   - https://github.com/github/cmark-gfm/blob/fca380ca85c046233c39523717073153e2458c1e/extensions/tagfilter.c
+
+  TO be able to have working anchor links emphasis must also be removed.
+  At the moment the implementation of the removal is incomplete because of its complexity.
+  See:
+
+  - https://spec.commonmark.org/0.28/#emphasis-and-strong-emphasis
 
 - ``gitlab``: new rules have been written:
 
@@ -873,7 +879,54 @@ implement them while others don't; some act on the duplicate entry problem
 while others don't; some strip consecutive dash characters while others don't.
 And it's not just about anchor links, as you have read before. For example:
 
-- Gogs, Marked, Notabug, Gitea: Gogs uses marked as the markdown
+- Gitea apparently uses ``goldmark`` as markdown parser. This parser claims
+  to be compliant: `goldmark is compliant with CommonMark 0.29.`.
+  See:
+
+  - https://github.com/go-gitea/gitea
+  - https://github.com/yuin/goldmark
+  - https://github.com/go-gitea/gitea/blob/71aca93decc10253133dcd77b64dae5d311d7163/modules/markup/markdown/goldmark.go
+
+  Gitea adds an annoying ``user-content`` substring in the TOC's anchor links. This is true for versions (git tags):
+
+  - v1.13.7
+  - v1.13.6
+  - v1.13.5
+  - v1.13.4
+  - v1.13.3
+  - v1.13.2
+  - v1.13.1
+  - v1.13.0
+  - v1.12.6
+  - v1.12.5
+  - v1.12.4
+  - v1.12.3
+  - v1.12.2
+  - v1.12.1
+  - v1.11.8
+  - v1.12.0
+  - v1.11.8
+  - v1.11.7
+  - v1.11.6
+  - v1.11.5
+  - v1.11.4
+  - v1.11.3
+  - v1.11.2
+  - v1.11.1
+  - v1.11.0
+
+  See:
+
+  - https://github.com/go-gitea/gitea/blob/71aca93decc10253133dcd77b64dae5d311d7163/modules/markup/markdown/goldmark.go#L230
+  - https://github.com/go-gitea/gitea/issues/12062
+  - https://github.com/go-gitea/gitea/pull/11903
+  - https://github.com/go-gitea/gitea/pull/12805
+
+  Older versions of Gitea used blackfriday. See:
+
+  - https://github.com/go-gitea/gitea/blob/2a03e96bceadfcc5e18bd61e755980ee72dcdb15/modules/markup/markdown/markdown.go
+
+- Gogs, Marked, Notabug: Gogs uses marked as the markdown
   parser while *NotABug.org is powered by a liberated version of gogs*.
   Gitea, a fork of Gogs, probably uses a custom parser. See link below.
   Situation is unclear. Here are some links:
@@ -883,8 +936,6 @@ And it's not just about anchor links, as you have read before. For example:
   - https://github.com/chjj/marked/issues/981
   - https://github.com/chjj/marked/search?q=anchor&type=Issues&utf8=%E2%9C%93
   - https://notabug.org/hp/gogs/
-  - https://github.com/go-gitea/gitea
-  - https://github.com/go-gitea/gitea/blob/2a03e96bceadfcc5e18bd61e755980ee72dcdb15/modules/markup/markdown/markdown.go
 
   For this reason no implementation is available for the moment.
 
