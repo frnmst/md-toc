@@ -683,22 +683,41 @@ def remove_html_tags(line: str, parser: str = 'github') -> str:
 
 
 def get_generic_fdr_indices(i: int, line: str, char: str, mem: dict, type: str = 'left', parser='github') -> int:
-    r"""get_generic_fdr_indices.
+    r"""Compute the indices of flanking delimiter runs in a string.
 
     :parameter i: the current iterating index of the line.
+    :parameter line: a string.
+    :parameter char: the delimiter type.
+    :parameter mem: a data structure containing the fdr indices
+        grouped by char, in start-end lists. See the get_fdr_indices function.
+    :parameter type: the type of FDR. This value can only be ``left`` or ``right``.
+    :parameter parser: decides rules on how to find FDR indices.
+         Defaults to ``github``.
+    :type i: int
+    :type line: str
+    :type char: str
+    :type mem: dict
+    :type type: str
+    :type parser: str
+    :returns: the current iterating index.
+    :rtype: int
+    :raises: a built-in exception.
     """
-    if char not in ['*', '_']:
+    if len(char) != 1:
         raise ValueError
-    if '*' not in mem:
-        raise ValueError
-    if '_' not in mem:
-        raise ValueError
-    if not isinstance(mem['*'], list):
-        raise TypeError
-    if not isinstance(mem['_'], list):
-        raise TypeError
     if type != 'left' and type != 'right':
         raise ValueError
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
+        if char not in ['*', '_']:
+            raise ValueError
+        if '*' not in mem:
+            raise ValueError
+        if '_' not in mem:
+            raise ValueError
+        if not isinstance(mem['*'], list):
+            raise TypeError
+        if not isinstance(mem['_'], list):
+            raise TypeError
 
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
         is_fdr = False
@@ -773,7 +792,20 @@ def get_generic_fdr_indices(i: int, line: str, char: str, mem: dict, type: str =
 
 
 def get_fdr_indices(line: str, type: str = 'left', parser: str = 'github') -> dict:
-    r"""Find FDR indices."""
+    r"""Iteratevly find flanking delimiter runs indices.
+
+    :parameter line: a string.
+    :parameter type: the type of FDR. This value can only be ``left`` or ``right``.
+    :parameter parser: decides rules on how to find FDR indices.
+         Defaults to ``github``.
+    :type line: str
+    :type type: str
+    :type parser: str
+    :returns: a data structure contaning the flanking delimiter runs indices.
+        See the ``fdr_indices`` data structure.
+    :rtype: dict
+    :raises: a built-in exception.
+    """
     if type != 'left' and type != 'right':
         raise ValueError
 
@@ -782,86 +814,282 @@ def get_fdr_indices(line: str, type: str = 'left', parser: str = 'github') -> di
         # the get_generic_fdr_indices function.
         line = line[::-1]
 
-    i = 0
+    fdr_indices = dict()
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
 
-    # A data structure containing the lfdr indices by type ,divided into couples start-end:
-    # '*': [[s0,e0], [s1,e1], ..., [sn,en]]
-    # '_': [[s0,e0], [s1,e1], ..., [sn,en]]
-    m = {
-        '*': list(),
-        '_': list(),
-    }
+        # A data structure containing the lfdr indices by type ,divided into couples start-end:
+        # '*': [[s0,e0], [s1,e1], ..., [sn,en]]
+        # '_': [[s0,e0], [s1,e1], ..., [sn,en]]
+        fdr_indices['*'] = list()
+        fdr_indices['_'] = list()
 
-    while i < len(line):
-        i = get_generic_fdr_indices(i, line, '*', m, type, parser)
-        i = get_generic_fdr_indices(i, line, '_', m, type, parser)
-        i += 1
+        i = 0
+        while i < len(line):
+            i = get_generic_fdr_indices(i, line, '*', fdr_indices, type, parser)
+            i = get_generic_fdr_indices(i, line, '_', fdr_indices, type, parser)
+            i += 1
 
-    return m
+    return fdr_indices
 
 
-def get_remove_emphasis_indices(line: str):
-    r"""get_remove_emphasis_indices."""
-    i = 0
-    j = len(line) - 1
-    ignore_list = list()
+def can_open_emphasis(line: str, emphasis_char: str, start: int, end: int, parser: str = 'github') -> bool:
+    r"""Check if a substring can open emphasis.
+
+    :parameter line: a string.
+    :emphasis_char: a character.
+    :start: index where to start the analysis.
+    :end: index where to end the analysis.
+    :parameter parser: decides rules on how to find FDR indices.
+        Defaults to ``github``.
+    :type line: str
+    :type emphasis_char: str
+    :type start: int
+    :type end: int
+    :type parser: str
+    :returns: a boolean that is set to ``True`` if a substring can open emphasis,
+        ``False`` otherwise.
+    :rtype: bool
+    :raises: a built-in exception.
+    """
+    if len(emphasis_char) != 1:
+        raise ValueError
+    if start < 0:
+        raise ValueError
+    if end > len(line) - 1:
+        raise ValueError
+
+    # Absence of flanking delimiter run.
     no_fdr = {
         '*': list(),
         '_': list(),
     }
 
-    while i < len(line) and j >= 0 and i < j:
-        Si = i
-        has_open = False
-        has_close = False
-        is_lfdr = True
+    # See
+    # https://spec.commonmark.org/0.28/#can-open-emphasis
 
-        while i < len(line) and line[i] == '*':
+    can_open = False
+    # Rule 1, 2, 5, 6.
+    if get_fdr_indices(line=line[start: end + 1], type='left') != no_fdr:
+        can_open = True
+
+    # Rule 5, 6.
+    if can_open and emphasis_char == '_':
+        can_open = False
+        condition = False
+        # end + 1 is to get the end index really.
+        if get_fdr_indices(line=line[start: end + 1], type='right') == no_fdr:
+            can_open = True
+            condition = True
+        if not condition:
+            if get_fdr_indices(line=line[start: end + 1], type='right') != no_fdr and line[start] in md_parser['github']['pseudo-re']['PC']:
+                can_open = True
+
+    return can_open
+
+
+def can_close_emphasis(line: str, emphasis_char: str, start: int, end: int) -> bool:
+    r"""Check if a substring can close emphasis.
+
+    :parameter line: a string.
+    :emphasis_char: a character.
+    :start: index where to start the analysis.
+    :end: index where to end the analysis.
+    :parameter parser: decides rules on how to find FDR indices.
+        Defaults to ``github``.
+    :type line: str
+    :type emphasis_char: str
+    :type start: int
+    :type end: int
+    :type parser: str
+    :returns: a boolean that is set to ``True`` if a substring can close emphasis,
+        ``False`` otherwise.
+    :rtype: bool
+    :raises: a built-in exception.
+    """
+    if start < 0:
+        raise ValueError
+    if end > len(line) - 1:
+        raise ValueError
+
+    # Absence of flanking delimiter run.
+    no_fdr = {
+        '*': list(),
+        '_': list(),
+    }
+
+    # See
+    # https://spec.commonmark.org/0.28/#can-close-emphasis
+
+    can_close = False
+    # Rule 3, 4, 7, 8.
+    if get_fdr_indices(line=line[start: end + 1], type='right') != no_fdr:
+        can_close = True
+
+    # Rule 7, 8.
+    if can_close and emphasis_char == '_':
+        can_close = False
+        condition = False
+        if get_fdr_indices(line=line[start: end + 1], type='left') == no_fdr:
+            can_close = True
+            condition = True
+        if not condition:
+            if get_fdr_indices(line=line[start: end + 1], type='left') != no_fdr and line[end] in md_parser['github']['pseudo-re']['PC']:
+                can_close = True
+
+    return can_close
+
+
+def remove_emphasis(line: str, parser: str = 'github') -> str:
+    r"""Remove emphasis.
+
+    :parameter line: a string.
+    :parameter parser: decides rules on how to find FDR indices.
+        Defaults to ``github``.
+    :type line: str
+    :type parser: str
+    :returns: the input line without emphasis.
+    :rtype: str
+    :raises: a built-in exception.
+
+    ..note: In case of cmark we don't care about removing ``*`` because
+            all ``*`` are removed anyway by the build_anchor_link function.
+            If you care to remove ``*`` this function needs to be tweaked.
+    """
+    ignore = list()
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
+        all = list()
+        j = len(line) - 1
+        # Get all delimiter runs and divide them into lists.
+        while j >= 0:
+            Sj = j
+            tmp = list()
+            while j >= 0 and line[j] == '_':
+                tmp.append(j)
+                j -= 1
+            if Sj > j:
+                all.append(tmp)
+
+            j -= 1
+
+        opn = list()
+        cls = list()
+        while len(all) > 0:
+            # Every x is a delimiter run.
+            x = all.pop()
+
+            # Check line limits.
+            if x[-1] == 0:
+                start = 0
+            else:
+                start = x[-1] - 1
+            if x[0] == len(line) - 1:
+                end = len(line) - 1
+            else:
+                end = x[0] + 1
+
+            # Separate delimiter runs into opening and closing emphasis.
+            # Delimiter runs may be in both lists.
+            if can_close_emphasis(line, '_', start, end):
+                cls.append(sorted(x))
+            if can_open_emphasis(line, '_', start, end):
+                opn.append(x)
+
+        # Reverse.
+        opn = opn[::-1]
+
+        i = 0
+        # Add elements to ignore list if:
+        # 1. opening and closing delimiters match in length
+        # 2. closing > opening in terms of indices
+        while i < len(opn):
+            if len(cls) > 0:
+                # Get the closing delimiter of the last opening delimiter.
+                x = get_nearest_list_id(opn[i][0], cls)
+                j = 0
+                while j < len(opn[i]):
+                    # Skip if delimiter can both open and close but
+                    # we need to avoid duplicates.
+                    # For example, try:
+                    #
+                    # md_toc.api.remove_emphasis('foo-_(bar)_')
+                    #
+                    # opn = [[4]]
+                    # cls = [[4], [10]]
+                    # The first iteration is skipped because
+                    # 4 !> 4
+                    # but the second is not, because
+                    # 10 > 4
+                    # so we have
+                    # ignore.append(close) == 10
+                    # ignore.append(open) == 4
+                    if sorted(opn[i]) in cls and len(cls) < len(opn):
+                        pass
+                    else:
+                        if len(cls[x]) > 0:
+                            # Empty the closing list so we don't have to
+                            # keep track of indices.
+                            close = cls[x].pop(0)
+                            open = opn[i][-j]
+                            if close > open:
+                                ignore.append(close)
+                                ignore.append(open)
+                    j += 1
+            # Remove an empty closing list.
+            if len(cls) > 0 and len(cls[-1]) == 0:
+                cls.pop(-1)
             i += 1
 
-        if Si > 0:
-            start_inspect = Si - 1
-        else:
-            start_inspect = Si
-
-        lfdr_indices = get_fdr_indices(line=line[start_inspect:i + 1], type='left')
-        if lfdr_indices == no_fdr:
-            is_lfdr = False
-
-        iter = i - Si
-
-        if iter > 0 and is_lfdr:
-            has_open = True
-            has_close = False
-
-            while i < j and iter > 0:
-                Sj = j
-
-                while line[j] != '*' and j > i:
-                    j -= 1
-
-                # Last position of a star character.
-                last_j = j
-
-                # Check if characters are part of RFDR to determine if they might be closing emphasis.
-                while j > 0 and line[j] == '*' and last_j - j < iter and line[j - 1] != '\\':
-                    j -= 1
-
-                closing_emph = False
-                if get_fdr_indices(line=line[j:Sj + 1], type='right') != no_fdr:
-                    closing_emph = True
-
-                if j < Sj and closing_emph:
-                    total_closed = last_j - j
-                    iter -= total_closed
-                    ignore_list.append([j + 1, last_j])
-                    has_close = True
-
-        if has_open and has_close:
-            ignore_list.append([Si, i - 1])
+    # Keep line indices which are not in the ignore list.
+    s = sorted(ignore)
+    final = str()
+    i = 0
+    while i < len(line):
+        if i not in s:
+            final += line[i]
         i += 1
 
-    return ignore_list
+    return final
+
+
+def get_nearest_list_id(index: int, integer_lists: list) -> int:
+    r"""Given a list of lists of integers, find the list id corresponding to the nearest bigger number to be searched (the index).
+
+    :parameter index: an integer from which to start searching.
+    :parameter integer_lists: a list of lists of integers.
+    :type index: int
+    :type integer_lists: list
+    :returns: the list id corresponding to the nearest bigger number to be searched.
+    :rtype: int
+    :raises: a built-in exception.
+
+    ..note: the lists must be sorted increasingly and the container list as well.
+    """
+    if len(integer_lists) == 0:
+        raise ValueError
+    if len(integer_lists[-1]) == 0:
+        raise ValueError
+    for ll in integer_lists:
+        for e in ll:
+            if not isinstance(e, int):
+                raise TypeError
+
+    i = 0
+    # Initially, min = max.
+    min = integer_lists[-1][-1]
+    nearest_list_id = len(integer_lists) - 1
+    done = False
+    while i < len(integer_lists) and not done:
+        j = 0
+        while j < len(integer_lists[i]) and not done:
+            # nearest_list_id must always come after the index.
+            if integer_lists[i][j] > index and integer_lists[i][j] < min:
+                min = integer_lists[i][j]
+                nearest_list_id = i
+                done = True
+            j += 1
+        i += 1
+
+    return nearest_list_id
 
 
 def build_anchor_link(header_text_trimmed: str,
@@ -895,7 +1123,7 @@ def build_anchor_link(header_text_trimmed: str,
         header_text_trimmed = remove_html_tags(header_text_trimmed, parser)
 
         # Filter "emphasis and strong emphasis".
-        # TODO
+        header_text_trimmed = remove_emphasis(header_text_trimmed, parser)
 
         # Remove punctuation: Keep spaces, hypens and "word characters"
         # only.

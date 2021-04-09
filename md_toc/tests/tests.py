@@ -430,6 +430,14 @@ class TestApi(unittest.TestCase):
         Refer to those two functions for the unit tests.
         """
 
+    @unittest.skip("empty test")
+    def get_generic_fdr_indices(self):
+        r"""Test that LFDR and RFDR indices are computed correctly.
+
+        This function is not tested because all its functionality is tested
+        in the test_get_fdr_indices function.
+        """
+
     def test_get_fdr_indices(self):
         r"""Test get flanking delimiter run indices.
 
@@ -470,145 +478,224 @@ class TestApi(unittest.TestCase):
         self.assertEqual(api.get_fdr_indices('abc *** def', 'right', 'github'), {'*': list(), '_': list(), })
         self.assertEqual(api.get_fdr_indices('a _ b', 'right', 'github'), {'*': list(), '_': list(), })
 
-    def test_get_remove_emphasis_indices(self):
-        r"""Test get remove emphasis indices."""
-        # Example 331
-        self.assertEqual(api.get_remove_emphasis_indices('*foo bar*'), [[8, 8], [0, 0]])
+    @unittest.skip("empty test")
+    def test_can_open_emphasis(self):
+        r"""Test that a substring can open emphasis in specific cases.
 
-        # Example 332
-        self.assertEqual(api.get_remove_emphasis_indices('a * foo bar*'), list())
+        This function is not tested because all its functionality is tested
+        in the remove_emphasis function.
+        """
 
-        # Example 333
-        self.assertEqual(api.get_remove_emphasis_indices('a*"foo"*'), list())
+    @unittest.skip("empty test")
+    def test_can_close_emphasis(self):
+        r"""Test that a substring can close emphasis in specific cases.
 
-        # Example 334
-        self.assertEqual(api.get_remove_emphasis_indices('* a *'), list())
+        This function is not tested because all its functionality is tested
+        in the remove_emphasis function.
+        """
 
-        # Example 335
-        self.assertEqual(api.get_remove_emphasis_indices('foo*bar*'), [[7, 7], [3, 3]])
+    @unittest.skip("empty test")
+    def test_get_generic_fdr_indices(self):
+        r"""Test that LFDR and RFDR indices are computed correctly.
 
-        # Example 336
-        self.assertEqual(api.get_remove_emphasis_indices('5*6*78'), [[3, 3], [1, 1]])
+        This function is not tested because all its functionality is tested
+        in the test_get_fdr_indices function.
+        """
 
+    def test_remove_emphasis(self):
+        r"""Test that removing emphasis works correctly correctly.
+
+        .. note: not all tests are enabled because of a missing implementation
+            and possible bugs.
+        """
         # Example 337
-        # self.assertEqual(api.get_remove_emphasis_indices('_foo bar_'), [[3, 3], [1, 1]])
+        self.assertEqual(api.remove_emphasis('_foo bar_'), 'foo bar')
+
         # Example 338
+        self.assertEqual(api.remove_emphasis('_ foo bar_'), '_ foo bar_')
+
         # Example 339
+        self.assertEqual(api.remove_emphasis('a_"foo"_'), 'a_"foo"_')
+
         # Example 340
+        self.assertEqual(api.remove_emphasis('foo_bar_'), 'foo_bar_')
+
         # Example 341
+        self.assertEqual(api.remove_emphasis('5_6_78'), '5_6_78')
+
         # Example 342
+        self.assertEqual(api.remove_emphasis('пристаням_стремятся_'), 'пристаням_стремятся_')
+
         # Example 343
+        self.assertEqual(api.remove_emphasis('aa_"bb"_cc'), 'aa_"bb"_cc')
+
         # Example 344
+        self.assertEqual(api.remove_emphasis('foo-_(bar)_'), 'foo-(bar)')
+
         # Example 345
-
-        # Example 346
-        self.assertEqual(api.get_remove_emphasis_indices('*foo bar *'), list())
-
-        # Example 347
-        self.assertEqual(api.get_remove_emphasis_indices('*foo bar\n*'), list())
-
-        # Example 348
-        self.assertEqual(api.get_remove_emphasis_indices('*(*foo)'), list())
-
-        # Example 349
-        self.assertEqual(api.get_remove_emphasis_indices('*(*foo*)*'), [[8, 8], [0, 0], [6, 6], [2, 2]])
-
-        # Example 350
-        self.assertEqual(api.get_remove_emphasis_indices('*foo*bar'), [[4, 4], [0, 0]])
+        self.assertEqual(api.remove_emphasis('_foo*'), '_foo*')
 
         # Example 351
+        self.assertEqual(api.remove_emphasis('_foo bar _'), '_foo bar _')
+
         # Example 352
+        self.assertEqual(api.remove_emphasis('_(_foo)'), '_(_foo)')
+
         # Example 353
+        self.assertEqual(api.remove_emphasis('_(_foo_)_'), '(foo)')
+
         # Example 354
+        self.assertEqual(api.remove_emphasis('_foo_bar'), '_foo_bar')
+
         # Example 355
+        self.assertEqual(api.remove_emphasis('_пристаням_стремятся'), '_пристаням_стремятся')
+
         # Example 356
+        self.assertEqual(api.remove_emphasis('_foo_bar_baz_'), 'foo_bar_baz')
+
         # Example 357
-
-        # Example 358
-        self.assertEqual(api.get_remove_emphasis_indices('**foo bar**'), [[9, 10], [0, 1]])
-
-        # Example 359
-        self.assertEqual(api.get_remove_emphasis_indices('** foo bar**'), list())
-
-        # Example 360
-        self.assertEqual(api.get_remove_emphasis_indices('a**"foo"**'), list())
-
-        # Example 361
-        self.assertEqual(api.get_remove_emphasis_indices('foo**bar**'), [[8, 9], [3, 4]])
+        self.assertEqual(api.remove_emphasis('_(bar)_.'), '(bar).')
 
         # Example 362
+        self.assertEqual(api.remove_emphasis('__foo bar__'), 'foo bar')
+
         # Example 363
+        self.assertEqual(api.remove_emphasis('__ foo bar__'), '__ foo bar__')
+
         # Example 364
+        self.assertEqual(api.remove_emphasis('__\nfoo bar__'), '__\nfoo bar__')
+
         # Example 365
+        self.assertEqual(api.remove_emphasis('a__"foo"__'), 'a__"foo"__')
+
         # Example 366
+        self.assertEqual(api.remove_emphasis('foo__bar__'), 'foo__bar__')
+
         # Example 367
+        self.assertEqual(api.remove_emphasis('5__6__78'), '5__6__78')
+
         # Example 368
+        self.assertEqual(api.remove_emphasis('пристаням__стремятся__'), 'пристаням__стремятся__')
+
         # Example 369
+        self.assertEqual(api.remove_emphasis('__foo, __bar__, baz__'), 'foo, bar, baz')
+
         # Example 370
-
-        # Example 371
-        self.assertEqual(api.get_remove_emphasis_indices('**foo bar **'), list())
-
-        # Example 372
-        self.assertEqual(api.get_remove_emphasis_indices('**(**foo)'), list())
-
-        # Example 373
-        self.assertEqual(api.get_remove_emphasis_indices('*(**foo**)*'), [[10, 10], [0, 0], [7, 8], [2, 3]])
-
-        # Example 374
-#        self.assertEqual(api.get_remove_emphasis_indices('**Gomphocarpus (*Gomphocarpus physocarpus*, syn.\n*Asclepias physocarpa*)**'), [[0, 1], [16, 16], [41, 41], [49, 49], [70, 70], [72, 73]])
-
-        # Example 375
-        self.assertEqual(api.get_remove_emphasis_indices('**foo "*bar*" foo**'), [[17, 18], [0, 1], [11, 11], [7, 7]])
-
-        # Example 376
-        self.assertEqual(api.get_remove_emphasis_indices('**foo**bar'), [[5, 6], [0, 1]])
+        self.assertEqual(api.remove_emphasis('foo-__(bar)__'), 'foo-(bar)')
 
         # Example 377
+        self.assertEqual(api.remove_emphasis('__foo bar __'), '__foo bar __')
+
         # Example 378
+        self.assertEqual(api.remove_emphasis('__(__foo)'), '__(__foo)')
+
         # Example 379
+        self.assertEqual(api.remove_emphasis('_(__foo__)_'), '(foo)')
+
         # Example 380
+        self.assertEqual(api.remove_emphasis('__foo__bar'), '__foo__bar')
+
         # Example 381
+        self.assertEqual(api.remove_emphasis('__пристаням__стремятся'), '__пристаням__стремятся')
+
         # Example 382
+        self.assertEqual(api.remove_emphasis('__foo__bar__baz__'), 'foo__bar__baz')
+
         # Example 383
-
-        # Example 384
-        self.assertEqual(api.get_remove_emphasis_indices('*foo [bar](/url)*'), [[16, 16], [0, 0]])
-
-        # Example 385
-        self.assertEqual(api.get_remove_emphasis_indices('*foo\nbar*'), [[8, 8], [0, 0]])
+        self.assertEqual(api.remove_emphasis('__(bar)__.'), '(bar).')
 
         # Example 386
+        self.assertEqual(api.remove_emphasis('_foo __bar__ baz_'), 'foo bar baz')
+
         # Example 387
+        self.assertEqual(api.remove_emphasis('_foo _bar_ baz_'), 'foo bar baz')
+
         # Example 388
+#        self.assertEqual(api.remove_emphasis('__foo_ bar_'), 'foo bar')
 
-        # Example 389
-#        self.assertEqual(api.get_remove_emphasis_indices('*foo *bar**'), [[9, 10], [5, 5], [0, 0]])
+        # Example 401
+        self.assertEqual(api.remove_emphasis('__foo _bar_ baz__'), 'foo bar baz')
 
-        # Example 390
-        self.assertEqual(api.get_remove_emphasis_indices('*foo **bar** baz*'), [[16, 16], [0, 0], [10, 11], [5, 6]])
+        # Example 402
+        self.assertEqual(api.remove_emphasis('__foo __bar__ baz__'), 'foo bar baz')
 
-        # Example 391
+        # Example 403
+#        self.assertEqual(api.remove_emphasis('____foo__ bar__'), 'foo bar')
 
-        # Example 392
+        # Example 411
+        self.assertEqual(api.remove_emphasis('__ is not an empty emphasis'), '__ is not an empty emphasis')
 
-        # Example 393
+        # Example 412
+        self.assertEqual(api.remove_emphasis('____ is not an empty strong emphasis'), '____ is not an empty strong emphasis')
 
-        # Example 394
+        # Example 425
+        self.assertEqual(api.remove_emphasis('foo ___'), 'foo ___')
 
-        # Example 395
+        # Example 426
+        self.assertEqual(api.remove_emphasis(r'foo _\__'), r'foo \_')
 
-        # Example 396
+        # Example 427
+#        self.assertEqual(api.remove_emphasis('foo _*_'), 'foo *')
 
-        # Example 397
+        # Example 428
+        self.assertEqual(api.remove_emphasis('foo _____'), 'foo _____')
 
-        # Example 398
+        # Example 429
+        self.assertEqual(api.remove_emphasis(r'foo __\___'), r'foo \_')
 
-        # Example 399
+        # Example 430
+#        self.assertEqual(api.remove_emphasis('foo __*__'), 'foo *')
 
-        # Example 400
+        # Example 431
+        self.assertEqual(api.remove_emphasis('__foo_'), '_foo')
+
+        # Example 432
+        self.assertEqual(api.remove_emphasis('_foo__'), 'foo_')
+
+        # Example 433
+        self.assertEqual(api.remove_emphasis('___foo__'), '_foo')
+
+        # Example 434
+        self.assertEqual(api.remove_emphasis('____foo_'), '___foo')
+
+        # Example 435
+        self.assertEqual(api.remove_emphasis('__foo___'), 'foo_')
+
+        # Example 436
+        self.assertEqual(api.remove_emphasis('_foo____'), 'foo___')
+
+        # Example 438
+        self.assertEqual(api.remove_emphasis('*_foo_*'), '*foo*')
+
+        # Example 439
+        self.assertEqual(api.remove_emphasis('__foo__'), 'foo')
+
+        # Example 440
+#        self.assertEqual(api.remove_emphasis('_*foo*_'), '*foo*')
+
+        # Example 442
+        self.assertEqual(api.remove_emphasis('____foo____'), 'foo')
+
+        # Example 445
+        self.assertEqual(api.remove_emphasis('_____foo_____'), 'foo')
+
+        # Example 446
+#        self.assertEqual(api.remove_emphasis('*foo _bar* baz_'), '*foo _bar* baz_')
+
+        # Example 447
+        self.assertEqual(api.remove_emphasis('*foo __bar *baz bim__ bam*'), '*foo bar *baz bim bam*')
+
+        # Example 451
+#        self.assertEqual(api.remove_emphasis('_foo [bar_](/url)'), '_foo [bar_](/url)')
+
+        # Example 454
+#        self.assertEqual(api.remove_emphasis('__<a href="__">'), '__<a href="__">')
+
+        # Example 456
+#        self.assertEqual(api.remove_emphasis('_a `_`_'), 'a `_`')
 
         # Example 458
+#        self.assertEqual(api.remove_emphasis('__a<http://foo.bar/?q=__>'), '__a<http://foo.bar/?q=__>')
 
     def test_remove_html_tags(self):
         r"""Test remove html tags."""

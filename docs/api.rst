@@ -7,7 +7,7 @@ Main Interface
 --------------
 
 Examples for the most relevant api functions can be viewed in the test
-file. md_toc's API uses `type hints`_ instead of assertions to check input and 
+file. md_toc's API uses `type hints`_ instead of assertions to check input and
 output types.
 
 .. _type hints: https://docs.python.org/3/library/typing.html
@@ -29,6 +29,15 @@ output types.
 .. autofunction:: is_closing_code_fence
 .. autofunction:: init_indentation_status_list
 .. autofunction:: toc_renders_as_coherent_list
+.. autofunction:: remove_html_tags
+.. autofunction:: get_generic_fdr_indices
+.. autofunction:: get_fdr_indices
+.. autofunction:: can_open_emphasis
+.. autofunction:: can_close_emphasis
+.. autofunction:: remove_emphasis
+.. autofunction:: get_nearest_list_id
+
+
 
 Exceptions
 ----------
