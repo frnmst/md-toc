@@ -24,7 +24,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='md_toc',
-    version='7.1.0',
+    version='7.2.0',
     packages=find_packages(exclude=['*tests*']),
     license='GPL',
     description='A utility that is able to generate a table of contents for a markdown file.',
@@ -36,7 +36,7 @@ setup(
     author='Franco Masotti',
     author_email='franco.masotti@live.com',
     keywords='markdown toc',
-    url='https://github.com/frnmst/md-toc',
+    url='https://blog.franco.net.eu.org/software/#md-toc',
     python_requires='>=3.5, <4',
     entry_points={
         'console_scripts': [

@@ -1,7 +1,7 @@
 #
 # Pipfile
 #
-# Copyright (C) 2017-2020 frnmst (Franco Masotti) <franco.masotti@live.com>
+# Copyright (C) 2017-2021 frnmst (Franco Masotti) <franco.masotti@live.com>
 #
 # This file is part of md-toc.
 #
@@ -26,12 +26,12 @@ verify_ssl = true
 
 [dev-packages]
 # Documentation.
-Sphinx = "~=3.3"
+Sphinx = "~=3.5"
 sphinx-rtd-theme = "~=0.5"
 
 # Tools.
-twine = "~=3.2"
-pre-commit = "~=2.9"
+twine = "~=3.4"
+pre-commit = "~=2.12"
 
 [packages]
 fpyutils = "~=1.2"
