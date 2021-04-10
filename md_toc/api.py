@@ -836,9 +836,9 @@ def can_open_emphasis(line: str, emphasis_char: str, start: int, end: int, parse
     r"""Check if a substring can open emphasis.
 
     :parameter line: a string.
-    :emphasis_char: a character.
-    :start: index where to start the analysis.
-    :end: index where to end the analysis.
+    :parameter emphasis_char: a character.
+    :parameter start: index where to start the analysis.
+    :parameter end: index where to end the analysis.
     :parameter parser: decides rules on how to find FDR indices.
         Defaults to ``github``.
     :type line: str
@@ -891,9 +891,9 @@ def can_close_emphasis(line: str, emphasis_char: str, start: int, end: int) -> b
     r"""Check if a substring can close emphasis.
 
     :parameter line: a string.
-    :emphasis_char: a character.
-    :start: index where to start the analysis.
-    :end: index where to end the analysis.
+    :parameter emphasis_char: a character.
+    :parameter start: index where to start the analysis.
+    :parameter end: index where to end the analysis.
     :parameter parser: decides rules on how to find FDR indices.
         Defaults to ``github``.
     :type line: str
@@ -951,9 +951,9 @@ def remove_emphasis(line: str, parser: str = 'github') -> str:
     :rtype: str
     :raises: a built-in exception.
 
-    ..note: In case of cmark we don't care about removing ``*`` because
-            all ``*`` are removed anyway by the build_anchor_link function.
-            If you care to remove ``*`` this function needs to be tweaked.
+    .. note:: In case of cmark we don't care about removing ``*`` because
+        all ``*`` are removed anyway by the ``build_anchor_link`` function.
+        If you care to remove ``*`` this function needs to be tweaked.
     """
     ignore = list()
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
