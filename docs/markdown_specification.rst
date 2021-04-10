@@ -8,66 +8,7 @@ md_toc aimes to be as conformant as possible to each supported markdown
 parser. What follows is a list of parameters and rules used by md_toc to decide
 how to parse markdown files and to generate the table of contents.
 
-Compatibility table
-```````````````````
-
-.. |unknown| image:: assets/grey.png
-    :width: 16
-    :height: 16
-
-.. |none| image:: assets/black.png
-    :width: 16
-    :height: 16
-
-.. |low| image:: assets/red.png
-    :width: 16
-    :height: 16
-
-.. |partial| image:: assets/yellow.png
-    :width: 16
-    :height: 16
-
-.. |most| image:: assets/blue.png
-    :width: 16
-    :height: 16
-
-.. |full| image:: assets/green.png
-    :width: 16
-    :height: 16
-
-Key
-^^^
-
-.. note:: This color system is subjective.
-
-============    ===========
-Color           Meaning
-============    ===========
-|unknown|       unknown
-|none|          none
-|low|           low
-|partial|       partial
-|most|          most
-|full|          full
-============    ===========
-
-Status
-^^^^^^
-
-===================   =====================   ============   ========================================================================================================  =============================================
-Parser                Status                  Alias of       Supported parser version                                                                                  Source
-===================   =====================   ============   ========================================================================================================  =============================================
-``cmark``             |most|                                 Version 0.28 (2017-08-01)                                                                                 https://github.com/commonmark/cmark
-``commonmarker``      |most|                  ``github``                                                                                                               https://github.com/gjtorikian/commonmarker
-``github``            |most|                                 Version 0.28-gfm (2017-08-01)                                                                             https://github.com/github/cmark
-``gitlab``            |partial|               ``github``                                                                                                               https://docs.gitlab.com/ee/user/markdown.html
-``redcarpet``         |low|                                  `Redcarpet v3.5.0 <https://github.com/vmg/redcarpet/tree/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae>`_      https://github.com/vmg/redcarpet
-``Gogs``              |unknown|
-``NotABug``           |unknown|
-``Marked``            |unknown|
-``Kramdown``          |unknown|
-===================   =====================   ============   ========================================================================================================  =============================================
-
+.. include:: compatibility_table.rst
 
 Supported markdown parsers
 --------------------------
