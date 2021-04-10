@@ -5,10 +5,10 @@ pkgver=7.2.0
 pkgrel=1
 pkgdesc="Automatically generate a compliant table of contents for a markdown file to improve document readability"
 arch=('any')
-url="https://github.com/frnmst/md-toc"
+url="https://blog.franco.net.eu.org/software/#md-toc"
 license=('GPL3')
 depends=('python'
-         'python-fpyutils=1.2.2'
+         'python-fpyutils=1.2.3'
          'python-setuptools')
 options=(!emptydirs)
 source=("https://blog.franco.net.eu.org/software/md-toc-${pkgver}.tar.gz.sig" "https://blog.franco.net.eu.org/software/md-toc-${pkgver}.tar.gz")
