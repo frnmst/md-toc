@@ -44,16 +44,16 @@ Color           Meaning
 Status
 ^^^^^^
 
-===================   =====================   ============   ========================================================================================================  =============================================
-Parser                Status                  Alias of       Supported parser version                                                                                  Source
-===================   =====================   ============   ========================================================================================================  =============================================
-``cmark``             |most|                                 Version 0.28 (2017-08-01)                                                                                 https://github.com/commonmark/cmark
-``commonmarker``      |most|                  ``github``                                                                                                               https://github.com/gjtorikian/commonmarker
-``github``            |most|                                 Version 0.28-gfm (2017-08-01)                                                                             https://github.com/github/cmark
-``gitlab``            |partial|               ``github``                                                                                                               https://docs.gitlab.com/ee/user/markdown.html
-``redcarpet``         |low|                                  `Redcarpet v3.5.0 <https://github.com/vmg/redcarpet/tree/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae>`_      https://github.com/vmg/redcarpet
-``Gogs``              |unknown|
-``NotABug``           |unknown|
-``Marked``            |unknown|
-``Kramdown``          |unknown|
-===================   =====================   ============   ========================================================================================================  =============================================
+=======================   =====================   ============   ========================================================================================================  =============================================
+Parser                    Status                  Alias of       Supported parser version                                                                                  Source
+=======================   =====================   ============   ========================================================================================================  =============================================
+``cmark``                 |most|                                 Version 0.28 (2017-08-01)                                                                                 https://github.com/commonmark/cmark
+``commonmarker``          |most|                  ``github``                                                                                                               https://github.com/gjtorikian/commonmarker
+``github``                |most|                                 Version 0.28-gfm (2017-08-01)                                                                             https://github.com/github/cmark
+``gitlab``                |partial|               ``github``                                                                                                               https://docs.gitlab.com/ee/user/markdown.html
+``redcarpet``             |low|                                  `Redcarpet v3.5.0 <https://github.com/vmg/redcarpet/tree/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae>`_      https://github.com/vmg/redcarpet
+Gogs                      |unknown|                                                                                                                                        https://gogs.io/
+NotABug Gogs fork         |unknown|                                                                                                                                        https://notabug.org/hp/gogs/
+Marked                    |unknown|                                                                                                                                        https://github.com/markedjs/marked
+kramdown                  |unknown|                                                                                                                                        https://kramdown.gettalong.org/
+=======================   =====================   ============   ========================================================================================================  =============================================
