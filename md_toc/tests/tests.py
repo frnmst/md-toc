@@ -1158,14 +1158,12 @@ class TestApi(unittest.TestCase):
         # Example 88 [Commonmark 0.28].
         # Example 89 [Commonmark 0.29].
         # Base case: no info string.
-        # https://github.github.com/gfm/#example-88
         self.assertEqual(api.is_opening_code_fence(BACKTICK3), BACKTICK3)
         self.assertEqual(api.is_opening_code_fence(BACKTICK4), BACKTICK4)
         self.assertEqual(api.is_opening_code_fence(BACKTICK10), BACKTICK10)
 
         # Example 89 [Commonmark 0.28].
         # Example 90 [Commonmark 0.29].
-        # https://github.github.com/gfm/#example-89
         self.assertEqual(api.is_opening_code_fence(TILDE3), TILDE3)
         self.assertEqual(api.is_opening_code_fence(TILDE4), TILDE4)
         self.assertEqual(api.is_opening_code_fence(TILDE10), TILDE10)
@@ -1191,7 +1189,6 @@ class TestApi(unittest.TestCase):
 
         # Example 98 [Commonmark 0.28].
         # Example 99 [Commonmark 0.29].
-        # https://github.github.com/gfm/#example-98
         self.assertEqual(
             api.is_opening_code_fence(BACKTICK3 + LINE_NEWLINE + LINE_NEWLINE +
                                       S2), BACKTICK3)
@@ -1202,34 +1199,29 @@ class TestApi(unittest.TestCase):
 
         # Example 99 [Commonmark 0.28].
         # Example 100 [Commonmark 0.29].
-        # https://github.github.com/gfm/#example-99
         # See example 88 [Commonmark 0.28].
 
         # Indentation.
         # Example 100 [Commonmark 0.28].
         # Example 101 [Commonmark 0.29].
-        # https://github.github.com/gfm/#example-100
         self.assertEqual(api.is_opening_code_fence(S1 + BACKTICK3), BACKTICK3)
 
         self.assertEqual(api.is_opening_code_fence(S1 + TILDE3), TILDE3)
 
         # Example 101 [Commonmark 0.28].
         # Example 102 [Commonmark 0.29].
-        # https://github.github.com/gfm/#example-101
         self.assertEqual(api.is_opening_code_fence(S2 + BACKTICK3), BACKTICK3)
 
         self.assertEqual(api.is_opening_code_fence(S2 + TILDE3), TILDE3)
 
         # Example 102 [Commonmark 0.28].
         # Example 103 [Commonmark 0.29].
-        # https://github.github.com/gfm/#example-102
         self.assertEqual(api.is_opening_code_fence(S3 + BACKTICK3), BACKTICK3)
 
         self.assertEqual(api.is_opening_code_fence(S3 + TILDE3), TILDE3)
 
         # Example 103 [Commonmark 0.28].
         # Example 104 [Commonmark 0.29].
-        # https://github.github.com/gfm/#example-103
         self.assertIsNone(api.is_opening_code_fence(S4 + BACKTICK3))
 
         self.assertIsNone(api.is_opening_code_fence(S4 + TILDE3))
@@ -1251,7 +1243,6 @@ class TestApi(unittest.TestCase):
 
         # Example 107 [Commonmark 0.28].
         # Example 108 [Commonmark 0.29].
-        # https://github.github.com/gfm/#example-107
         self.assertIsNone(
             api.is_opening_code_fence(BACKTICK3 + S1 + BACKTICK3))
 
@@ -1268,7 +1259,6 @@ class TestApi(unittest.TestCase):
 
         # Example 111 [Commonmark 0.28].
         # Example 112 [Commonmark 0.29].
-        # https://github.github.com/gfm/#example-111
         self.assertEqual(
             api.is_opening_code_fence(BACKTICK3 + GITHUB_INFO_STRING_FOO),
             BACKTICK3)
@@ -1280,7 +1270,6 @@ class TestApi(unittest.TestCase):
         # example 111 [Commonmark 0.28].
         # example 112 [Commonmark 0.29].
         # Info string.
-        # https://github.github.com/gfm/#example-111
         self.assertEqual(
             api.is_opening_code_fence(BACKTICK4 + GITHUB_INFO_STRING_FOO),
             BACKTICK4)
@@ -1297,7 +1286,6 @@ class TestApi(unittest.TestCase):
         # Example 112 [Commonmark 0.28].
         # Example 113 [Commonmark 0.29].
         # Info string with garbage and foreign character.
-        # https://github.github.com/gfm/#example-112
         self.assertEqual(
             api.is_opening_code_fence(BACKTICK4 + S4 + GITHUB_INFO_STRING_FOO +
                                       S1 + GITHUB_INFO_STRING_GARBAGE),
@@ -1309,14 +1297,12 @@ class TestApi(unittest.TestCase):
 
         # Example 113 [Commonmark 0.28].
         # Example 114 [Commonmark 0.29].
-        # https://github.github.com/gfm/#example-113
         self.assertEqual(api.is_opening_code_fence(BACKTICK4 + ';'), BACKTICK4)
 
         self.assertEqual(api.is_opening_code_fence(TILDE4 + ';'), TILDE4)
 
         # Example 114 [Commonmark 0.28].
         # Example 115 [Commonmark 0.29].
-        # https://github.github.com/gfm/#example-114
         self.assertIsNone(
             api.is_opening_code_fence(BACKTICK3 + S1 + 'aa' + S1 + BACKTICK3))
 
@@ -1334,32 +1320,33 @@ class TestApi(unittest.TestCase):
     def test_is_closing_code_fence(self):
         r"""Test detection of closing code fence."""
         # github.
-        # Example 91.
-        # https://github.github.com/gfm/#example-91
+        # Example 91 [Commonmark 0.28].
+        # Example 92 [Commonmark 0.29].
         self.assertFalse(api.is_closing_code_fence(BACKTICK3, TILDE3))
 
-        # Example 92.
-        # https://github.github.com/gfm/#example-92
+        # Example 92 [Commonmark 0.28].
+        # Example 93 [Commonmark 0.29].
         self.assertFalse(api.is_closing_code_fence(TILDE3, BACKTICK3))
 
-        # Example 93.
+        # Example 93 [Commonmark 0.28].
+        # Example 94 [Commonmark 0.29].
         # https://github.github.com/gfm/#example-93
         # "The closing code fence must be at least as long as the opening
         #  fence."
         self.assertFalse(api.is_closing_code_fence(BACKTICK3, BACKTICK4))
 
-        # Example 94.
-        # https://github.github.com/gfm/#example-94
+        # Example 94 [Commonmark 0.28].
+        # Example 95 [Commonmark 0.29].
         self.assertFalse(api.is_closing_code_fence(TILDE3, TILDE4))
 
-        # Example 95.
-        # https://github.github.com/gfm/#example-95
+        # Example 95 [Commonmark 0.28].
+        # Example 96 [Commonmark 0.29].
         self.assertTrue(api.is_closing_code_fence(LINE_EMPTY, BACKTICK3, True))
 
         self.assertTrue(api.is_closing_code_fence(LINE_EMPTY, TILDE3, True))
 
-        # Example 96.
-        # https://github.github.com/gfm/#example-96
+        # Example 96 [Commonmark 0.28].
+        # Example 97 [Commonmark 0.29].
         self.assertTrue(
             api.is_closing_code_fence(LINE_NEWLINE + BACKTICK3 + 'aaa',
                                       BACKTICK5, True))
@@ -1368,37 +1355,39 @@ class TestApi(unittest.TestCase):
             api.is_closing_code_fence(LINE_NEWLINE + TILDE3 + 'aaa', TILDE5,
                                       True))
 
-        # Example 97 not relevant.
+        # Example 97 [Commonmark 0.28]
+        # Example 98 [Commonmark 0.29]
+        # not relevant because we don't have to find headings inside blockquotes.
 
-        # Example 104.
-        # https://github.github.com/gfm/#example-104
+        # Example 104 [Commonmark 0.28].
+        # Example 105 [Commonmark 0.29].
         self.assertTrue(api.is_closing_code_fence(S2 + BACKTICK3, BACKTICK3))
 
         self.assertTrue(api.is_closing_code_fence(S2 + TILDE3, TILDE3))
 
-        # Example 105.
-        # https://github.github.com/gfm/#example-105
+        # Example 105 [Commonmark 0.28].
+        # Example 106 [Commonmark 0.29].
         self.assertTrue(
             api.is_closing_code_fence(S2 + BACKTICK3, S3 + BACKTICK3))
 
         self.assertTrue(api.is_closing_code_fence(S2 + TILDE3, S3 + TILDE3))
 
-        # Example 106.
-        # https://github.github.com/gfm/#example-106
+        # Example 106 [Commonmark 0.28].
+        # Example 107 [Commonmark 0.29].
         self.assertFalse(api.is_closing_code_fence(S4 + BACKTICK3, BACKTICK3))
 
         self.assertFalse(api.is_closing_code_fence(S4 + TILDE3, TILDE3))
 
-        # Example 108.
-        # https://github.github.com/gfm/#example-108
+        # Example 108 [Commonmark 0.28].
+        # Example 109 [Commonmark 0.29].
         self.assertFalse(
             api.is_closing_code_fence(TILDE3 + S1 + TILDE2, TILDE6))
 
         self.assertFalse(
             api.is_closing_code_fence(BACKTICK3 + S1 + BACKTICK2, BACKTICK6))
 
-        # Example 115.
-        # https://github.github.com/gfm/#example-115
+        # Example 115 [Commonmark 0.28].
+        # Example 117 [Commonmark 0.29].
         self.assertFalse(
             api.is_closing_code_fence(BACKTICK3 + S1 + 'aaa', BACKTICK3))
 
