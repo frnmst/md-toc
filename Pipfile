@@ -34,7 +34,7 @@ twine = "~=3.4"
 pre-commit = "~=2.12"
 
 [packages]
-fpyutils = "~=1.2"
+fpyutils = "~=2.0"
 
 [requires]
-python_version = "3.9"
+python_version = "*"

@@ -44,7 +44,7 @@ demo:
 	asciinema/md_toc_asciinema_$$(git describe --tags $$(git rev-list --tags --max-count=1) | tr '.' '_')_demo.sh
 
 test:
-	python -m unittest $(PACKAGE_NAME).tests.tests --failfast --locals --verbose
+	pipenv run python -m unittest $(PACKAGE_NAME).tests.tests --failfast --locals --verbose
 
 dist:
 	pipenv run python setup.py sdist
