@@ -1481,22 +1481,34 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
             return None
 
         line = line.lstrip(' ').rstrip('\n')
-        if not line.startswith((markers[0] * marker_min_length, markers[1] * marker_min_length)):
+        if not line.startswith((markers['backtick'] * marker_min_length, markers['tilde'] * marker_min_length)):
             return None
 
+        # The info string is the whole line except the first opening code
+        # fence markers.
         if line == len(line) * line[0]:
             info_string = str()
+            info_string_start = len(line)
         else:
-            info_string = line.lstrip(line[0])
-        # Backticks or tildes in info string are explicitly forbidden.
-        if markers[0] in info_string or markers[1] in info_string:
-            return None
-        # Solves example 107. See:
+            # Get the index where the info string starts.
+            i = 0
+            done = False
+            while not done and i < len(line):
+                if line[i] != line[0]:
+                    info_string_start = i
+                    done = True
+                i += 1
+
+            info_string = line[info_string_start:len(line)]
+
+        # Backticks or tildes in info string are explicitly forbidden
+        # in a backtick-opened code fence, for Commonmark 0.29.
+        # This also solves example 107 [Commonmark 0.28]. See:
         # https://github.github.com/gfm/#example-107
-        if line.rstrip(markers[0]) != line and line.rstrip(markers[1]) != line:
+        if markers['backtick'] in info_string and line[0] != markers['tilde']:
             return None
 
-        return line.rstrip(info_string)
+        return line[0:info_string_start]
     elif parser in ['redcarpet']:
         # TODO.
         return None
@@ -1536,7 +1548,7 @@ def is_closing_code_fence(line: str,
         # Remove opening fence indentation after it is known to be valid.
         fence = fence.lstrip(' ')
         # Check if fence uses valid characters.
-        if not fence.startswith((markers[0], markers[1])):
+        if not fence.startswith((markers['backtick'], markers['tilde'])):
             return False
 
         if len(fence) < marker_min_length:

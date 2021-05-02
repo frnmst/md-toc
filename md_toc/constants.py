@@ -45,22 +45,25 @@ parser['github']['list']['ordered'] = {
     'default marker number': 1,
     'min marker number': 0,
     'max marker number': 999999999,
-    'default closing marker': '.'
+    'default closing marker': '.',
 }
 parser['github']['list']['unordered'] = {
     'bullet markers': ['-', '+', '*'],
-    'default marker': '-'
+    'default marker': '-',
 }
 
 parser['github']['header'] = {
     'max space indentation': 3,
     'max levels': 6,
-    'default keep levels': 3
+    'default keep levels': 3,
 }
 
 parser['github']['code fence'] = {
-    'marker': ['`', '~'],
-    'min marker characters': 3
+    'marker': {
+        'backtick': '`',
+        'tilde': '~',
+    },
+    'min marker characters': 3,
 }
 
 # A structure containing some generic pseudo-regex expressions used in some algorithms.
