@@ -1561,14 +1561,14 @@ def is_closing_code_fence(line: str,
             return False
 
         # We might be inside a code block if this is not closed
-        # by the end of the document, according to example 95 and 96.
+        # by the end of the document, according to example 96 and 97.
         # This means that the end of the document corresponds to
         # a closing code fence.
         # Of course we first have to check that fence is a valid opening
         # code fence marker.
         # See:
-        # https://github.github.com/gfm/#example-95
-        # https://github.github.com/gfm/#example-96
+        # example 96 [Commonmark 0.29]
+        # example 97 [Commonmark 0.29]
         if is_document_end:
             return True
 
@@ -1578,9 +1578,9 @@ def is_closing_code_fence(line: str,
             return False
 
         line = line.rstrip('\n').rstrip(' ')
-        # Solves example 93 and 94. See:
-        # https://github.github.com/gfm/#example-93
-        # https://github.github.com/gfm/#example-94
+        # Solves:
+        # example 93 -> 94 [Commonmark 0.28]
+        # example 94 -> 95 [Commonmark 0.29]
         if len(line) < len(fence):
             return False
 
