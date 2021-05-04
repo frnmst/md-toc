@@ -51,6 +51,16 @@ class CliToApi():
             ordered = True
         elif args.unordered_list_marker is not None:
             list_marker = args.unordered_list_marker
+        newline_string = args.newline_string
+        if newline_string == r'\n':
+            newline_string = '\n'
+        elif newline_string == r'\r':
+            newline_string = '\r'
+        if newline_string == r'\r\n':
+            newline_string = '\r\n'
+
+        print(repr(newline_string))
+        print(newline_string)
 
         toc_struct = build_multiple_tocs(
             filenames=args.filename,
@@ -62,7 +72,8 @@ class CliToApi():
             parser=args.parser,
             list_marker=list_marker,
             skip_lines=args.skip_lines,
-            constant_ordered_list=args.constant_ordered_list)
+            constant_ordered_list=args.constant_ordered_list,
+            newline_string=newline_string)
         if args.in_place:
             write_strings_on_files_between_markers(
                 filenames=args.filename,
@@ -232,9 +243,19 @@ class CliInterface():
             '--toc-marker',
             metavar='TOC_MARKER',
             default=common_defaults['toc marker'],
-            help='set the string to be used as the marker for positioning the \
+            help=('set the string to be used as the marker for positioning the \
                   table of contents. Defaults to ' +
-            common_defaults['toc marker'])
+                  common_defaults['toc marker'])
+        )
+        parser.add_argument(
+            '-n',
+            '--newline-string',
+            choices=[r'\n', r'\r', r'\r\n'],
+            metavar='NEWLINE_STRING',
+            type=str,
+            default=common_defaults['newline string'],
+            help='the string used to separate the lines of the TOC. Use quotes to delimit the string. Defaults to ' + repr(common_defaults['newline string'])
+        )
         parser.add_argument(
             '-p',
             '--in-place',

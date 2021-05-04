@@ -24,7 +24,10 @@ import copy
 
 common_defaults = dict()
 
-common_defaults = {'toc marker': '<!--TOC-->'}
+common_defaults = {
+    'toc marker': '<!--TOC-->',
+    'newline string': '\n',
+}
 
 parser = dict()
 parser['github'] = dict()

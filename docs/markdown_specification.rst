@@ -71,14 +71,15 @@ Only ATX-style headings are supported in md_toc.
   - https://github.github.com/gfm/#backslash-escapes
 
   A line ending character is ``U+000A`` or the ``U+000D`` character,
-  respectively ``\n`` and ``\r``. Everything following those characters
-  is ignored. This has also the benefit to automatically remove
+  respectively ``\n`` and ``\r`` or ``\r\n``.
+  Everything following those characters is ignored.
+  This has also the benefit to automatically remove
   the trailing newline or carriage return at the end of each line. This also
-  includes ARX headers with line endings only as main content, such as
+  includes ATX headers with line endings only as main content, such as
   ``#\n`` or ``#\r``. See also:
 
-  - https://github.github.com/gfm/#line
-  - https://github.github.com/gfm/#line-ending
+  - https://spec.commonmark.org/0.29/#line
+  - https://spec.commonmark.org/0.29/#line-ending
 
   Every other rule for ATX headings is applied.
 
@@ -112,6 +113,10 @@ Only ATX-style headings are supported in md_toc.
   - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1444
   - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1981
 
+  Line endings are generically ``\n`` or ``\r`` characters. See:
+
+  - https://github.com/vmg/redcarpet/blob/8db31cb83e7d81b19970466645e899b5ac3bc15d/ext/redcarpet/markdown.c#L2845
+  - https://github.com/vmg/redcarpet/blob/8db31cb83e7d81b19970466645e899b5ac3bc15d/ext/redcarpet/markdown.c#L2854
 
 List item rules
 ```````````````
@@ -913,6 +918,8 @@ And it's not just about anchor links, as you have read before. For example:
   - https://github.com/go-gitea/gitea/issues/12062
   - https://github.com/go-gitea/gitea/pull/11903
   - https://github.com/go-gitea/gitea/pull/12805
+
+  The user content substring does not seem to affect the functionality of the TOC.
 
   Older versions of Gitea used blackfriday. See:
 

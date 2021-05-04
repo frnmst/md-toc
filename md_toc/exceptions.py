@@ -39,3 +39,7 @@ class StdinIsNotAFileToBeWritten(Exception):
 
 class TocDoesNotRenderAsCoherentList(Exception):
     """TOC list indentations are either wrong or not what the user intended."""
+
+
+class StringCannotContainNewlines(Exception):
+    """The specified string cannot contain newlines."""

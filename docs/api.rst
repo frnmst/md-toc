@@ -36,7 +36,7 @@ output types.
 .. autofunction:: can_close_emphasis
 .. autofunction:: remove_emphasis
 .. autofunction:: get_nearest_list_id
-
+.. autofunction:: replace_and_split_newlines
 
 
 Exceptions
@@ -47,3 +47,4 @@ Exceptions
 .. autoexception:: GithubOverflowOrderedListMarker
 .. autoexception:: StdinIsNotAFileToBeWritten
 .. autoexception:: TocDoesNotRenderAsCoherentList
+.. autoexception:: StringCannotContainNewlines

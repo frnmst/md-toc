@@ -26,8 +26,8 @@ import sys
 from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
                          GithubOverflowOrderedListMarker,
                          StdinIsNotAFileToBeWritten,
-                         TocDoesNotRenderAsCoherentList)
-from .constants import parser as md_parser
+                         TocDoesNotRenderAsCoherentList, StringCannotContainNewlines)
+from .constants import parser as md_parser, common_defaults
 
 
 # _ctoi and _isascii taken from cpython source Lib/curses/ascii.py
@@ -135,7 +135,8 @@ def build_toc(filename: str,
               parser: str = 'github',
               list_marker: str = '-',
               skip_lines: int = 0,
-              constant_ordered_list: bool = False) -> str:
+              constant_ordered_list: bool = False,
+              newline_string: str = common_defaults['newline string']) -> str:
     r"""Build the table of contents of a single file.
 
     :parameter filename: the file that needs to be read.
@@ -158,6 +159,8 @@ def build_toc(filename: str,
          Defaults to ``0```.
     :parameter constant_ordered_list: use a single integer
         as list marker. This sets ordered to ``True``.
+    :parameter newline_string: the set of characters used to
+        go to a new line.
     :type filename: str
     :type ordered: bool
     :type no_links: bool
@@ -167,6 +170,7 @@ def build_toc(filename: str,
     :type list_marker: str
     :type skip_lines: int
     :type constant_ordered_list: bool
+    :type newline_string: str
     :returns: toc, the corresponding table of contents of the file.
     :rtype: str
     :raises: a built-in exception.
@@ -184,7 +188,13 @@ def build_toc(filename: str,
     if filename == '-':
         f = sys.stdin
     else:
-        f = open(filename, 'r')
+        # When reading input from the stream,
+        # if newline is None, universal newlines mode is enabled.
+        # Lines in the input can end in '\n', '\r', or '\r\n',
+        # and these are translated into '\n' before being returned to the caller.
+        # See
+        # https://docs.python.org/3/library/functions.html#open-newline-parameter
+        f = open(filename, 'r', newline=None)
 
     # Help the developers: override the list_marker in case
     # this function is called with the default unordered list marker,
@@ -244,8 +254,13 @@ def build_toc(filename: str,
         if not is_within_code_fence or code_fence is None:
 
             # Header detection and gathering.
-            header = get_md_header(line, header_duplicate_counter,
-                                   keep_header_levels, parser, no_links)
+            headers = get_md_header(line, header_duplicate_counter,
+                                    keep_header_levels, parser, no_links)
+
+            # We only need to get the first element since all the lines
+            # have been already separated here.
+            header = headers[0]
+
             if header is not None:
                 header_type_curr = header['type']
 
@@ -287,7 +302,7 @@ def build_toc(filename: str,
 
                 # Save the TOC line with the indentation.
                 toc += build_toc_line(toc_line_no_indent,
-                                      no_of_indentation_spaces_curr) + '\n'
+                                      no_of_indentation_spaces_curr) + newline_string
 
                 header_type_prev = header_type_curr
 
@@ -313,7 +328,8 @@ def build_multiple_tocs(filenames: list,
                         parser: str = 'github',
                         list_marker: str = '-',
                         skip_lines: int = 0,
-                        constant_ordered_list: bool = False) -> list:
+                        constant_ordered_list: bool = False,
+                        newline_string: str = common_defaults['newline string']) -> list:
     r"""Parse files by line and build the table of contents of each file.
 
     :parameter filenames: the files that needs to be read.
@@ -366,7 +382,7 @@ def build_multiple_tocs(filenames: list,
         toc_struct.append(
             build_toc(filenames[file_id], ordered, no_links, no_indentation,
                       no_list_coherence, keep_header_levels, parser,
-                      list_marker, skip_lines, constant_ordered_list))
+                      list_marker, skip_lines, constant_ordered_list, newline_string))
         file_id += 1
 
     return toc_struct
@@ -858,6 +874,8 @@ def can_open_emphasis(line: str, emphasis_char: str, start: int, end: int, parse
     if end > len(line) - 1:
         raise ValueError
 
+    # CHECK FOR NEWLINES
+
     # Absence of flanking delimiter run.
     no_fdr = {
         '*': list(),
@@ -1116,6 +1134,10 @@ def build_anchor_link(header_text_trimmed: str,
          The licenses of each markdown parser algorithm are reported on
          the 'Markdown spec' documentation page.
     """
+    # Check for newlines.
+    if len(replace_and_split_newlines(header_text_trimmed)) > 1:
+        raise StringCannotContainNewlines
+
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
         header_text_trimmed = header_text_trimmed.lower()
 
@@ -1142,6 +1164,7 @@ def build_anchor_link(header_text_trimmed: str,
             header_text_trimmed = header_text_trimmed + '-' + str(
                 header_duplicate_counter[header_text_trimmed])
         header_duplicate_counter[ht] += 1
+        print(header_duplicate_counter)
         return header_text_trimmed
     elif parser in ['redcarpet']:
         # To ensure full compatibility what follows is a direct translation
@@ -1193,13 +1216,37 @@ def build_anchor_link(header_text_trimmed: str,
         return header_text_trimmed_middle_stage
 
 
+def replace_and_split_newlines(line: str) -> list:
+    r"""Replace all the newline characters with line feeds and separate the components.
+
+    :parameter line: a string.
+    :type line: str
+    :returns: a list of newline separated strings.
+    :rtype: list
+    :raises: a built-in exception.
+    """
+    line = line.replace('\r\n', '\n')
+    line = line.replace('\r', '\n')
+
+    # Ignore the sequences of consecutive first and last newline characters.
+    # Since there is no need to process the last
+    # empty line.
+    line = line.lstrip('\n')
+    line = line.rstrip('\n')
+
+    line = line.split('\n')
+
+    return line
+
+
 def get_atx_heading(line: str,
                     keep_header_levels: int = 3,
                     parser: str = 'github',
-                    no_links: bool = False):
+                    no_links: bool = False) -> list:
     r"""Given a line extract the link label and its type.
 
-    :parameter line: the line to be examined.
+    :parameter line: the line to be examined. This string may include newline
+        characters in between.
     :parameter keep_header_levels: the maximum level of headers to be
          considered as such when building the table of contents.
          Defaults to ``3``.
@@ -1209,183 +1256,202 @@ def get_atx_heading(line: str,
     :type line: str
     :type keep_header_levels: int
     :type parser: str
-    :type np_links: bool
-    :returns: None if the line does not contain header elements according to
-         the rules of the selected markdown parser, or a tuple containing the
-         header type and the trimmed header text, according to the selected
-         parser rules, otherwise.
-    :rtype: typing.Optional[tuple]
+    :type no_links: bool
+    :returns: struct, a list of dictionaries with ``header type`` (int)
+        and ``header text trimmed`` (str) keys. Both values are
+        set to ``None`` if the line does not contain header elements according to
+        the rules of the selected markdown parser.
+    :rtype: list
     :raises: GithubEmptyLinkLabel or GithubOverflowCharsLinkLabel or a
          built-in exception.
     """
     if not keep_header_levels >= 1:
         raise ValueError
 
+    struct = list()
+
     if len(line) == 0:
-        return None
+        return [{'header type': None, 'header text trimmed': None}]
 
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
+    for subl in replace_and_split_newlines(line):
+        current_headers = None
+        final_line = None
 
-        # Backslash.
-        if line[0] == '\u005c':
-            return None
+        if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
 
-        i = 0
-        while i < len(line) and line[i] == ' ' and i <= md_parser['github'][
-                'header']['max space indentation']:
-            i += 1
-        if i > md_parser['github']['header']['max space indentation']:
-            return None
+            struct.append({'header type': None, 'header text trimmed': None})
 
-        offset = i
-        while i < len(line) and line[i] == '#' and i <= md_parser['github'][
-                'header']['max levels'] + offset:
-            i += 1
-        if i - offset > md_parser['github']['header'][
-                'max levels'] or i - offset > keep_header_levels or i - offset == 0:
-            return None
-        current_headers = i - offset
-
-        # Include special cases for line endings which should not be
-        # discarded as non-ATX headers.
-        if i < len(line) and (line[i] != ' ' and line[i] != '\u000a'
-                              and line[i] != '\u000d'):
-            return None
-
-        i += 1
-        # Exclude leading whitespaces after the ATX header identifier.
-        while i < len(line) and line[i] == ' ':
-            i += 1
-
-        # An algorithm to find the start and the end of the closing sequence (cs).
-        # The closing sequence includes all the significant part of the
-        # string. This algorithm has a complexity of O(n) with n being the
-        # length of the line.
-        cs_start = i
-        cs_end = cs_start
-        # line_prime =~ l'.
-        line_prime = line[::-1]
-        len_line = len(line)
-        hash_char_rounds = 0
-        go = True
-        i = 0
-        hash_round_start = i
-
-        # Ignore all characters after newlines and carrage returns which
-        # are not at the end of the line.
-        # See the two CRLF marker tests.
-        crlf_marker = 0
-        stripped_crlf = False
-        while i < len_line - cs_start:
-            if line_prime[i] in ['\u000a', '\u000d']:
-                crlf_marker = i
-                stripped_crlf = True
-            i += 1
-
-        # crlf_marker is the first CR LF character in the string.
-        i = crlf_marker
-        if stripped_crlf:
-            # Skip last character only if is '\u000a', '\u000d'.
-            i += 1
-
-        # We know for sure that from now '\u000a', '\u000d' will not be
-        # considered.
-        cs_end = i
-
-        # Cut spaces and hashes.
-        while go and i < len_line - cs_start:
-            if (line_prime[i] not in [' ', '#']
-                    or hash_char_rounds > 1):
-                if i > hash_round_start and hash_char_rounds > 0:
-                    cs_end = len_line - hash_round_start
-                else:
-                    cs_end = len_line - i
-                go = False
-            if go:
-                while line_prime[i] == ' ':
-                    i += 1
-                hash_round_start = i
-                while line_prime[i] == '#':
-                    i += 1
-                if i > hash_round_start:
-                    hash_char_rounds += 1
-
-        final_line = line[cs_start:cs_end]
-
-        # Add escaping.
-        if not no_links:
-            if len(final_line) > 0 and final_line[-1] == '\u005c':
-                final_line += ' '
-            if len(
-                    final_line.strip('\u0020').strip('\u0009').strip('\u000a').
-                    strip('\u000b').strip('\u000c').strip('\u000d')) == 0:
-                raise GithubEmptyLinkLabel
-            if len(final_line
-                   ) > md_parser['github']['link']['max chars label']:
-                raise GithubOverflowCharsLinkLabel
+            # Empty substring or backslash.
+            if len(subl) == 0 or subl[0] == '\u005c':
+                continue
 
             i = 0
-            while i < len(final_line):
-                # Escape square brackets if not already escaped.
-                if (final_line[i] == '[' or final_line[i] == ']'):
-                    j = i - 1
-                    consecutive_escape_characters = 0
-                    while j >= 0 and final_line[j] == '\u005c':
-                        consecutive_escape_characters += 1
-                        j -= 1
-                    if ((consecutive_escape_characters > 0
-                         and consecutive_escape_characters % 2 == 0)
-                            or consecutive_escape_characters == 0):
-                        tmp = '\u005c'
+            while i < len(subl) and subl[i] == ' ' and i <= md_parser['github'][
+                    'header']['max space indentation']:
+                i += 1
+            if i > md_parser['github']['header']['max space indentation']:
+                continue
+
+            offset = i
+            while i < len(subl) and subl[i] == '#' and i <= md_parser['github'][
+                    'header']['max levels'] + offset:
+                i += 1
+            if i - offset > md_parser['github']['header'][
+                    'max levels'] or i - offset > keep_header_levels or i - offset == 0:
+                continue
+
+            current_headers = i - offset
+
+            # Include special cases for l endings which should not be
+            # discarded as non-ATX headers.
+            if i < len(subl) and (subl[i] != ' ' and subl[i] != '\u000a'
+                                  and subl[i] != '\u000d'):
+                continue
+
+            i += 1
+            # Exclude leading whitespaces after the ATX header identifier.
+            while i < len(subl) and subl[i] == ' ':
+                i += 1
+
+            # An algorithm to find the start and the end of the closing sequence (cs).
+            # The closing sequence includes all the significant part of the
+            # string. This algorithm has a complexity of O(n) with n being the
+            # length of the l.
+            cs_start = i
+            cs_end = cs_start
+            # subl_prime =~ subl'.
+            subl_prime = subl[::-1]
+            len_subl = len(subl)
+            hash_char_rounds = 0
+            go = True
+            i = 0
+            hash_round_start = i
+
+            # Ignore all characters after newlines and carrage returns which
+            # are not at the end of the l.
+            # See the two CRLF marker tests.
+            crlf_marker = 0
+            stripped_crlf = False
+            while i < len_subl - cs_start:
+                if subl_prime[i] in ['\u000a', '\u000d']:
+                    crlf_marker = i
+                    stripped_crlf = True
+                i += 1
+
+            # crlf_marker is the first CR LF character in the string.
+            i = crlf_marker
+            if stripped_crlf:
+                # Skip last character only if is '\u000a', '\u000d'.
+                i += 1
+
+            # We know for sure that from now '\u000a', '\u000d' will not be
+            # considered.
+            cs_end = i
+
+            # Cut spaces and hashes.
+            while go and i < len_subl - cs_start:
+                if (subl_prime[i] not in [' ', '#']
+                        or hash_char_rounds > 1):
+                    if i > hash_round_start and hash_char_rounds > 0:
+                        cs_end = len_subl - hash_round_start
                     else:
-                        tmp = str()
-                    final_line = final_line[0:i] + tmp + final_line[i:len(
-                        final_line)]
-                    i += 1 + len(tmp)
-                else:
-                    i += 1
+                        cs_end = len_subl - i
+                    go = False
+                if go:
+                    while subl_prime[i] == ' ':
+                        i += 1
+                    hash_round_start = i
+                    while subl_prime[i] == '#':
+                        i += 1
+                    if i > hash_round_start:
+                        hash_char_rounds += 1
 
-    elif parser in ['redcarpet']:
+            final_line = subl[cs_start:cs_end]
 
-        if line[0] != '#':
-            return None
+            # Add escaping.
+            if not no_links:
+                if len(final_line) > 0 and final_line[-1] == '\u005c':
+                    final_line += ' '
+                if len(
+                        final_line.strip('\u0020').strip('\u0009').strip('\u000a').
+                        strip('\u000b').strip('\u000c').strip('\u000d')) == 0:
+                    raise GithubEmptyLinkLabel
+                if len(final_line
+                       ) > md_parser['github']['link']['max chars label']:
+                    raise GithubOverflowCharsLinkLabel
 
-        i = 0
-        while (i < len(line)
-               and i < md_parser['redcarpet']['header']['max levels']
-               and line[i] == '#'):
-            i += 1
-        current_headers = i
+                i = 0
+                while i < len(final_line):
+                    # Escape square brackets if not already escaped.
+                    if (final_line[i] == '[' or final_line[i] == ']'):
+                        j = i - 1
+                        consecutive_escape_characters = 0
+                        while j >= 0 and final_line[j] == '\u005c':
+                            consecutive_escape_characters += 1
+                            j -= 1
+                        if ((consecutive_escape_characters > 0
+                             and consecutive_escape_characters % 2 == 0)
+                                or consecutive_escape_characters == 0):
+                            tmp = '\u005c'
+                        else:
+                            tmp = str()
+                        final_line = final_line[0:i] + tmp + final_line[i:len(
+                            final_line)]
+                        i += 1 + len(tmp)
+                    else:
+                        i += 1
 
-        if i < len(line) and line[i] != ' ':
-            return None
+            # Overwrite the element with None as values.
+            struct[-1] = {'header type': current_headers, 'header text trimmed': final_line}
 
-        while i < len(line) and line[i] == ' ':
-            i += 1
+        elif parser in ['redcarpet']:
 
-        end = i
-        while end < len(line) and line[end] != '\n':
-            end += 1
+            struct.append({'header type': None, 'header text trimmed': None})
 
-        while end > 0 and line[end - 1] == '#':
-            end -= 1
+            if len(subl) == 0 or subl[0] != '#':
+                continue
 
-        while end > 0 and line[end - 1] == ' ':
-            end -= 1
+            i = 0
+            while (i < len(subl)
+                   and i < md_parser['redcarpet']['header']['max levels']
+                   and subl[i] == '#'):
+                i += 1
+            current_headers = i
 
-        if end > i:
-            final_line = line
-            if not no_links and len(final_line) > 0 and final_line[-1] == '\\':
-                final_line += ' '
+            if i < len(subl) and subl[i] != ' ':
+                continue
+
+            while i < len(subl) and subl[i] == ' ':
+                i += 1
+
+            end = i
+            while end < len(subl) and subl[end] != '\n':
                 end += 1
-            final_line = final_line[i:end]
-        else:
-            return None
 
-    # TODO: escape or remove '[', ']', '(', ')' in inline links for redcarpet,
-    # TODO: check link label rules for redcarpet.
+            while end > 0 and subl[end - 1] == '#':
+                end -= 1
 
-    return current_headers, final_line
+            while end > 0 and subl[end - 1] == ' ':
+                end -= 1
+
+            if end > i:
+                final_line = subl
+                if not no_links and len(final_line) > 0 and final_line[-1] == '\\':
+                    final_line += ' '
+                    end += 1
+                final_line = final_line[i:end]
+
+            if final_line is None:
+                current_headers = None
+
+            struct[-1] = {'header type': current_headers, 'header text trimmed': final_line}
+
+        # TODO: escape or remove '[', ']', '(', ')' in inline links for redcarpet,
+        # TODO: check link label rules for redcarpet.
+
+    # endfor
+
+    return struct
 
 
 def get_md_header(header_text_line: str,
@@ -1396,7 +1462,8 @@ def get_md_header(header_text_line: str,
     r"""Build a data structure with the elements needed to create a TOC line.
 
     :parameter header_text_line: a single markdown line that needs to be
-         transformed into a TOC line.
+        transformed into a TOC line. This line may include nmultiple newline
+        characters in between.
     :parameter header_duplicate_counter: a data structure that contains the
          number of occurrencies of each header anchor link. This is used to
          avoid duplicate anchor links and it is meaningful only for certain
@@ -1410,10 +1477,10 @@ def get_md_header(header_text_line: str,
     :type header_duplicate_counter: dict
     :type keep_header_levels: int
     :type parser: str
-    :returns: None if the input line does not correspond to one of the
-         designated cases or a data structure containing the necessary
-         components to create a table of contents line, otherwise.
-    :rtype: dict
+    :returns: a list with elements ``None`` if the input line does not correspond
+        to one of the designated cases or a list of data structures containing
+        the necessary components to create a table of contents.
+    :rtype: list
     :raises: a built-in exception.
 
     .. note::
@@ -1421,20 +1488,24 @@ def get_md_header(header_text_line: str,
     """
     result = get_atx_heading(header_text_line, keep_header_levels, parser,
                              no_links)
-    if result is None:
-        return result
-    else:
-        header_type, header_text_trimmed = result
-        header = {
-            'type':
-            header_type,
-            'text_original':
-            header_text_trimmed,
-            'text_anchor_link':
-            build_anchor_link(header_text_trimmed, header_duplicate_counter,
-                              parser)
-        }
-        return header
+
+    headers = list()
+    for r in result:
+        if r == {'header type': None, 'header text trimmed': None}:
+            headers.append(None)
+        else:
+            header_type, header_text_trimmed = r['header type'], r['header text trimmed']
+            headers.append({
+                'type':
+                header_type,
+                'text_original':
+                header_text_trimmed,
+                'text_anchor_link':
+                build_anchor_link(header_text_trimmed, header_duplicate_counter,
+                                  parser)
+            })
+
+    return headers
 
 
 def is_valid_code_fence_indent(line: str, parser: str = 'github') -> bool:
