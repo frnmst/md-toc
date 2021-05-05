@@ -28,8 +28,8 @@ Supported markdown parsers
 
 - ``github``:
 
-  - uses a forked version of ``cmark`` with some added extensions,
-    called GitHub Flavored Markdown.
+  - uses a forked version of ``cmark`` with some added extensions.
+    This language specification is called GitHub Flavored Markdown.
 
   - there are subtle differences such as
     the disallowed raw HTML extension which affects md-toc.
@@ -41,11 +41,12 @@ Supported markdown parsers
     newer versions use ``github`` instead. In the past GitLab used
     Redcarpet as markdown parser.
 
-  - the extensions used in GitLab Flavored Markdown (not to be confused
-    with GitHub Flavored Markdown) should not concern md_toc. For this
-    reason we assume that ``gitlab`` is an alias of ``github``.
+  - some extensions used in GitLab Flavored Markdown, not to be confused
+    with GitHub Flavored Markdown, are different from the ones used in GitHub Flavored Markdown.
 
-  .. note:: This last assertion needs to be confirmed thoroughly.
+  - see also
+
+    - https://docs.gitlab.com/ee/development/documentation/styleguide/#documentation-is-the-single-source-of-truth-ssot
 
 - ``redcarpet``:
 
@@ -941,6 +942,10 @@ And it's not just about anchor links, as you have read before. For example:
 - Kramdown: It is unclear if this feature is available. See:
 
   - https://github.com/gettalong/kramdown/search?q=anchor&type=Issues&utf8=%E2%9C%93
+
+- Gitlab Kramdown
+
+  - https://gitlab.com/gitlab-org/gitlab_kramdown/-/blob/master/lib/gitlab_kramdown/parser/header.rb
 
 Steps to add an unsupported markdown parser
 ```````````````````````````````````````````
