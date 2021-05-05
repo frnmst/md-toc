@@ -35,6 +35,7 @@ LINE_LINE_FEED = '\n'
 LINE_CARRIAGE_RETURN = '\r'
 LINE_SQUARE_BRACKET_OPEN = '['
 LINE_SQUARE_BRACKET_CLOSE = ']'
+LINE_DASH = '-'
 
 # Spaces.
 S1 = 1 * ' '
@@ -837,6 +838,14 @@ class TestApi(unittest.TestCase):
         header_duplicate_counter = dict()
         with self.assertRaises(exceptions.StringCannotContainNewlines):
             api.build_anchor_link(GITHUB_LINE_FOO + LINE_LINE_FEED + GITHUB_LINE_FOO, header_duplicate_counter, parser='github')
+
+        # Check the GitLab Flavored Markdown multiple dash rule.
+        header_duplicate_counter = dict()
+        self.assertEqual(api.build_anchor_link(GITHUB_LINE_FOO + S3 + GITHUB_LINE_FOO, header_duplicate_counter, parser='gitlab'), GITHUB_LINE_FOO + LINE_DASH + GITHUB_LINE_FOO)
+        header_duplicate_counter = dict()
+        self.assertEqual(api.build_anchor_link(GITHUB_LINE_FOO + LINE_DASH * 6 + GITHUB_LINE_FOO, header_duplicate_counter, parser='gitlab'), GITHUB_LINE_FOO + LINE_DASH + GITHUB_LINE_FOO)
+        self.assertEqual(api.build_anchor_link(GITHUB_LINE_FOO + LINE_DASH * 6, header_duplicate_counter, parser='gitlab'), GITHUB_LINE_FOO + LINE_DASH)
+        self.assertEqual(api.build_anchor_link(LINE_DASH * 6 + GITHUB_LINE_FOO, header_duplicate_counter, parser='gitlab'), LINE_DASH + GITHUB_LINE_FOO)
 
     def test_replace_and_split_newlines(self):
         r"""Test the replacement and splitting of newlines in a string."""

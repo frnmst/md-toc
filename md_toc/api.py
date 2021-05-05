@@ -1153,6 +1153,11 @@ def build_anchor_link(header_text_trimmed: str,
         # Replace spaces with dash.
         header_text_trimmed = header_text_trimmed.replace(' ', '-')
 
+        if parser in ['gitlab']:
+            # See https://docs.gitlab.com/ee/user/markdown.html#header-ids-and-links
+            # Two or more hyphens in a row are converted to one.
+            header_text_trimmed = re.sub('-+', '-', header_text_trimmed)
+
         # Check for duplicates.
         ht = header_text_trimmed
         # Set the initial value if we are examining the first occurrency.
