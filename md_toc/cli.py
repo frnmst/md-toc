@@ -59,9 +59,6 @@ class CliToApi():
         if newline_string == r'\r\n':
             newline_string = '\r\n'
 
-        print(repr(newline_string))
-        print(newline_string)
-
         toc_struct = build_multiple_tocs(
             filenames=args.filename,
             ordered=ordered,
@@ -91,17 +88,52 @@ class CliInterface():
         """Set the parser variable that will be used instead of using create_parser."""
         self.parser = self.create_parser()
 
-    def add_filename_argument(self, parser):
-        """Add the filename argument to the pecified parser.
-
-        The filename argument is common to all markdown parsers.
-        See commit b65cf32.
-        """
+    def _add_filename_argument(self, parser):
+        # The filename argument is common to all markdown parsers.
+        # See commit b65cf32.
         parser.add_argument(
             'filename',
             metavar='FILE_NAME',
             nargs='*',
             help='the I/O file name')
+
+    def _add_cmark_like_megroup_arguments(self, megroup, parser_name: str):
+        megroup.add_argument(
+            '-u',
+            '--unordered-list-marker',
+            choices=md_parser[parser_name]['list']['unordered']['bullet markers'],
+            nargs='?',
+            const=md_parser[parser_name]['list']['unordered']['default marker'],
+            default=md_parser[parser_name]['list']['unordered']['default marker'],
+            help='set the marker and enables unordered list. Defaults to ' +
+            md_parser[parser_name]['list']['unordered']['default marker'])
+        megroup.add_argument(
+            '-o',
+            '--ordered-list-marker',
+            choices=md_parser[parser_name]['list']['ordered']['closing markers'],
+            nargs='?',
+            const=md_parser[parser_name]['list']['ordered']['default closing marker'],
+            help='set the marker and enable ordered lists. Defaults to ' +
+            md_parser[parser_name]['list']['ordered']['default closing marker']
+        )
+
+    def _add_cmark_like_arguments(self, parser, parser_name: str):
+        parser.add_argument(
+            '-c',
+            '--constant-ordered-list',
+            action='store_true',
+            help='intead of progressive numbers use a single integer as list marker. This options enables ordered lists'
+        )
+        parser.add_argument(
+            '-l',
+            '--header-levels',
+            type=int,
+            choices=range(1, md_parser[parser_name]['header']['max levels'] + 1),
+            nargs='?',
+            const=md_parser[parser_name]['header']['default keep levels'],
+            help='set the maximum level of headers to be considered as part \
+                  of the TOC. Defaults to ' + str(
+                md_parser[parser_name]['header']['default keep levels']))
 
     def create_parser(self):
         """Create the CLI parser."""
@@ -118,55 +150,59 @@ class CliInterface():
             help='<markdown parser> --help')
         subparsers.required = True
 
-        # github + cmark + gitlab + commonmarker.
+        #########################
+        # github + commonmarker #
+        #########################
         github = subparsers.add_parser(
             'github',
-            aliases=['cmark', 'gitlab', 'commonmarker'],
-            description='Use Commonmark rules to generate an output. If no \
+            aliases=['commonmarker'],
+            description='Use GitHub Flavored Markdown rules to generate an output. If no \
                          option is selected, the default output will be an \
                          unordered list with the respective default values \
                          as listed below')
         self.add_filename_argument(github)
-
         megroup = github.add_mutually_exclusive_group()
-        megroup.add_argument(
-            '-u',
-            '--unordered-list-marker',
-            choices=md_parser['github']['list']['unordered']['bullet markers'],
-            nargs='?',
-            const=md_parser['github']['list']['unordered']['default marker'],
-            default=md_parser['github']['list']['unordered']['default marker'],
-            help='set the marker and enables unordered list. Defaults to ' +
-            md_parser['github']['list']['unordered']['default marker'])
-        megroup.add_argument(
-            '-o',
-            '--ordered-list-marker',
-            choices=md_parser['github']['list']['ordered']['closing markers'],
-            nargs='?',
-            const=md_parser['github']['list']['ordered']['default closing marker'],
-            help='set the marker and enable ordered lists. Defaults to ' +
-            md_parser['github']['list']['ordered']['default closing marker']
-        )
-        github.add_argument(
-            '-c',
-            '--constant-ordered-list',
-            action='store_true',
-            help='intead of progressive numbers use a single integer as list marker. This options enables ordered lists'
-        )
-        github.add_argument(
-            '-l',
-            '--header-levels',
-            type=int,
-            choices=range(1, md_parser['github']['header']['max levels'] + 1),
-            nargs='?',
-            const=md_parser['github']['header']['default keep levels'],
-            help='set the maximum level of headers to be considered as part \
-                  of the TOC. Defaults to ' + str(
-                md_parser['github']['header']['default keep levels']))
+        self._add_cmark_like_megroup_arguments(megroup, 'github')
+        self._add_cmark_like_arguments(github, 'github')
         github.set_defaults(
             header_levels=md_parser['github']['header']['default keep levels'])
 
-        # Redcarpet.
+        ##########
+        # gitlab #
+        ##########
+        gitlab = subparsers.add_parser(
+            'gitlab',
+            description='Use GitLab Flavored Markdown rules to generate an output. If no \
+                         option is selected, the default output will be an \
+                         unordered list with the respective default values \
+                         as listed below')
+        self.add_filename_argument(gitlab)
+        megroup = gitlab.add_mutually_exclusive_group()
+        self._add_cmark_like_megroup_arguments(megroup, 'gitlab')
+        self._add_cmark_like_arguments(gitlab, 'gitlab')
+        gitlab.set_defaults(
+            header_levels=md_parser['gitlab']['header']['default keep levels'])
+
+        ####################
+        # cmark + Goldmark #
+        ####################
+        cmark = subparsers.add_parser(
+            'cmark',
+            aliases=['goldmark'],
+            description='Use CommonMark rules to generate an output. If no \
+                         option is selected, the default output will be an \
+                         unordered list with the respective default values \
+                         as listed below')
+        self.add_filename_argument(cmark)
+        megroup = cmark.add_mutually_exclusive_group()
+        self._add_cmark_like_megroup_arguments(megroup, 'cmark')
+        self._add_cmark_like_arguments(cmark, 'cmark')
+        cmark.set_defaults(
+            header_levels=md_parser['cmark']['header']['default keep levels'])
+
+        #############
+        # Redcarpet #
+        #############
         redcarpet = subparsers.add_parser(
             'redcarpet',
             description='Use Redcarpet rules to generate an output. If no \
@@ -176,7 +212,6 @@ class CliInterface():
                          Redcarpet except that conflicts are avoided with \
                          duplicate headers.')
         self.add_filename_argument(redcarpet)
-
         megroup = redcarpet.add_mutually_exclusive_group()
         megroup.add_argument(
             '-u',
@@ -220,6 +255,9 @@ class CliInterface():
         redcarpet.set_defaults(header_levels=md_parser['redcarpet']['header']
                                ['default keep levels'])
 
+        ##########
+        # Common #
+        ##########
         no_list_coherence_or_no_indentation = parser.add_mutually_exclusive_group(
         )
         no_list_coherence_or_no_indentation.add_argument(

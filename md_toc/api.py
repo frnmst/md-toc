@@ -1169,7 +1169,6 @@ def build_anchor_link(header_text_trimmed: str,
             header_text_trimmed = header_text_trimmed + '-' + str(
                 header_duplicate_counter[header_text_trimmed])
         header_duplicate_counter[ht] += 1
-        print(header_duplicate_counter)
         return header_text_trimmed
     elif parser in ['redcarpet']:
         # To ensure full compatibility what follows is a direct translation

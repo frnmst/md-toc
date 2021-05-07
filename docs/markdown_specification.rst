@@ -48,6 +48,11 @@ Supported markdown parsers
 
     - https://docs.gitlab.com/ee/development/documentation/styleguide/#documentation-is-the-single-source-of-truth-ssot
 
+- ``goldmark``:
+
+    - this parser claims to be compliant with CommonMark: `goldmark is compliant with CommonMark 0.29.`.
+      For this reason ``goldmark`` is an alias of ``cmark``.
+
 - ``redcarpet``:
 
   - "The safe Markdown parser, reloaded."
@@ -920,7 +925,7 @@ And it's not just about anchor links, as you have read before. For example:
   - https://github.com/go-gitea/gitea/pull/11903
   - https://github.com/go-gitea/gitea/pull/12805
 
-  The user content substring does not seem to affect the functionality of the TOC.
+  The ``user-content`` substring does not seem to affect the functionality of the TOC.
 
   Older versions of Gitea used blackfriday. See:
 
@@ -928,7 +933,7 @@ And it's not just about anchor links, as you have read before. For example:
 
 - Gogs, Marked, Notabug: Gogs uses marked as the markdown
   parser while *NotABug.org is powered by a liberated version of gogs*.
-  Gitea, a fork of Gogs, probably uses a custom parser. See link below.
+  See link below.
   Situation is unclear. Here are some links:
 
   - https://gogs.io/docs

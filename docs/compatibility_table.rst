@@ -58,6 +58,7 @@ NotABug Gogs fork         |unknown|                                             
 Marked                    |unknown|                                                                                                                                        https://github.com/markedjs/marked
 kramdown                  |unknown|                                                                                                                                        https://kramdown.gettalong.org/
 GitLab Kramdown           |unknown|                                                                                                                                        https://gitlab.com/gitlab-org/gitlab_kramdown
+Notabug                   |unknown|                                                                                                                                        https://notabug.org/hp/gogs/
 =======================   =====================   ============   ========================================================================================================  =============================================
 
 md-toc version table
