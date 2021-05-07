@@ -160,7 +160,7 @@ class CliInterface():
                          option is selected, the default output will be an \
                          unordered list with the respective default values \
                          as listed below')
-        self.add_filename_argument(github)
+        self._add_filename_argument(github)
         megroup = github.add_mutually_exclusive_group()
         self._add_cmark_like_megroup_arguments(megroup, 'github')
         self._add_cmark_like_arguments(github, 'github')
@@ -176,7 +176,7 @@ class CliInterface():
                          option is selected, the default output will be an \
                          unordered list with the respective default values \
                          as listed below')
-        self.add_filename_argument(gitlab)
+        self._add_filename_argument(gitlab)
         megroup = gitlab.add_mutually_exclusive_group()
         self._add_cmark_like_megroup_arguments(megroup, 'gitlab')
         self._add_cmark_like_arguments(gitlab, 'gitlab')
@@ -193,7 +193,7 @@ class CliInterface():
                          option is selected, the default output will be an \
                          unordered list with the respective default values \
                          as listed below')
-        self.add_filename_argument(cmark)
+        self._add_filename_argument(cmark)
         megroup = cmark.add_mutually_exclusive_group()
         self._add_cmark_like_megroup_arguments(megroup, 'cmark')
         self._add_cmark_like_arguments(cmark, 'cmark')
@@ -211,7 +211,7 @@ class CliInterface():
                          as listed below. Gitlab rules are the same as \
                          Redcarpet except that conflicts are avoided with \
                          duplicate headers.')
-        self.add_filename_argument(redcarpet)
+        self._add_filename_argument(redcarpet)
         megroup = redcarpet.add_mutually_exclusive_group()
         megroup.add_argument(
             '-u',
