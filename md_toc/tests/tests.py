@@ -74,14 +74,14 @@ GENERIC_NUMBER_OF_INDENTATION_SPACES = 128
 GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX = 1000
 
 # github test lines.
-GITHUB_LINE_FOO = 'foo'
-GITHUB_LINE_BAR = 'bar'
-GITHUB_LINE_BAZ = 'baz'
-GITHUB_LINE_5_BOLT = '5 bolt'
-GITHUB_LINE_HASHTAG = 'hashtag'
-GITHUB_LINE_BAR_BAZ = '*bar* ' + LINE_ESCAPE + '*baz' + LINE_ESCAPE + '*'
-GITHUB_LINE_B = 'b'
-GITHUB_LINE_1000_CHARS = 1000 * 'c'
+CMARK_LINE_FOO = 'foo'
+CMARK_LINE_BAR = 'bar'
+CMARK_LINE_BAZ = 'baz'
+CMARK_LINE_5_BOLT = '5 bolt'
+CMARK_LINE_HASHTAG = 'hashtag'
+CMARK_LINE_BAR_BAZ = '*bar* ' + LINE_ESCAPE + '*baz' + LINE_ESCAPE + '*'
+CMARK_LINE_B = 'b'
+CMARK_LINE_1000_CHARS = 1000 * 'c'
 
 # Code fences.
 BACKTICK1 = 1 * '`'
@@ -98,15 +98,15 @@ TILDE4 = 4 * '~'
 TILDE5 = 5 * '~'
 TILDE6 = 6 * '~'
 TILDE10 = 10 * '~'
-GITHUB_INFO_STRING_FOO = 'ruby'
-GITHUB_INFO_STRING_GARBAGE = 'startline=3 $%@#$'
+CMARK_INFO_STRING_FOO = 'ruby'
+CMARK_INFO_STRING_GARBAGE = 'startline=3 $%@#$'
 
 # github renders as list header types. Do not change these values.
-BASE_CASE_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR = 1
-GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR = 4
-GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS = 5
-BASE_CASE_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_FIRST = 1
-GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_FIRST = 4
+BASE_CASE_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR = 1
+GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR = 4
+GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS = 5
+BASE_CASE_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST = 1
+GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST = 4
 
 # redcarpet test lines.
 REDCARPET_LINE_FOO = 'foo'
@@ -131,10 +131,6 @@ class TestApi(unittest.TestCase):
     @unittest.skip("empty test")
     def test_build_toc(self):
         r"""Test that the TOC is built correctly.
-
-        There is no need to test this since it is a wrapper for several
-        other functions. Practically it is just an extended version
-        of build_toc_line.
 
         TODO: tests will be needed eventually because the complexity of
         this function is growing.
@@ -837,24 +833,24 @@ class TestApi(unittest.TestCase):
         # Check if the exception is raised for newlines.
         header_duplicate_counter = dict()
         with self.assertRaises(exceptions.StringCannotContainNewlines):
-            api.build_anchor_link(GITHUB_LINE_FOO + LINE_LINE_FEED + GITHUB_LINE_FOO, header_duplicate_counter, parser='github')
+            api.build_anchor_link(CMARK_LINE_FOO + LINE_LINE_FEED + CMARK_LINE_FOO, header_duplicate_counter, parser='github')
 
         # Check the GitLab Flavored Markdown multiple dash rule.
         header_duplicate_counter = dict()
-        self.assertEqual(api.build_anchor_link(GITHUB_LINE_FOO + S3 + GITHUB_LINE_FOO, header_duplicate_counter, parser='gitlab'), GITHUB_LINE_FOO + LINE_DASH + GITHUB_LINE_FOO)
+        self.assertEqual(api.build_anchor_link(CMARK_LINE_FOO + S3 + CMARK_LINE_FOO, header_duplicate_counter, parser='gitlab'), CMARK_LINE_FOO + LINE_DASH + CMARK_LINE_FOO)
         header_duplicate_counter = dict()
-        self.assertEqual(api.build_anchor_link(GITHUB_LINE_FOO + LINE_DASH * 6 + GITHUB_LINE_FOO, header_duplicate_counter, parser='gitlab'), GITHUB_LINE_FOO + LINE_DASH + GITHUB_LINE_FOO)
-        self.assertEqual(api.build_anchor_link(GITHUB_LINE_FOO + LINE_DASH * 6, header_duplicate_counter, parser='gitlab'), GITHUB_LINE_FOO + LINE_DASH)
-        self.assertEqual(api.build_anchor_link(LINE_DASH * 6 + GITHUB_LINE_FOO, header_duplicate_counter, parser='gitlab'), LINE_DASH + GITHUB_LINE_FOO)
+        self.assertEqual(api.build_anchor_link(CMARK_LINE_FOO + LINE_DASH * 6 + CMARK_LINE_FOO, header_duplicate_counter, parser='gitlab'), CMARK_LINE_FOO + LINE_DASH + CMARK_LINE_FOO)
+        self.assertEqual(api.build_anchor_link(CMARK_LINE_FOO + LINE_DASH * 6, header_duplicate_counter, parser='gitlab'), CMARK_LINE_FOO + LINE_DASH)
+        self.assertEqual(api.build_anchor_link(LINE_DASH * 6 + CMARK_LINE_FOO, header_duplicate_counter, parser='gitlab'), LINE_DASH + CMARK_LINE_FOO)
 
     def test_replace_and_split_newlines(self):
         r"""Test the replacement and splitting of newlines in a string."""
-        self.assertEqual(api.replace_and_split_newlines(LINE_LINE_FEED + GITHUB_LINE_FOO + LINE_LINE_FEED), [GITHUB_LINE_FOO])
-        self.assertEqual(api.replace_and_split_newlines(LINE_LINE_FEED + LINE_CARRIAGE_RETURN + GITHUB_LINE_FOO + LINE_LINE_FEED), [GITHUB_LINE_FOO])
-        self.assertEqual(api.replace_and_split_newlines(GITHUB_LINE_BAR + LINE_CARRIAGE_RETURN + LINE_LINE_FEED + GITHUB_LINE_FOO + LINE_LINE_FEED), [GITHUB_LINE_BAR, GITHUB_LINE_FOO])
-        self.assertEqual(api.replace_and_split_newlines(LINE_CARRIAGE_RETURN + LINE_LINE_FEED + LINE_LINE_FEED + LINE_LINE_FEED + GITHUB_LINE_BAR), [GITHUB_LINE_BAR])
-        self.assertEqual(api.replace_and_split_newlines(LINE_LINE_FEED + LINE_LINE_FEED + LINE_LINE_FEED + GITHUB_LINE_BAR), [GITHUB_LINE_BAR])
-        self.assertEqual(api.replace_and_split_newlines(LINE_LINE_FEED + GITHUB_LINE_FOO + LINE_LINE_FEED + LINE_LINE_FEED + LINE_CARRIAGE_RETURN + LINE_LINE_FEED + GITHUB_LINE_BAR), [GITHUB_LINE_FOO, str(), str(), GITHUB_LINE_BAR])
+        self.assertEqual(api.replace_and_split_newlines(LINE_LINE_FEED + CMARK_LINE_FOO + LINE_LINE_FEED), [CMARK_LINE_FOO])
+        self.assertEqual(api.replace_and_split_newlines(LINE_LINE_FEED + LINE_CARRIAGE_RETURN + CMARK_LINE_FOO + LINE_LINE_FEED), [CMARK_LINE_FOO])
+        self.assertEqual(api.replace_and_split_newlines(CMARK_LINE_BAR + LINE_CARRIAGE_RETURN + LINE_LINE_FEED + CMARK_LINE_FOO + LINE_LINE_FEED), [CMARK_LINE_BAR, CMARK_LINE_FOO])
+        self.assertEqual(api.replace_and_split_newlines(LINE_CARRIAGE_RETURN + LINE_LINE_FEED + LINE_LINE_FEED + LINE_LINE_FEED + CMARK_LINE_BAR), [CMARK_LINE_BAR])
+        self.assertEqual(api.replace_and_split_newlines(LINE_LINE_FEED + LINE_LINE_FEED + LINE_LINE_FEED + CMARK_LINE_BAR), [CMARK_LINE_BAR])
+        self.assertEqual(api.replace_and_split_newlines(LINE_LINE_FEED + CMARK_LINE_FOO + LINE_LINE_FEED + LINE_LINE_FEED + LINE_CARRIAGE_RETURN + LINE_LINE_FEED + CMARK_LINE_BAR), [CMARK_LINE_FOO, str(), str(), CMARK_LINE_BAR])
 
     def test_get_atx_heading(self):
         r"""Test the title gathering for edge cases and various parsers.
@@ -873,44 +869,44 @@ class TestApi(unittest.TestCase):
         # Example 32 [Commonmark 0.28].
         # Example 32 [Commonmark 0.29].
         self.assertEqual(
-            api.get_atx_heading(H1 + S1 + GITHUB_LINE_FOO, m_github, 'github'),
-            [{'header type': 1, 'header text trimmed': GITHUB_LINE_FOO, }])
+            api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO, m_github, 'github'),
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, }])
         self.assertEqual(
-            api.get_atx_heading(H2 + S1 + GITHUB_LINE_FOO, m_github, 'github'),
-            [{'header type': 2, 'header text trimmed': GITHUB_LINE_FOO, }])
+            api.get_atx_heading(H2 + S1 + CMARK_LINE_FOO, m_github, 'github'),
+            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, }])
         self.assertEqual(
-            api.get_atx_heading(H3 + S1 + GITHUB_LINE_FOO, m_github, 'github'),
-            [{'header type': 3, 'header text trimmed': GITHUB_LINE_FOO, }])
+            api.get_atx_heading(H3 + S1 + CMARK_LINE_FOO, m_github, 'github'),
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, }])
         self.assertEqual(
-            api.get_atx_heading(H4 + S1 + GITHUB_LINE_FOO, m_github, 'github'),
-            [{'header type': 4, 'header text trimmed': GITHUB_LINE_FOO, }])
+            api.get_atx_heading(H4 + S1 + CMARK_LINE_FOO, m_github, 'github'),
+            [{'header type': 4, 'header text trimmed': CMARK_LINE_FOO, }])
         self.assertEqual(
-            api.get_atx_heading(H5 + S1 + GITHUB_LINE_FOO, m_github, 'github'),
-            [{'header type': 5, 'header text trimmed': GITHUB_LINE_FOO, }])
+            api.get_atx_heading(H5 + S1 + CMARK_LINE_FOO, m_github, 'github'),
+            [{'header type': 5, 'header text trimmed': CMARK_LINE_FOO, }])
         self.assertEqual(
-            api.get_atx_heading(H6 + S1 + GITHUB_LINE_FOO, m_github, 'github'),
-            [{'header type': 6, 'header text trimmed': GITHUB_LINE_FOO, }])
+            api.get_atx_heading(H6 + S1 + CMARK_LINE_FOO, m_github, 'github'),
+            [{'header type': 6, 'header text trimmed': CMARK_LINE_FOO, }])
 
         # Example 33 [Commonmark 0.28].
         # Example 33 [Commonmark 0.29].
         self.assertEqual(
-            api.get_atx_heading(H7 + S1 + GITHUB_LINE_FOO, 7, 'github'),
+            api.get_atx_heading(H7 + S1 + CMARK_LINE_FOO, 7, 'github'),
             [{'header type': None, 'header text trimmed': None, }])
 
         # Example 34 [Commonmark 0.28].
         # Example 34 [Commonmark 0.29].
         self.assertEqual(
-            api.get_atx_heading(H1 + GITHUB_LINE_5_BOLT, m_github, 'github'),
+            api.get_atx_heading(H1 + CMARK_LINE_5_BOLT, m_github, 'github'),
             [{'header type': None, 'header text trimmed': None, }])
 
         self.assertEqual(
-            api.get_atx_heading(H1 + GITHUB_LINE_HASHTAG, m_github, 'github'),
+            api.get_atx_heading(H1 + CMARK_LINE_HASHTAG, m_github, 'github'),
             [{'header type': None, 'header text trimmed': None, }])
 
         # Example 35 [Commonmark 0.28].
         # Example 35 [Commonmark 0.29].
         self.assertEqual(
-            api.get_atx_heading(LINE_ESCAPE + H1 + S1 + GITHUB_LINE_FOO,
+            api.get_atx_heading(LINE_ESCAPE + H1 + S1 + CMARK_LINE_FOO,
                                 m_github, 'github'),
             [{'header type': None, 'header text trimmed': None, }])
 
@@ -918,68 +914,68 @@ class TestApi(unittest.TestCase):
         # Example 36 [Commonmark 0.29].
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + GITHUB_LINE_FOO + S1 + GITHUB_LINE_BAR_BAZ, 3,
+                H1 + S1 + CMARK_LINE_FOO + S1 + CMARK_LINE_BAR_BAZ, 3,
                 'github'),
-            [{'header type': 1, 'header text trimmed': GITHUB_LINE_FOO + S1 + GITHUB_LINE_BAR_BAZ, }])
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + S1 + CMARK_LINE_BAR_BAZ, }])
 
         # Example 37 [Commonmark 0.28].
         # Example 37 [Commonmark 0.29].
         self.assertEqual(
-            api.get_atx_heading(H1 + S18 + GITHUB_LINE_FOO + S21, m_github,
+            api.get_atx_heading(H1 + S18 + CMARK_LINE_FOO + S21, m_github,
                                 'github'),
-            [{'header type': 1, 'header text trimmed': GITHUB_LINE_FOO, }])
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, }])
 
         # Example 38 [Commonmark 0.28].
         # Example 38 [Commonmark 0.29].
         self.assertEqual(
-            api.get_atx_heading(S1 + H3 + S1 + GITHUB_LINE_FOO, m_github,
+            api.get_atx_heading(S1 + H3 + S1 + CMARK_LINE_FOO, m_github,
                                 'github'),
-            [{'header type': 3, 'header text trimmed': GITHUB_LINE_FOO, }])
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, }])
         self.assertEqual(
-            api.get_atx_heading(S2 + H2 + S1 + GITHUB_LINE_FOO, m_github,
+            api.get_atx_heading(S2 + H2 + S1 + CMARK_LINE_FOO, m_github,
                                 'github'),
-            [{'header type': 2, 'header text trimmed': GITHUB_LINE_FOO, }])
+            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, }])
         self.assertEqual(
-            api.get_atx_heading(S3 + H1 + S1 + GITHUB_LINE_FOO, m_github,
+            api.get_atx_heading(S3 + H1 + S1 + CMARK_LINE_FOO, m_github,
                                 'github'),
-            [{'header type': 1, 'header text trimmed': GITHUB_LINE_FOO, }])
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, }])
 
         # Example 39 [Commonmark 0.28].
         # Example 39 [Commonmark 0.29].
         self.assertEqual(
-            api.get_atx_heading(S4 + H1 + S1 + GITHUB_LINE_FOO, m_github,
+            api.get_atx_heading(S4 + H1 + S1 + CMARK_LINE_FOO, m_github,
                                 'github'),
             [{'header type': None, 'header text trimmed': None, }])
 
         # Example 40 [Commonmark 0.28].
         # Example 40 [Commonmark 0.29].
         self.assertEqual(
-            api.get_atx_heading(GITHUB_LINE_FOO + LINE_LINE_FEED + S4 + H1 + S1 + GITHUB_LINE_BAR, m_github,
+            api.get_atx_heading(CMARK_LINE_FOO + LINE_LINE_FEED + S4 + H1 + S1 + CMARK_LINE_BAR, m_github,
                                 'github'),
             [{'header type': None, 'header text trimmed': None, }, {'header type': None, 'header text trimmed': None, }])
 
         # Example 41 [Commonmark 0.28].
         # Example 41 [Commonmark 0.29].
         self.assertEqual(
-            api.get_atx_heading(H2 + S1 + GITHUB_LINE_FOO + S1 + H2, m_github,
+            api.get_atx_heading(H2 + S1 + CMARK_LINE_FOO + S1 + H2, m_github,
                                 'github'),
-            [{'header type': 2, 'header text trimmed': GITHUB_LINE_FOO, }])
+            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, }])
         self.assertEqual(
-            api.get_atx_heading(S2 + H3 + S3 + GITHUB_LINE_BAR + S4 + H3,
+            api.get_atx_heading(S2 + H3 + S3 + CMARK_LINE_BAR + S4 + H3,
                                 m_github, 'github'),
-            [{'header type': 3, 'header text trimmed': GITHUB_LINE_BAR, }])
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_BAR, }])
 
         # Example 42 [Commonmark 0.28].
         # Example 42 [Commonmark 0.29].
         self.assertEqual(
-            api.get_atx_heading(H1 + S1 + GITHUB_LINE_FOO + S1 + H34, m_github,
+            api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO + S1 + H34, m_github,
                                 'github'),
-            [{'header type': 1, 'header text trimmed': GITHUB_LINE_FOO, }])
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, }])
 
         self.assertEqual(
-            api.get_atx_heading(H5 + S1 + GITHUB_LINE_FOO + S1 + H2, m_github,
+            api.get_atx_heading(H5 + S1 + CMARK_LINE_FOO + S1 + H2, m_github,
                                 'github'),
-            [{'header type': 5, 'header text trimmed': GITHUB_LINE_FOO, }])
+            [{'header type': 5, 'header text trimmed': CMARK_LINE_FOO, }])
 
         # Extra test.
         self.assertEqual(api.get_atx_heading(H5 * 7, m_github, 'github'),
@@ -988,24 +984,24 @@ class TestApi(unittest.TestCase):
         # Example 43 [Commonmark 0.28].
         # Example 43 [Commonmark 0.29].
         self.assertEqual(
-            api.get_atx_heading(H3 + S1 + GITHUB_LINE_FOO + S1 + H3 + S5,
+            api.get_atx_heading(H3 + S1 + CMARK_LINE_FOO + S1 + H3 + S5,
                                 m_github, 'github'),
-            [{'header type': 3, 'header text trimmed': GITHUB_LINE_FOO, }])
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, }])
 
         # Example 44 [Commonmark 0.28].
         # Example 44 [Commonmark 0.29].
         self.assertEqual(
             api.get_atx_heading(
-                H3 + S1 + GITHUB_LINE_FOO + S1 + H3 + S1 + GITHUB_LINE_B,
+                H3 + S1 + CMARK_LINE_FOO + S1 + H3 + S1 + CMARK_LINE_B,
                 m_github, 'github'),
-            [{'header type': 3, 'header text trimmed': GITHUB_LINE_FOO + S1 + H3 + S1 + GITHUB_LINE_B, }])
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO + S1 + H3 + S1 + CMARK_LINE_B, }])
 
         # Example 45 [Commonmark 0.28].
         # Example 45 [Commonmark 0.29].
         self.assertEqual(
-            api.get_atx_heading(H1 + S1 + GITHUB_LINE_FOO + H1, m_github,
+            api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO + H1, m_github,
                                 'github'),
-            [{'header type': 1, 'header text trimmed': GITHUB_LINE_FOO + H1, }])
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + H1, }])
 
         # Example 46 [Commonmark 0.28].
         # Example 46 [Commonmark 0.29].
@@ -1017,35 +1013,35 @@ class TestApi(unittest.TestCase):
         # https://spec.commonmark.org/0.28/#ascii-punctuation-character
         self.assertEqual(
             api.get_atx_heading(
-                H3 + S1 + GITHUB_LINE_FOO + S1 + LINE_ESCAPE + H3, m_github,
+                H3 + S1 + CMARK_LINE_FOO + S1 + LINE_ESCAPE + H3, m_github,
                 'github'),
-            [{'header type': 3, 'header text trimmed': GITHUB_LINE_FOO + S1 + LINE_ESCAPE + H3}])
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO + S1 + LINE_ESCAPE + H3}])
         self.assertEqual(
             api.get_atx_heading(
-                H2 + S1 + GITHUB_LINE_FOO + S1 + H1 + LINE_ESCAPE + H2,
+                H2 + S1 + CMARK_LINE_FOO + S1 + H1 + LINE_ESCAPE + H2,
                 m_github, 'github'),
-            [{'header type': 2, 'header text trimmed': GITHUB_LINE_FOO + S1 + H1 + LINE_ESCAPE + H2}])
+            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO + S1 + H1 + LINE_ESCAPE + H2}])
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + GITHUB_LINE_FOO + S1 + LINE_ESCAPE + H1, m_github,
+                H1 + S1 + CMARK_LINE_FOO + S1 + LINE_ESCAPE + H1, m_github,
                 'github'),
-            [{'header type': 1, 'header text trimmed': GITHUB_LINE_FOO + S1 + LINE_ESCAPE + H1}])
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + S1 + LINE_ESCAPE + H1}])
 
         # Example 47 [Commonmark 0.28].
         # Example 47 [Commonmark 0.29].
         self.assertEqual(
             api.get_atx_heading(
-                '****' + LINE_LINE_FEED + H2 + S1 + GITHUB_LINE_FOO + LINE_LINE_FEED + '****', m_github,
+                '****' + LINE_LINE_FEED + H2 + S1 + CMARK_LINE_FOO + LINE_LINE_FEED + '****', m_github,
                 'github'),
-            [{'header type': None, 'header text trimmed': None}, {'header type': 2, 'header text trimmed': GITHUB_LINE_FOO}, {'header type': None, 'header text trimmed': None}])
+            [{'header type': None, 'header text trimmed': None}, {'header type': 2, 'header text trimmed': CMARK_LINE_FOO}, {'header type': None, 'header text trimmed': None}])
 
         # Example 48 [Commonmark 0.28].
         # Example 48 [Commonmark 0.29].
         self.assertEqual(
             api.get_atx_heading(
-                'Foo' + S1 + GITHUB_LINE_BAR + LINE_LINE_FEED + H1 + S1 + GITHUB_LINE_BAZ + LINE_LINE_FEED + 'Bar' + S1 + GITHUB_LINE_FOO, m_github,
+                'Foo' + S1 + CMARK_LINE_BAR + LINE_LINE_FEED + H1 + S1 + CMARK_LINE_BAZ + LINE_LINE_FEED + 'Bar' + S1 + CMARK_LINE_FOO, m_github,
                 'github'),
-            [{'header type': None, 'header text trimmed': None}, {'header type': 1, 'header text trimmed': GITHUB_LINE_BAZ}, {'header type': None, 'header text trimmed': None}])
+            [{'header type': None, 'header text trimmed': None}, {'header type': 1, 'header text trimmed': CMARK_LINE_BAZ}, {'header type': None, 'header text trimmed': None}])
 
         # Example 49 [Commonmark 0.28].
         # Example 49 [Commonmark 0.29].
@@ -1073,29 +1069,29 @@ class TestApi(unittest.TestCase):
         # A modified Example 302 and Example 496 (for square brackets).
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + LINE_SQUARE_BRACKET_OPEN + S1 + GITHUB_LINE_FOO + S1
-                + LINE_SQUARE_BRACKET_OPEN + GITHUB_LINE_BAR +
+                H1 + S1 + LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO + S1
+                + LINE_SQUARE_BRACKET_OPEN + CMARK_LINE_BAR +
                 LINE_SQUARE_BRACKET_CLOSE + LINE_SQUARE_BRACKET_CLOSE,
                 m_github, 'github'),
-            [{'header type': 1, 'header text trimmed': LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + S1 + GITHUB_LINE_FOO +
-             S1 + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + GITHUB_LINE_BAR +
+            [{'header type': 1, 'header text trimmed': LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO +
+             S1 + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + CMARK_LINE_BAR +
              LINE_ESCAPE + LINE_SQUARE_BRACKET_CLOSE + LINE_ESCAPE +
              LINE_SQUARE_BRACKET_CLOSE, }])
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + LINE_ESCAPE + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN
-                + S1 + GITHUB_LINE_FOO, m_github, 'github'),
-            [{'header type': 1, 'header text trimmed': LINE_ESCAPE + LINE_ESCAPE + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + S1 + GITHUB_LINE_FOO, }])
+                + S1 + CMARK_LINE_FOO, m_github, 'github'),
+            [{'header type': 1, 'header text trimmed': LINE_ESCAPE + LINE_ESCAPE + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO, }])
 
         # Test escape character space workaround.
         self.assertEqual(
-            api.get_atx_heading(H2 + S1 + GITHUB_LINE_FOO + LINE_ESCAPE,
+            api.get_atx_heading(H2 + S1 + CMARK_LINE_FOO + LINE_ESCAPE,
                                 m_github, 'github'),
-            [{'header type': 2, 'header text trimmed': GITHUB_LINE_FOO + LINE_ESCAPE + S1}])
+            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO + LINE_ESCAPE + S1}])
 
-        # Test MD_PARSER_GITHUB_MAX_CHARS_LINK_LABEL
+        # Test MD_PARSER_CMARK_MAX_CHARS_LINK_LABEL
         with self.assertRaises(exceptions.GithubOverflowCharsLinkLabel):
-            api.get_atx_heading(H1 + S1 + GITHUB_LINE_1000_CHARS, m_github,
+            api.get_atx_heading(H1 + S1 + CMARK_LINE_1000_CHARS, m_github,
                                 'github')
 
         # Test an empty line.
@@ -1103,12 +1099,12 @@ class TestApi(unittest.TestCase):
                          [{'header type': None, 'header text trimmed': None}])
 
         # Test multiple lines at once.
-        self.assertEqual(api.get_atx_heading(H1 + S1 + GITHUB_LINE_FOO
+        self.assertEqual(api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO
                          + LINE_LINE_FEED + LINE_LINE_FEED + H1 + S1
-                         + GITHUB_LINE_FOO + LINE_LINE_FEED, m_github, 'github'),
-                         [{'header type': 1, 'header text trimmed': GITHUB_LINE_FOO, },
+                         + CMARK_LINE_FOO + LINE_LINE_FEED, m_github, 'github'),
+                         [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, },
                           {'header type': None, 'header text trimmed': None, },
-                          {'header type': 1, 'header text trimmed': GITHUB_LINE_FOO}])
+                          {'header type': 1, 'header text trimmed': CMARK_LINE_FOO}])
 
         # Test line endings.
         self.assertEqual(
@@ -1122,15 +1118,15 @@ class TestApi(unittest.TestCase):
         # CRLF marker tests.
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + GITHUB_LINE_FOO + LINE_LINE_FEED + GITHUB_LINE_FOO,
+                H1 + S1 + CMARK_LINE_FOO + LINE_LINE_FEED + CMARK_LINE_FOO,
                 m_github, 'github'),
-            [{'header type': 1, 'header text trimmed': GITHUB_LINE_FOO}, {'header type': None, 'header text trimmed': None}])
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO}, {'header type': None, 'header text trimmed': None}])
 
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + GITHUB_LINE_FOO + LINE_CARRIAGE_RETURN +
-                GITHUB_LINE_FOO, m_github, 'github'),
-            [{'header type': 1, 'header text trimmed': GITHUB_LINE_FOO}, {'header type': None, 'header text trimmed': None}])
+                H1 + S1 + CMARK_LINE_FOO + LINE_CARRIAGE_RETURN +
+                CMARK_LINE_FOO, m_github, 'github'),
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO}, {'header type': None, 'header text trimmed': None}])
 
         # Test line endings with link labels.
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
@@ -1235,9 +1231,9 @@ class TestApi(unittest.TestCase):
         # Generic, spaces and headings. These are not code fences.
         self.assertIsNone(api.is_opening_code_fence(LINE))
         self.assertIsNone(api.is_opening_code_fence(LINE_EMPTY))
-        self.assertIsNone(api.is_opening_code_fence(GITHUB_LINE_FOO))
+        self.assertIsNone(api.is_opening_code_fence(CMARK_LINE_FOO))
         self.assertIsNone(
-            api.is_opening_code_fence(GITHUB_LINE_FOO + LINE_LINE_FEED))
+            api.is_opening_code_fence(CMARK_LINE_FOO + LINE_LINE_FEED))
 
         self.assertIsNone(api.is_opening_code_fence(S1))
         self.assertIsNone(api.is_opening_code_fence(S2))
@@ -1273,13 +1269,13 @@ class TestApi(unittest.TestCase):
         self.assertIsNone(api.is_opening_code_fence(BACKTICK1))
         self.assertIsNone(api.is_opening_code_fence(BACKTICK2))
         self.assertIsNone(
-            api.is_opening_code_fence(BACKTICK2 + GITHUB_LINE_FOO))
+            api.is_opening_code_fence(BACKTICK2 + CMARK_LINE_FOO))
         self.assertIsNone(
             api.is_opening_code_fence(BACKTICK2 + LINE_LINE_FEED + BACKTICK1))
 
         self.assertIsNone(api.is_opening_code_fence(TILDE1))
         self.assertIsNone(api.is_opening_code_fence(TILDE2))
-        self.assertIsNone(api.is_opening_code_fence(TILDE2 + GITHUB_LINE_FOO))
+        self.assertIsNone(api.is_opening_code_fence(TILDE2 + CMARK_LINE_FOO))
         self.assertIsNone(
             api.is_opening_code_fence(TILDE2 + LINE_LINE_FEED + TILDE1))
 
@@ -1358,40 +1354,40 @@ class TestApi(unittest.TestCase):
         # Example 111 [Commonmark 0.28].
         # Example 112 [Commonmark 0.29].
         self.assertEqual(
-            api.is_opening_code_fence(BACKTICK3 + GITHUB_INFO_STRING_FOO),
+            api.is_opening_code_fence(BACKTICK3 + CMARK_INFO_STRING_FOO),
             BACKTICK3)
 
         self.assertEqual(
-            api.is_opening_code_fence(TILDE3 + GITHUB_INFO_STRING_FOO), TILDE3)
+            api.is_opening_code_fence(TILDE3 + CMARK_INFO_STRING_FOO), TILDE3)
 
         # Expansion of
         # example 111 [Commonmark 0.28].
         # example 112 [Commonmark 0.29].
         # Info string.
         self.assertEqual(
-            api.is_opening_code_fence(BACKTICK4 + GITHUB_INFO_STRING_FOO),
+            api.is_opening_code_fence(BACKTICK4 + CMARK_INFO_STRING_FOO),
             BACKTICK4)
         self.assertEqual(
-            api.is_opening_code_fence(BACKTICK10 + GITHUB_INFO_STRING_FOO),
+            api.is_opening_code_fence(BACKTICK10 + CMARK_INFO_STRING_FOO),
             BACKTICK10)
 
         self.assertEqual(
-            api.is_opening_code_fence(TILDE4 + GITHUB_INFO_STRING_FOO), TILDE4)
+            api.is_opening_code_fence(TILDE4 + CMARK_INFO_STRING_FOO), TILDE4)
         self.assertEqual(
-            api.is_opening_code_fence(TILDE10 + GITHUB_INFO_STRING_FOO),
+            api.is_opening_code_fence(TILDE10 + CMARK_INFO_STRING_FOO),
             TILDE10)
 
         # Example 112 [Commonmark 0.28].
         # Example 113 [Commonmark 0.29].
         # Info string with garbage and foreign character.
         self.assertEqual(
-            api.is_opening_code_fence(BACKTICK4 + S4 + GITHUB_INFO_STRING_FOO +
-                                      S1 + GITHUB_INFO_STRING_GARBAGE),
+            api.is_opening_code_fence(BACKTICK4 + S4 + CMARK_INFO_STRING_FOO +
+                                      S1 + CMARK_INFO_STRING_GARBAGE),
             BACKTICK4)
 
         self.assertEqual(
-            api.is_opening_code_fence(TILDE4 + S4 + GITHUB_INFO_STRING_FOO +
-                                      S1 + GITHUB_INFO_STRING_GARBAGE), TILDE4)
+            api.is_opening_code_fence(TILDE4 + S4 + CMARK_INFO_STRING_FOO +
+                                      S1 + CMARK_INFO_STRING_GARBAGE), TILDE4)
 
         # Example 113 [Commonmark 0.28].
         # Example 114 [Commonmark 0.29].
@@ -1514,57 +1510,57 @@ class TestApi(unittest.TestCase):
         # 1. header_type_first = 1; header_type_curr = 1.
         expected_indentation_list = [True, False, False, False, False, False]
         self._test_helper_toc_renders_as_coherent_list(
-            BASE_CASE_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR,
-            BASE_CASE_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_FIRST,
+            BASE_CASE_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR,
+            BASE_CASE_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST,
             api.init_indentation_status_list('github'),
             expected_indentation_list, True)
 
         # 2. header_type_first = 1; header_type_curr = generic > 1.
         indentation_list = api.init_indentation_status_list('github')
-        for i in range(0, GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR - 1):
+        for i in range(0, GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR - 1):
             indentation_list[i] = True
         expected_indentation_list = [True, True, True, True, False, False]
         self._test_helper_toc_renders_as_coherent_list(
-            GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR,
-            BASE_CASE_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_FIRST,
+            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR,
+            BASE_CASE_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST,
             indentation_list, expected_indentation_list, True)
 
         # 3. header_type_first = generic > 1; header_type_curr = 1.
         indentation_list = api.init_indentation_status_list('github')
         expected_indentation_list = [True, False, False, False, False, False]
         self._test_helper_toc_renders_as_coherent_list(
-            BASE_CASE_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR,
-            GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_FIRST, indentation_list,
+            BASE_CASE_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR,
+            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST, indentation_list,
             expected_indentation_list, False)
 
         # 4. header_type_first = generic > 1; header_type_curr = generic > 1; header_type_curr > header_type_first.
         indentation_list = api.init_indentation_status_list('github')
-        indentation_list[GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_FIRST -
+        indentation_list[GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST -
                          1] = True
         expected_indentation_list = [False, False, False, True, True, False]
         self._test_helper_toc_renders_as_coherent_list(
-            GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS,
-            GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_FIRST, indentation_list,
+            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS,
+            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST, indentation_list,
             expected_indentation_list, True)
 
         # 4. header_type_first = generic > 1; header_type_curr = generic > 1; header_type_curr == header_type_first.
         indentation_list = api.init_indentation_status_list('github')
-        indentation_list[GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR -
+        indentation_list[GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR -
                          1] = True
         expected_indentation_list = [False, False, False, True, False, False]
         self._test_helper_toc_renders_as_coherent_list(
-            GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR,
-            GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR, indentation_list,
+            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR,
+            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR, indentation_list,
             expected_indentation_list, True)
 
         # 5. header_type_first = generic > 1; header_type_curr = generic > 1; header_type_curr < header_type_first.
         indentation_list = api.init_indentation_status_list('github')
-        indentation_list[GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS -
+        indentation_list[GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS -
                          1] = True
         expected_indentation_list = [False, False, False, True, False, False]
         self._test_helper_toc_renders_as_coherent_list(
-            GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_FIRST,
-            GENERIC_GITHUB_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS,
+            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST,
+            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS,
             indentation_list, expected_indentation_list, False)
 
 
