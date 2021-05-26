@@ -26,10 +26,116 @@ import sys
 from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
                          GithubOverflowOrderedListMarker,
                          StdinIsNotAFileToBeWritten,
-                         TocDoesNotRenderAsCoherentList, StringCannotContainNewlines)
+                         TocDoesNotRenderAsCoherentList, StringCannotContainNewlines,
+                         CannotTreatUnicodeString)
 from .constants import parser as md_parser, common_defaults
 
 
+##########################
+# cmark specific Classes #
+##########################
+class _DLLNode:
+    r"""A list node with attributes useful for processing emphasis."""
+
+    def __init__(self, delim_char: str, length: int, start_index: int):
+        self.delim_char = delim_char
+        self.length = length
+        self.offset = 0
+        self.original_length = length
+        self.active = True
+        self.start_index = start_index
+        self.previous = None
+        self.next = None
+        self.can_open = False
+        self.can_close = False
+
+    def __str__(self):
+        if self.delim_char is not None:
+            if self.previous is None:
+                previous = 'None'
+            else:
+                previous = hex(id(self.previous))
+            if self.next is None:
+                next = 'None'
+            else:
+                next = hex(id(self.next))
+
+            el = '== element ' + hex(id(self)) + " =="
+            de = 'delim_char = ' + self.delim_char
+            le = 'length = ' + str(self.length)
+            of = 'offset = ' + str(self.offset)
+            oi = 'original_length = ' + str(self.original_length)
+            ac = 'active = ' + str(self.active)
+            st = 'start_index = ' + str(self.start_index)
+            pr = 'previous = ' + previous
+            ne = 'next = ' + next
+            co = 'can_open = ' + str(self.can_open)
+            cc = 'can_close = ' + str(self.can_close)
+
+            return (el + '\n' + de + '\n' + le + '\n' + of + '\n' + oi + '\n'
+                    + ac + '\n' + st + '\n' + pr + '\n' + ne + '\n' + co + '\n'
+                    + cc + '\n')
+
+
+class _DLL:
+    r"""A double linked list useful for processing emphasis."""
+
+    def __init__(self):
+        self.start = None
+        self.end = None
+
+    def push(self, node: _DLLNode):
+        r"""Add a new node."""
+        if self.start is None and self.end is None:
+            self.start = self.end = node
+        else:
+            self.end.next = node
+            node.previous = self.end
+            self.end = self.end.next
+            node.next = None
+
+    def pop(self) -> _DLLNode:
+        r"""Remove the last node."""
+        node = None
+        if self.start is None and self.end is None:
+            pass
+        else:
+            node = self.end
+            self.end = node.previous
+
+            if self.end is None:
+                self.start = None
+
+        return node
+
+    def extract(self, node: _DLLNode):
+        r"""Remove a specific node."""
+        if node is None:
+            pass
+        elif self.start is not None and self.end is not None:
+            if node == self.end:
+                self.end = node.previous
+
+                if self.end is None:
+                    self.start = None
+            else:
+                node.next.previous = node.previous
+            if node.previous is not None:
+                node.previous.next = node.next
+            else:
+                self.start = node.next
+
+    def scroll(self):
+        r"""Print the list."""
+        x = self.start
+        while x is not None:
+            print(x)
+            x = x.next
+
+
+#####################
+# Generic functions #
+#####################
 # _ctoi and _isascii taken from cpython source Lib/curses/ascii.py
 # See:
 # https://github.com/python/cpython/blob/283de2b9c18e38c9a573526d6c398ade7dd6f8e9/Lib/curses/ascii.py#L48
@@ -53,6 +159,333 @@ def _isascii(c):
     return 0 <= _ctoi(c) <= 127
 
 
+############################
+# cmark specific functions #
+############################
+def _cmark_is_space(char: int, parser: str = 'github') -> bool:
+    value = False
+    if chr(char) in md_parser[parser]['pseudo-re']['UWC']:
+        value = True
+
+    return value
+
+
+def _cmark_is_punctuation(char: int, parser: str = 'github') -> bool:
+    value = False
+    if chr(char) in md_parser[parser]['pseudo-re']['PC']:
+        value = True
+
+    return value
+
+
+def _cmark_ispunct(char: int, parser: str = 'github') -> bool:
+    value = False
+    if chr(char) in md_parser[parser]['pseudo-re']['APC']:
+        value = True
+
+    return value
+
+
+def _cmark_utf8proc_charlen(line: str, line_length: int) -> int:
+    if not line_length:
+        return 0
+
+    # Use length = 1 instead of the utf8proc_utf8class[256]
+    # list.
+    # For example:
+    # len('ł') == 2 # in Python 2
+    # len('ł') == 1 # in Python 3
+    # See the documentation.
+    # In Python 3 since all strings are unicode by default
+    # they all have length of 1.
+    length = 1
+    if len(line) > 1:
+        # See
+        # https://docs.python.org/3/howto/unicode.html#comparing-strings
+        raise CannotTreatUnicodeString
+
+    if not length:
+        return -1
+
+    if line_length >= 0 and length > line_length:
+        return -line_length
+
+    for i in range(1, length):
+        if (ord(line[i]) & 0xC0) != 0x80:
+            return -i
+
+    return length
+
+
+def _cmark_utf8proc_iterate(line: str, line_len: int) -> tuple:
+    length = 0
+    uc = -1
+    dst = -1
+
+    length = _cmark_utf8proc_charlen(line, line_len)
+    if length < 0:
+        return -1, dst
+
+    if length == 1:
+        uc = ord(line[0])
+    elif length == 2:
+        uc = ((ord(line[0]) & 0x1F) << 6) + (ord(line[1]) & 0x3F)
+        if uc < 0x80:
+            uc = -1
+    elif length == 3:
+        uc = ((ord(line[0]) & 0x0F) << 12) + ((ord(line[1]) & 0x3F) << 6) + (ord(line[2]) & 0x3F)
+        if uc < 0x800 or (uc >= 0xD800 and uc < 0xE000):
+            uc = -1
+    elif length == 4:
+        uc = (((ord(line[0]) & 0x07) << 18) + ((ord(line[1]) & 0x3F) << 12) +
+             ((ord(line[2]) & 0x3F) << 6) + (ord(line[3]) & 0x3F))
+        if uc < 0x10000 or uc >= 0x110000:
+            uc = -1
+
+    if uc < 0:
+        return -1, dst
+
+    dst = uc
+
+    return length, dst
+
+
+def _cmark_scan_delims(line: str, c: str, pos: int) -> tuple:
+    left_flanking = False
+    right_flanking = False
+    can_open = False
+    can_close = False
+    numdelims = 0
+    before_char_pos = 0
+    before_char = 0
+    after_char = 0
+
+    if pos == 0:
+        before_char = 10
+    else:
+        before_char_pos = pos - 1
+        # walk back to the beginning of the UTF_8 sequence
+        while _cmark_peek_char(line, before_char_pos) >> 6 == 2 and before_char_pos > 0:
+            before_char_pos -= 1
+
+        length, before_char = _cmark_utf8proc_iterate(line[before_char_pos:before_char_pos + 1],
+                                                      pos - before_char_pos)
+
+        if length == -1:
+            before_char = 10
+
+    if c == '\'' or c == '"':
+        numdelims += 1
+        pos += 1
+    else:
+        while chr(_cmark_peek_char(line, pos)) == c:
+            numdelims += 1
+            pos += 1
+
+    length, after_char = _cmark_utf8proc_iterate(line[pos:pos + 1], len(line) - pos)
+
+    if length == -1:
+        after_char = 10
+
+    if (numdelims > 0
+       and (not _cmark_is_space(after_char))
+       and (not _cmark_is_punctuation(after_char)
+            or _cmark_is_space(before_char)
+            or _cmark_is_punctuation(before_char))):
+               left_flanking = True
+
+    if (numdelims > 0
+       and (not _cmark_is_space(before_char))
+       and (not _cmark_is_punctuation(before_char)
+            or _cmark_is_space(after_char)
+            or _cmark_is_punctuation(after_char))):
+                right_flanking = True
+
+    if c == '_':
+        if (left_flanking
+            and (not right_flanking or _cmark_is_punctuation(before_char))):
+            can_open = True
+        if (right_flanking
+            and (not left_flanking or _cmark_is_punctuation(after_char))):
+            can_close = True
+
+    elif c == '\'' or c == '"':
+        if (left_flanking and not right_flanking and
+            before_char != ']' and before_char != ')'):
+            can_open = True
+        can_close = right_flanking
+    else:
+        can_open = left_flanking
+        can_close = right_flanking
+
+    return numdelims, can_open, can_close, pos
+
+
+def _cmark_handle_delim(delimiter_stack: _DLL, line: str, c: str, start_index: int) -> tuple:
+    numdelims, can_open, can_close, pos = _cmark_scan_delims(line, c, start_index)
+
+    if (can_open or can_close) and (not (c == '\'' or c == '"')):
+        current = _DLLNode(c, numdelims, start_index)
+        current.can_open = can_open
+        current.can_close = can_close
+        delimiter_stack.push(current)
+
+    return numdelims, pos
+
+
+def _cmark_peek_char(line: str, pos: int) -> int:
+    if pos < len(line):
+        return ord(line[pos])
+    else:
+        return 0
+
+
+def _cmark_remove_emph(delimiter_stack: _DLL, opener: _DLLNode, closer: _DLLNode, ignore: list):
+    opener_num_chars = opener.length
+    closer_num_chars = closer.length
+
+    # calculate the actual number of characters used from this closer
+    if closer_num_chars >= 2 and opener_num_chars >= 2:
+        use_delims = 2
+    else:
+        use_delims = 1
+
+    # remove used characters from associated inlines.
+    opener_num_chars -= use_delims
+    closer_num_chars -= use_delims
+    opener.length = opener_num_chars
+    closer.length = closer_num_chars
+
+    # free delimiters between opener and closer
+    delim = closer.previous
+    while delim is not None and delim != opener:
+        tmp_delim = delim.previous
+        delimiter_stack.extract(delim)
+        delim = tmp_delim
+
+    opener_relative_start = opener.start_index + opener.original_length - opener.offset - use_delims
+    opener_relative_end = opener.start_index + opener.original_length - opener.offset
+
+    closer_relative_start = closer.start_index + closer.original_length - closer.offset - use_delims
+    closer_relative_end = closer.start_index + closer.original_length - closer.offset
+
+    ignore.append(range(opener_relative_start, opener_relative_end))
+    ignore.append(range(closer_relative_start, closer_relative_end))
+
+    opener.offset += use_delims
+    closer.offset += use_delims
+
+    # if opener has 0 characters, remove it and its associated inline
+    if opener_num_chars == 0:
+        delimiter_stack.extract(opener)
+
+    # if closer has 0 characters, remove it and its associated inline
+    if closer_num_chars == 0:
+        # remove closer from list
+        tmp_delim = closer.next
+        delimiter_stack.extract(closer)
+        closer = tmp_delim
+
+    return closer
+
+
+def _cmark_process_emphasis(delimiter_stack: _DLL, ignore: list) -> list:
+    # Store indices.
+    openers_bottom = [None, None, None, None, None, None]
+
+    stack_bottom = None
+
+    # delimiter *closer = subj->last_delim;
+    closer = delimiter_stack.end
+
+    # move back to first relevant delim.
+    while closer is not None and closer.previous is not stack_bottom:
+        closer = closer.previous
+
+    # now move forward, looking for closers, and handling each
+    while closer is not None:
+        if closer.can_close:
+            if closer.delim_char == '"':
+                openers_bottom_index = 0
+            elif closer.delim_char == '\'':
+                openers_bottom_index = 1
+            elif closer.delim_char == '_':
+                openers_bottom_index = 2
+            elif closer.delim_char == '*':
+                openers_bottom_index = 3 + (closer.length % 3)
+            else:
+                raise ValueError
+
+            # Now look backwards for first matching opener:
+            opener = closer.previous
+            opener_found = False
+            while opener is not None and opener != openers_bottom[openers_bottom_index]:
+                if opener.can_open and opener.delim_char == closer.delim_char:
+                    # interior closer of size 2 can't match opener of size 1
+                    # or of size 1 can't match 2
+                    if (not (closer.can_open or opener.can_close)
+                        or closer.length % 3 == 0
+                        or (opener.length + closer.length) % 3 != 0):
+                        opener_found = True
+                        break
+                opener = opener.previous
+
+            old_closer = closer
+
+            if closer.delim_char == '*' or closer.delim_char == '_':
+                if opener_found:
+                    closer = _cmark_remove_emph(delimiter_stack, opener, closer, ignore)
+                else:
+                    closer = closer.next
+            elif closer.delim_char == '\'' or closer.delim_char == '"':
+                closer = closer.next
+            if not opener_found:
+                # set lower bound for future searches for openers
+                openers_bottom[openers_bottom_index] = old_closer.previous
+                if not old_closer.can_open:
+                    # we can remove a closer that can't be an
+                    # opener, once we've seen there's no
+                    # matching opener:
+                    delimiter_stack.extract(old_closer)
+        else:
+            closer = closer.next
+
+    # free all delimiters in list until stack_bottom:
+    while delimiter_stack.end is not None and delimiter_stack.end != stack_bottom:
+        delimiter_stack.extract(delimiter_stack.end)
+
+
+def _cmark_handle_backslash(line: str, char: str, pos: int):
+    r"""Parse backslash-escape or just a backslash, returning an inline."""
+    pos += 1
+    nextchar = _cmark_peek_char(line, pos)
+
+    # only ascii symbols and newline can be escaped
+    if _cmark_ispunct(nextchar):
+        pos += 1
+
+    return pos
+
+
+def _cmark_parse_inline(delimiter_stack: _DLL, line: str, pos: int) -> tuple:
+    numdelim = 0
+
+    c = _cmark_peek_char(line, pos)
+    if c == 0:
+        return 0
+    elif chr(c) == '\\':
+        numdelim = _cmark_handle_backslash(line, chr(c), pos)
+    elif chr(c) == '*' or chr(c) == '_' or chr(c) == '\'' or chr(c) == '"':
+        numdelim, pos = _cmark_handle_delim(delimiter_stack, line, chr(c), pos)
+    # TODO
+    # Images, code and HTML tags detection still needs to be done.
+
+    return numdelim, pos
+
+
+#######
+# API #
+#######
 def write_string_on_file_between_markers(filename: str, string: str,
                                          marker: str):
     r"""Write the table of contents on a single file.
@@ -505,14 +938,14 @@ def compute_toc_line_indentation_spaces(
         raise ValueError
     if not header_type_prev >= 0:
         raise ValueError
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'redcarpet']:
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark', 'redcarpet']:
         if ordered:
             if list_marker not in md_parser[parser]['list']['ordered']['closing markers']:
                 raise ValueError
         else:
             if list_marker not in md_parser[parser]['list']['unordered']['bullet markers']:
                 raise ValueError
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
         if not len(indentation_log) == md_parser['github']['header']['max levels']:
             raise ValueError
         for i in range(1, md_parser['github']['header']['max levels'] + 1):
@@ -531,7 +964,7 @@ def compute_toc_line_indentation_spaces(
     if not index >= 1:
         raise TypeError
 
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
         if ordered:
             if header_type_prev == 0:
                 index_length = 0
@@ -623,7 +1056,7 @@ def build_toc_line_without_indentation(header: dict,
         raise ValueError
     if not index >= 1:
         raise ValueError
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'redcarpet']:
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark', 'redcarpet']:
         if ordered:
             if list_marker not in md_parser[parser]['list']['ordered']['closing markers']:
                 raise ValueError
@@ -633,7 +1066,7 @@ def build_toc_line_without_indentation(header: dict,
 
     toc_line_no_indent = str()
 
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'redcarpet']:
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark', 'redcarpet']:
         if ordered:
             list_marker = str(index) + list_marker
 
@@ -685,7 +1118,7 @@ def remove_html_tags(line: str, parser: str = 'github') -> str:
     :rtype: str
     :raises: a built-in exception.
     """
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
         # We need to match newline as well because it is a WS, so we
         # must use re.DOTALL.
         line = re.sub(md_parser[parser]['re']['OT'], str(), line, flags=re.DOTALL)
@@ -698,367 +1131,57 @@ def remove_html_tags(line: str, parser: str = 'github') -> str:
     return line
 
 
-def get_generic_fdr_indices(i: int, line: str, char: str, mem: dict, type: str = 'left', parser='github') -> int:
-    r"""Compute the indices of flanking delimiter runs in a string.
-
-    :parameter i: the current iterating index of the line.
-    :parameter line: a string.
-    :parameter char: the delimiter type.
-    :parameter mem: a data structure containing the fdr indices
-        grouped by char, in start-end lists. See the get_fdr_indices function.
-    :parameter type: the type of FDR. This value can only be ``left`` or ``right``.
-    :parameter parser: decides rules on how to find FDR indices.
-         Defaults to ``github``.
-    :type i: int
-    :type line: str
-    :type char: str
-    :type mem: dict
-    :type type: str
-    :type parser: str
-    :returns: the current iterating index.
-    :rtype: int
-    :raises: a built-in exception.
-    """
-    if len(char) != 1:
-        raise ValueError
-    if type != 'left' and type != 'right':
-        raise ValueError
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
-        if char not in ['*', '_']:
-            raise ValueError
-        if '*' not in mem:
-            raise ValueError
-        if '_' not in mem:
-            raise ValueError
-        if not isinstance(mem['*'], list):
-            raise TypeError
-        if not isinstance(mem['_'], list):
-            raise TypeError
-
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
-        is_fdr = False
-        is_fdr_b = False
-        is_fdr_c = False
-        is_fdr_d = False
-        was_char = False
-
-        char_start = i
-        while i < len(line) and line[i] == char:
-            i += 1
-            was_char = True
-
-        # Go back 1.
-        char_end = i - 1
-
-        # Using definition from 0.29 which is much clearer than the one from 0.28:
-        #
-        # "
-        # A left-flanking delimiter run is a delimiter run that is
-        #       (1) not followed by Unicode whitespace,
-        #           AND
-        #               either (2a) not followed by a punctuation character,
-        #               OR
-        #               (2b) followed by a punctuation character
-        #                   AND preceded by Unicode whitespace or a punctuation character.
-        # For purposes of this definition, the beginning and the end of the line count as Unicode whitespace.
-        # "
-        if was_char:
-            if char_end < len(line) - 1:
-                # (1)
-                if line[char_end + 1] not in md_parser[parser]['pseudo-re']['UWC']:
-                    is_fdr = True
-            else:
-                # End of the line.
-                # For purposes of this definition, the beginning and the end of the line count as Unicode whitespace.
-                is_fdr = True
-            # AND.
-            if is_fdr:
-                if char_end < len(line) - 1:
-                    # (2a)
-                    if line[char_end + 1] not in md_parser[parser]['pseudo-re']['PC']:
-                        is_fdr_b = True
-                # OR
-                if not is_fdr_b:
-                    # (2b)
-                    if char_end < len(line) - 1:
-                        if line[char_end + 1] in md_parser[parser]['pseudo-re']['PC']:
-                            is_fdr_c = True
-                    # AND.
-                    if is_fdr_c:
-                        if char_start > 0:
-                            if line[char_start - 1] in md_parser[parser]['pseudo-re']['UWC'] or line[char_start - 1] in md_parser[parser]['pseudo-re']['PC']:
-                                is_fdr_d = True
-                        else:
-                            # Beginning of the line.
-                            # For purposes of this definition, the beginning and the end of the line count as Unicode whitespace.
-                            is_fdr_d = True
-
-            if is_fdr and (is_fdr_b or (is_fdr_c and is_fdr_d)):
-                # LFDR and RFDR are very similar.
-                # RFDR is just the reverse of LFDR.
-                if type == 'left':
-                    alpha = char_start
-                    bravo = char_end
-                elif type == 'right':
-                    alpha = len(line) - 1 - char_end
-                    bravo = len(line) - 1 - char_start
-                mem[char].append([alpha, bravo])
-
-    return i
-
-
-def get_fdr_indices(line: str, type: str = 'left', parser: str = 'github') -> dict:
-    r"""Iteratevly find flanking delimiter runs indices.
-
-    :parameter line: a string.
-    :parameter type: the type of FDR. This value can only be ``left`` or ``right``.
-    :parameter parser: decides rules on how to find FDR indices.
-         Defaults to ``github``.
-    :type line: str
-    :type type: str
-    :type parser: str
-    :returns: a data structure contaning the flanking delimiter runs indices.
-        See the ``fdr_indices`` data structure.
-    :rtype: dict
-    :raises: a built-in exception.
-    """
-    if type != 'left' and type != 'right':
-        raise ValueError
-
-    if type == 'right':
-        # To be able to find RFDRs we need to reverse the line before giving it to
-        # the get_generic_fdr_indices function.
-        line = line[::-1]
-
-    fdr_indices = dict()
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
-
-        # A data structure containing the lfdr indices by type ,divided into couples start-end:
-        # '*': [[s0,e0], [s1,e1], ..., [sn,en]]
-        # '_': [[s0,e0], [s1,e1], ..., [sn,en]]
-        fdr_indices['*'] = list()
-        fdr_indices['_'] = list()
-
-        i = 0
-        while i < len(line):
-            i = get_generic_fdr_indices(i, line, '*', fdr_indices, type, parser)
-            i = get_generic_fdr_indices(i, line, '_', fdr_indices, type, parser)
-            i += 1
-
-    return fdr_indices
-
-
-def can_open_emphasis(line: str, emphasis_char: str, start: int, end: int, parser: str = 'github') -> bool:
-    r"""Check if a substring can open emphasis.
-
-    :parameter line: a string.
-    :parameter emphasis_char: a character.
-    :parameter start: index where to start the analysis.
-    :parameter end: index where to end the analysis.
-    :parameter parser: decides rules on how to find FDR indices.
-        Defaults to ``github``.
-    :type line: str
-    :type emphasis_char: str
-    :type start: int
-    :type end: int
-    :type parser: str
-    :returns: a boolean that is set to ``True`` if a substring can open emphasis,
-        ``False`` otherwise.
-    :rtype: bool
-    :raises: a built-in exception.
-    """
-    if len(emphasis_char) != 1:
-        raise ValueError
-    if start < 0:
-        raise ValueError
-    if end > len(line) - 1:
-        raise ValueError
-
-    # CHECK FOR NEWLINES
-
-    # Absence of flanking delimiter run.
-    no_fdr = {
-        '*': list(),
-        '_': list(),
-    }
-
-    # See
-    # https://spec.commonmark.org/0.28/#can-open-emphasis
-
-    can_open = False
-    # Rule 1, 2, 5, 6.
-    if get_fdr_indices(line=line[start: end + 1], type='left') != no_fdr:
-        can_open = True
-
-    # Rule 5, 6.
-    if can_open and emphasis_char == '_':
-        can_open = False
-        condition = False
-        # end + 1 is to get the end index really.
-        if get_fdr_indices(line=line[start: end + 1], type='right') == no_fdr:
-            can_open = True
-            condition = True
-        if not condition:
-            if get_fdr_indices(line=line[start: end + 1], type='right') != no_fdr and line[start] in md_parser['github']['pseudo-re']['PC']:
-                can_open = True
-
-    return can_open
-
-
-def can_close_emphasis(line: str, emphasis_char: str, start: int, end: int) -> bool:
-    r"""Check if a substring can close emphasis.
-
-    :parameter line: a string.
-    :parameter emphasis_char: a character.
-    :parameter start: index where to start the analysis.
-    :parameter end: index where to end the analysis.
-    :parameter parser: decides rules on how to find FDR indices.
-        Defaults to ``github``.
-    :type line: str
-    :type emphasis_char: str
-    :type start: int
-    :type end: int
-    :type parser: str
-    :returns: a boolean that is set to ``True`` if a substring can close emphasis,
-        ``False`` otherwise.
-    :rtype: bool
-    :raises: a built-in exception.
-    """
-    if start < 0:
-        raise ValueError
-    if end > len(line) - 1:
-        raise ValueError
-
-    # Absence of flanking delimiter run.
-    no_fdr = {
-        '*': list(),
-        '_': list(),
-    }
-
-    # See
-    # https://spec.commonmark.org/0.28/#can-close-emphasis
-
-    can_close = False
-    # Rule 3, 4, 7, 8.
-    if get_fdr_indices(line=line[start: end + 1], type='right') != no_fdr:
-        can_close = True
-
-    # Rule 7, 8.
-    if can_close and emphasis_char == '_':
-        can_close = False
-        condition = False
-        if get_fdr_indices(line=line[start: end + 1], type='left') == no_fdr:
-            can_close = True
-            condition = True
-        if not condition:
-            if get_fdr_indices(line=line[start: end + 1], type='left') != no_fdr and line[end] in md_parser['github']['pseudo-re']['PC']:
-                can_close = True
-
-    return can_close
-
-
-def remove_emphasis(line: str, parser: str = 'github') -> str:
+def remove_emphasis(line: str, parser: str = 'github') -> list:
     r"""Remove emphasis.
 
     :parameter line: a string.
-    :parameter parser: decides rules on how to find FDR indices.
+    :parameter parser: decides rules on how to find delimiters.
         Defaults to ``github``.
     :type line: str
     :type parser: str
     :returns: the input line without emphasis.
     :rtype: str
     :raises: a built-in exception.
-
-    .. note:: In case of cmark we don't care about removing ``*`` because
-        all ``*`` are removed anyway by the ``build_anchor_link`` function.
-        If you care to remove ``*`` this function needs to be tweaked.
     """
-    ignore = list()
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
-        all = list()
-        j = len(line) - 1
-        # Get all delimiter runs and divide them into lists.
-        while j >= 0:
-            Sj = j
-            tmp = list()
-            while j >= 0 and line[j] == '_':
-                tmp.append(j)
-                j -= 1
-            if Sj > j:
-                all.append(tmp)
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark', 'redcarpet']:
 
-            j -= 1
-
-        opn = list()
-        cls = list()
-        while len(all) > 0:
-            # Every x is a delimiter run.
-            x = all.pop()
-
-            # Check line limits.
-            if x[-1] == 0:
-                start = 0
-            else:
-                start = x[-1] - 1
-            if x[0] == len(line) - 1:
-                end = len(line) - 1
-            else:
-                end = x[0] + 1
-
-            # Separate delimiter runs into opening and closing emphasis.
-            # Delimiter runs may be in both lists.
-            if can_close_emphasis(line, '_', start, end):
-                cls.append(sorted(x))
-            if can_open_emphasis(line, '_', start, end):
-                opn.append(x)
-
-        # Reverse.
-        opn = opn[::-1]
-
+        delimiter_stack = _DLL()
         i = 0
-        # Add elements to ignore list if:
-        # 1. opening and closing delimiters match in length
-        # 2. closing > opening in terms of indices
-        while i < len(opn):
-            if len(cls) > 0:
-                # Get the closing delimiter of the last opening delimiter.
-                x = get_nearest_list_id(opn[i][0], cls)
-                j = 0
-                while j < len(opn[i]):
-                    # Skip if delimiter can both open and close but
-                    # we need to avoid duplicates.
-                    # For example, try:
-                    #
-                    # md_toc.api.remove_emphasis('foo-_(bar)_')
-                    #
-                    # opn = [[4]]
-                    # cls = [[4], [10]]
-                    # The first iteration is skipped because
-                    # 4 !> 4
-                    # but the second is not, because
-                    # 10 > 4
-                    # so we have
-                    # ignore.append(close) == 10
-                    # ignore.append(open) == 4
-                    if sorted(opn[i]) in cls and len(cls) < len(opn):
-                        pass
-                    else:
-                        if len(cls[x]) > 0:
-                            # Empty the closing list so we don't have to
-                            # keep track of indices.
-                            close = cls[x].pop(0)
-                            open = opn[i][-j]
-                            if close > open:
-                                ignore.append(close)
-                                ignore.append(open)
-                    j += 1
-            # Remove an empty closing list.
-            if len(cls) > 0 and len(cls[-1]) == 0:
-                cls.pop(-1)
-            i += 1
+        while i < len(line):
+            numdelims, pos = _cmark_parse_inline(delimiter_stack, line, i)
 
-    # Keep line indices which are not in the ignore list.
-    s = sorted(ignore)
+            advance = False
+            if pos > i:
+                i = pos
+                advance = True
+
+            if not advance:
+                i += 1
+
+        ignore = list()
+
+        # When we hit the end of the input, we call the process emphasis procedure (see below), with stack_bottom = NULL.
+        _cmark_process_emphasis(delimiter_stack, ignore)
+        l = filter_indices_from_line(line, ignore)
+        line = l
+    elif parser in ['redcarpet']:
+        # TODO
+        pass
+
+    return line
+
+
+def filter_indices_from_line(line: str, ranges: list) -> str:
+    r"""Given a line and a Python ranges, remove the characters in the ranges."""
+    # Transform ranges into lists.
+    rng = list()
+    for r in ranges:
+        rng.append(list(r))
+
+    # Flatten list.
+    ll = [item for e in rng for item in e]
+
+    s = sorted(ll)
     final = str()
     i = 0
     while i < len(line):
@@ -1067,47 +1190,6 @@ def remove_emphasis(line: str, parser: str = 'github') -> str:
         i += 1
 
     return final
-
-
-def get_nearest_list_id(index: int, integer_lists: list) -> int:
-    r"""Given a list of lists of integers, find the list id corresponding to the nearest bigger number to be searched (the index).
-
-    :parameter index: an integer from which to start searching.
-    :parameter integer_lists: a list of lists of integers.
-    :type index: int
-    :type integer_lists: list
-    :returns: the list id corresponding to the nearest bigger number to be searched.
-    :rtype: int
-    :raises: a built-in exception.
-
-    ..note: the lists must be sorted increasingly and the container list as well.
-    """
-    if len(integer_lists) == 0:
-        raise ValueError
-    if len(integer_lists[-1]) == 0:
-        raise ValueError
-    for ll in integer_lists:
-        for e in ll:
-            if not isinstance(e, int):
-                raise TypeError
-
-    i = 0
-    # Initially, min = max.
-    min = integer_lists[-1][-1]
-    nearest_list_id = len(integer_lists) - 1
-    done = False
-    while i < len(integer_lists) and not done:
-        j = 0
-        while j < len(integer_lists[i]) and not done:
-            # nearest_list_id must always come after the index.
-            if integer_lists[i][j] > index and integer_lists[i][j] < min:
-                min = integer_lists[i][j]
-                nearest_list_id = i
-                done = True
-            j += 1
-        i += 1
-
-    return nearest_list_id
 
 
 def build_anchor_link(header_text_trimmed: str,
@@ -1138,7 +1220,7 @@ def build_anchor_link(header_text_trimmed: str,
     if len(replace_and_split_newlines(header_text_trimmed)) > 1:
         raise StringCannotContainNewlines
 
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
         header_text_trimmed = header_text_trimmed.lower()
 
         # Filter HTML tags.
@@ -1281,7 +1363,7 @@ def get_atx_heading(line: str,
         current_headers = None
         final_line = None
 
-        if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
+        if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
 
             struct.append({'header type': None, 'header text trimmed': None})
 
@@ -1525,7 +1607,7 @@ def is_valid_code_fence_indent(line: str, parser: str = 'github') -> bool:
     :rtype: bool
     :raises: a built-in exception.
     """
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
         return len(line) - len(line.lstrip(
             ' ')) <= md_parser['github']['code fence']['min marker characters']
     elif parser in ['redcarpet']:
@@ -1547,7 +1629,7 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
     :rtype: typing.Optional[str]
     :raises: a built-in exception.
     """
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
         markers = md_parser['github']['code fence']['marker']
         marker_min_length = md_parser['github']['code fence'][
             'min marker characters']
@@ -1612,7 +1694,7 @@ def is_closing_code_fence(line: str,
     :rtype: bool
     :raises: a built-in exception.
     """
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
         markers = md_parser['github']['code fence']['marker']
         marker_min_length = md_parser['github']['code fence'][
             'min marker characters']
@@ -1682,7 +1764,7 @@ def init_indentation_status_list(parser: str = 'github'):
     """
     indentation_list = list()
 
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'redcarpet']:
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark', 'redcarpet']:
         for i in range(0, md_parser[parser]['header']['max levels']):
             indentation_list.append(False)
 
@@ -1714,7 +1796,7 @@ def toc_renders_as_coherent_list(
         raise ValueError
     if not header_type_first >= 1:
         raise ValueError
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'redcarpet']:
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark', 'redcarpet']:
         if not len(indentation_list) == md_parser[parser]['header']['max levels']:
             raise ValueError
     for e in indentation_list:
@@ -1722,7 +1804,7 @@ def toc_renders_as_coherent_list(
             raise TypeError
 
     renders_as_list = True
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'redcarpet']:
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark', 'redcarpet']:
         # Update with current information.
         indentation_list[header_type_curr - 1] = True
 

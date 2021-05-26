@@ -30,12 +30,7 @@ output types.
 .. autofunction:: init_indentation_status_list
 .. autofunction:: toc_renders_as_coherent_list
 .. autofunction:: remove_html_tags
-.. autofunction:: get_generic_fdr_indices
-.. autofunction:: get_fdr_indices
-.. autofunction:: can_open_emphasis
-.. autofunction:: can_close_emphasis
 .. autofunction:: remove_emphasis
-.. autofunction:: get_nearest_list_id
 .. autofunction:: replace_and_split_newlines
 
 

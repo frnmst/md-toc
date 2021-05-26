@@ -781,12 +781,6 @@ Anchor link types and behaviours
   - https://github.github.com/gfm/#disallowed-raw-html-extension-
   - https://github.com/github/cmark-gfm/blob/fca380ca85c046233c39523717073153e2458c1e/extensions/tagfilter.c
 
-  TO be able to have working anchor links emphasis must also be removed.
-  At the moment the implementation of the removal is incomplete because of its complexity.
-  See:
-
-  - https://spec.commonmark.org/0.28/#emphasis-and-strong-emphasis
-
 - ``gitlab``: new rules have been written:
 
   - https://docs.gitlab.com/ee/user/markdown.html#header-ids-and-links
@@ -827,6 +821,59 @@ Anchor link types and behaviours
 
   - https://github.com/vmg/redcarpet/issues/618#issuecomment-306476184
   - https://github.com/vmg/redcarpet/issues/307#issuecomment-261793668
+
+Emphasis
+^^^^^^^^
+
+To be able to have working anchor links emphasis must also be removed.
+At the moment the implementation of the removal is incomplete because of its complexity.
+See:
+
+  - https://spec.commonmark.org/0.29/#emphasis-and-strong-emphasis
+
+- ``cmark``: the core functions for this feature have been translated directly
+  from the original cmark dource in C to Python, with some differences:
+
+  1. the ``cmark_utf8proc_charlen`` uses ``length = 1``
+     instead of:
+
+     - ``length = cmark_utf8proc_char_len(line[0])``
+     - ``length = utf8proc_utf8class[ord(line)]`` (causes list overflow).
+
+     This is what the ``cmark_utf8proc_char_len`` function should look like in md_toc,
+     which is taken from ``cmark_utf8proc_encode_char``:
+
+     ::
+
+        def cmark_utf8proc_char_len(char: str) -> int:
+            # Taken from the cmark_utf8proc_encode_char function
+            length = 0
+            uc = ord(char)
+
+            assert (uc >= 0)
+
+            if uc < 0x80:
+                length = 1
+            elif uc < 0x800:
+                length = 2
+            elif uc == 0xFFFF:
+                length = 1
+            elif uc == 0xFFFE:
+                length = 1
+            elif uc < 0x10000:
+                length = 3
+            elif uc < 0x110000:
+                length = 4
+            else:
+                raise ValueError
+
+            return length
+
+     In Python 3, since all characters are UTF-8 by default, they are all
+     represented with length 1. See:
+
+     - https://rosettacode.org/wiki/String_length#Python
+     - https://docs.python.org/3/howto/unicode.html#comparing-strings
 
 
 Code fence
