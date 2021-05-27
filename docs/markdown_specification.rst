@@ -831,7 +831,7 @@ Emphasis
 To be able to have working anchor links, emphasis must also be removed from the
 link destination.
 
-- ``cmark``: At the moment the implementation of the removal is incomplete
+- ``cmark``,  ``github``, ``gitlab``: At the moment the implementation of the removal is incomplete
   because of its complexity. See:
 
   - https://spec.commonmark.org/0.29/#emphasis-and-strong-emphasis
@@ -846,7 +846,7 @@ link destination.
      - ``length = utf8proc_utf8class[ord(line)]`` (causes list overflow).
 
      This is what the ``cmark_utf8proc_char_len`` function should look like in md_toc,
-     which is taken from ``cmark_utf8proc_encode_char`` in the orignal source:
+     which is taken from ``cmark_utf8proc_encode_char`` in the original source:
 
      ::
 
@@ -880,9 +880,10 @@ link destination.
      - https://rosettacode.org/wiki/String_length#Python
      - https://docs.python.org/3/howto/unicode.html#comparing-strings
 
-  The licenses used for these functions are these:
+  The licenses used for all functions with name starting with ``_cmark`` are these:
 
   license D:
+
 
   ::
 
@@ -915,9 +916,12 @@ link destination.
         (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
         OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+
   license E:
 
+
   ::
+
 
         utf8.c and utf8.c
 
