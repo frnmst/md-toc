@@ -66,7 +66,7 @@ Headers
 
 Only ATX-style headings are supported in md_toc.
 
-- ``github``: the code used in md_toc is a reverse engineering of the
+- ``cmark``, ``github``, ``gitlab``: the code used in md_toc is a reverse engineering of the
   behavour described in the following:
 
   - https://github.github.com/gfm/#atx-heading
@@ -194,7 +194,7 @@ while the user might expect this:
 Indentation
 ^^^^^^^^^^^
 
-- ``github``: list indentation for sublists with this parser is based on the
+- ``cmark``, ``github``, ``gitlab``: list indentation for sublists with this parser is based on the
   previous state, as stated in the GitHub Flavored Markdown document, at
   section 5.2:
 
@@ -486,12 +486,11 @@ Indentation
 Overflows
 ^^^^^^^^^
 
-- ``github``: ordered list markers cannot exceed ``99999999`` according to
+- ``cmark``, ``github``, ``gitlab``: ordered list markers cannot exceed ``99999999`` according to
   the following. If that is the case then a  ``GithubOverflowOrderedListMarker``
   exception is raised:
 
-  - https://github.github.com/gfm/#ordered-list-marker
-  - https://spec.commonmark.org/0.28/#ordered-list-marker
+  - https://spec.commonmark.org/0.29/#ordered-list-marker
 
 - ``redcarpet``: apparently there are no cases of ordered list marker
   overflows:
@@ -501,10 +500,10 @@ Overflows
 Notes on ordered lists
 ^^^^^^^^^^^^^^^^^^^^^^
 
-- ``github``: ordered list markers may start with any integer (except special cases).
+- ``cmark``, ``github``, ``gitlab``: ordered list markers may start with any integer (except special cases).
   any following number is ignored and subsequent numeration is progressive:
 
-  - https://spec.commonmark.org/0.28/#start-number
+  - https://spec.commonmark.org/0.29/#start-number
 
   However, when you try this in practice this is not always true: nested lists
   do not follow the specifications. See:
@@ -513,7 +512,7 @@ Notes on ordered lists
 
   Markers cannot be negative:
 
-  - https://spec.commonmark.org/0.28/#example-232
+  - https://spec.commonmark.org/0.29/#example-239
 
 - ``redcarpet``: ordered lists do not use the ``start`` HTML attribute:
   any number is ignored and lists starts from 1. See:
@@ -526,9 +525,9 @@ Link label
 If the user decides to generate the table of contents with the anchor links,
 then link label rules will be applied.
 
-- ``github``:
+- ``cmark``, ``github``, ``gitlab``:
 
-  - https://github.github.com/gfm/#link-label
+  - https://spec.commonmark.org/0.29/#link-label
 
   If a line ends in 1 or more '\' characters, this disrupts the anchor
   title. For example ``- [xdmdmsdm\](#xdmdmsdm)`` becomes
@@ -546,9 +545,8 @@ then link label rules will be applied.
   If the headers contains ``[`` or ``]``, these characters
   are treated with the following rules.
 
-  - https://github.github.com/gfm/#link-text
-  - https://github.github.com/gfm/#example-302
-  - https://github.github.com/gfm/#example-496
+  - https://spec.commonmark.org/0.29/#link-text
+  - https://spec.commonmark.org/0.29/#link-destination
 
   According to a function in the source code, balanced square brackets do not
   work, however they do when interpeted by the web interface. It is however
@@ -698,13 +696,13 @@ then link label rules will be applied.
   - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1088
   - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1099
 
-  To solve this we use the same workaround used for ``github``.
+  To solve this we use the same workaround used for ``cmark``, ``github``, ``gitlab``.
 
 
 Anchor link types and behaviours
 ````````````````````````````````
 
-- ``github``: a translated version of the Ruby algorithm is used in md_toc.
+- ``cmark``, ``github``: a translated version of the Ruby algorithm is used in md_toc.
   The original one is repored here:
 
   - https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb
@@ -825,7 +823,7 @@ Anchor link types and behaviours
 Emphasis
 ^^^^^^^^
 
-To be able to have working anchor links emphasis must also be removed.
+To be able to have working anchor links, emphasis must also be removed.
 At the moment the implementation of the removal is incomplete because of its complexity.
 See:
 
@@ -841,7 +839,7 @@ See:
      - ``length = utf8proc_utf8class[ord(line)]`` (causes list overflow).
 
      This is what the ``cmark_utf8proc_char_len`` function should look like in md_toc,
-     which is taken from ``cmark_utf8proc_encode_char``:
+     which is taken from ``cmark_utf8proc_encode_char`` in the orignal source:
 
      ::
 
@@ -886,10 +884,10 @@ way to comment a line in the code. For this reason md_toc needs to ignore code
 fences in order not to treat the ``#`` character as an ATX-style heading and thus
 get parsed as an element of the TOC.
 
-- ``github``: the rules followed are the ones reported on the
+- ``cmark``, ``github``, ``gitlab``: the rules followed are the ones reported on the
   documentation:
 
-  - https://github.github.com/gfm/#code-fence
+  - https://spec.commonmark.org/0.29/#code-fence
 
 - ``redcarpet``: needs to be implemented:
 
@@ -906,9 +904,9 @@ it would result invisible in some markdown parsers. In other cases, however, suc
 as the one used by Gitea, that particular TOC marker was still visible. HTML
 comments seem to be a better solution.
 
-- ``github``:
+- ``cmark``, ``github``, ``gitlab``:
 
-  - https://spec.commonmark.org/0.28/#html-comment
+  - https://spec.commonmark.org/0.29/#html-comment
 
 - ``redcarpet``:
 
@@ -927,10 +925,10 @@ Moreover, that list has not been updated in a while.
 Markdown parsers have different behaviours regarding anchor links. Some of them
 implement them while others don't; some act on the duplicate entry problem
 while others don't; some strip consecutive dash characters while others don't.
-And it's not just about anchor links, as you have read before. For example:
+And it's not just about anchor links, as you have read earlier. For example:
 
 - Gitea apparently uses ``goldmark`` as markdown parser. This parser claims
-  to be compliant: `goldmark is compliant with CommonMark 0.29.`.
+  to be compliant with CommonMark: *goldmark is compliant with CommonMark 0.29.*.
   See:
 
   - https://github.com/go-gitea/gitea
@@ -978,18 +976,16 @@ And it's not just about anchor links, as you have read before. For example:
 
   - https://github.com/go-gitea/gitea/blob/2a03e96bceadfcc5e18bd61e755980ee72dcdb15/modules/markup/markdown/markdown.go
 
-- Gogs, Marked, Notabug: Gogs uses marked as the markdown
-  parser while *NotABug.org is powered by a liberated version of gogs*.
-  See link below.
-  Situation is unclear. Here are some links:
+- Gogs uses Marked as the markdown parser:
 
   - https://gogs.io/docs
   - https://github.com/chjj/marked
   - https://github.com/chjj/marked/issues/981
   - https://github.com/chjj/marked/search?q=anchor&type=Issues&utf8=%E2%9C%93
-  - https://notabug.org/hp/gogs/
 
-  For this reason no implementation is available for the moment.
+- Notabug: *Notabug is powered by a liberated version of gogs*:
+
+  - https://notabug.org/hp/gogs/
 
 - Kramdown: It is unclear if this feature is available. See:
 
