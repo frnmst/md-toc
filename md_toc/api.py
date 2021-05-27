@@ -163,6 +163,7 @@ def _isascii(c):
 # cmark specific functions #
 ############################
 def _cmark_is_space(char: int, parser: str = 'github') -> bool:
+    # license D applies here. See docs/markdown_specification.rst
     value = False
     if chr(char) in md_parser[parser]['pseudo-re']['UWC']:
         value = True
@@ -171,6 +172,7 @@ def _cmark_is_space(char: int, parser: str = 'github') -> bool:
 
 
 def _cmark_is_punctuation(char: int, parser: str = 'github') -> bool:
+    # license D applies here. See docs/markdown_specification.rst
     value = False
     if chr(char) in md_parser[parser]['pseudo-re']['PC']:
         value = True
@@ -179,6 +181,8 @@ def _cmark_is_punctuation(char: int, parser: str = 'github') -> bool:
 
 
 def _cmark_ispunct(char: int, parser: str = 'github') -> bool:
+    # license D applies here. See docs/markdown_specification.rst
+
     value = False
     if chr(char) in md_parser[parser]['pseudo-re']['APC']:
         value = True
@@ -187,6 +191,8 @@ def _cmark_ispunct(char: int, parser: str = 'github') -> bool:
 
 
 def _cmark_utf8proc_charlen(line: str, line_length: int) -> int:
+    # license E applies here. See docs/markdown_specification.rst
+
     if not line_length:
         return 0
 
@@ -218,6 +224,8 @@ def _cmark_utf8proc_charlen(line: str, line_length: int) -> int:
 
 
 def _cmark_utf8proc_iterate(line: str, line_len: int) -> tuple:
+    # license E applies here. See docs/markdown_specification.rst
+
     length = 0
     uc = -1
     dst = -1
@@ -238,7 +246,7 @@ def _cmark_utf8proc_iterate(line: str, line_len: int) -> tuple:
             uc = -1
     elif length == 4:
         uc = (((ord(line[0]) & 0x07) << 18) + ((ord(line[1]) & 0x3F) << 12) +
-             ((ord(line[2]) & 0x3F) << 6) + (ord(line[3]) & 0x3F))
+              ((ord(line[2]) & 0x3F) << 6) + (ord(line[3]) & 0x3F))
         if uc < 0x10000 or uc >= 0x110000:
             uc = -1
 
@@ -251,6 +259,8 @@ def _cmark_utf8proc_iterate(line: str, line_len: int) -> tuple:
 
 
 def _cmark_scan_delims(line: str, c: str, pos: int) -> tuple:
+    # license D applies here. See docs/markdown_specification.rst
+
     left_flanking = False
     right_flanking = False
     can_open = False
@@ -292,14 +302,14 @@ def _cmark_scan_delims(line: str, c: str, pos: int) -> tuple:
        and (not _cmark_is_punctuation(after_char)
             or _cmark_is_space(before_char)
             or _cmark_is_punctuation(before_char))):
-               left_flanking = True
+           left_flanking = True
 
     if (numdelims > 0
        and (not _cmark_is_space(before_char))
        and (not _cmark_is_punctuation(before_char)
             or _cmark_is_space(after_char)
             or _cmark_is_punctuation(after_char))):
-                right_flanking = True
+           right_flanking = True
 
     if c == '_':
         if (left_flanking
@@ -322,6 +332,8 @@ def _cmark_scan_delims(line: str, c: str, pos: int) -> tuple:
 
 
 def _cmark_handle_delim(delimiter_stack: _DLL, line: str, c: str, start_index: int) -> tuple:
+    # license D applies here. See docs/markdown_specification.rst
+
     numdelims, can_open, can_close, pos = _cmark_scan_delims(line, c, start_index)
 
     if (can_open or can_close) and (not (c == '\'' or c == '"')):
@@ -334,6 +346,8 @@ def _cmark_handle_delim(delimiter_stack: _DLL, line: str, c: str, start_index: i
 
 
 def _cmark_peek_char(line: str, pos: int) -> int:
+    # license D applies here. See docs/markdown_specification.rst
+
     if pos < len(line):
         return ord(line[pos])
     else:
@@ -341,6 +355,8 @@ def _cmark_peek_char(line: str, pos: int) -> int:
 
 
 def _cmark_remove_emph(delimiter_stack: _DLL, opener: _DLLNode, closer: _DLLNode, ignore: list):
+    # license D applies here. See docs/markdown_specification.rst
+
     opener_num_chars = opener.length
     closer_num_chars = closer.length
 
@@ -390,6 +406,8 @@ def _cmark_remove_emph(delimiter_stack: _DLL, opener: _DLLNode, closer: _DLLNode
 
 
 def _cmark_process_emphasis(delimiter_stack: _DLL, ignore: list) -> list:
+    # license D applies here. See docs/markdown_specification.rst
+
     # Store indices.
     openers_bottom = [None, None, None, None, None, None]
 
@@ -456,7 +474,10 @@ def _cmark_process_emphasis(delimiter_stack: _DLL, ignore: list) -> list:
 
 
 def _cmark_handle_backslash(line: str, char: str, pos: int):
-    r"""Parse backslash-escape or just a backslash, returning an inline."""
+    r"""Parse backslash-escape or just a backslash, returning an inline.
+
+    .. note: license D applies here. See docs/markdown_specification.rst
+    """
     pos += 1
     nextchar = _cmark_peek_char(line, pos)
 
@@ -468,6 +489,10 @@ def _cmark_handle_backslash(line: str, char: str, pos: int):
 
 
 def _cmark_parse_inline(delimiter_stack: _DLL, line: str, pos: int) -> tuple:
+    r"""Handle all the different elements of a string.
+
+    ..note: license D applies here. See docs/markdown_specification.rst
+    """
     numdelim = 0
 
     c = _cmark_peek_char(line, pos)
@@ -477,8 +502,7 @@ def _cmark_parse_inline(delimiter_stack: _DLL, line: str, pos: int) -> tuple:
         numdelim = _cmark_handle_backslash(line, chr(c), pos)
     elif chr(c) == '*' or chr(c) == '_' or chr(c) == '\'' or chr(c) == '"':
         numdelim, pos = _cmark_handle_delim(delimiter_stack, line, chr(c), pos)
-    # TODO
-    # Images, code and HTML tags detection still needs to be done.
+    # TODO: images, code, HTML tags detection.
 
     return numdelim, pos
 
@@ -1162,8 +1186,7 @@ def remove_emphasis(line: str, parser: str = 'github') -> list:
 
         # When we hit the end of the input, we call the process emphasis procedure (see below), with stack_bottom = NULL.
         _cmark_process_emphasis(delimiter_stack, ignore)
-        l = filter_indices_from_line(line, ignore)
-        line = l
+        line = filter_indices_from_line(line, ignore)
     elif parser in ['redcarpet']:
         # TODO
         pass
@@ -1172,7 +1195,16 @@ def remove_emphasis(line: str, parser: str = 'github') -> list:
 
 
 def filter_indices_from_line(line: str, ranges: list) -> str:
-    r"""Given a line and a Python ranges, remove the characters in the ranges."""
+    r"""Given a line and a Python ranges, remove the characters in the ranges.
+
+    :parameter line: a string.
+    :parameter ranges: a list of Python ranges.
+    :type line: str
+    :type ranges: list
+    :returns: the line without the specified indices.
+    :rtype: str
+    :raises: a built-in exception.
+    """
     # Transform ranges into lists.
     rng = list()
     for r in ranges:
@@ -1198,23 +1230,22 @@ def build_anchor_link(header_text_trimmed: str,
     r"""Apply the specified slug rule to build the anchor link.
 
     :parameter header_text_trimmed: the text that needs to be transformed
-         in a link.
+        in a link.
     :parameter header_duplicate_counter: a data structure that keeps track of
-         possible duplicate header links in order to avoid them. This is
-         meaningful only for certain values of parser.
+        possible duplicate header links in order to avoid them. This is
+        meaningful only for certain values of parser.
     :parameter parser: decides rules on how to generate anchor links.
-         Defaults to ``github``.
+        Defaults to ``github``.
     :type header_text_trimmed: str
     :type header_duplicate_counter: dict
     :type parser: str
     :returns: None if the specified parser is not recognized, or the anchor
-         link, otherwise.
+        link, otherwise.
     :rtype: str
     :raises: a built-in exception.
 
-    .. note::
-         The licenses of each markdown parser algorithm are reported on
-         the 'Markdown spec' documentation page.
+    .. note: license A applies for the redcarpet part.
+        See docs/markdown_specification.rst
     """
     # Check for newlines.
     if len(replace_and_split_newlines(header_text_trimmed)) > 1:
@@ -1350,6 +1381,9 @@ def get_atx_heading(line: str,
     :rtype: list
     :raises: GithubEmptyLinkLabel or GithubOverflowCharsLinkLabel or a
          built-in exception.
+
+    .. note:: license B applies for the github part and license A for redcarpet part.
+         See docs/markdown_specification.rst
     """
     if not keep_header_levels >= 1:
         raise ValueError

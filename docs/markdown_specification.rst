@@ -69,12 +69,12 @@ Only ATX-style headings are supported in md_toc.
 - ``cmark``, ``github``, ``gitlab``: the code used in md_toc is a reverse engineering of the
   behavour described in the following:
 
-  - https://github.github.com/gfm/#atx-heading
+  - https://spec.commonmark.org/0.29/#atx-heading
 
   The escape character ``\`` will be left as-is since they are parsed by
   Github's markdown parser already:
 
-  - https://github.github.com/gfm/#backslash-escapes
+  - https://spec.commonmark.org/0.29/#backslash-escapes
 
   A line ending character is ``U+000A`` or the ``U+000D`` character,
   respectively ``\n`` and ``\r`` or ``\r\n``.
@@ -91,12 +91,13 @@ Only ATX-style headings are supported in md_toc.
 
 - ``redcarpet``: this is the license used in md_toc:
 
+  license A:
 
   ::
 
         Copyright (c) 2009, Natacha Porté
         Copyright (c) 2015, Vicent Marti
-        Copyright (c) 2018, Franco Masotti <franco.masotti@student.unife.it>
+        Copyright (c) 2018, Franco Masotti <franco.masotti@live.com> (for md-toc only)
 
         Permission is hereby granted, free of charge, to any person obtaining a copy
         of this software and associated documentation files (the "Software"), to deal
@@ -121,8 +122,8 @@ Only ATX-style headings are supported in md_toc.
 
   Line endings are generically ``\n`` or ``\r`` characters. See:
 
-  - https://github.com/vmg/redcarpet/blob/8db31cb83e7d81b19970466645e899b5ac3bc15d/ext/redcarpet/markdown.c#L2845
-  - https://github.com/vmg/redcarpet/blob/8db31cb83e7d81b19970466645e899b5ac3bc15d/ext/redcarpet/markdown.c#L2854
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L2845
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L2854
 
 List item rules
 ```````````````
@@ -636,7 +637,7 @@ then link label rules will be applied.
 
   Let's inspect this loop:
 
-  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1017):
+  - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1017
 
   .. highlight:: c
 
@@ -714,12 +715,14 @@ Anchor link types and behaviours
   - https://githubengineering.com/a-formal-spec-for-github-markdown/
   - https://github.com/github/cmark/issues/65#issuecomment-343433978
 
-  This is the license used in md_toc:
+  This is the license used in md-toc:
+
+  license B:
 
   ::
 
         Copyright (c) 2012 GitHub Inc. and Jerry Cheung
-        Copyright (c) 2018, Franco Masotti <franco.masotti@student.unife.it>
+        Copyright (c) 2018, Franco Masotti <franco.masotti@live.com> (for md-toc only)
 
         MIT License
 
@@ -789,13 +792,15 @@ Anchor link types and behaviours
 
   - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/html.c#L274
 
-  This is the license used in md_toc:
+  This is the license used in md-toc:
+
+  license C:
 
   ::
 
         Copyright (c) 2009, Natacha Porté
         Copyright (c) 2015, Vicent Marti
-        Copyright (c) 2018, Franco Masotti <franco.masotti@student.unife.it>
+        Copyright (c) 2018, Franco Masotti <franco.masotti@live.com> (for md-toc only)
 
         Permission is hereby granted, free of charge, to any person obtaining a copy
         of this software and associated documentation files (the "Software"), to deal
@@ -823,13 +828,15 @@ Anchor link types and behaviours
 Emphasis
 ^^^^^^^^
 
-To be able to have working anchor links, emphasis must also be removed.
-At the moment the implementation of the removal is incomplete because of its complexity.
-See:
+To be able to have working anchor links, emphasis must also be removed from the
+link destination.
+
+- ``cmark``: At the moment the implementation of the removal is incomplete
+  because of its complexity. See:
 
   - https://spec.commonmark.org/0.29/#emphasis-and-strong-emphasis
 
-- ``cmark``: the core functions for this feature have been translated directly
+  The core functions for this feature have been translated directly
   from the original cmark dource in C to Python, with some differences:
 
   1. the ``cmark_utf8proc_charlen`` uses ``length = 1``
@@ -872,6 +879,70 @@ See:
 
      - https://rosettacode.org/wiki/String_length#Python
      - https://docs.python.org/3/howto/unicode.html#comparing-strings
+
+  The licenses used for these functions are these:
+
+  license D:
+
+  ::
+
+
+        Copyright (c) 2014, John MacFarlane
+        Copyright (c) 2021, Franco Masotti <franco.masotti@live.com> (for md-toc only)
+
+        All rights reserved.
+
+        Redistribution and use in source and binary forms, with or without
+        modification, are permitted provided that the following conditions are met:
+
+            * Redistributions of source code must retain the above copyright
+              notice, this list of conditions and the following disclaimer.
+
+            * Redistributions in binary form must reproduce the above
+              copyright notice, this list of conditions and the following
+              disclaimer in the documentation and/or other materials provided
+              with the distribution.
+
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+        "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+        LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+        A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+        OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+        SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+        LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+        DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+        THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+        (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+        OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+  license E:
+
+  ::
+
+        utf8.c and utf8.c
+
+        are derived from utf8proc
+        (<http://www.public-software-group.org/utf8proc>),
+        (C) 2009 Public Software Group e. V., Berlin, Germany.
+        Copyright (C) 2021, Franco Masotti <franco.masotti@live.com> (for md-toc only)
+
+        Permission is hereby granted, free of charge, to any person obtaining a
+        copy of this software and associated documentation files (the "Software"),
+        to deal in the Software without restriction, including without limitation
+        the rights to use, copy, modify, merge, publish, distribute, sublicense,
+        and/or sell copies of the Software, and to permit persons to whom the
+        Software is furnished to do so, subject to the following conditions:
+
+        The above copyright notice and this permission notice shall be included in
+        all copies or substantial portions of the Software.
+
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+        FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+        DEALINGS IN THE SOFTWARE.
 
 
 Code fence
