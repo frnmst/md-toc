@@ -26,12 +26,12 @@ verify_ssl = true
 
 [dev-packages]
 # Documentation.
-Sphinx = "~=3.5"
+Sphinx = "~=4.0"
 sphinx-rtd-theme = "~=0.5"
 
 # Tools.
 twine = "~=3.4"
-pre-commit = "~=2.12"
+pre-commit = "~=2.13"
 
 [packages]
 fpyutils = "~=2.0"
