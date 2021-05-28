@@ -148,3 +148,10 @@ Trusted source
 You can check the authenticity of new releases using my public key.
 
 Instructions, sources and keys can be found at `blog.franco.net.eu.org/software <https://blog.franco.net.eu.org/software/>`_.
+
+Crypto donations
+----------------
+
+- Bitcoin: bc1qnkflazapw3hjupawj0lm39dh9xt88s7zal5mwu
+- Dogecoin: DMB5h2GhHiTNW7EcmDnqkYpKs6Da2wK3zP
+- Vertcoin: vtc1qd8n3jvkd2vwrr6cpejkd9wavp4ld6xfu9hkhh0
