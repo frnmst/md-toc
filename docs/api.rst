@@ -32,7 +32,7 @@ output types.
 .. autofunction:: remove_html_tags
 .. autofunction:: remove_emphasis
 .. autofunction:: replace_and_split_newlines
-
+.. autofunction:: filter_indices_from_line
 
 Exceptions
 ----------
@@ -43,3 +43,4 @@ Exceptions
 .. autoexception:: StdinIsNotAFileToBeWritten
 .. autoexception:: TocDoesNotRenderAsCoherentList
 .. autoexception:: StringCannotContainNewlines
+.. autoexception:: CannotTreatUnicodeString
