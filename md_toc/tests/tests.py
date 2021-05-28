@@ -785,7 +785,7 @@ class TestApi(unittest.TestCase):
 
         # Example 414 [Commonmark 0.28].
         # Example 436 [Commonmark 0.29].
-        self.assertEqual(api.remove_emphasis('foo *\**').replace(LINE_ESCAPE, ''), ('foo ' + LINE_ESCAPE + '*').replace('\\', ''))
+        self.assertEqual(api.remove_emphasis(r'foo *\**').replace(LINE_ESCAPE, ''), ('foo ' + LINE_ESCAPE + '*').replace('\\', ''))
 
         # Example 415 [Commonmark 0.28].
         # Example 437 [Commonmark 0.29].
@@ -797,7 +797,7 @@ class TestApi(unittest.TestCase):
 
         # Example 417 [Commonmark 0.28].
         # Example 439 [Commonmark 0.29].
-        self.assertEqual(api.remove_emphasis('foo **\***').replace(LINE_ESCAPE, ''), ('foo ' + LINE_ESCAPE + '*').replace('\\', ''))
+        self.assertEqual(api.remove_emphasis(r'foo **\***').replace(LINE_ESCAPE, ''), ('foo ' + LINE_ESCAPE + '*').replace('\\', ''))
 
         # Example 418 [Commonmark 0.28].
         # Example 440 [Commonmark 0.29].

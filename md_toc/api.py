@@ -302,26 +302,26 @@ def _cmark_scan_delims(line: str, c: str, pos: int) -> tuple:
        and (not _cmark_is_punctuation(after_char)
             or _cmark_is_space(before_char)
             or _cmark_is_punctuation(before_char))):
-           left_flanking = True
+        left_flanking = True
 
     if (numdelims > 0
        and (not _cmark_is_space(before_char))
        and (not _cmark_is_punctuation(before_char)
             or _cmark_is_space(after_char)
             or _cmark_is_punctuation(after_char))):
-           right_flanking = True
+        right_flanking = True
 
     if c == '_':
         if (left_flanking
-            and (not right_flanking or _cmark_is_punctuation(before_char))):
+           and (not right_flanking or _cmark_is_punctuation(before_char))):
             can_open = True
         if (right_flanking
-            and (not left_flanking or _cmark_is_punctuation(after_char))):
+           and (not left_flanking or _cmark_is_punctuation(after_char))):
             can_close = True
 
     elif c == '\'' or c == '"':
         if (left_flanking and not right_flanking and
-            before_char != ']' and before_char != ')'):
+           before_char != ']' and before_char != ')'):
             can_open = True
         can_close = right_flanking
     else:
@@ -442,8 +442,8 @@ def _cmark_process_emphasis(delimiter_stack: _DLL, ignore: list) -> list:
                     # interior closer of size 2 can't match opener of size 1
                     # or of size 1 can't match 2
                     if (not (closer.can_open or opener.can_close)
-                        or closer.length % 3 == 0
-                        or (opener.length + closer.length) % 3 != 0):
+                       or closer.length % 3 == 0
+                       or (opener.length + closer.length) % 3 != 0):
                         opener_found = True
                         break
                 opener = opener.previous
