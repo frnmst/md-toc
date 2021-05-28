@@ -428,13 +428,14 @@ class TestApi(unittest.TestCase):
         Refer to those two functions for the unit tests.
         """
 
-    @unittest.skip("empty test")
-    def test_get_generic_fdr_indices(self):
-        r"""Test that LFDR and RFDR indices are computed correctly.
-
-        This function is not tested because all its functionality is tested
-        in the test_get_fdr_indices function.
-        """
+    def test_filter_indices_from_line(self):
+        r"""Test removing indices from a string."""
+        self.assertEqual(api.filter_indices_from_line('foo', [range(0, 3)]), str())
+        self.assertEqual(api.filter_indices_from_line(str(), [range(0, 1024)]), str())
+        self.assertEqual(api.filter_indices_from_line(str(), [range(0, 0)]), str())
+        self.assertEqual(api.filter_indices_from_line(512 * '1', [range(0, 512 - 1)]), '1')
+        self.assertEqual(api.filter_indices_from_line(512 * '1', []), 512 * '1')
+        self.assertEqual(api.filter_indices_from_line('foo bar', [range(1, 2), range(4, 7)]), 'fo ')
 
     def test_remove_emphasis(self):
         r"""Test that removing emphasis works correctly correctly.
