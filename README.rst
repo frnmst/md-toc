@@ -153,5 +153,6 @@ Crypto donations
 ----------------
 
 - Bitcoin: bc1qnkflazapw3hjupawj0lm39dh9xt88s7zal5mwu
+- Monero: 84KHWDTd9hbPyGwikk33Qp5GW7o7zRwPb8kJ6u93zs4sNMpDSnM5ZTWVnUp2cudRYNT6rNqctnMQ9NbUewbj7MzCBUcrQEY
 - Dogecoin: DMB5h2GhHiTNW7EcmDnqkYpKs6Da2wK3zP
 - Vertcoin: vtc1qd8n3jvkd2vwrr6cpejkd9wavp4ld6xfu9hkhh0
