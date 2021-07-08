@@ -21,9 +21,10 @@
 #
 r"""The tests module."""
 
-from .. import (api, exceptions)
-from ..constants import parser as md_parser
 import unittest
+
+from .. import api, exceptions
+from ..constants import parser as md_parser
 
 # Some static generic variables.
 

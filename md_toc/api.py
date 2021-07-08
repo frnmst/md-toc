@@ -20,15 +20,19 @@
 #
 """The main file."""
 
-import fpyutils
 import re
 import sys
-from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
+
+import fpyutils
+
+from .constants import common_defaults
+from .constants import parser as md_parser
+from .exceptions import (CannotTreatUnicodeString, GithubEmptyLinkLabel,
+                         GithubOverflowCharsLinkLabel,
                          GithubOverflowOrderedListMarker,
                          StdinIsNotAFileToBeWritten,
-                         TocDoesNotRenderAsCoherentList, StringCannotContainNewlines,
-                         CannotTreatUnicodeString)
-from .constants import parser as md_parser, common_defaults
+                         StringCannotContainNewlines,
+                         TocDoesNotRenderAsCoherentList)
 
 
 ##########################

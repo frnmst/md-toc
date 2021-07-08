@@ -20,18 +20,21 @@
 #
 """Python discovery file."""
 
-from .api import (
-    get_md_header, get_atx_heading, build_toc_line, remove_html_tags,
-    remove_emphasis, filter_indices_from_line,
-    increase_index_ordered_list, build_anchor_link, init_indentation_log,
-    compute_toc_line_indentation_spaces, build_toc_line_without_indentation,
-    build_toc, build_multiple_tocs, write_string_on_file_between_markers,
-    write_strings_on_files_between_markers, is_valid_code_fence_indent,
-    is_opening_code_fence, is_closing_code_fence, init_indentation_status_list,
-    toc_renders_as_coherent_list, replace_and_split_newlines)
-from .cli import (CliInterface)
-from .exceptions import (GithubOverflowCharsLinkLabel, GithubEmptyLinkLabel,
+from .api import (build_anchor_link, build_multiple_tocs, build_toc,
+                  build_toc_line, build_toc_line_without_indentation,
+                  compute_toc_line_indentation_spaces,
+                  filter_indices_from_line, get_atx_heading, get_md_header,
+                  increase_index_ordered_list, init_indentation_log,
+                  init_indentation_status_list, is_closing_code_fence,
+                  is_opening_code_fence, is_valid_code_fence_indent,
+                  remove_emphasis, remove_html_tags,
+                  replace_and_split_newlines, toc_renders_as_coherent_list,
+                  write_string_on_file_between_markers,
+                  write_strings_on_files_between_markers)
+from .cli import CliInterface
+from .exceptions import (CannotTreatUnicodeString, GithubEmptyLinkLabel,
+                         GithubOverflowCharsLinkLabel,
                          GithubOverflowOrderedListMarker,
                          StdinIsNotAFileToBeWritten,
-                         TocDoesNotRenderAsCoherentList,
-                         StringCannotContainNewlines, CannotTreatUnicodeString)
+                         StringCannotContainNewlines,
+                         TocDoesNotRenderAsCoherentList)

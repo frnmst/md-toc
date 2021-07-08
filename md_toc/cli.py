@@ -22,8 +22,10 @@
 
 import argparse
 import textwrap
-from pkg_resources import (get_distribution, DistributionNotFound)
-from .api import (write_strings_on_files_between_markers, build_multiple_tocs)
+
+from pkg_resources import DistributionNotFound, get_distribution
+
+from .api import build_multiple_tocs, write_strings_on_files_between_markers
 from .constants import common_defaults
 from .constants import parser as md_parser
 
