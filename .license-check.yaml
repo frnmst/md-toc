@@ -1,0 +1,4 @@
+allowedLicenses: []
+excludedPackages: []
+include:
+- url: https://raw.githubusercontent.com/nbyl/license-check-config/main/open-source/license-check-python.yaml
