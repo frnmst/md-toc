@@ -8,6 +8,11 @@ repos:
     -   id: end-of-file-fixer
     -   id: check-yaml
     -   id: check-added-large-files
+    -   id: destroyed-symlinks
+    -   id: detect-private-key
+    -   id: check-ast
+    -   id: check-case-conflict
+    -   id: debug-statements
 
 -   repo: https://github.com/pre-commit/mirrors-yapf
     rev: 'v0.31.0'  # Use the sha / tag you want to point at
@@ -37,7 +42,7 @@ repos:
 -   repo: https://github.com/pycqa/isort
     rev: 5.5.2
     hooks:
-      - id: isort
+    -   id: isort
 
 -   repo: local
     hooks:
