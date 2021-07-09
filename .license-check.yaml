@@ -1,4 +1,4 @@
 allowedLicenses: []
 excludedPackages: []
 include:
-- url: https://raw.githubusercontent.com/nbyl/license-check-config/main/open-source/license-check-python.yaml
+- url: https://raw.githubusercontent.com/frnmst/license-check-config/main/categories/gnu-gpl-compatible/license-check-python.yaml
