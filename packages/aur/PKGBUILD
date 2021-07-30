@@ -11,7 +11,7 @@ depends=('python'
          'python-fpyutils=2.0.0'
          'python-setuptools')
 options=(!emptydirs)
-source=("https://blog.franco.net.eu.org/software/md-toc-${pkgver}.tar.gz.sig" "https://blog.franco.net.eu.org/software/md-toc-${pkgver}.tar.gz")
+source=("https://blog.franco.net.eu.org/software/md-toc-${pkgver}/md-toc-${pkgver}.tar.gz.sig" "https://blog.franco.net.eu.org/software/md-toc-${pkgver}.tar.gz")
 sha512sums=('SKIP' 'SKIP')
 
 check() {
