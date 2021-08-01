@@ -97,7 +97,7 @@ Only ATX-style headings are supported in md_toc.
 
         Copyright (c) 2009, Natacha Porté
         Copyright (c) 2015, Vicent Marti
-        Copyright (c) 2018, Franco Masotti <franco.masotti@live.com> (for md-toc only)
+        Copyright (c) 2018, Franco Masotti <franco.masotti@tutanota.com> (for md-toc only)
 
         Permission is hereby granted, free of charge, to any person obtaining a copy
         of this software and associated documentation files (the "Software"), to deal
@@ -722,7 +722,7 @@ Anchor link types and behaviours
   ::
 
         Copyright (c) 2012 GitHub Inc. and Jerry Cheung
-        Copyright (c) 2018, Franco Masotti <franco.masotti@live.com> (for md-toc only)
+        Copyright (c) 2018, Franco Masotti <franco.masotti@tutanota.com> (for md-toc only)
 
         MIT License
 
@@ -800,7 +800,7 @@ Anchor link types and behaviours
 
         Copyright (c) 2009, Natacha Porté
         Copyright (c) 2015, Vicent Marti
-        Copyright (c) 2018, Franco Masotti <franco.masotti@live.com> (for md-toc only)
+        Copyright (c) 2018, Franco Masotti <franco.masotti@tutanota.com> (for md-toc only)
 
         Permission is hereby granted, free of charge, to any person obtaining a copy
         of this software and associated documentation files (the "Software"), to deal
@@ -889,7 +889,7 @@ link destination.
 
 
         Copyright (c) 2014, John MacFarlane
-        Copyright (c) 2021, Franco Masotti <franco.masotti@live.com> (for md-toc only)
+        Copyright (c) 2021, Franco Masotti <franco.masotti@tutanota.com> (for md-toc only)
 
         All rights reserved.
 
@@ -928,7 +928,7 @@ link destination.
         are derived from utf8proc
         (<http://www.public-software-group.org/utf8proc>),
         (C) 2009 Public Software Group e. V., Berlin, Germany.
-        Copyright (C) 2021, Franco Masotti <franco.masotti@live.com> (for md-toc only)
+        Copyright (C) 2021, Franco Masotti <franco.masotti@tutanota.com> (for md-toc only)
 
         Permission is hereby granted, free of charge, to any person obtaining a
         copy of this software and associated documentation files (the "Software"),

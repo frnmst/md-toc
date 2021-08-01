@@ -1,7 +1,7 @@
 #
 # setup.py
 #
-# Copyright (C) 2017-2021 frnmst (Franco Masotti) <franco.masotti@live.com>
+# Copyright (C) 2017-2021 frnmst (Franco Masotti) <franco.masotti@tutanota.com>
 #
 # This file is part of md-toc.
 #
@@ -34,7 +34,7 @@ setup(
         '': ['*.txt', '*.rst'],
     },
     author='Franco Masotti',
-    author_email='franco.masotti@live.com',
+    author_email='franco.masotti@tutanota.com',
     keywords='markdown toc',
     url='https://blog.franco.net.eu.org/software/#md-toc',
     python_requires='>=3.5, <4',

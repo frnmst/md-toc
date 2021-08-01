@@ -1,7 +1,7 @@
 #
 # constants.py
 #
-# Copyright (C) 2017-2021 frnmst (Franco Masotti) <franco.masotti@live.com>
+# Copyright (C) 2017-2021 frnmst (Franco Masotti) <franco.masotti@tutanota.com>
 #
 # This file is part of md-toc.
 #
