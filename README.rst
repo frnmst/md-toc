@@ -142,12 +142,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with md-toc.  If not, see <http://www.gnu.org/licenses/>.
 
-Trusted source
---------------
+Changelog and trusted source
+----------------------------
 
 You can check the authenticity of new releases using my public key.
 
-Instructions, sources and keys can be found at `blog.franco.net.eu.org/software <https://blog.franco.net.eu.org/software/>`_.
+Changelogs, instructions, sources and keys can be found at `blog.franco.net.eu.org/software <https://blog.franco.net.eu.org/software/>`_.
 
 Crypto donations
 ----------------
