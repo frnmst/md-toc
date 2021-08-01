@@ -48,7 +48,14 @@ test:
 
 dist:
 	pipenv run python setup.py sdist
-	pipenv run python setup.py bdist_wheel
+	# Create a reproducible archve at least on the wheel.
+	# See
+	# https://bugs.python.org/issue31526
+	# https://bugs.python.org/issue38727
+	# https://github.com/pypa/setuptools/issues/1468
+	# https://github.com/pypa/setuptools/issues/2133
+	# https://reproducible-builds.org/docs/source-date-epoch/
+	SOURCE_DATE_EPOCH=$$(git log -1 --pretty=%ct) pipenv run python setup.py bdist_wheel
 	pipenv run twine check dist/*
 
 upload:
