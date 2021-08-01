@@ -44,12 +44,6 @@ repos:
     hooks:
     -   id: isort
 
--   repo: https://github.com/kontrolilo/kontrolilo
-    rev: v2.1.0
-    hooks:
-    -   id: license-check-configuration-lint
-    -   id: license-check-pipenv
-
 -   repo: local
     hooks:
     -   id: unit-tests
