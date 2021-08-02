@@ -3,7 +3,7 @@
 #
 # python -m md_toc_asciinema_6_0_0_demo.sh
 #
-# Copyright (C) 2019 frnmst (Franco Masotti) <franco.masotti@live.com>
+# Copyright (C) 2019 frnmst (Franco Masotti) <franco.masotti@tutanota.com>
 #
 # This file is part of md-toc.
 #
