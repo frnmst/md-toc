@@ -44,6 +44,11 @@ repos:
     hooks:
     -   id: isort
 
+-   repo: https://codeberg.org/frnmst/licheck
+    rev: 0c2690f6082aa56318d832b22f0bc80bad185dbd
+    hooks:
+    -   id: licheck
+
 -   repo: local
     hooks:
     -   id: unit-tests

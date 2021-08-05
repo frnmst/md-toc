@@ -1,0 +1,10 @@
+allowed licenses: []
+
+files to check:
+    - Pipfile
+    - setup.py
+
+language: python
+
+include:
+    - https://codeberg.org/frnmst/licheck/raw/branch/master/examples/python_gpl_compatible.yml
