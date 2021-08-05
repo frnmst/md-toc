@@ -17,7 +17,7 @@ These are the default plugin settings:
    :name: .pre-commit-config.yaml simple
 
     repos:
-    -   repo: https://github.com/frnmst/md-toc
+    -   repo: https://codeberg.org/frnmst/md-toc
         rev: master  # or a specific git tag from md-toc
         hooks:
         -   id: md-toc
@@ -32,7 +32,7 @@ You can override the defaults via the ``args`` parameter, such as:
    :name: .pre-commit-config.yaml args
 
     repos:
-    -   repo: https://github.com/frnmst/md-toc
+    -   repo: https://codeberg.org/frnmst/md-toc
         rev: master  # or a specific git tag from md-toc
         hooks:
         -   id: md-toc
@@ -46,7 +46,7 @@ This is what I use in some repositories:
     # See https://pre-commit.com for more information
     # See https://pre-commit.com/hooks.html for more hooks
     repos:
-    -   repo: https://github.com/pre-commit/pre-commit-hooks
+    -   repo: https://codeberg.org/pre-commit/pre-commit-hooks
         rev: v2.4.0
         hooks:
         -   id: trailing-whitespace
@@ -54,7 +54,7 @@ This is what I use in some repositories:
         -   id: check-yaml
         -   id: check-added-large-files
 
-    -  repo: https://github.com/frnmst/md-toc
+    -  repo: https://codeberg.org/frnmst/md-toc
        rev: 'master'  # or a specific git tag from md-toc
        hooks:
        -    id: md-toc
