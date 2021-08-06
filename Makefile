@@ -2,7 +2,7 @@
 #
 # Makefile
 #
-# Copyright (C) 2017-2020 frnmst (Franco Masotti) <franco.masotti@tutanota.com>
+# Copyright (C) 2017-2021 frnmst (Franco Masotti) <franco.masotti@tutanota.com>
 #
 # This file is part of md-toc.
 #

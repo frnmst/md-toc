@@ -45,7 +45,7 @@ repos:
     -   id: isort
 
 -   repo: https://codeberg.org/frnmst/licheck
-    rev: 0c2690f6082aa56318d832b22f0bc80bad185dbd
+    rev: 0.0.1
     hooks:
     -   id: licheck
 
