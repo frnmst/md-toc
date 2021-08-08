@@ -1,7 +1,7 @@
 Markdown Table Of Contents
 ==========================
 
-|pypiver|    |license|    |pyver|    |downloads|    |dependentrepos|    |buymeacoffee|
+|pypiver|    |license|    |pyver|    |downloads|    |dependentrepos|    |pre-commit|	|buymeacoffee|
 
 .. |pypiver| image:: https://img.shields.io/pypi/v/md-toc.svg
                :alt: PyPI md-toc version
@@ -21,6 +21,10 @@ Markdown Table Of Contents
 .. |dependentrepos| image:: https://img.shields.io/librariesio/dependent-repos/pypi/md-toc.svg
                       :alt: Dependent repos (via libraries.io)
                       :target: https://libraries.io/pypi/md-toc/dependents
+
+.. |pre-commit| image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
+				  :alt: pre-commit
+				  :target: https://github.com/pre-commit/pre-commit
 
 .. |buymeacoffee| image:: assets/buy_me_a_coffee.svg
                    :alt: Buy me a coffee
