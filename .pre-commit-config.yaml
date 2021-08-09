@@ -50,6 +50,12 @@ repos:
     -   id: licheck
         args: ['--configuration-file', '.allowed_licenses.yml']
 
+-   repo: https://github.com/mgedmin/check-manifest
+    rev: "0.46"
+    hooks:
+    -   id: check-manifest
+        args: ['--ignore','docs/*,docs/assets/*,Pipfile,Makefile,asciinema/*,*.yaml,*.yml,assets/*,md_toc/tests/*,packages/aur/*']
+
 -   repo: local
     hooks:
     -   id: unit-tests
