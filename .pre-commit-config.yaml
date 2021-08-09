@@ -45,9 +45,10 @@ repos:
     -   id: isort
 
 -   repo: https://codeberg.org/frnmst/licheck
-    rev: 0.0.1
+    rev: 0.0.2
     hooks:
     -   id: licheck
+        args: ['--configuration-file', '.allowed_licenses.yml']
 
 -   repo: local
     hooks:
