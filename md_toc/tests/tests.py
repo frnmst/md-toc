@@ -966,7 +966,7 @@ class TestApi(unittest.TestCase):
 #        self.assertEqual(api.remove_emphasis('__a<http://foo.bar/?q=__>'), '__a<http://foo.bar/?q=__>')
 
         # Extra examples.
-#       self.assertEqual(api.remove_emphasis('_j\_'), '_j\_')
+        self.assertEqual(api.remove_emphasis('_j\_'), '_j\_')
 
     def test_remove_html_tags(self):
         r"""Test remove html tags."""

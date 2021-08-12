@@ -38,18 +38,38 @@ from .exceptions import (CannotTreatUnicodeString, GithubEmptyLinkLabel,
 ##########################
 # cmark specific Classes #
 ##########################
-class _DLLNode:
+class _cmarkCmarkNode:
+    def __init__(self):
+        prev = None
+        parent = None
+        first_child = None
+        last_child = None
+
+        user_data = None
+
+        start_line = 0
+        start_column = 0
+        end_line = 0
+        end_column = 0
+        internal_offset = 0
+
+
+class _cmarkDelimiterDLLNode:
     r"""A list node with attributes useful for processing emphasis."""
 
     def __init__(self, delim_char: str, length: int, start_index: int):
+        self.previous = None
+        self.next = None
+
+        # _cmarkCmarkNode
+        inl_text = None
+
         self.delim_char = delim_char
         self.length = length
         self.offset = 0
         self.original_length = length
         self.active = True
         self.start_index = start_index
-        self.previous = None
-        self.next = None
         self.can_open = False
         self.can_close = False
 
@@ -81,46 +101,48 @@ class _DLLNode:
                     + cc + '\n')
 
 
-class _DLL:
+class _cmark_DLL:
     r"""A double linked list useful for processing emphasis."""
 
     def __init__(self):
+        self.pos = 0
         self.start = None
-        self.end = None
+        self.last_delim = None
+        self.last_bracket = None
 
-    def push(self, node: _DLLNode):
+    def push(self, node: _cmarkDelimiterDLLNode):
         r"""Add a new node."""
-        if self.start is None and self.end is None:
-            self.start = self.end = node
+        if self.start is None and self.last_delim is None:
+            self.start = self.last_delim = node
         else:
-            self.end.next = node
-            node.previous = self.end
-            self.end = self.end.next
+            self.last_delim.next = node
+            node.previous = self.last_delim
+            self.last_delim = self.last_delim.next
             node.next = None
 
-    def pop(self) -> _DLLNode:
+    def pop(self) -> _cmarkDelimiterDLLNode:
         r"""Remove the last node."""
         node = None
-        if self.start is None and self.end is None:
+        if self.start is None and self.last_delim is None:
             pass
         else:
-            node = self.end
-            self.end = node.previous
+            node = self.last_delim
+            self.last_delim = node.previous
 
-            if self.end is None:
+            if self.last_delim is None:
                 self.start = None
 
         return node
 
-    def extract(self, node: _DLLNode):
+    def extract(self, node: _cmarkDelimiterDLLNode):
         r"""Remove a specific node."""
         if node is None:
             pass
-        elif self.start is not None and self.end is not None:
-            if node == self.end:
-                self.end = node.previous
+        elif self.start is not None and self.last_delim is not None:
+            if node == self.last_delim:
+                self.last_delim = node.previous
 
-                if self.end is None:
+                if self.last_delim is None:
                     self.start = None
             else:
                 node.next.previous = node.previous
@@ -131,11 +153,24 @@ class _DLL:
 
     def scroll(self):
         r"""Print the list."""
+        print('last_bracket: ' + str(self.last_backet))
         x = self.start
         while x is not None:
             print(x)
             x = x.next
 
+class _cmark_Bracket:
+    def __init__(self):
+        self.previous = None
+        self.previous_delimiter = None
+
+        # _cmarkCmarkNode
+        self.inl_text = None
+
+        self.position = 0
+        self.image = False
+        self.active = True
+        self.bracket_after = False
 
 #####################
 # Generic functions #
@@ -166,6 +201,10 @@ def _isascii(c):
 ############################
 # cmark specific functions #
 ############################
+def _cmark_advance(subj: _cmark_DLL):
+    # Advance the subject.  Doesn't check for eof.
+    subj.pos += 1
+
 def _cmark_is_space(char: int, parser: str = 'github') -> bool:
     # license D applies here. See docs/markdown_specification.rst
     value = False
@@ -262,7 +301,7 @@ def _cmark_utf8proc_iterate(line: str, line_len: int) -> tuple:
     return length, dst
 
 
-def _cmark_scan_delims(line: str, c: str, pos: int) -> tuple:
+def _cmark_scan_delims(subj: _cmark_DLL, line: str, c: str) -> tuple:
     # license D applies here. See docs/markdown_specification.rst
 
     left_flanking = False
@@ -274,29 +313,29 @@ def _cmark_scan_delims(line: str, c: str, pos: int) -> tuple:
     before_char = 0
     after_char = 0
 
-    if pos == 0:
+    if subj.pos == 0:
         before_char = 10
     else:
-        before_char_pos = pos - 1
+        before_char_pos = subj.pos - 1
         # walk back to the beginning of the UTF_8 sequence
         while _cmark_peek_char(line, before_char_pos) >> 6 == 2 and before_char_pos > 0:
             before_char_pos -= 1
 
         length, before_char = _cmark_utf8proc_iterate(line[before_char_pos:before_char_pos + 1],
-                                                      pos - before_char_pos)
+                                                      subj.pos - before_char_pos)
 
         if length == -1:
             before_char = 10
 
     if c == '\'' or c == '"':
         numdelims += 1
-        pos += 1
+        _cmark_advance(subj)
     else:
-        while chr(_cmark_peek_char(line, pos)) == c:
+        while chr(_cmark_peek_char(line, subj.pos)) == c:
             numdelims += 1
-            pos += 1
+            _cmark_advance(subj)
 
-    length, after_char = _cmark_utf8proc_iterate(line[pos:pos + 1], len(line) - pos)
+    length, after_char = _cmark_utf8proc_iterate(line[subj.pos:subj.pos + 1], len(line) - subj.pos)
 
     if length == -1:
         after_char = 10
@@ -332,21 +371,30 @@ def _cmark_scan_delims(line: str, c: str, pos: int) -> tuple:
         can_open = left_flanking
         can_close = right_flanking
 
-    return numdelims, can_open, can_close, pos
+    return numdelims, can_open, can_close
 
 
-def _cmark_handle_delim(delimiter_stack: _DLL, line: str, c: str, start_index: int) -> tuple:
+def _cmark_handle_delim(subj: _cmark_DLL, line: str, c: str) -> int:
     # license D applies here. See docs/markdown_specification.rst
 
-    numdelims, can_open, can_close, pos = _cmark_scan_delims(line, c, start_index)
+    numdelims, can_open, can_close = _cmark_scan_delims(subj, line, c)
+
+    # make_str(subj, subj->pos - numdelims, subj->pos - 1, contents);
+    # start_column = subj->pos - numdelims
+    # static CMARK_INLINE cmark_node *make_literal(subject *subj, cmark_node_type t,
+    #                                         int start_column, int end_column,
+    #                                         cmark_chunk s)
+    #  // columns are 1 based.
+    # e->start_column = start_column + 1 + subj->column_offset + subj->block_offset;
+    start_index = subj.pos - numdelims
 
     if (can_open or can_close) and (not (c == '\'' or c == '"')):
-        current = _DLLNode(c, numdelims, start_index)
+        current = _cmarkDelimiterDLLNode(c, numdelims, start_index)
         current.can_open = can_open
         current.can_close = can_close
-        delimiter_stack.push(current)
+        subj.push(current)
 
-    return numdelims, pos
+    return numdelims
 
 
 def _cmark_peek_char(line: str, pos: int) -> int:
@@ -358,7 +406,7 @@ def _cmark_peek_char(line: str, pos: int) -> int:
         return 0
 
 
-def _cmark_remove_emph(delimiter_stack: _DLL, opener: _DLLNode, closer: _DLLNode, ignore: list):
+def _cmark_remove_emph(delimiter_stack: _cmark_DLL, opener: _cmarkDelimiterDLLNode, closer: _cmarkDelimiterDLLNode, ignore: list):
     # license D applies here. See docs/markdown_specification.rst
 
     opener_num_chars = opener.length
@@ -409,7 +457,7 @@ def _cmark_remove_emph(delimiter_stack: _DLL, opener: _DLLNode, closer: _DLLNode
     return closer
 
 
-def _cmark_process_emphasis(delimiter_stack: _DLL, ignore: list) -> list:
+def _cmark_process_emphasis(delimiter_stack: _cmark_DLL, ignore: list) -> list:
     # license D applies here. See docs/markdown_specification.rst
 
     # Store indices.
@@ -418,7 +466,7 @@ def _cmark_process_emphasis(delimiter_stack: _DLL, ignore: list) -> list:
     stack_bottom = None
 
     # delimiter *closer = subj->last_delim;
-    closer = delimiter_stack.end
+    closer = delimiter_stack.last_delim
 
     # move back to first relevant delim.
     while closer is not None and closer.previous is not stack_bottom:
@@ -473,42 +521,97 @@ def _cmark_process_emphasis(delimiter_stack: _DLL, ignore: list) -> list:
             closer = closer.next
 
     # free all delimiters in list until stack_bottom:
-    while delimiter_stack.end is not None and delimiter_stack.end != stack_bottom:
-        delimiter_stack.extract(delimiter_stack.end)
+    while delimiter_stack.last_delim is not None and delimiter_stack.last_delim != stack_bottom:
+        delimiter_stack.extract(delimiter_stack.last_delim)
 
 
-def _cmark_handle_backslash(line: str, char: str, pos: int):
+def _cmark_handle_backslash(subj: _cmark_DLL, line: str, char: str):
     r"""Parse backslash-escape or just a backslash, returning an inline.
 
     .. note: license D applies here. See docs/markdown_specification.rst
     """
-    pos += 1
-    nextchar = _cmark_peek_char(line, pos)
+    _cmark_advance(subj)
+    nextchar = _cmark_peek_char(line, subj.pos)
 
     # only ascii symbols and newline can be escaped
     if _cmark_ispunct(nextchar):
-        pos += 1
+        _cmark_advance(subj)
 
-    return pos
+def _cmark_make_literal(subj: _cmark_DLL, start_column: int, end_column: int, char: str):
+    e = _cmarkCmarkNode()
+    # FIXME.
+    e.start_line = e.end_line = line;
+    # columns are 1 based.
+    e.start_column = start_column + 1
+    e.end_column = end_column + 1
+
+    return e
+
+def _cmark_make_str(subj: _cmark_DLL, start_column: int, end_column: int, char: str):
+    return _cmark_make_literal(subj, start_column, end_column, char)
+
+def _cmark_push_bracket(subj: _cmark_DLL, image: bool, inl_text: str):
+    b = Bracket()
+    if subj.last_bracket is not None:
+        subj.last_bracket.bracket_after = True
+    b.image = image
+    b.active = True
+    b.inl_text = inl_text
+    b.previous = subj.last_bracket
+    b.previous_delimiter = subj.last_delim
+    b.position = subj.pos
+    b.bracket_after = False
+    subj.last_bracket = b
+
+def _cmark_handle_close_bracket(subj: _cmark_DLL):
+    advance(subj) # advance past ]
+    initial_pos = subj.pos
+
+    # get last [ or ![
+    opener = subj.last_bracket
+
+    if opener is None:
+        return _cmark_make_str(subj, subj.pos - 1, subj.pos - 1, ']')
+
+    if not opener.active:
+        # take delimiter off stack
+        pop_bracket(subj);
+        return _cmark_make_str(subj, subj.pos - 1, subj.pos - 1, ']');
+
+    # If we got here, we matched a potential link/image text.
+    # Now we check to see if it's a link/image.
+    is_image = opener.image
+
+    after_link_text_pos = subj.pos
 
 
-def _cmark_parse_inline(delimiter_stack: _DLL, line: str, pos: int) -> tuple:
+
+def _cmark_parse_inline(subj: _cmark_DLL, line: str) -> tuple:
     r"""Handle all the different elements of a string.
 
     ..note: license D applies here. See docs/markdown_specification.rst
     """
     numdelim = 0
 
-    c = _cmark_peek_char(line, pos)
+    c = _cmark_peek_char(line, subj.pos)
     if c == 0:
         return 0
     elif chr(c) == '\\':
-        numdelim = _cmark_handle_backslash(line, chr(c), pos)
+        numdelim = _cmark_handle_backslash(subj, line, chr(c))
     elif chr(c) == '*' or chr(c) == '_' or chr(c) == '\'' or chr(c) == '"':
-        numdelim, pos = _cmark_handle_delim(delimiter_stack, line, chr(c), pos)
+        numdelim = _cmark_handle_delim(subj, line, chr(c))
+    elif chr(c) == '[':
+        pass
+#        _cmark_advance(subj)
+#       new_inl = _cmark_make_str(subj, subj.pos - 1, subj.pos - 1, '[')
+#        new_inl = line[subj.pos - 1]
+#       _cmark_push_bracket(subj, False, new_inl)
+    elif chr(c) == ']':
+        pass
+
     # TODO: images, code, HTML tags detection.
 
-    return numdelim, pos
+    return numdelim
 
 
 #######
@@ -1173,14 +1276,15 @@ def remove_emphasis(line: str, parser: str = 'github') -> list:
     """
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark', 'redcarpet']:
 
-        delimiter_stack = _DLL()
+        delimiter_stack = _cmark_DLL()
         i = 0
         while i < len(line):
-            numdelims, pos = _cmark_parse_inline(delimiter_stack, line, i)
+            delimiter_stack.pos = i
+            numdelims = _cmark_parse_inline(delimiter_stack, line)
 
             advance = False
-            if pos > i:
-                i = pos
+            if delimiter_stack.pos > i:
+                i = delimiter_stack.pos
                 advance = True
 
             if not advance:
