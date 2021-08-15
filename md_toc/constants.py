@@ -39,6 +39,16 @@ parser['redcarpet'] = dict()
 parser['redcarpet']['list'] = dict()
 
 # github.
+parser['cmark']['generic'] = {
+    'EMDASH': '\xE2\x80\x94',
+    'ENDASH': '\xE2\x80\x93',
+    'ELLIPSES': '\xE2\x80\xA6',
+    'LEFTDOUBLEQUOTE': '\xE2\x80\x9C',
+    'RIGHTDOUBLEQUOTE': '\xE2\x80\x9D',
+    'LEFTSINGLEQUOTE': '\xE2\x80\x98',
+    'RIGHTSINGLEQUOTE': '\xE2\x80\x99',
+}
+
 parser['cmark']['link'] = {
     'max chars label': 999,
 }
