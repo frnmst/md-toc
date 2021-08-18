@@ -935,7 +935,7 @@ class TestApi(unittest.TestCase):
 
         # Example 451 [Commonmark 0.28].
         # Example 473 [Commonmark 0.29].
-#        self.assertEqual(api.remove_emphasis('_foo [bar_](/url)'), '_foo [bar_](/url)')
+        self.assertEqual(api.remove_emphasis('_foo [bar_](/url)'), '_foo [bar_](/url)')
 
         # Example 452 [Commonmark 0.28].
         # Example 474 [Commonmark 0.29].
