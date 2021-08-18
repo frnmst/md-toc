@@ -20,6 +20,7 @@
 #
 """Generic functions."""
 
+
 # _ctoi and _isascii taken from cpython source Lib/curses/ascii.py
 # See:
 # https://github.com/python/cpython/blob/283de2b9c18e38c9a573526d6c398ade7dd6f8e9/Lib/curses/ascii.py#L48
@@ -38,8 +39,10 @@ def _ctoi(c: str):
 
     return retval
 
+
 def _isascii(c):
     return 0 <= _ctoi(c) <= 127
+
 
 if __name__ == '__main__':
     pass

@@ -696,7 +696,12 @@ def remove_emphasis(line: str, parser: str = 'github') -> list:
     """
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark', 'redcarpet']:
 
+        mem = None
+        refmap = None
+
+        content = cmark._cmarkCmarkChunk(line, len(line), 0)
         subj = cmark._cmark_Subject(input=line)
+        cmark._cmark_subject_from_buf(mem, 0, 0, subj, content, refmap)
 
         while not cmark._cmark_is_eof(subj):
             cmark._cmark_parse_inline(subj)

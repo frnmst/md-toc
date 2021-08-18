@@ -47,6 +47,7 @@ parser['cmark']['generic'] = {
     'RIGHTDOUBLEQUOTE': '\xE2\x80\x9D',
     'LEFTSINGLEQUOTE': '\xE2\x80\x98',
     'RIGHTSINGLEQUOTE': '\xE2\x80\x99',
+    'MAXBACKTICKS': 1000,
 }
 
 parser['cmark']['link'] = {

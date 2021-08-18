@@ -26,9 +26,6 @@ from .constants import parser as md_parser
 from .exceptions import CannotTreatUnicodeString
 
 
-##########################
-# cmark specific Classes #
-##########################
 class _cmarkCmarkNode:
     def __init__(self):
         # cmark_strbuf
@@ -47,8 +44,7 @@ class _cmarkCmarkNode:
         self.end_column = 0
         self.internal_offset = 0
 
-        # union
-        ## cmark_chunk
+        # union (cmark_chunk)
         self.as_literal = None
         self.as_literal_len: int = 0
 
@@ -105,20 +101,29 @@ class _cmarkDelimiterDLLNode:
                     + cc + '\n')
 
 
+class _cmarkCmarkChunk:
+    r"""See chunk.h file."""
+
+    def __init__(self, data, length, alloc):
+        self.data: str = data
+        self.length: int = length
+
+        # also implies a NULL-terminated string
+        self.alloc: int = alloc
+
+
 class _cmark_Subject:
     r"""A double linked list useful for processing emphasis."""
 
     def __init__(self, input: str):
-        '''
-        /** Defines the memory allocation functions to be used by CMark
-         * when parsing and allocating a document tree
-         */
+        r"""Define the memory allocation functions to be used by CMark when parsing and allocating a document tree.
+
         typedef struct cmark_mem {
           void *(*calloc)(size_t, size_t);
           void *(*realloc)(void *, size_t);
           void (*free)(void *);
         } cmark_mem;
-        '''
+        """
         self.mem = None
 
         self.line = 0
@@ -130,7 +135,13 @@ class _cmark_Subject:
         self.last_bracket = None
 
         # This corresponds to the line.
+        # cmark_chunk input
         self.input: str = input
+
+        # cmark_reference_map *refmap
+        self.refmap = None
+        self.backticks: list = list(range(0, md_parser['cmark']['generic']['MAXBACKTICKS']))
+        self.scanned_for_backticks: bool = False
 
     def push(self, node: _cmarkDelimiterDLLNode):
         r"""Add a new node."""
@@ -182,6 +193,7 @@ class _cmark_Subject:
             print(x)
             x = x.next
 
+
 class _cmark_Bracket:
     def __init__(self):
         self.previous = None
@@ -195,15 +207,15 @@ class _cmark_Bracket:
         self.active = True
         self.bracket_after = False
 
+
 def _cmark_advance(subj: _cmark_Subject):
     # Advance the subject.  Doesn't check for eof.
     subj.pos += 1
 
-def _cmark_cmark_utf8proc_is_space(char: int, parser: str = 'github') -> bool:
-    r"""license D applies here. See docs/markdown_specification.rst.
 
-    Matches anything in the Zs class, plus LF, CR, TAB, FF.
-    """
+def _cmark_cmark_utf8proc_is_space(char: int, parser: str = 'github') -> bool:
+    r"""Match anything in the Zs class, plus LF, CR, TAB, FF."""
+    # license D applies here. See docs/markdown_specification.rst.
     value = False
     if chr(char) in md_parser[parser]['pseudo-re']['UWC']:
         value = True
@@ -212,10 +224,8 @@ def _cmark_cmark_utf8proc_is_space(char: int, parser: str = 'github') -> bool:
 
 
 def _cmark_cmark_utf8proc_is_punctuation(char: int, parser: str = 'github') -> bool:
-    r"""license D applies here. See docs/markdown_specification.rst.
-
-    Matches anything in the P[cdefios] classes.
-    """
+    r"""Match anything in the P[cdefios] classes."""
+    # license D applies here. See docs/markdown_specification.rst.
     value = False
     if chr(char) in md_parser[parser]['pseudo-re']['PC']:
         value = True
@@ -224,10 +234,8 @@ def _cmark_cmark_utf8proc_is_punctuation(char: int, parser: str = 'github') -> b
 
 
 def _cmark_cmark_ispunct(char: int, parser: str = 'github') -> bool:
-    r"""license D applies here. See docs/markdown_specification.rst.
-
-    Returns True if c is an ascii punctuation character.
-    """
+    r"""Return True if c is an ascii punctuation character."""
+    # license D applies here. See docs/markdown_specification.rst.
     value = False
     if chr(char) in md_parser[parser]['pseudo-re']['APC']:
         value = True
@@ -304,9 +312,11 @@ def _cmark_cmark_utf8proc_iterate(line: str, line_len: int) -> tuple:
 
     return length, dst
 
+
 def _cmark_peek_at(subj: _cmark_Subject, pos: int) -> int:
     # license D applies here. See docs/markdown_specification.rst
-    return ord(subj.input[pos])
+    return ord(subj.input.data[pos])
+
 
 def _cmark_scan_delims(subj: _cmark_Subject, c: str) -> tuple:
     # license D applies here. See docs/markdown_specification.rst
@@ -329,8 +339,8 @@ def _cmark_scan_delims(subj: _cmark_Subject, c: str) -> tuple:
         while _cmark_peek_at(subj, before_char_pos) >> 6 == 2 and before_char_pos > 0:
             before_char_pos -= 1
 
-        length, before_char = _cmark_cmark_utf8proc_iterate(subj.input[before_char_pos:before_char_pos + 1],
-                                                      subj.pos - before_char_pos)
+        length, before_char = _cmark_cmark_utf8proc_iterate(subj.input.data[before_char_pos:before_char_pos + 1],
+                                                            subj.pos - before_char_pos)
 
         if length == -1:
             before_char = 10
@@ -343,7 +353,7 @@ def _cmark_scan_delims(subj: _cmark_Subject, c: str) -> tuple:
             numdelims += 1
             _cmark_advance(subj)
 
-    length, after_char = _cmark_cmark_utf8proc_iterate(subj.input[subj.pos:subj.pos + 1], len(subj.input) - subj.pos)
+    length, after_char = _cmark_cmark_utf8proc_iterate(subj.input.data[subj.pos:subj.pos + 1], subj.input.length - subj.pos)
 
     if length == -1:
         after_char = 10
@@ -391,9 +401,11 @@ def _cmark_push_delimiter(subj: _cmark_Subject, c: str, can_open: bool,
     subj.push(delim)
     # List operations are handled in the class definition.
 
-def _cmark_cmark_chunk_dup(ch: str, pos: int, length: int) -> str:
+
+def _cmark_cmark_chunk_dup(ch: _cmarkCmarkChunk, pos: int, length: int) -> str:
     # license F applies here. See docs/markdown_specification.rst
-    return copy.deepcopy(ch[pos: pos + length])
+    return copy.deepcopy(ch.data[pos: pos + length])
+
 
 def _cmark_handle_delim(subj: _cmark_Subject, c: str) -> int:
     # license D applies here. See docs/markdown_specification.rst
@@ -414,19 +426,18 @@ def _cmark_handle_delim(subj: _cmark_Subject, c: str) -> int:
 
 def _cmark_peek_char(subj: _cmark_Subject) -> int:
     # license D applies here. See docs/markdown_specification.rst
-    assert not (subj.pos < len(subj.input) and ord(subj.input[subj.pos]) == 0)
+    if subj.pos < subj.input.length and ord(subj.input.data[subj.pos]) == 0:
+        raise ValueError
 
-    if subj.pos < len(subj.input):
-        return ord(subj.input[subj.pos])
+    if subj.pos < subj.input.length:
+        return ord(subj.input.data[subj.pos])
     else:
         return 0
 
 
 def _cmark_remove_emph(delimiter_stack: _cmark_Subject, opener: _cmarkDelimiterDLLNode, closer: _cmarkDelimiterDLLNode, ignore: list):
-    r"""This function refers to S_insert_emph()
-
-    license D applies here. See docs/markdown_specification.rst
-    """
+    # license D applies here. See docs/markdown_specification.rst
+    # This function refers to S_insert_emph()
     opener_inl: _cmarkCmarkNode = opener.inl_text
     closer_inl: _cmarkCmarkNode = closer.inl_text
     opener_num_chars: int = opener_inl.as_literal_len
@@ -480,6 +491,7 @@ def _cmark_remove_emph(delimiter_stack: _cmark_Subject, opener: _cmarkDelimiterD
         closer = tmp_delim
 
     return closer
+
 
 def _cmark_process_emphasis(subj: _cmark_Subject, stack_bottom: _cmarkDelimiterDLLNode, ignore: list) -> list:
     # license D applies here. See docs/markdown_specification.rst
@@ -555,9 +567,10 @@ def _cmark_process_emphasis(subj: _cmark_Subject, stack_bottom: _cmarkDelimiterD
     while subj.last_delim is not None and subj.last_delim != stack_bottom:
         subj.extract(subj.last_delim)
 
+
 def _cmark_skip_line_end(subj: _cmark_Subject) -> bool:
     # license D applies here. See docs/markdown_specification.rst
-    seen_line_end_char: bool = False;
+    seen_line_end_char: bool = False
 
     if _cmark_peek_char(subj) == '\r':
         _cmark_advance(subj)
@@ -568,21 +581,21 @@ def _cmark_skip_line_end(subj: _cmark_Subject) -> bool:
     return seen_line_end_char or _cmark_is_eof(subj)
 
 
-def make_simple(mem) -> _cmarkCmarkNode:
+def _cmark_make_simple(mem) -> _cmarkCmarkNode:
     # license D applies here. See docs/markdown_specification.rst
     e = _cmarkCmarkNode()
     e.content = copy.deepcopy(mem)
-    return e;
+    return e
+
 
 def _cmark_make_linebreak(mem):
     # license D applies here. See docs/markdown_specification.rst
     _cmark_make_simple(mem)
 
-def _cmark_handle_backslash(subj: _cmark_Subject):
-    r"""Parse backslash-escape or just a backslash, returning an inline.
 
-    .. note: license D applies here. See docs/markdown_specification.rst
-    """
+def _cmark_handle_backslash(subj: _cmark_Subject):
+    r"""Parse backslash-escape or just a backslash, returning an inline."""
+    # license D applies here. See docs/markdown_specification.rst
     _cmark_advance(subj)
     nextchar: str = _cmark_peek_char(subj)
 
@@ -594,6 +607,7 @@ def _cmark_handle_backslash(subj: _cmark_Subject):
         return _cmark_make_linebreak(subj.mem)
     else:
         return _cmark_make_str(subj, subj.pos - 1, subj.pos - 1, '\\')
+
 
 def _cmark_make_literal(subj: _cmark_Subject, start_column: int, end_column: int, char: str):
     # license D applies here. See docs/markdown_specification.rst
@@ -614,9 +628,11 @@ def _cmark_make_literal(subj: _cmark_Subject, start_column: int, end_column: int
 
     return e
 
+
 def _cmark_make_str(subj: _cmark_Subject, start_column: int, end_column: int, char: str):
     # license D applies here. See docs/markdown_specification.rst
     return _cmark_make_literal(subj, start_column, end_column, char)
+
 
 def _cmark_push_bracket(subj: _cmark_Subject, image: bool, inl_text: str):
     # license D applies here. See docs/markdown_specification.rst
@@ -632,112 +648,112 @@ def _cmark_push_bracket(subj: _cmark_Subject, image: bool, inl_text: str):
     b.bracket_after = False
     subj.last_bracket = b
 
-def _cmark_handle_close_bracket(subj: _cmark_Subject):
-    # license D applies here. See docs/markdown_specification.rst
-    # TODO
-    advance(subj) # advance past ]
-    initial_pos = subj.pos
-
-    # get last [ or ![
-    opener = subj.last_bracket
-
-    if opener is None:
-        return _cmark_make_str(subj, subj.pos - 1, subj.pos - 1, ']')
-
-    if not opener.active:
-        # take delimiter off stack
-        pop_bracket(subj);
-        return _cmark_make_str(subj, subj.pos - 1, subj.pos - 1, ']');
-
-    # If we got here, we matched a potential link/image text.
-    # Now we check to see if it's a link/image.
-    is_image = opener.image
-
-    after_link_text_pos = subj.pos
 
 def _cmark_subject_find_special_char(subj: _cmark_Subject, options: int) -> int:
     # license D applies here. See docs/markdown_specification.rst
 
     # "\r\n\\`&_*[]<!"
     SPECIAL_CHARS: list = [
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1,
-      1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    ]
 
     # " ' . -
     SMART_PUNCT_CHARS: list = [
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ]
 
     CMARK_OPT_SMART = 1 << 10
     n: int = subj.pos + 1
 
-    if n > len(subj.input) - 1:
-        return len(subj.input)
-    if ord(subj.input[n]) > len(SPECIAL_CHARS) - 1 or ord(subj.input[n]) > len(SMART_PUNCT_CHARS) - 1:
+    if n > subj.input.length - 1:
+        return subj.input.length
+    if ord(subj.input.data[n]) > len(SPECIAL_CHARS) - 1 or ord(subj.input.data[n]) > len(SMART_PUNCT_CHARS) - 1:
         return n
 
-    while n < len(subj.input):
-        if SPECIAL_CHARS[ord(subj.input[n])] == 1:
+    while n < subj.input.length:
+        if SPECIAL_CHARS[ord(subj.input.data[n])] == 1:
             return n
-        if options & CMARK_OPT_SMART and SMART_PUNCT_CHARS[ord(subj.input[n])]:
+        if options & CMARK_OPT_SMART and SMART_PUNCT_CHARS[ord(subj.input.data[n])]:
             return n
         n += 1
 
-    return len(subj.input)
+    return subj.input.length
+
+
+def _cmark_subject_from_buf(mem, line_number: int,
+                            block_offset: int, e: _cmark_Subject,
+                            chunk: _cmarkCmarkChunk, cmark_reference_map=None):
+    # license D applies here. See docs/markdown_specification.rst
+    e.mem = mem
+    e.input = chunk
+    e.line = line_number
+    e.pos = 0
+    e.block_offset = block_offset
+    e.column_offset = 0
+    e.refmap = None
+    e.last_delim = None
+    e.last_bracket = None
+
+    for i in range(0, md_parser['cmark']['generic']['MAXBACKTICKS']):
+        e.backticks[i] = 0
+
+    e.scanned_for_backticks = False
+
 
 def _cmark_parse_inline(subj: _cmark_Subject, options: int = 0) -> int:
-    r"""Handle all the different elements of a string.
-
-    ..note: license D applies here. See docs/markdown_specification.rst
-    """
+    r"""Handle all the different elements of a string."""
+    # license D applies here. See docs/markdown_specification.rst
     new_inl: _cmarkCmarkNode = None
     contents: str
     c: int
     startpos: int
     endpos: int
 
-    numdelim = 0
-
     c = _cmark_peek_char(subj)
     if c == 0:
         return 0
     elif chr(c) == '\\':
-        numdelim = _cmark_handle_backslash(subj)
+        new_inl = _cmark_handle_backslash(subj)
     elif chr(c) == '*' or chr(c) == '_' or chr(c) == '\'' or chr(c) == '"':
-        numdelim = _cmark_handle_delim(subj, chr(c))
+        new_inl = _cmark_handle_delim(subj, chr(c))
     elif chr(c) == '[':
         _cmark_advance(subj)
         new_inl = _cmark_make_str(subj, subj.pos - 1, subj.pos - 1, '[')
         _cmark_push_bracket(subj, False, new_inl)
     elif chr(c) == ']':
-        # FIXME
+        # TODO
+        _cmark_advance(subj)
+    elif chr(c) == '`':
+        # TODO
         _cmark_advance(subj)
 
     # TODO: images, code, HTML tags detection.
 
     else:
-        endpos = _cmark_subject_find_special_char(subj, options);
+        endpos = _cmark_subject_find_special_char(subj, options)
         contents = _cmark_cmark_chunk_dup(subj.input, subj.pos, endpos - subj.pos)
-        startpos = subj.pos;
-        subj.pos = endpos;
+        startpos = subj.pos
+        subj.pos = endpos
 
         '''
         // if we're at a newline, strip trailing spaces.
@@ -755,12 +771,12 @@ def _cmark_parse_inline(subj: _cmark_Subject, options: int = 0) -> int:
 
     return 1
 
-def _cmark_is_eof(subj: _cmark_Subject):
-    r"""license D applies here. See docs/markdown_specification.rst.
 
-    Return true if there are more characters in the subject.
-    """
-    return subj.pos >= len(subj.input)
+def _cmark_is_eof(subj: _cmark_Subject):
+    r"""Return true if there are more characters in the subject."""
+    # license D applies here. See docs/markdown_specification.rst.
+    return subj.pos >= subj.input.length
+
 
 if __name__ == '__main__':
     pass
