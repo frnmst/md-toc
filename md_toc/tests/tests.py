@@ -446,86 +446,107 @@ class TestApi(unittest.TestCase):
         """
         # Example 331 [Commonmark 0.28].
         # Example 350 [Commonmark 0.29].
+        # Example 350 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo bar*'), 'foo bar')
 
         # Example 332 [Commonmark 0.28].
         # Example 351 [Commonmark 0.29].
+        # Example 351 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('a * foo bar*'), 'a * foo bar*')
 
         # Example 333 [Commonmark 0.28].
         # Example 352 [Commonmark 0.29].
+        # Example 352 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('a*"foo"*'), 'a*"foo"*')
 
         # Example 334 [Commonmark 0.28].
         # Example 353 [Commonmark 0.29].
+        # Example 353 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('* a *'), '* a *')
 
         # Example 335 [Commonmark 0.28].
         # Example 354 [Commonmark 0.29].
+        # Example 354 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo*bar*'), 'foobar')
 
         # Example 336 [Commonmark 0.28].
         # Example 355 [Commonmark 0.29].
+        # Example 355 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('5*6*78'), '5678')
 
         # Example 337 [Commonmark 0.28].
         # Example 356 [Commonmark 0.29].
+        # Example 356 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_foo bar_'), 'foo bar')
 
         # Example 338 [Commonmark 0.28].
         # Example 357 [Commonmark 0.29].
+        # Example 357 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_ foo bar_'), '_ foo bar_')
 
         # Example 339 [Commonmark 0.28].
         # Example 358 [Commonmark 0.29].
+        # Example 358 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('a_"foo"_'), 'a_"foo"_')
 
         # Example 340 [Commonmark 0.28].
         # Example 359 [Commonmark 0.29].
+        # Example 359 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo_bar_'), 'foo_bar_')
 
         # Example 341 [Commonmark 0.28].
         # Example 360 [Commonmark 0.29].
+        # Example 360 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('5_6_78'), '5_6_78')
 
         # Example 342 [Commonmark 0.28].
         # Example 361 [Commonmark 0.29].
+        # Example 361 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('пристаням_стремятся_'), 'пристаням_стремятся_')
 
         # Example 343 [Commonmark 0.28].
         # Example 362 [Commonmark 0.29].
+        # Example 362 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('aa_"bb"_cc'), 'aa_"bb"_cc')
 
         # Example 344 [Commonmark 0.28].
         # Example 363 [Commonmark 0.29].
+        # Example 363 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo-_(bar)_'), 'foo-(bar)')
 
         # Example 345 [Commonmark 0.28].
         # Example 364 [Commonmark 0.29].
+        # Example 364 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_foo*'), '_foo*')
 
         # Example 346 [Commonmark 0.28].
         # Example 365 [Commonmark 0.29].
+        # Example 365 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo bar *'), '*foo bar *')
 
         # Example 347 [Commonmark 0.28].
         # Example 366 [Commonmark 0.29].
+        # Example 366 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo bar\n*'), '*foo bar\n*')
 
         # Example 348 [Commonmark 0.28].
         # Example 367 [Commonmark 0.29].
+        # Example 367 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*(*foo)'), '*(*foo)')
 
         # Example 349 [Commonmark 0.28].
         # Example 368 [Commonmark 0.29].
+        # Example 368 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*(*foo*)*'), '(foo)')
 
         # Example 350 [Commonmark 0.28].
         # Example 369 [Commonmark 0.29].
+        # Example 369 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo*bar'), 'foobar')
 
         # Example 351 [Commonmark 0.28].
         # Example 370 [Commonmark 0.29].
+        # Example 370 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_foo bar _'), '_foo bar _')
 
         # Example 352 [Commonmark 0.28].
@@ -1141,6 +1162,7 @@ class TestApi(unittest.TestCase):
 
         # Example 32 [Commonmark 0.28].
         # Example 32 [Commonmark 0.29].
+        # Example 62 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO, m_github, 'github'),
             [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, }])
@@ -1162,19 +1184,17 @@ class TestApi(unittest.TestCase):
 
         # Example 33 [Commonmark 0.28].
         # Example 33 [Commonmark 0.29].
+        # Example 63 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H7 + S1 + CMARK_LINE_FOO, 7, 'github'),
             [{'header type': None, 'header text trimmed': None, }])
 
         # Example 34 [Commonmark 0.28].
         # Example 34 [Commonmark 0.29].
+        # Example 64 [Commonmark 0.30].
         self.assertEqual(
-            api.get_atx_heading(H1 + CMARK_LINE_5_BOLT, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None, }])
-
-        self.assertEqual(
-            api.get_atx_heading(H1 + CMARK_LINE_HASHTAG, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None, }])
+            api.get_atx_heading(H1 + CMARK_LINE_5_BOLT + LINE_LINE_FEED + LINE_LINE_FEED + H1 + CMARK_LINE_HASHTAG, m_github, 'github'),
+            [{'header type': None, 'header text trimmed': None, }, {'header type': None, 'header text trimmed': None, }, {'header type': None, 'header text trimmed': None, }])
 
         # Example 35 [Commonmark 0.28].
         # Example 35 [Commonmark 0.29].
@@ -1182,6 +1202,20 @@ class TestApi(unittest.TestCase):
             api.get_atx_heading(LINE_ESCAPE + H1 + S1 + CMARK_LINE_FOO,
                                 m_github, 'github'),
             [{'header type': None, 'header text trimmed': None, }])
+
+        # Example 65 [Commonmark 0.30].
+        self.assertEqual(
+            api.get_atx_heading(LINE_ESCAPE + H2 + S1 + CMARK_LINE_FOO,
+                                m_github, 'github'),
+            [{'header type': None, 'header text trimmed': None, }])
+
+        # Example 66 [Commonmark 0.30].
+        # Note: emphasis is trated separately.
+        self.assertEqual(
+            api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO + S1 + '*' + CMARK_LINE_BAR + '*' + S1 + LINE_ESCAPE + '*' + CMARK_LINE_BAZ + LINE_ESCAPE + '*',
+                                m_github, 'github'),
+            [{'header type': 1,
+              'header text trimmed': CMARK_LINE_FOO + S1 + '*' + CMARK_LINE_BAR + '*' + S1 + LINE_ESCAPE + '*' + CMARK_LINE_BAZ + LINE_ESCAPE + '*', }])
 
         # Example 36 [Commonmark 0.28].
         # Example 36 [Commonmark 0.29].
@@ -1193,6 +1227,7 @@ class TestApi(unittest.TestCase):
 
         # Example 37 [Commonmark 0.28].
         # Example 37 [Commonmark 0.29].
+        # Example 67 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H1 + S18 + CMARK_LINE_FOO + S21, m_github,
                                 'github'),
@@ -1200,6 +1235,7 @@ class TestApi(unittest.TestCase):
 
         # Example 38 [Commonmark 0.28].
         # Example 38 [Commonmark 0.29].
+        # Example 68 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(S1 + H3 + S1 + CMARK_LINE_FOO, m_github,
                                 'github'),
@@ -1215,6 +1251,7 @@ class TestApi(unittest.TestCase):
 
         # Example 39 [Commonmark 0.28].
         # Example 39 [Commonmark 0.29].
+        # Example 69 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(S4 + H1 + S1 + CMARK_LINE_FOO, m_github,
                                 'github'),
@@ -1222,6 +1259,7 @@ class TestApi(unittest.TestCase):
 
         # Example 40 [Commonmark 0.28].
         # Example 40 [Commonmark 0.29].
+        # Example 70 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(CMARK_LINE_FOO + LINE_LINE_FEED + S4 + H1 + S1 + CMARK_LINE_BAR, m_github,
                                 'github'),
@@ -1229,6 +1267,7 @@ class TestApi(unittest.TestCase):
 
         # Example 41 [Commonmark 0.28].
         # Example 41 [Commonmark 0.29].
+        # Example 71 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H2 + S1 + CMARK_LINE_FOO + S1 + H2, m_github,
                                 'github'),
@@ -1240,6 +1279,7 @@ class TestApi(unittest.TestCase):
 
         # Example 42 [Commonmark 0.28].
         # Example 42 [Commonmark 0.29].
+        # Example 72 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO + S1 + H34, m_github,
                                 'github'),
@@ -1256,6 +1296,7 @@ class TestApi(unittest.TestCase):
 
         # Example 43 [Commonmark 0.28].
         # Example 43 [Commonmark 0.29].
+        # Example 73 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H3 + S1 + CMARK_LINE_FOO + S1 + H3 + S5,
                                 m_github, 'github'),
@@ -1263,6 +1304,7 @@ class TestApi(unittest.TestCase):
 
         # Example 44 [Commonmark 0.28].
         # Example 44 [Commonmark 0.29].
+        # Example 74 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(
                 H3 + S1 + CMARK_LINE_FOO + S1 + H3 + S1 + CMARK_LINE_B,
@@ -1271,6 +1313,7 @@ class TestApi(unittest.TestCase):
 
         # Example 45 [Commonmark 0.28].
         # Example 45 [Commonmark 0.29].
+        # Example 75 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO + H1, m_github,
                                 'github'),
@@ -1278,8 +1321,11 @@ class TestApi(unittest.TestCase):
 
         # Example 46 [Commonmark 0.28].
         # Example 46 [Commonmark 0.29].
+        # Example 76 [Commonmark 0.30].
         # Preserve the backslashes unlike the original example so that they
-        # conform to the original ATX header.
+        # conform to the original ATX header. The backslash is infact removed
+        # from the markdown parser used by GitHub, GitLab, etc...
+        #
         # See
         # https://github.com/github/cmark-gfm/blob/6b101e33ba1637e294076c46c69cd6a262c7539f/src/inlines.c#L756
         # and
@@ -1302,6 +1348,7 @@ class TestApi(unittest.TestCase):
 
         # Example 47 [Commonmark 0.28].
         # Example 47 [Commonmark 0.29].
+        # Example 77 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(
                 '****' + LINE_LINE_FEED + H2 + S1 + CMARK_LINE_FOO + LINE_LINE_FEED + '****', m_github,
@@ -1310,6 +1357,7 @@ class TestApi(unittest.TestCase):
 
         # Example 48 [Commonmark 0.28].
         # Example 48 [Commonmark 0.29].
+        # Example 78 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(
                 'Foo' + S1 + CMARK_LINE_BAR + LINE_LINE_FEED + H1 + S1 + CMARK_LINE_BAZ + LINE_LINE_FEED + 'Bar' + S1 + CMARK_LINE_FOO, m_github,
@@ -1318,6 +1366,7 @@ class TestApi(unittest.TestCase):
 
         # Example 49 [Commonmark 0.28].
         # Example 49 [Commonmark 0.29].
+        # Example 79 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H2 + S1, m_github, 'github', True),
             [{'header type': 2, 'header text trimmed': LINE_EMPTY}])
@@ -1328,9 +1377,10 @@ class TestApi(unittest.TestCase):
             api.get_atx_heading(H3 + S1 + H3, m_github, 'github', True),
             [{'header type': 3, 'header text trimmed': LINE_EMPTY}])
 
-        # Example 49 with link labels.
+        # Example 49 with link labels: link lables cannot be empty
         # Example 49 [Commonmark 0.28].
         # Example 49 [Commonmark 0.29].
+        # Example 79 [Commonmark 0.30].
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
             api.get_atx_heading(H2 + S1, m_github, 'github', False)
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
@@ -1524,6 +1574,7 @@ class TestApi(unittest.TestCase):
 
         # Example 88 [Commonmark 0.28].
         # Example 89 [Commonmark 0.29].
+        # Example 119 [Commonmark 0.30].
         # Base case: no info string.
         self.assertEqual(api.is_opening_code_fence(BACKTICK3), BACKTICK3)
         self.assertEqual(api.is_opening_code_fence(BACKTICK4), BACKTICK4)
@@ -1531,14 +1582,15 @@ class TestApi(unittest.TestCase):
 
         # Example 89 [Commonmark 0.28].
         # Example 90 [Commonmark 0.29].
+        # Example 120 [Commonmark 0.30].
         self.assertEqual(api.is_opening_code_fence(TILDE3), TILDE3)
         self.assertEqual(api.is_opening_code_fence(TILDE4), TILDE4)
         self.assertEqual(api.is_opening_code_fence(TILDE10), TILDE10)
 
         # Example 90 [Commonmark 0.28].
         # Example 91 [Commonmark 0.29].
+        # Example 121 [Commonmark 0.30].
         # Backticks and tildes.
-        # https://github.github.com/gfm/#example-90
         self.assertIsNone(api.is_opening_code_fence(BACKTICK1))
         self.assertIsNone(api.is_opening_code_fence(BACKTICK2))
         self.assertIsNone(
@@ -1552,10 +1604,14 @@ class TestApi(unittest.TestCase):
         self.assertIsNone(
             api.is_opening_code_fence(TILDE2 + LINE_LINE_FEED + TILDE1))
 
-        # Example 91->97 see test_is_closing_code_fence.
+        # Example 91->97 [[Commonmark 0.28].
+        # Example 92->98 [[Commonmark 0.29].
+        # Example 122->128 [[Commonmark 0.30].
+        # See test_is_closing_code_fence.
 
         # Example 98 [Commonmark 0.28].
         # Example 99 [Commonmark 0.29].
+        # Example 129 [Commonmark 0.30].
         self.assertEqual(
             api.is_opening_code_fence(BACKTICK3 + LINE_LINE_FEED + LINE_LINE_FEED +
                                       S2), BACKTICK3)
@@ -1566,29 +1622,34 @@ class TestApi(unittest.TestCase):
 
         # Example 99 [Commonmark 0.28].
         # Example 100 [Commonmark 0.29].
+        # Example 130 [Commonmark 0.30].
         # See example 88 [Commonmark 0.28].
 
         # Indentation.
         # Example 100 [Commonmark 0.28].
         # Example 101 [Commonmark 0.29].
+        # Example 131 [Commonmark 0.30].
         self.assertEqual(api.is_opening_code_fence(S1 + BACKTICK3), BACKTICK3)
 
         self.assertEqual(api.is_opening_code_fence(S1 + TILDE3), TILDE3)
 
         # Example 101 [Commonmark 0.28].
         # Example 102 [Commonmark 0.29].
+        # Example 132 [Commonmark 0.30].
         self.assertEqual(api.is_opening_code_fence(S2 + BACKTICK3), BACKTICK3)
 
         self.assertEqual(api.is_opening_code_fence(S2 + TILDE3), TILDE3)
 
         # Example 102 [Commonmark 0.28].
         # Example 103 [Commonmark 0.29].
+        # Example 133 [Commonmark 0.30].
         self.assertEqual(api.is_opening_code_fence(S3 + BACKTICK3), BACKTICK3)
 
         self.assertEqual(api.is_opening_code_fence(S3 + TILDE3), TILDE3)
 
         # Example 103 [Commonmark 0.28].
         # Example 104 [Commonmark 0.29].
+        # Example 134 [Commonmark 0.30].
         self.assertIsNone(api.is_opening_code_fence(S4 + BACKTICK3))
 
         self.assertIsNone(api.is_opening_code_fence(S4 + TILDE3))
@@ -1610,6 +1671,7 @@ class TestApi(unittest.TestCase):
 
         # Example 107 [Commonmark 0.28].
         # Example 108 [Commonmark 0.29].
+        # Example 138 [Commonmark 0.30].
         self.assertIsNone(
             api.is_opening_code_fence(BACKTICK3 + S1 + BACKTICK3))
 
@@ -1624,14 +1686,21 @@ class TestApi(unittest.TestCase):
         # Example 110 -> 111 [Commonmark 0.29].
         # Not relevant.
 
+        # Example 24 [Commonmark 0.30].
+        self.assertEqual(
+            api.is_opening_code_fence(BACKTICK3 + S1 + CMARK_LINE_FOO + LINE_ESCAPE + CMARK_LINE_BAR),
+            BACKTICK3)
+
         # Example 111 [Commonmark 0.28].
         # Example 112 [Commonmark 0.29].
+        # Example 142 [Commonmark 0.30].
         self.assertEqual(
             api.is_opening_code_fence(BACKTICK3 + CMARK_INFO_STRING_FOO),
             BACKTICK3)
 
         self.assertEqual(
-            api.is_opening_code_fence(TILDE3 + CMARK_INFO_STRING_FOO), TILDE3)
+            api.is_opening_code_fence(TILDE3 + CMARK_INFO_STRING_FOO),
+            TILDE3)
 
         # Expansion of
         # example 111 [Commonmark 0.28].
@@ -1652,6 +1721,7 @@ class TestApi(unittest.TestCase):
 
         # Example 112 [Commonmark 0.28].
         # Example 113 [Commonmark 0.29].
+        # Example 143 [Commonmark 0.30].
         # Info string with garbage and foreign character.
         self.assertEqual(
             api.is_opening_code_fence(BACKTICK4 + S4 + CMARK_INFO_STRING_FOO +
@@ -1664,12 +1734,14 @@ class TestApi(unittest.TestCase):
 
         # Example 113 [Commonmark 0.28].
         # Example 114 [Commonmark 0.29].
+        # Example 144 [Commonmark 0.29].
         self.assertEqual(api.is_opening_code_fence(BACKTICK4 + ';'), BACKTICK4)
 
         self.assertEqual(api.is_opening_code_fence(TILDE4 + ';'), TILDE4)
 
         # Example 114 [Commonmark 0.28].
         # Example 115 [Commonmark 0.29].
+        # Example 145 [Commonmark 0.29].
         self.assertIsNone(
             api.is_opening_code_fence(BACKTICK3 + S1 + 'aa' + S1 + BACKTICK3))
 
@@ -1677,11 +1749,14 @@ class TestApi(unittest.TestCase):
             api.is_opening_code_fence(TILDE3 + S1 + 'aa' + S1 + TILDE3), TILDE3)
 
         # Example 116 [Commonmark 0.29].
-        # https://spec.commonmark.org/0.29/#example-116
-        self.assertEqual(api.is_opening_code_fence(TILDE3 + S1 + 'aa' + S1 + BACKTICK3 + S1 + TILDE3), TILDE3)
+        # Example 146 [Commonmark 0.30].
+        self.assertEqual(
+            api.is_opening_code_fence(TILDE3 + S1 + 'aa' + S1 + BACKTICK3 + S1 + TILDE3),
+            TILDE3)
 
         # Example 115 [Commonmark 0.28].
         # Example 117 [Commonmark 0.29].
+        # Example 147 [Commonmark 0.30].
         # See test_is_closing_code_fence.
 
     def test_is_closing_code_fence(self):
@@ -1689,51 +1764,57 @@ class TestApi(unittest.TestCase):
         # github.
         # Example 91 [Commonmark 0.28].
         # Example 92 [Commonmark 0.29].
+        # Example 122 [Commonmark 0.30].
         self.assertFalse(api.is_closing_code_fence(BACKTICK3, TILDE3))
 
         # Example 92 [Commonmark 0.28].
         # Example 93 [Commonmark 0.29].
+        # Example 123 [Commonmark 0.30].
         self.assertFalse(api.is_closing_code_fence(TILDE3, BACKTICK3))
 
         # Example 93 [Commonmark 0.28].
         # Example 94 [Commonmark 0.29].
-        # https://github.github.com/gfm/#example-93
-        # "The closing code fence must be at least as long as the opening
-        #  fence."
+        # Example 124 [Commonmark 0.30].
         self.assertFalse(api.is_closing_code_fence(BACKTICK3, BACKTICK4))
 
         # Example 94 [Commonmark 0.28].
         # Example 95 [Commonmark 0.29].
+        # Example 125 [Commonmark 0.30].
         self.assertFalse(api.is_closing_code_fence(TILDE3, TILDE4))
 
         # Example 95 [Commonmark 0.28].
         # Example 96 [Commonmark 0.29].
+        # Example 126 [Commonmark 0.30].
         self.assertTrue(api.is_closing_code_fence(LINE_EMPTY, BACKTICK3, True))
 
         self.assertTrue(api.is_closing_code_fence(LINE_EMPTY, TILDE3, True))
 
         # Example 96 [Commonmark 0.28].
         # Example 97 [Commonmark 0.29].
+        # Example 127 [Commonmark 0.30].
         self.assertTrue(
-            api.is_closing_code_fence(LINE_LINE_FEED + BACKTICK3 + 'aaa',
+            api.is_closing_code_fence(LINE_LINE_FEED + BACKTICK3 + LINE_LINE_FEED + 'aaa',
                                       BACKTICK5, True))
 
         self.assertTrue(
-            api.is_closing_code_fence(LINE_LINE_FEED + TILDE3 + 'aaa', TILDE5,
+            api.is_closing_code_fence(LINE_LINE_FEED + TILDE3 + LINE_LINE_FEED + 'aaa', TILDE5,
                                       True))
 
-        # Example 97 [Commonmark 0.28]
-        # Example 98 [Commonmark 0.29]
+        # Example 97 [Commonmark 0.28].
+        # Example 98 [Commonmark 0.29].
+        # Example 128 [Commonmark 0.30].
         # not relevant because we don't have to find headings inside blockquotes.
 
         # Example 104 [Commonmark 0.28].
         # Example 105 [Commonmark 0.29].
+        # Example 135 [Commonmark 0.30].
         self.assertTrue(api.is_closing_code_fence(S2 + BACKTICK3, BACKTICK3))
 
         self.assertTrue(api.is_closing_code_fence(S2 + TILDE3, TILDE3))
 
         # Example 105 [Commonmark 0.28].
         # Example 106 [Commonmark 0.29].
+        # Example 136 [Commonmark 0.30].
         self.assertTrue(
             api.is_closing_code_fence(S2 + BACKTICK3, S3 + BACKTICK3))
 
@@ -1741,12 +1822,17 @@ class TestApi(unittest.TestCase):
 
         # Example 106 [Commonmark 0.28].
         # Example 107 [Commonmark 0.29].
+        # Example 137 [Commonmark 0.30].
         self.assertFalse(api.is_closing_code_fence(S4 + BACKTICK3, BACKTICK3))
 
         self.assertFalse(api.is_closing_code_fence(S4 + TILDE3, TILDE3))
 
+        # Example 138 [Commonmark 0.30].
+        self.assertTrue(api.is_closing_code_fence(S1 + BACKTICK3, BACKTICK3))
+
         # Example 108 [Commonmark 0.28].
         # Example 109 [Commonmark 0.29].
+        # Example 139 [Commonmark 0.30].
         self.assertFalse(
             api.is_closing_code_fence(TILDE3 + S1 + TILDE2, TILDE6))
 
@@ -1755,6 +1841,7 @@ class TestApi(unittest.TestCase):
 
         # Example 115 [Commonmark 0.28].
         # Example 117 [Commonmark 0.29].
+        # Example 147 [Commonmark 0.30].
         self.assertFalse(
             api.is_closing_code_fence(BACKTICK3 + S1 + 'aaa', BACKTICK3))
 
