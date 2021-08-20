@@ -215,7 +215,7 @@ def _cmark_advance(subj: _cmark_Subject):
 
 def _cmark_cmark_utf8proc_is_space(char: int, parser: str = 'github') -> bool:
     r"""Match anything in the Zs class, plus LF, CR, TAB, FF."""
-    # license D applies here. See docs/markdown_specification.rst.
+    # license C applies here. See docs/copyright_license.rst.
     value = False
     if chr(char) in md_parser[parser]['pseudo-re']['UWC']:
         value = True
@@ -225,7 +225,7 @@ def _cmark_cmark_utf8proc_is_space(char: int, parser: str = 'github') -> bool:
 
 def _cmark_cmark_utf8proc_is_punctuation(char: int, parser: str = 'github') -> bool:
     r"""Match anything in the P[cdefios] classes."""
-    # license D applies here. See docs/markdown_specification.rst.
+    # license C applies here. See docs/copyright_license.rst.
     value = False
     if chr(char) in md_parser[parser]['pseudo-re']['PC']:
         value = True
@@ -235,7 +235,7 @@ def _cmark_cmark_utf8proc_is_punctuation(char: int, parser: str = 'github') -> b
 
 def _cmark_cmark_ispunct(char: int, parser: str = 'github') -> bool:
     r"""Return True if c is an ascii punctuation character."""
-    # license D applies here. See docs/markdown_specification.rst.
+    # license C applies here. See docs/copyright_license.rst.
     value = False
     if chr(char) in md_parser[parser]['pseudo-re']['APC']:
         value = True
@@ -244,7 +244,7 @@ def _cmark_cmark_ispunct(char: int, parser: str = 'github') -> bool:
 
 
 def _cmark_cmark_utf8proc_charlen(line: str, line_length: int) -> int:
-    # license E applies here. See docs/markdown_specification.rst
+    # license D applies here. See docs/copyright_license.rst
     length: int
     i: int
 
@@ -279,7 +279,7 @@ def _cmark_cmark_utf8proc_charlen(line: str, line_length: int) -> int:
 
 
 def _cmark_cmark_utf8proc_iterate(line: str, line_len: int) -> tuple:
-    # license E applies here. See docs/markdown_specification.rst
+    # license D applies here. See docs/copyright_license.rst
 
     length: int = 0
     uc: int = -1
@@ -314,12 +314,12 @@ def _cmark_cmark_utf8proc_iterate(line: str, line_len: int) -> tuple:
 
 
 def _cmark_peek_at(subj: _cmark_Subject, pos: int) -> int:
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
     return ord(subj.input.data[pos])
 
 
 def _cmark_scan_delims(subj: _cmark_Subject, c: str) -> tuple:
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
     numdelims: int = 0
     before_char_pos: int = 0
     after_char: int = 0
@@ -393,7 +393,7 @@ def _cmark_scan_delims(subj: _cmark_Subject, c: str) -> tuple:
 
 def _cmark_push_delimiter(subj: _cmark_Subject, c: str, can_open: bool,
                           can_close: bool, inl_text: _cmarkCmarkNode):
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
     delim = _cmarkDelimiterDLLNode(c, inl_text.as_literal_len)
     delim.can_open = can_open
     delim.can_close = can_close
@@ -403,12 +403,12 @@ def _cmark_push_delimiter(subj: _cmark_Subject, c: str, can_open: bool,
 
 
 def _cmark_cmark_chunk_dup(ch: _cmarkCmarkChunk, pos: int, length: int) -> str:
-    # license F applies here. See docs/markdown_specification.rst
+    # license E applies here. See docs/copyright_license.rst
     return copy.deepcopy(ch.data[pos: pos + length])
 
 
 def _cmark_handle_delim(subj: _cmark_Subject, c: str) -> int:
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
     numdelims: int
     can_open: bool
     can_close: bool
@@ -425,7 +425,7 @@ def _cmark_handle_delim(subj: _cmark_Subject, c: str) -> int:
 
 
 def _cmark_peek_char(subj: _cmark_Subject) -> int:
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
     if subj.pos < subj.input.length and ord(subj.input.data[subj.pos]) == 0:
         raise ValueError
 
@@ -436,7 +436,7 @@ def _cmark_peek_char(subj: _cmark_Subject) -> int:
 
 
 def _cmark_remove_emph(delimiter_stack: _cmark_Subject, opener: _cmarkDelimiterDLLNode, closer: _cmarkDelimiterDLLNode, ignore: list):
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
     # This function refers to S_insert_emph()
     opener_inl: _cmarkCmarkNode = opener.inl_text
     closer_inl: _cmarkCmarkNode = closer.inl_text
@@ -494,7 +494,7 @@ def _cmark_remove_emph(delimiter_stack: _cmark_Subject, opener: _cmarkDelimiterD
 
 
 def _cmark_process_emphasis(subj: _cmark_Subject, stack_bottom: _cmarkDelimiterDLLNode, ignore: list) -> list:
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
     closer: _cmarkDelimiterDLLNode = subj.last_delim
     opener: _cmarkDelimiterDLLNode
     openers_bottom_index: int = 0
@@ -569,7 +569,7 @@ def _cmark_process_emphasis(subj: _cmark_Subject, stack_bottom: _cmarkDelimiterD
 
 
 def _cmark_skip_line_end(subj: _cmark_Subject) -> bool:
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
     seen_line_end_char: bool = False
 
     if _cmark_peek_char(subj) == '\r':
@@ -582,20 +582,20 @@ def _cmark_skip_line_end(subj: _cmark_Subject) -> bool:
 
 
 def _cmark_make_simple(mem) -> _cmarkCmarkNode:
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
     e = _cmarkCmarkNode()
     e.content = copy.deepcopy(mem)
     return e
 
 
 def _cmark_make_linebreak(mem):
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
     _cmark_make_simple(mem)
 
 
 def _cmark_handle_backslash(subj: _cmark_Subject):
     r"""Parse backslash-escape or just a backslash, returning an inline."""
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
     _cmark_advance(subj)
     nextchar: str = _cmark_peek_char(subj)
 
@@ -610,7 +610,7 @@ def _cmark_handle_backslash(subj: _cmark_Subject):
 
 
 def _cmark_make_literal(subj: _cmark_Subject, start_column: int, end_column: int, char: str):
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
     r"""Create an inline with a literal string value."""
     e = _cmarkCmarkNode()
 
@@ -630,12 +630,12 @@ def _cmark_make_literal(subj: _cmark_Subject, start_column: int, end_column: int
 
 
 def _cmark_make_str(subj: _cmark_Subject, start_column: int, end_column: int, char: str):
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
     return _cmark_make_literal(subj, start_column, end_column, char)
 
 
 def _cmark_push_bracket(subj: _cmark_Subject, image: bool, inl_text: str):
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
     b = _cmark_Bracket()
     if subj.last_bracket is not None:
         subj.last_bracket.bracket_after = True
@@ -650,7 +650,7 @@ def _cmark_push_bracket(subj: _cmark_Subject, image: bool, inl_text: str):
 
 
 def _cmark_subject_find_special_char(subj: _cmark_Subject, options: int) -> int:
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
 
     # "\r\n\\`&_*[]<!"
     SPECIAL_CHARS: list = [
@@ -703,7 +703,7 @@ def _cmark_subject_find_special_char(subj: _cmark_Subject, options: int) -> int:
 def _cmark_subject_from_buf(mem, line_number: int,
                             block_offset: int, e: _cmark_Subject,
                             chunk: _cmarkCmarkChunk, cmark_reference_map=None):
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
     e.mem = mem
     e.input = chunk
     e.line = line_number
@@ -722,7 +722,7 @@ def _cmark_subject_from_buf(mem, line_number: int,
 
 def _cmark_parse_inline(subj: _cmark_Subject, options: int = 0) -> int:
     r"""Handle all the different elements of a string."""
-    # license D applies here. See docs/markdown_specification.rst
+    # license C applies here. See docs/copyright_license.rst
     new_inl: _cmarkCmarkNode = None
     contents: str
     c: int
@@ -774,7 +774,7 @@ def _cmark_parse_inline(subj: _cmark_Subject, options: int = 0) -> int:
 
 def _cmark_is_eof(subj: _cmark_Subject):
     r"""Return true if there are more characters in the subject."""
-    # license D applies here. See docs/markdown_specification.rst.
+    # license C applies here. See docs/copyright_license.rst.
     return subj.pos >= subj.input.length
 
 

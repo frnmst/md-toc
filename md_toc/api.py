@@ -769,7 +769,7 @@ def build_anchor_link(header_text_trimmed: str,
     :raises: a built-in exception.
 
     .. note: license A applies for the redcarpet part.
-        See docs/markdown_specification.rst
+        See docs/copyright_license.rst
     """
     # Check for newlines.
     if len(replace_and_split_newlines(header_text_trimmed)) > 1:
