@@ -31,7 +31,7 @@ sphinx-rtd-theme = "~=0.5"
 
 # Tools.
 twine = "~=3.4"
-pre-commit = "~=2.13"
+pre-commit = "~=2.14"
 
 [packages]
 fpyutils = "~=2.0"
