@@ -749,7 +749,7 @@ def filter_indices_from_line(line: str, ranges: list) -> str:
 
 
 def build_anchor_link(header_text_trimmed: str,
-                      header_duplicate_counter: str,
+                      header_duplicate_counter: dict,
                       parser: str = 'github') -> str:
     r"""Apply the specified slug rule to build the anchor link.
 
