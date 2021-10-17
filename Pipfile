@@ -35,6 +35,3 @@ pre-commit = "~=2.14"
 
 [packages]
 fpyutils = "~=2.0"
-
-[requires]
-python_version = "*"
