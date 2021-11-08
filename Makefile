@@ -36,9 +36,15 @@ uninstall:
 install-dev:
 	pipenv install --dev
 	pipenv run pre-commit install
+	pipenv graph
+	pipenv check
 
 uninstall-dev:
+	rm -f Pipfile.lock
 	pipenv --rm
+
+update: install-dev
+	pipenv run pre-commit autoupdate
 
 demo:
 	asciinema/md_toc_asciinema_$$(git describe --tags $$(git rev-list --tags --max-count=1) | tr '.' '_')_demo.sh
@@ -65,4 +71,4 @@ clean:
 	rm -rf build dist *.egg-info tests/benchmark-results *.md
 	pipenv run $(MAKE) -C docs clean
 
-.PHONY: default doc install uninstall install-dev uninstall-dev test clean demo benchmark
+.PHONY: default doc install uninstall install-dev uninstall-dev update test clean demo
