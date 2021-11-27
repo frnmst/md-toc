@@ -26,7 +26,7 @@ setup(
     name='md_toc',
     version='8.0.1',
     packages=find_packages(exclude=['*tests*']),
-    license='GPL',
+    license='GPLv3+',
     description='A utility that is able to generate a table of contents for a markdown file.',
     long_description=open('README.rst').read(),
     long_description_content_type='text/x-rst',
