@@ -21,12 +21,13 @@
 """A file that contains all the global constants."""
 
 import copy
+import os
 
 common_defaults = dict()
 
 common_defaults = {
     'toc marker': '<!--TOC-->',
-    'newline string': '\n',
+    'newline string': os.linesep,
 }
 
 parser = dict()
