@@ -123,7 +123,7 @@ class TestApi(unittest.TestCase):
         for the unit tests.
         """
         with self.assertRaises(exceptions.StdinIsNotAFileToBeWritten):
-            api.write_string_on_file_between_markers('-', LINE, LINE)
+            api.write_string_on_file_between_markers('-', LINE, LINE, newline_string='\n')
 
     @unittest.skip("empty test")
     def test_write_strings_on_files_between_markers(self):

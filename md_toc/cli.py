@@ -77,7 +77,8 @@ class CliToApi():
             write_strings_on_files_between_markers(
                 filenames=args.filename,
                 strings=toc_struct,
-                marker=args.toc_marker)
+                marker=args.toc_marker,
+                newline_string=newline_string)
         else:
             for toc in toc_struct:
                 print(toc, end='')
@@ -294,7 +295,12 @@ class CliInterface():
             metavar='NEWLINE_STRING',
             type=str,
             default=common_defaults['newline string'],
-            help='the string used to separate the lines of the TOC. Use quotes to delimit the string. Defaults to ' + repr(common_defaults['newline string'])
+            help=('the string used to separate the lines of the TOC. \
+                  Use quotes to delimit the string. \
+                  If you output in place all the newlines of the \
+                  input file will be replaced with this value. \
+                  Defaults to ' +
+                  repr(common_defaults['newline string']))
         )
         parser.add_argument(
             '-p',

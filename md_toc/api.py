@@ -21,6 +21,7 @@
 """The main file."""
 
 import copy
+import os
 import re
 import sys
 
@@ -38,16 +39,19 @@ from .exceptions import (CannotTreatUnicodeString, GithubEmptyLinkLabel,
 
 
 def write_string_on_file_between_markers(filename: str, string: str,
-                                         marker: str):
+                                         marker: str, newline_string: str = common_defaults['newline string']):
     r"""Write the table of contents on a single file.
 
     :parameter filename: the file that needs to be read or modified.
     :parameter string: the string that will be written on the file.
     :parameter marker: a marker that will identify the start
          and the end of the string.
+    :parameter newline_string: the new line separator.
+         Defaults to ``os.linesep``.
     :type filenames: str
     :type string: str
     :type marker: str
+    :type newline_string: str
     :returns: None
     :rtype: None
     :raises: StdinIsNotAFileToBeWritten or an fpyutils exception
@@ -74,11 +78,12 @@ def write_string_on_file_between_markers(filename: str, string: str,
             final_string,
             marker_line_positions[1],
             filename,
-            append=False)
+            append=False,
+            newline_string=newline_string)
 
 
 def write_strings_on_files_between_markers(filenames: list, strings: list,
-                                           marker: str):
+                                           marker: str, newline_string: str = common_defaults['newline string']):
     r"""Write the table of contents on multiple files.
 
     :parameter filenames: the files that needs to be read or modified.
@@ -86,9 +91,12 @@ def write_strings_on_files_between_markers(filenames: list, strings: list,
          string is associated with one file.
     :parameter marker: a marker that will identify the start
          and the end of the string.
+    :parameter newline_string: the new line separator.
+         Defaults to ``os.linesep``.
     :type filenames: list
-    :type string: list
+    :type strings: list
     :type marker: str
+    :type newline_string: str
     :returns: None
     :rtype: None
     :raises: an fpyutils exception or a built-in exception.
@@ -106,7 +114,7 @@ def write_strings_on_files_between_markers(filenames: list, strings: list,
 
     file_id = 0
     for f in filenames:
-        write_string_on_file_between_markers(f, strings[file_id], marker)
+        write_string_on_file_between_markers(f, strings[file_id], marker, newline_string)
         file_id += 1
 
 
@@ -143,8 +151,8 @@ def build_toc(filename: str,
          Defaults to ``0```.
     :parameter constant_ordered_list: use a single integer
         as list marker. This sets ordered to ``True``.
-    :parameter newline_string: the set of characters used to
-        go to a new line.
+    :parameter newline_string: the newline separator.
+        Defaults to ``os.linesep``.
     :type filename: str
     :type ordered: bool
     :type no_links: bool
@@ -336,6 +344,8 @@ def build_multiple_tocs(filenames: list,
          Defaults to ``-``.
     :parameter constant_ordered_list: use a single integer
         as list marker. This sets ordered to ``True``.
+    :parameter newline_string: the newline separator.
+        Defaults to ``os.linesep``.
     :type filenames: list
     :type ordered: bool
     :type no_links: bool
@@ -345,6 +355,7 @@ def build_multiple_tocs(filenames: list,
     :type list_marker: str
     :type skip_lines: int
     :type constant_ordered_list: bool
+    :type newline_string: str
     :returns: toc_struct, the corresponding table of contents for each input
          file.
     :rtype: list

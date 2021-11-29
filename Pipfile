@@ -34,4 +34,4 @@ twine = ">=3,<4"
 pre-commit = ">=2,<3"
 
 [packages]
-fpyutils = ">=2,<3"
+fpyutils = ">=2.1,<3"
