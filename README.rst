@@ -36,8 +36,8 @@ improve document readability.
 Video
 -----
 
-.. image:: https://asciinema.org/a/416978.png
-     :target: https://asciinema.org/a/416978
+.. image:: https://asciinema.org/a/452384.png
+     :target: https://asciinema.org/a/452384
      :align: center
 
 Description

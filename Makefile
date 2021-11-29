@@ -47,7 +47,7 @@ update: install-dev
 	pipenv run pre-commit autoupdate
 
 demo:
-	asciinema/md_toc_asciinema_$$(git describe --tags $$(git rev-list --tags --max-count=1) | tr '.' '_')_demo.sh
+	pipenv run asciinema/md_toc_asciinema_$$(git describe --tags $$(git rev-list --tags --max-count=1) | tr '.' '_')_demo.sh
 
 test:
 	pipenv run python -m unittest $(PACKAGE_NAME).tests.tests --failfast --locals --verbose
