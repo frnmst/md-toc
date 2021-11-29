@@ -20,7 +20,7 @@ Text
 ::
 
 
-    Copyright (C) 2017-2021 frnmst (Franco Masotti) <franco.masotti@tutanota.com>
+    Copyright (C) 2017-2021 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
 
     md-toc is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ Text
 
     Copyright (c) 2009, Natacha Porté
     Copyright (c) 2015, Vicent Marti
-    Copyright (c) 2018, Franco Masotti <franco.masotti@tutanota.com> (for md-toc only)
+    Copyright (c) 2018, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -96,7 +96,7 @@ Text
 
 
     Copyright (c) 2012 GitHub Inc. and Jerry Cheung
-    Copyright (c) 2018, Franco Masotti <franco.masotti@tutanota.com> (for md-toc only)
+    Copyright (c) 2018, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
 
     MIT License
 
@@ -139,7 +139,7 @@ Text
 
 
     Copyright (c) 2014, John MacFarlane
-    Copyright (c) 2021, Franco Masotti <franco.masotti@tutanota.com> (for md-toc only)
+    Copyright (c) 2021, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
 
     All rights reserved.
 
@@ -190,7 +190,7 @@ Text
     are derived from utf8proc
     (<http://www.public-software-group.org/utf8proc>),
     (C) 2009 Public Software Group e. V., Berlin, Germany.
-    Copyright (C) 2021, Franco Masotti <franco.masotti@tutanota.com> (for md-toc only)
+    Copyright (C) 2021, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -232,7 +232,7 @@ Text
     buffer.h, buffer.c, chunk.h
 
     are derived from code (C) 2012 Github, Inc.
-    Copyright (C) 2021, Franco Masotti <franco.masotti@tutanota.com> (for md-toc only)
+    Copyright (C) 2021, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
     this software and associated documentation files (the "Software"), to deal in

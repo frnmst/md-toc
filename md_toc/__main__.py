@@ -1,7 +1,7 @@
 #
 # __main__.py
 #
-# Copyright (C) 2017-2020 frnmst (Franco Masotti) <franco.masotti@tutanota.com>
+# Copyright (C) 2017-2020 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
 #
 # This file is part of md-toc.
 #

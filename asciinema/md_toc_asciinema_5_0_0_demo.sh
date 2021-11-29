@@ -3,7 +3,7 @@
 #
 # md_toc_asciinema_5_0_0_demo.sh
 #
-# Copyright (C) 2019 frnmst (Franco Masotti) <franco.masotti@tutanota.com>
+# Copyright (C) 2019 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
 #
 # This file is part of md-toc.
 #

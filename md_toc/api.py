@@ -1,7 +1,7 @@
 #
 # api.py
 #
-# Copyright (C) 2017-2021 frnmst (Franco Masotti) <franco.masotti@tutanota.com>
+# Copyright (C) 2017-2021 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
 #
 # This file is part of md-toc.
 #
