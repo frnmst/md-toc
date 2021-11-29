@@ -79,7 +79,7 @@ def write_string_on_file_between_markers(filename: str, string: str,
             marker_line_positions[1],
             filename,
             append=False,
-            newline_string=newline_string)
+            newline_character=newline_string)
 
 
 def write_strings_on_files_between_markers(filenames: list, strings: list,
