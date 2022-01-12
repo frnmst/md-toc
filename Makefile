@@ -61,7 +61,7 @@ dist:
 	# https://github.com/pypa/setuptools/issues/1468
 	# https://github.com/pypa/setuptools/issues/2133
 	# https://reproducible-builds.org/docs/source-date-epoch/
-	SOURCE_DATE_EPOCH=$$(git log -1 --pretty=%ct) pipenv run python setup.py bdist_wheel
+	SOURCE_DATE_EPOCH=$$(git log -c log.showSignature='false' -1 --pretty=%ct) pipenv run python setup.py bdist_wheel
 	pipenv run twine check dist/*
 
 upload:
