@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.1.0
     hooks:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
@@ -15,20 +15,20 @@ repos:
     -   id: debug-statements
 
 -   repo: https://github.com/pre-commit/mirrors-yapf
-    rev: 'v0.31.0'  # Use the sha / tag you want to point at
+    rev: 'v0.32.0'  # Use the sha / tag you want to point at
     hooks:
     -   id: yapf
         args: ['--style', '{based_on_style: pep8; indent_width: 4}']
 
 -   repo: https://github.com/pycqa/flake8
-    rev: '3.9.2'  # Use the sha / tag you want to point at
+    rev: '4.0.1'  # Use the sha / tag you want to point at
     hooks:
     -   id: flake8
         args: ['--ignore=E501,W503,W504,F401']
         additional_dependencies: [flake8-docstrings]
 
 -   repo: https://github.com/PyCQA/bandit
-    rev: '1.7.0'  # Use the sha / tag you want to point at
+    rev: '1.7.1'  # Use the sha / tag you want to point at
     hooks:
     -   id: bandit
         args: ['--skip', 'B404,B506,B410,B603', '--level', 'LOW']
@@ -40,18 +40,18 @@ repos:
         args: ['-s', 'gemnasium', '-s', 'pyup']
 
 -   repo: https://github.com/pycqa/isort
-    rev: 5.9.3
+    rev: 5.10.1
     hooks:
     -   id: isort
 
 -   repo: https://codeberg.org/frnmst/licheck
-    rev: 0.0.3
+    rev: 1.0.0
     hooks:
     -   id: licheck
         args: ['--configuration-file', '.allowed_licenses.yml']
 
 -   repo: https://github.com/mgedmin/check-manifest
-    rev: "0.46"
+    rev: "0.47"
     hooks:
     -   id: check-manifest
         args: ['--ignore','docs/*,docs/assets/*,Pipfile,Makefile,asciinema/*,*.yaml,*.yml,assets/*,md_toc/tests/*,packages/aur/*']
