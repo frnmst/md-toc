@@ -694,7 +694,7 @@ def remove_html_tags(line: str, parser: str = 'github') -> str:
 
 
 def remove_emphasis(line: str, parser: str = 'github') -> list:
-    r"""Remove emphasis.
+    r"""Remove markdown emphasis.
 
     :parameter line: a string.
     :parameter parser: decides rules on how to find delimiters.
@@ -704,22 +704,21 @@ def remove_emphasis(line: str, parser: str = 'github') -> list:
     :returns: the input line without emphasis.
     :rtype: str
     :raises: a built-in exception.
+
+    .. note:: Backslashes are preserved.
     """
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark', 'redcarpet']:
-
         mem = None
         refmap = None
 
-        content = cmark._cmarkCmarkChunk(line, len(line), 0)
-        subj = cmark._cmark_Subject(input=line)
-        cmark._cmark_subject_from_buf(mem, 0, 0, subj, content, refmap)
+        parent = cmark._cmarkCmarkNode()
+        parent.data = line
+        parent.length = len(line)
+        parent.start_line = 0
+        parent.start_column = 0
+        parent.internal_offset = 1
 
-        while not cmark._cmark_is_eof(subj):
-            cmark._cmark_parse_inline(subj)
-
-        ignore = list()
-        # When we hit the end of the input, we call the process emphasis procedure (see below), with stack_bottom = NULL.
-        cmark._cmark_process_emphasis(subj, None, ignore)
+        ignore = cmark._cmark_cmark_parse_inlines(mem, parent, refmap, 0)
         line = filter_indices_from_line(line, ignore)
 
     elif parser in ['redcarpet']:
