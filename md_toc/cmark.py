@@ -65,6 +65,7 @@ class _cmarkCmarkReferenceMap:
 
 
 class _cmarkCmarkNode:
+    # license C applies here. See docs/copyright_license.rst
     def __init__(self):
         # cmark_strbuf
 
@@ -121,6 +122,8 @@ class _cmarkCmarkNode:
 class _cmarkCmarkChunk:
     r"""See chunk.h file."""
 
+    # license E applies here. See docs/copyright_license.rst
+
     def __init__(self, data: str = None, length: int = 0, alloc: int = 0):
         self.data: str = data
         self.length: int = length
@@ -131,6 +134,8 @@ class _cmarkCmarkChunk:
 
 class _cmarkDelimiter:
     r"""A list node with attributes useful for processing emphasis."""
+
+    # license C applies here. See docs/copyright_license.rst
 
     def __init__(self, delim_char: str, length: int):
         self.previous = None
@@ -180,6 +185,8 @@ class _cmarkDelimiter:
 
 class _cmarkSubject:
     r"""A double linked list useful for processing emphasis."""
+
+    # license C applies here. See docs/copyright_license.rst
 
     def __init__(self):
         r"""Define the memory allocation functions to be used by CMark when parsing and allocating a document tree.
@@ -271,6 +278,7 @@ class _cmarkSubject:
 
 
 class _cmarkBracket:
+    # license C applies here. See docs/copyright_license.rst
     def __init__(self):
         self.previous = None
         self.previous_delimiter = None
@@ -286,6 +294,7 @@ class _cmarkBracket:
 
 # 0.29, 0.30
 def _cmark_advance(subj: _cmarkSubject):
+    # license C applies here. See docs/copyright_license.rst.
     # Advance the subject.  Doesn't check for eof.
     subj.pos += 1
 
@@ -293,7 +302,7 @@ def _cmark_advance(subj: _cmarkSubject):
 # 0.29, 0.30
 def _cmark_cmark_utf8proc_is_space(char: int, parser: str = 'github') -> bool:
     r"""Match anything in the Zs class, plus LF, CR, TAB, FF."""
-    # license C applies here. See docs/copyright_license.rst.
+    # license D applies here. See docs/copyright_license.rst.
     value = False
     if chr(char) in md_parser[parser]['pseudo-re']['UWC']:
         value = True
@@ -317,7 +326,7 @@ def _cmark_cmark_utf8proc_is_punctuation(char: int, parser: str = 'github') -> b
     r"""Match anything in the P[cdefios] classes."""
     # license C applies here. See docs/copyright_license.rst.
     value = False
-    if (char < 128 and _cmark_cmark_ispunct(char)) or chr(char) in md_parser[parser]['pseudo-re']['PC']:
+    if (char < 128 and _cmark_cmark_ispunct(char)) or chr(char) in md_parser[parser]['pseudo-re']['UPC']:
         value = True
 
     return value
@@ -362,7 +371,6 @@ def _cmark_cmark_utf8proc_charlen(line: str, line_length: int) -> int:
 # 0.29, 0.30
 def _cmark_cmark_utf8proc_iterate(line: str, line_len: int) -> tuple:
     # license D applies here. See docs/copyright_license.rst
-
     length: int = 0
     uc: int = -1
     dst: int = -1
@@ -495,6 +503,7 @@ def _cmark_cmark_chunk_dup(ch: _cmarkCmarkChunk, pos: int, length: int) -> str:
 
 # 0.30
 def _cmark_cmark_chunk_literal(data: str) -> _cmarkCmarkChunk:
+    # license E applies here. See docs/copyright_license.rst
     length: int
     c: _cmarkCmarkChunk
 
@@ -539,7 +548,6 @@ def _cmark_handle_delim(subj: _cmarkSubject, c: str, smart: bool = False) -> _cm
 # 0.29, 0.30
 def _cmark_peek_char(subj: _cmarkSubject) -> int:
     # license C applies here. See docs/copyright_license.rst
-
     # Instead of using assert just raise a ValueError
     if subj.pos < subj.input.length and ord(subj.input.data[subj.pos]) == 0:
         raise ValueError
@@ -553,6 +561,7 @@ def _cmark_peek_char(subj: _cmarkSubject) -> int:
 # 0.30
 # Unlink a node without adjusting its next, prev, and parent pointers.
 def _cmark_S_node_unlink(node: _cmarkCmarkNode):
+    # license C applies here. See docs/copyright_license.rst
     if node is None:
         return
 
@@ -573,6 +582,7 @@ def _cmark_S_node_unlink(node: _cmarkCmarkNode):
 
 # 0.30
 def _cmark_S_free_nodes(e: _cmarkCmarkNode):
+    # license C applies here. See docs/copyright_license.rst
     mem = e.mem
     next: _cmarkCmarkNode
 
@@ -595,6 +605,7 @@ def _cmark_S_free_nodes(e: _cmarkCmarkNode):
 
 # 0.30
 def _cmark_cmark_node_free(node: _cmarkCmarkNode):
+    # license C applies here. See docs/copyright_license.rst
     _cmark_S_node_unlink(node)
     node.next = None
     _cmark_S_free_nodes(node)
@@ -683,6 +694,7 @@ def _cmark_remove_emph(subj: _cmarkSubject, opener: _cmarkDelimiter, closer: _cm
 
 # 0.30
 def _cmark_cmark_set_cstr(mem, dst: str, src: str) -> int:
+    # license C applies here. See docs/copyright_license.rst
     old: str = dst
     length: int
 
@@ -702,6 +714,7 @@ def _cmark_cmark_set_cstr(mem, dst: str, src: str) -> int:
 
 # 0.30
 def _cmark_cmark_node_set_literal(node: _cmarkCmarkNode, content: str) -> int:
+    # license C applies here. See docs/copyright_license.rst
     if node is None:
         return 0
 
@@ -858,10 +871,10 @@ def _cmark_make_literal(subj: _cmarkSubject, t: int, start_column: int, end_colu
 
 # 0.29, 0.30
 def _cmark_make_str(subj: _cmarkSubject, sc: int, ec: int, s: _cmarkCmarkChunk) -> _cmarkCmarkNode:
+    # license C applies here. See docs/copyright_license.rst
     # s = char
     # sc = start column
     # ec = end cloumn
-    # license C applies here. See docs/copyright_license.rst
     e = _cmark_make_literal(subj, md_parser['cmark']['cmark_node_type']['CMARK_NODE_TEXT'], sc, ec)
 
     # Realloc with NULL ptr is equal to malloc, so no need to translate
@@ -896,7 +909,6 @@ def _cmark_push_bracket(subj: _cmarkSubject, image: bool, inl_text: _cmarkCmarkN
 # 0.29, 0.30
 def _cmark_subject_find_special_char(subj: _cmarkSubject, options: int) -> int:
     # license C applies here. See docs/copyright_license.rst
-
     # "\r\n\\`&_*[]<!"
     SPECIAL_CHARS: list = [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -970,6 +982,7 @@ def _cmark_subject_from_buf(mem, line_number: int,
 
 # 0.30
 def _cmark_S_is_line_end_char(c: str) -> bool:
+    # license C applies here. See docs/copyright_license.rst
     return c == '\n' or c == '\r'
 
 
@@ -980,6 +993,7 @@ def _cmark_S_is_line_end_char(c: str) -> bool:
 # int cmark_isspace(char c) { return cmark_ctype_class[(uint8_t)c] == 1; }
 # The only defined whitespaces in the spec are Unicode whitespaces.
 def _cmark_cmark_chunk_rtrim(c: _cmarkCmarkChunk):
+    # license E applies here. See docs/copyright_license.rst
     while c.length > 0:
         # if (!cmark_isspace(c->data[c->len - 1]))
         if not c.data[c.length - 1] in md_parser['cmark']['pseudo-re']['UWC']:
@@ -1038,6 +1052,7 @@ def _cmark_parse_inline(subj: _cmarkSubject, parent: _cmarkCmarkNode, options: i
 
 # 0.30
 def _cmark_pop_bracket(subj: _cmarkSubject):
+    # license C applies here. See docs/copyright_license.rst
     b: _cmarkBracket
     if subj.last_bracket is None:
         return
@@ -1052,6 +1067,7 @@ def _cmark_pop_bracket(subj: _cmarkSubject):
 def _cmark_cmark_parse_inlines(mem, parent: _cmarkCmarkNode,
                                refmap: _cmarkCmarkReferenceMap, options: int) -> list:
     r"""Get the ignore list."""
+    # license C applies here. See docs/copyright_license.rst
     subj: _cmarkSubject
     content: _cmarkCmarkChunk = _cmarkCmarkChunk(parent.data, parent.length)
     subj = _cmarkSubject()

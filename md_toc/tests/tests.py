@@ -48,6 +48,16 @@ S10 = 10 * ' '
 S18 = 18 * ' '
 S21 = 21 * ' '
 
+# Tabs.
+T1 = 1 * '\u0009'
+T2 = 2 * '\u0009'
+T3 = 3 * '\u0009'
+T4 = 4 * '\u0009'
+T5 = 5 * '\u0009'
+T10 = 10 * '\u0009'
+T18 = 18 * '\u0009'
+T21 = 21 * '\u0009'
+
 # ATX headers.
 H1 = 1 * '#'
 H2 = 2 * '#'
@@ -1346,19 +1356,60 @@ class TestApi(unittest.TestCase):
             api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO, m_github, 'github'),
             [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, }])
         self.assertEqual(
+            api.get_atx_heading(H1 + T1 + CMARK_LINE_FOO, m_github, 'github'),
+            [{'header type': None, 'header text trimmed': None, }])
+        self.assertEqual(
+            api.get_atx_heading(H1 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, }])
+
+        self.assertEqual(
             api.get_atx_heading(H2 + S1 + CMARK_LINE_FOO, m_github, 'github'),
             [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, }])
+        self.assertEqual(
+            api.get_atx_heading(H2 + T1 + CMARK_LINE_FOO, m_github, 'github'),
+            [{'header type': None, 'header text trimmed': None, }])
+        self.assertEqual(
+            api.get_atx_heading(H2 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
+            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, }])
+
         self.assertEqual(
             api.get_atx_heading(H3 + S1 + CMARK_LINE_FOO, m_github, 'github'),
             [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, }])
         self.assertEqual(
+            api.get_atx_heading(H3 + T1 + CMARK_LINE_FOO, m_github, 'github'),
+            [{'header type': None, 'header text trimmed': None, }])
+        self.assertEqual(
+            api.get_atx_heading(H3 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, }])
+
+        self.assertEqual(
             api.get_atx_heading(H4 + S1 + CMARK_LINE_FOO, m_github, 'github'),
             [{'header type': 4, 'header text trimmed': CMARK_LINE_FOO, }])
+        self.assertEqual(
+            api.get_atx_heading(H4 + T1 + CMARK_LINE_FOO, m_github, 'github'),
+            [{'header type': None, 'header text trimmed': None, }])
+        self.assertEqual(
+            api.get_atx_heading(H4 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
+            [{'header type': 4, 'header text trimmed': CMARK_LINE_FOO, }])
+
         self.assertEqual(
             api.get_atx_heading(H5 + S1 + CMARK_LINE_FOO, m_github, 'github'),
             [{'header type': 5, 'header text trimmed': CMARK_LINE_FOO, }])
         self.assertEqual(
+            api.get_atx_heading(H5 + T1 + CMARK_LINE_FOO, m_github, 'github'),
+            [{'header type': None, 'header text trimmed': None, }])
+        self.assertEqual(
+            api.get_atx_heading(H5 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
+            [{'header type': 5, 'header text trimmed': CMARK_LINE_FOO, }])
+
+        self.assertEqual(
             api.get_atx_heading(H6 + S1 + CMARK_LINE_FOO, m_github, 'github'),
+            [{'header type': 6, 'header text trimmed': CMARK_LINE_FOO, }])
+        self.assertEqual(
+            api.get_atx_heading(H6 + T1 + CMARK_LINE_FOO, m_github, 'github'),
+            [{'header type': None, 'header text trimmed': None, }])
+        self.assertEqual(
+            api.get_atx_heading(H6 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
             [{'header type': 6, 'header text trimmed': CMARK_LINE_FOO, }])
 
         # Example 33 [Commonmark 0.28].
@@ -1410,6 +1461,14 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.get_atx_heading(H1 + S18 + CMARK_LINE_FOO + S21, m_github,
                                 'github'),
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, }])
+        self.assertEqual(
+            api.get_atx_heading(H1 + T18 + CMARK_LINE_FOO + T21, m_github,
+                                'github'),
+            [{'header type': None, 'header text trimmed': None, }])
+        self.assertEqual(
+            api.get_atx_heading(H1 + T18 + CMARK_LINE_FOO + T21, m_github,
+                                'cmark'),
             [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, }])
 
         # Example 38 [Commonmark 0.28].
@@ -1480,6 +1539,14 @@ class TestApi(unittest.TestCase):
             api.get_atx_heading(H3 + S1 + CMARK_LINE_FOO + S1 + H3 + S5,
                                 m_github, 'github'),
             [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, }])
+        self.assertEqual(
+            api.get_atx_heading(H3 + S1 + CMARK_LINE_FOO + S1 + H3 + T5,
+                                m_github, 'github'),
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO + S1 + H3 + T5, }])
+        self.assertEqual(
+            api.get_atx_heading(H3 + S1 + CMARK_LINE_FOO + S1 + H3 + T5,
+                                m_github, 'cmark'),
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, }])
 
         # Example 44 [Commonmark 0.28].
         # Example 44 [Commonmark 0.29].
@@ -1497,6 +1564,18 @@ class TestApi(unittest.TestCase):
             api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO + H1, m_github,
                                 'github'),
             [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + H1, }])
+        self.assertEqual(
+            api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO + S1 + H1, m_github,
+                                'github'),
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, }])
+        self.assertEqual(
+            api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO + T1 + H1, m_github,
+                                'github'),
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + T1 + H1, }])
+        self.assertEqual(
+            api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO + T1 + H1, m_github,
+                                'cmark'),
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, }])
 
         # Example 46 [Commonmark 0.28].
         # Example 46 [Commonmark 0.29].

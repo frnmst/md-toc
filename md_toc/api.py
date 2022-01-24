@@ -939,6 +939,7 @@ def get_atx_heading(line: str,
             if len(subl) == 0 or subl[0] == '\u005c':
                 continue
 
+            # Preceding.
             i = 0
             while i < len(subl) and subl[i] == ' ' and i <= md_parser['github'][
                     'header']['max space indentation']:
@@ -946,6 +947,7 @@ def get_atx_heading(line: str,
             if i > md_parser['github']['header']['max space indentation']:
                 continue
 
+            # ATX characters.
             offset = i
             while i < len(subl) and subl[i] == '#' and i <= md_parser['github'][
                     'header']['max levels'] + offset:
@@ -956,21 +958,37 @@ def get_atx_heading(line: str,
 
             current_headers = i - offset
 
-            # Include special cases for l endings which should not be
+            # At this moment GFM is still at version 0.29
+            # while cmark is at 0.30. There are subtle differences
+            # such as this one. Assume gitlab is on par with 0.30.
+            if parser in ['github', 'commonmarker']:
+                # GFM 0.29 and cmark 0.29.
+                spaces = [' ']
+            else:
+                # cmark 0.30.
+                spaces = [' ', '\u0009']
+
+            # Include special cases for line endings which should not be
             # discarded as non-ATX headers.
-            if i < len(subl) and (subl[i] != ' ' and subl[i] != '\u000a'
-                                  and subl[i] != '\u000d'):
+            if i < len(subl) and subl[i] not in spaces + ['\u000a', '\u000d']:
                 continue
 
             i += 1
+
             # Exclude leading whitespaces after the ATX header identifier.
-            while i < len(subl) and subl[i] == ' ':
+            # [0.29]:
+            #   The opening sequence of `#` characters must be followed
+            #   by a space or by the end of line.
+            # [0.30]:
+            #   The opening sequence of `#` characters must be followed
+            #   by spaces or tabs, or by the end of line.
+            while i < len(subl) and subl[i] in spaces:
                 i += 1
 
             # An algorithm to find the start and the end of the closing sequence (cs).
             # The closing sequence includes all the significant part of the
             # string. This algorithm has a complexity of O(n) with n being the
-            # length of the l.
+            # length of the line.
             cs_start = i
             cs_end = cs_start
             # subl_prime =~ subl'.
@@ -982,7 +1000,7 @@ def get_atx_heading(line: str,
             hash_round_start = i
 
             # Ignore all characters after newlines and carrage returns which
-            # are not at the end of the l.
+            # are not at the end of the line.
             # See the two CRLF marker tests.
             crlf_marker = 0
             stripped_crlf = False
@@ -1004,7 +1022,7 @@ def get_atx_heading(line: str,
 
             # Cut spaces and hashes.
             while go and i < len_subl - cs_start:
-                if (subl_prime[i] not in [' ', '#']
+                if (subl_prime[i] not in spaces + ['#']
                         or hash_char_rounds > 1):
                     if i > hash_round_start and hash_char_rounds > 0:
                         cs_end = len_subl - hash_round_start
@@ -1012,7 +1030,7 @@ def get_atx_heading(line: str,
                         cs_end = len_subl - i
                     go = False
                 if go:
-                    while subl_prime[i] == ' ':
+                    while subl_prime[i] in spaces:
                         i += 1
                     hash_round_start = i
                     while subl_prime[i] == '#':

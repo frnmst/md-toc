@@ -922,10 +922,10 @@ parser['cmark']['pseudo-re'] = {
     ],
 }
 
-# Punctuation character.
+# Unicode punctuation character.
 # Removed parser['cmark']['pseudo-re']['APC'] because check is done
 # manually in the md_toc.cmark._cmark_cmark_utf8proc_is_punctuation function.
-parser['cmark']['pseudo-re']['PC'] = (
+parser['cmark']['pseudo-re']['UPC'] = (
     parser['cmark']['pseudo-re']['PGUCPC']
     + parser['cmark']['pseudo-re']['PGUCPD']
     + parser['cmark']['pseudo-re']['PGUCPF']
