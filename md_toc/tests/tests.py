@@ -1970,17 +1970,46 @@ class TestApi(unittest.TestCase):
         # example 142 [Commonmark 0.30].
         # Info string.
         self.assertEqual(
+            api.is_opening_code_fence(BACKTICK3 + CMARK_INFO_STRING_FOO),
+            BACKTICK3)
+        self.assertEqual(
             api.is_opening_code_fence(BACKTICK4 + CMARK_INFO_STRING_FOO),
             BACKTICK4)
         self.assertEqual(
             api.is_opening_code_fence(BACKTICK10 + CMARK_INFO_STRING_FOO),
             BACKTICK10)
+        self.assertEqual(
+            api.is_opening_code_fence(BACKTICK3 + S3 + CMARK_INFO_STRING_FOO),
+            BACKTICK3)
+        self.assertEqual(
+            api.is_opening_code_fence(BACKTICK3 + S3 + CMARK_INFO_STRING_FOO, 'cmark'),
+            BACKTICK3)
+        self.assertEqual(
+            api.is_opening_code_fence(BACKTICK3 + T3 + CMARK_INFO_STRING_FOO),
+            BACKTICK3)
+        self.assertEqual(
+            api.is_opening_code_fence(BACKTICK3 + T3 + CMARK_INFO_STRING_FOO, 'cmark'),
+            BACKTICK3)
 
+        self.assertEqual(
+            api.is_opening_code_fence(TILDE3 + CMARK_INFO_STRING_FOO), TILDE3)
         self.assertEqual(
             api.is_opening_code_fence(TILDE4 + CMARK_INFO_STRING_FOO), TILDE4)
         self.assertEqual(
             api.is_opening_code_fence(TILDE10 + CMARK_INFO_STRING_FOO),
             TILDE10)
+        self.assertEqual(
+            api.is_opening_code_fence(TILDE3 + S3 + CMARK_INFO_STRING_FOO),
+            TILDE3)
+        self.assertEqual(
+            api.is_opening_code_fence(TILDE3 + S3 + CMARK_INFO_STRING_FOO, 'cmark'),
+            TILDE3)
+        self.assertEqual(
+            api.is_opening_code_fence(TILDE3 + T3 + CMARK_INFO_STRING_FOO),
+            TILDE3)
+        self.assertEqual(
+            api.is_opening_code_fence(TILDE3 + T3 + CMARK_INFO_STRING_FOO, 'cmark'),
+            TILDE3)
 
         # Example 112 [Commonmark 0.28].
         # Example 113 [Commonmark 0.29].
@@ -2060,6 +2089,7 @@ class TestApi(unittest.TestCase):
         # Example 96 [Commonmark 0.28].
         # Example 97 [Commonmark 0.29].
         # Example 127 [Commonmark 0.30].
+        # End of document.
         self.assertTrue(
             api.is_closing_code_fence(LINE_LINE_FEED + BACKTICK3 + LINE_LINE_FEED + 'aaa',
                                       BACKTICK5, True))
@@ -2071,7 +2101,10 @@ class TestApi(unittest.TestCase):
         # Example 97 [Commonmark 0.28].
         # Example 98 [Commonmark 0.29].
         # Example 128 [Commonmark 0.30].
-        # not relevant because we don't have to find headings inside blockquotes.
+        # Not relevant because we don't have to find headings inside blockquotes.
+
+        # Example 129 -> 134 [Commonmark 0.30].
+        # See test_is_opening_code_fence.
 
         # Example 104 [Commonmark 0.28].
         # Example 105 [Commonmark 0.29].
@@ -2107,6 +2140,9 @@ class TestApi(unittest.TestCase):
         self.assertFalse(
             api.is_closing_code_fence(BACKTICK3 + S1 + BACKTICK2, BACKTICK6))
 
+        # Example 140 -> 146 [Commonmark 0.30].
+        # See test_is_opening_code_fence.
+
         # Example 115 [Commonmark 0.28].
         # Example 117 [Commonmark 0.29].
         # Example 147 [Commonmark 0.30].
@@ -2115,6 +2151,25 @@ class TestApi(unittest.TestCase):
 
         self.assertFalse(
             api.is_closing_code_fence(TILDE3 + S1 + 'aaa', TILDE3))
+
+        # Extra examples for tabs [Commonmark 0.30].
+        self.assertTrue(
+            api.is_closing_code_fence(BACKTICK3 + T1, BACKTICK3, 'cmark'))
+        self.assertFalse(
+            api.is_closing_code_fence(BACKTICK3 + T1, BACKTICK3))
+        self.assertTrue(
+            api.is_closing_code_fence(BACKTICK3 + T4 + S4, BACKTICK3, 'cmark'))
+        self.assertFalse(
+            api.is_closing_code_fence(BACKTICK3 + T4 + S4, BACKTICK3))
+
+        self.assertTrue(
+            api.is_closing_code_fence(TILDE3 + T1, TILDE3, 'cmark'))
+        self.assertFalse(
+            api.is_closing_code_fence(TILDE3 + T4 + S4, TILDE3))
+        self.assertTrue(
+            api.is_closing_code_fence(TILDE3 + T1, TILDE3, 'cmark'))
+        self.assertFalse(
+            api.is_closing_code_fence(TILDE3 + T4 + S4, TILDE3))
 
     @unittest.skip("empty test")
     def test_init_indentation_status_list(self):

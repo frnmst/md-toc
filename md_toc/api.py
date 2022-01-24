@@ -1243,8 +1243,22 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
                 i += 1
 
             info_string = line[info_string_start:len(line)]
+            # [0.29]
+            #   The line with the opening code fence may optionally contain
+            #   some text following the code fence; this is trimmed of leading
+            #   and trailing whitespace and called the info string.
+            # [0.30]
+            #   The line with the opening code fence may optionally contain
+            #   some text following the code fence; this is trimmed of leading
+            #   and trailing spaces or tabs and called the info string.
+            # This does not change the end result of this function.
+            if parser in ['github', 'commonmarker']:
+                spaces = ' '
+            else:
+                spaces = ' \u0009'
+            info_string = info_string.strip(spaces)
 
-        # Backticks or tildes in info string are explicitly forbidden
+        # Backticks or tildes in info strings are explicitly forbidden
         # in a backtick-opened code fence, for Commonmark 0.29.
         # This also solves example 107 [Commonmark 0.28]. See:
         # https://github.github.com/gfm/#example-107
@@ -1298,7 +1312,7 @@ def is_closing_code_fence(line: str,
             return False
 
         # Additional security.
-        fence = fence.rstrip('\n').rstrip(' ')
+        fence = fence.rstrip(' \n')
         # Check that all fence characters are equal.
         if fence != len(fence) * fence[0]:
             return False
@@ -1320,7 +1334,19 @@ def is_closing_code_fence(line: str,
         if not line.startswith(fence):
             return False
 
-        line = line.rstrip('\n').rstrip(' ')
+        # [0.29]
+        #   The closing code fence may be indented up to three spaces, and may be
+        #   followed only by spaces, which are ignored.
+        # [0.30]
+        #   The closing code fence may be preceded by up to three spaces of
+        #   indentation, and may be followed only by spaces or tabs,
+        #   which are ignored.
+        if parser in ['github', 'commonmarker']:
+            spaces = ' '
+        else:
+            spaces = ' \u0009'
+        line = line.rstrip(spaces + '\n')
+
         # Solves:
         # example 93 -> 94 [Commonmark 0.28]
         # example 94 -> 95 [Commonmark 0.29]
