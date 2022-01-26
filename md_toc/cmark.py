@@ -1,7 +1,7 @@
 #
 # cmark.py
 #
-# Copyright (C) 2017-2021 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
+# Copyright (C) 2017-2022 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
 #
 # This file is part of md-toc.
 #
@@ -24,12 +24,7 @@ import copy
 
 from .constants import parser as md_parser
 from .exceptions import CannotTreatUnicodeString
-
-
-def _noop(var):
-    # Black hole for unused variables
-    # to avoid triggering flake8.
-    pass
+from .generic import _noop
 
 
 class _cmarkCmarkReference:

@@ -2,7 +2,7 @@
 #
 # tests.py
 #
-# Copyright (C) 2017-2021 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
+# Copyright (C) 2017-2022 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
 #
 # This file is part of md-toc.
 #
@@ -1123,6 +1123,9 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.remove_html_tags('<a><bab><c2c>', 'github'), str()
         )
+        self.assertEqual(
+            api.remove_html_tags('<a><bab><c2c>', 'cmark'), str()
+        )
 
         # Example 585 [Commonmark 0.28].
         # Example 610 [Commonmark 0.29].
@@ -1131,13 +1134,53 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.remove_html_tags('<a/><b2/>', 'github'), str()
         )
+        self.assertEqual(
+            api.remove_html_tags('<a/><b2/>', 'cmark'), str()
+        )
 
         # Example 586 [Commonmark 0.28].
         # Example 611 [Commonmark 0.29].
         # Example 614 [Commonmark 0.30].
         # Example 634 [GFM 0.29.0.gfm.2].
+        # Original example with extensions.
         self.assertEqual(
             api.remove_html_tags('<a  /><b2\ndata="foo" >', 'github'), str()
+        )
+        self.assertEqual(
+            api.remove_html_tags('<a  /><b2\r\ndata="foo" >', 'github'), str()
+        )
+        self.assertEqual(
+            api.remove_html_tags('<a  /><b2\rdata="foo" >', 'github'), str()
+        )
+        self.assertEqual(
+            api.remove_html_tags('<a  /><b2\n\rdata="foo" >', 'github'), str()
+        )
+        self.assertEqual(
+            api.remove_html_tags('<a\t/><b2\ndata="foo" >', 'github'), str()
+        )
+        # Two newlines.
+        self.assertEqual(
+            api.remove_html_tags('<a\t\t  /><b2\n\ndata="foo" >', 'github'), str()
+        )
+
+        self.assertEqual(
+            api.remove_html_tags('<a  /><b2\ndata="foo" >', 'cmark'), str()
+        )
+        self.assertEqual(
+            api.remove_html_tags('<a  /><b2\r\ndata="foo" >', 'cmark'), str()
+        )
+        self.assertEqual(
+            api.remove_html_tags('<a  /><b2\rdata="foo" >', 'cmark'), str()
+        )
+        self.assertEqual(
+            api.remove_html_tags('<a  /><b2\n\rdata="foo" >', 'cmark'), '<b2\n\rdata="foo" >'
+        )
+        self.assertEqual(
+            api.remove_html_tags('<a\t\t  /><b2\ndata="foo" >', 'cmark'), str()
+        )
+        # Two newlines.
+        self.assertEqual(
+            api.remove_html_tags('<a\t/><b2\n\ndata="foo" >', 'cmark'), '<b2\n\ndata="foo" >'
         )
 
         # Example 587 [Commonmark 0.28].
@@ -1147,6 +1190,9 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.remove_html_tags('<a foo="bar" bam = \'baz <em>"</em>\'\n_boolean zoop:33=zoop:33 />', 'github'), str()
         )
+        self.assertEqual(
+            api.remove_html_tags('<a foo="bar" bam = \'baz <em>"</em>\'\n_boolean zoop:33=zoop:33 />', 'cmark'), str()
+        )
 
         # Example 588 [Commonmark 0.28].
         # Example 613 [Commonmark 0.29].
@@ -1154,6 +1200,9 @@ class TestApi(unittest.TestCase):
         # Example 636 [GFM 0.29.0.gfm.2].
         self.assertEqual(
             api.remove_html_tags('Foo <responsive-image src="foo.jpg" />', 'github'), 'Foo '
+        )
+        self.assertEqual(
+            api.remove_html_tags('Foo <responsive-image src="foo.jpg" />', 'cmark'), 'Foo '
         )
 
         # Example 589 [Commonmark 0.28].
@@ -1163,6 +1212,9 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.remove_html_tags('<33> <__>', 'github'), '<33> <__>'
         )
+        self.assertEqual(
+            api.remove_html_tags('<33> <__>', 'cmark'), '<33> <__>'
+        )
 
         # Example 590 [Commonmark 0.28].
         # Example 615 [Commonmark 0.29].
@@ -1170,6 +1222,9 @@ class TestApi(unittest.TestCase):
         # Example 638 [GFM 0.29.0.gfm.2].
         self.assertEqual(
             api.remove_html_tags('<a h*#ref="hi">', 'github'), '<a h*#ref="hi">'
+        )
+        self.assertEqual(
+            api.remove_html_tags('<a h*#ref="hi">', 'cmark'), '<a h*#ref="hi">'
         )
 
         # Example 591 [Commonmark 0.28].
@@ -1179,6 +1234,9 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.remove_html_tags('<a href="hi\'> <a href=hi\'>', 'github'), '<a href="hi\'> <a href=hi\'>'
         )
+        self.assertEqual(
+            api.remove_html_tags('<a href="hi\'> <a href=hi\'>', 'cmark'), '<a href="hi\'> <a href=hi\'>'
+        )
 
         # Example 592 [Commonmark 0.28].
         # Example 617 [Commonmark 0.29].
@@ -1187,13 +1245,19 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.remove_html_tags('< a><\nfoo><bar/ >', 'github'), '< a><\nfoo><bar/ >'
         )
+        self.assertEqual(
+            api.remove_html_tags('< a><\nfoo><bar/ >', 'cmark'), '< a><\nfoo><bar/ >'
+        )
 
         # Example 593 [Commonmark 0.28].
         # Example 618 [Commonmark 0.29].
         # Example 621 [Commonmark 0.30].
         # Example 641 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('<a href=\'bar\'title=title>', 'github'), '<a href=\'bar\'title=title>'
+            api.remove_html_tags(r"<a href='bar'title=title>", 'github'), r"<a href='bar'title=title>"
+        )
+        self.assertEqual(
+            api.remove_html_tags(r"<a href='bar'title=title>", 'cmark'), r"<a href='bar'title=title>"
         )
 
         # Example 594 [Commonmark 0.28].
@@ -1203,6 +1267,9 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.remove_html_tags('</a></foo >', 'github'), str()
         )
+        self.assertEqual(
+            api.remove_html_tags('</a></foo >', 'cmark'), str()
+        )
 
         # Example 595 [Commonmark 0.28].
         # Example 620 [Commonmark 0.29].
@@ -1210,6 +1277,9 @@ class TestApi(unittest.TestCase):
         # Example 643 [GFM 0.29.0.gfm.2].
         self.assertEqual(
             api.remove_html_tags('</a href="foo">', 'github'), '</a href="foo">'
+        )
+        self.assertEqual(
+            api.remove_html_tags('</a href="foo">', 'cmark'), '</a href="foo">'
         )
 
         # Example 596 [Commonmark 0.28].
@@ -1219,6 +1289,9 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.remove_html_tags('foo <!-- this is a\ncomment - with hyphen -->', 'github'), 'foo '
         )
+        self.assertEqual(
+            api.remove_html_tags('foo <!-- this is a\ncomment - with hyphen -->', 'cmark'), 'foo '
+        )
 
         # Example 597 [Commonmark 0.28].
         # Example 622 [Commonmark 0.29].
@@ -1227,16 +1300,25 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.remove_html_tags('foo <!-- not a comment -- two hyphens -->', 'github'), 'foo <!-- not a comment -- two hyphens -->'
         )
+        self.assertEqual(
+            api.remove_html_tags('foo <!-- not a comment -- two hyphens -->', 'cmark'), 'foo <!-- not a comment -- two hyphens -->'
+        )
 
         # Example 598 [Commonmark 0.28].
         # Example 623 [Commonmark 0.29].
         # Example 626 [Commonmark 0.30].
         # Example 646 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('foo <!--> foo -->'), 'foo <!--> foo -->'
+            api.remove_html_tags('foo <!--> foo -->', 'cmark'), 'foo <!--> foo -->'
         )
         self.assertEqual(
-            api.remove_html_tags('foo <!-- foo--->'), 'foo <!-- foo--->'
+            api.remove_html_tags('foo <!-- foo--->', 'cmark'), 'foo <!-- foo--->'
+        )
+        self.assertEqual(
+            api.remove_html_tags('foo <!--> foo -->', 'cmark'), 'foo <!--> foo -->'
+        )
+        self.assertEqual(
+            api.remove_html_tags('foo <!-- foo--->', 'cmark'), 'foo <!-- foo--->'
         )
 
         # Example 599 [Commonmark 0.28].
@@ -1246,6 +1328,9 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.remove_html_tags('foo <?php echo $a; ?>', 'github'), 'foo '
         )
+        self.assertEqual(
+            api.remove_html_tags('foo <?php echo $a; ?>', 'cmark'), 'foo '
+        )
 
         # Example 600 [Commonmark 0.28].
         # Example 625 [Commonmark 0.29].
@@ -1253,6 +1338,9 @@ class TestApi(unittest.TestCase):
         # Example 648 [GFM 0.29.0.gfm.2].
         self.assertEqual(
             api.remove_html_tags('foo <!ELEMENT br EMPTY>', 'github'), 'foo '
+        )
+        self.assertEqual(
+            api.remove_html_tags('foo <!ELEMENT br EMPTY>', 'cmark'), 'foo '
         )
 
         # Example 601 [Commonmark 0.28].
@@ -1262,6 +1350,9 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.remove_html_tags('foo <![CDATA[>&<]]>', 'github'), 'foo '
         )
+        self.assertEqual(
+            api.remove_html_tags('foo <![CDATA[>&<]]>', 'cmark'), 'foo '
+        )
 
         # Example 602 [Commonmark 0.28].
         # Example 627 [Commonmark 0.29].
@@ -1269,6 +1360,9 @@ class TestApi(unittest.TestCase):
         # Example 650 [GFM 0.29.0.gfm.2].
         self.assertEqual(
             api.remove_html_tags('foo <a href="&ouml;">', 'github'), 'foo '
+        )
+        self.assertEqual(
+            api.remove_html_tags('foo <a href="&ouml;">', 'cmark'), 'foo '
         )
 
         # Example 603 [Commonmark 0.28].
@@ -1278,6 +1372,9 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             api.remove_html_tags(r'foo <a href="\*">', 'github'), 'foo '
         )
+        self.assertEqual(
+            api.remove_html_tags(r'foo <a href="\*">', 'cmark'), 'foo '
+        )
 
         # Example 604 [Commonmark 0.28].
         # Example 629 [Commonmark 0.29].
@@ -1285,6 +1382,9 @@ class TestApi(unittest.TestCase):
         # Example 652 [GFM 0.29.0.gfm.2].
         self.assertEqual(
             api.remove_html_tags('<a href="\"">', 'github'), '<a href="\"">'
+        )
+        self.assertEqual(
+            api.remove_html_tags('<a href="\"">', 'cmark'), '<a href="\"">'
         )
 
         # GitHub Flavored Markdown Disallowed Raw HTML (extension).
