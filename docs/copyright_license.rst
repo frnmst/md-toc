@@ -8,7 +8,7 @@ Scope
 `````
 
 +-----------------------------------------+-----------------------------------------------+
-| Name                                    | Parsers                                       |
+| Applies to                              | Parsers                                       |
 +-----------------------------------------+-----------------------------------------------+
 | Most of md-toc's API                    | all                                           |
 +-----------------------------------------+-----------------------------------------------+
@@ -20,7 +20,7 @@ Text
 ::
 
 
-    Copyright (C) 2017-2021 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
+    Copyright (C) 2017-2022 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
 
     md-toc is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ Scope
 `````
 
 +-----------------------------------------+-----------------------------------------------+
-| Name                                    | Parsers                                       |
+| Applies to                              | Parsers                                       |
 +-----------------------------------------+-----------------------------------------------+
 | Headers                                 | ``redcarpet``                                 |
 | Anchor link types and behaviours        | ``redcarpet``                                 |
@@ -84,7 +84,7 @@ Scope
 `````
 
 +-----------------------------------------+-----------------------------------------------+
-| Name                                    | Parsers                                       |
+| Applies to                              | Parsers                                       |
 +-----------------------------------------+-----------------------------------------------+
 | Anchor link types and behaviours        | ``cmark``, ``github``                         |
 +-----------------------------------------+-----------------------------------------------+
@@ -127,9 +127,9 @@ Scope
 `````
 
 +-----------------------------------------+-----------------------------------------------+
-| Name                                    | Parsers                                       |
+| Applies to                              | Parsers                                       |
 +-----------------------------------------+-----------------------------------------------+
-| Emphasis                                | ``cmark``, ``github``, ``gitlab``             |
+| Most ``md_toc/cmark.py`` code           | ``cmark``, ``github``, ``gitlab``             |
 +-----------------------------------------+-----------------------------------------------+
 
 Text
@@ -139,7 +139,7 @@ Text
 
 
     Copyright (c) 2014, John MacFarlane
-    Copyright (c) 2021, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
+    Copyright (c) 2021-2022, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
 
     All rights reserved.
 
@@ -174,7 +174,7 @@ Scope
 `````
 
 +-----------------------------------------+-----------------------------------------------+
-| Name                                    | Parsers                                       |
+| Applies to                              | Parsers                                       |
 +-----------------------------------------+-----------------------------------------------+
 | Emphasis                                | ``cmark``, ``github``, ``gitlab``             |
 +-----------------------------------------+-----------------------------------------------+
@@ -190,7 +190,7 @@ Text
     are derived from utf8proc
     (<http://www.public-software-group.org/utf8proc>),
     (C) 2009 Public Software Group e. V., Berlin, Germany.
-    Copyright (C) 2021, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
+    Copyright (C) 2021-2022, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -218,7 +218,7 @@ Scope
 `````
 
 +-----------------------------------------+-----------------------------------------------+
-| Name                                    | Parsers                                       |
+| Applies to                              | Parsers                                       |
 +-----------------------------------------+-----------------------------------------------+
 | Emphasis                                | ``cmark``, ``github``, ``gitlab``             |
 +-----------------------------------------+-----------------------------------------------+
@@ -232,7 +232,7 @@ Text
     buffer.h, buffer.c, chunk.h
 
     are derived from code (C) 2012 Github, Inc.
-    Copyright (C) 2021, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
+    Copyright (C) 2021-2022, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
     this software and associated documentation files (the "Software"), to deal in

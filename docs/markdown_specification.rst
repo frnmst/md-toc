@@ -50,7 +50,7 @@ Supported markdown parsers
 
 - ``goldmark``:
 
-    - this parser claims to be compliant with CommonMark: `goldmark is compliant with CommonMark 0.29.`.
+    - this parser claims to be compliant with CommonMark: `goldmark is compliant with CommonMark 0.30.`.
       For this reason ``goldmark`` is an alias of ``cmark``.
 
 - ``redcarpet``:
@@ -69,23 +69,23 @@ Only ATX-style headings are supported in md-toc.
 - ``cmark``, ``github``, ``gitlab``: the code used in md-toc is a reverse engineering of the
   behavour described in the following:
 
-  - https://spec.commonmark.org/0.29/#atx-heading
+  - https://spec.commonmark.org/0.30/#atx-heading
 
   The escape character ``\`` will be left as-is since they are parsed by
   Github's markdown parser already:
 
-  - https://spec.commonmark.org/0.29/#backslash-escapes
+  - https://spec.commonmark.org/0.30/#backslash-escapes
 
   A line ending character is ``U+000A`` or the ``U+000D`` character,
-  respectively ``\n`` and ``\r`` or ``\r\n``.
+  respectively ``\n`` and ``\r`` (or ``\r\n`` if combined).
   Everything following those characters is ignored.
   This has also the benefit to automatically remove
   the trailing newline or carriage return at the end of each line. This also
   includes ATX headers with line endings only as main content, such as
   ``#\n`` or ``#\r``. See also:
 
-  - https://spec.commonmark.org/0.29/#line
-  - https://spec.commonmark.org/0.29/#line-ending
+  - https://spec.commonmark.org/0.30/#line
+  - https://spec.commonmark.org/0.30/#line-ending
 
   Every other rule for ATX headings is applied.
 
@@ -170,16 +170,17 @@ Indentation
 ^^^^^^^^^^^
 
 - ``cmark``, ``github``, ``gitlab``: list indentation for sublists with this parser is based on the
-  previous state, as stated in the GitHub Flavored Markdown document, at
+  previous state, as stated in the Commonmark spec, at
   section 5.2:
 
     "The most important thing to notice is that the position of the text after the
     list marker determines how much indentation is needed in subsequent blocks in
-    the list item. If the list marker takes up two spaces, and there are three
-    spaces between the list marker and the next non-whitespace character, then
-    blocks must be indented five spaces in order to fall under the list item."
+    the list item. If the list marker takes up two spaces of indentation,
+    and there are three spaces between the list marker and the next character
+    other than a space or tab, then blocks must be indented five spaces in order
+    to fall under the list item."
 
-  - https://github.github.com/gfm/#list-items
+  - https://spec.commonmark.org/0.30/#list-items
 
   This is also true with the specular case: if our new list element needs less
   indentation than the one processed currently, we have to use the same number
@@ -465,7 +466,7 @@ Overflows
   the following. If that is the case then a  ``GithubOverflowOrderedListMarker``
   exception is raised:
 
-  - https://spec.commonmark.org/0.29/#ordered-list-marker
+  - https://spec.commonmark.org/0.30/#ordered-list-marker
 
 - ``redcarpet``: apparently there are no cases of ordered list marker
   overflows:
@@ -478,7 +479,7 @@ Notes on ordered lists
 - ``cmark``, ``github``, ``gitlab``: ordered list markers may start with any integer (except special cases).
   any following number is ignored and subsequent numeration is progressive:
 
-  - https://spec.commonmark.org/0.29/#start-number
+  - https://spec.commonmark.org/0.30/#start-number
 
   However, when you try this in practice this is not always true: nested lists
   do not follow the specifications. See:
@@ -487,7 +488,7 @@ Notes on ordered lists
 
   Markers cannot be negative:
 
-  - https://spec.commonmark.org/0.29/#example-239
+  - https://spec.commonmark.org/0.30/#example-239
 
 - ``redcarpet``: ordered lists do not use the ``start`` HTML attribute:
   any number is ignored and lists starts from 1. See:
@@ -502,7 +503,7 @@ then link label rules will be applied.
 
 - ``cmark``, ``github``, ``gitlab``:
 
-  - https://spec.commonmark.org/0.29/#link-label
+  - https://spec.commonmark.org/0.30/#link-label
 
   If a line ends in 1 or more '\' characters, this disrupts the anchor
   title. For example ``- [xdmdmsdm\](#xdmdmsdm)`` becomes
@@ -520,8 +521,8 @@ then link label rules will be applied.
   If the headers contains ``[`` or ``]``, these characters
   are treated with the following rules.
 
-  - https://spec.commonmark.org/0.29/#link-text
-  - https://spec.commonmark.org/0.29/#link-destination
+  - https://spec.commonmark.org/0.30/#link-text
+  - https://spec.commonmark.org/0.30/#link-destination
 
   According to a function in the source code, balanced square brackets do not
   work, however they do when interpeted by the web interface. It is however
@@ -753,7 +754,7 @@ link destination.
 - ``cmark``,  ``github``, ``gitlab``: At the moment the implementation of the removal is incomplete
   because of its complexity. See:
 
-  - https://spec.commonmark.org/0.29/#emphasis-and-strong-emphasis
+  - https://spec.commonmark.org/0.30/#emphasis-and-strong-emphasis
 
   The core functions for this feature have been translated directly
   from the original cmark source in C to Python, with some differences:
@@ -800,7 +801,11 @@ link destination.
      - https://docs.python.org/3/howto/unicode.html#comparing-strings
 
   The licenses used for all functions with name starting with ``_cmark`` are
-  licenses C, D and E.
+  licenses:
+
+  - C
+  - D
+  - E
 
 Code fence
 ``````````
@@ -815,7 +820,7 @@ get parsed as an element of the TOC.
 - ``cmark``, ``github``, ``gitlab``: the rules followed are the ones reported on the
   documentation:
 
-  - https://spec.commonmark.org/0.29/#code-fence
+  - https://spec.commonmark.org/0.30/#code-fence
 
 - ``redcarpet``: needs to be implemented:
 
@@ -834,7 +839,7 @@ comments seem to be a better solution.
 
 - ``cmark``, ``github``, ``gitlab``:
 
-  - https://spec.commonmark.org/0.29/#html-comment
+  - https://spec.commonmark.org/0.30/#html-comment
 
 - ``redcarpet``:
 
@@ -855,43 +860,13 @@ implement them while others don't; some act on the duplicate entry problem
 while others don't; some strip consecutive dash characters while others don't.
 And it's not just about anchor links, as you have read earlier. For example:
 
-- Gitea apparently uses ``goldmark`` as markdown parser. This parser claims
-  to be compliant with CommonMark: *goldmark is compliant with CommonMark 0.29.*.
-  See:
+- Gitea apparently uses ``goldmark`` as markdown parser. See:
 
   - https://github.com/go-gitea/gitea
-  - https://github.com/yuin/goldmark
   - https://github.com/go-gitea/gitea/blob/71aca93decc10253133dcd77b64dae5d311d7163/modules/markup/markdown/goldmark.go
 
-  Gitea adds an annoying ``user-content`` substring in the TOC's anchor links. This is true for versions (git tags):
-
-  - v1.13.7
-  - v1.13.6
-  - v1.13.5
-  - v1.13.4
-  - v1.13.3
-  - v1.13.2
-  - v1.13.1
-  - v1.13.0
-  - v1.12.6
-  - v1.12.5
-  - v1.12.4
-  - v1.12.3
-  - v1.12.2
-  - v1.12.1
-  - v1.11.8
-  - v1.12.0
-  - v1.11.8
-  - v1.11.7
-  - v1.11.6
-  - v1.11.5
-  - v1.11.4
-  - v1.11.3
-  - v1.11.2
-  - v1.11.1
-  - v1.11.0
-
-  See:
+  Gitea adds an annoying ``user-content`` substring in the TOC's anchor links. This is true
+  for versions since git tag v1.11.0. See:
 
   - https://github.com/go-gitea/gitea/blob/71aca93decc10253133dcd77b64dae5d311d7163/modules/markup/markdown/goldmark.go#L230
   - https://github.com/go-gitea/gitea/issues/12062
