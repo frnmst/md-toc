@@ -24,7 +24,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='md_toc',
-    version='8.1.0',
+    version='8.1.1',
     packages=find_packages(exclude=['*tests*']),
     license='GPLv3+',
     description='A utility that is able to generate a table of contents for a markdown file.',
