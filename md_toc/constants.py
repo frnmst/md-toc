@@ -49,6 +49,7 @@ parser['cmark']['generic'] = {
     'LEFTSINGLEQUOTE': '\xE2\x80\x98',
     'RIGHTSINGLEQUOTE': '\xE2\x80\x99',
     'CMARK_OPT_SMART': 1 << 10,
+    'CMARK_OPT_SOURCEPOS': 1 << 1,
     'MAXBACKTICKS': 1000,
 }
 

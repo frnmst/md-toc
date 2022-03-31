@@ -50,5 +50,22 @@ def _noop(var):
     pass
 
 
+def _replace_substring(source: str, replacement: str, start: int, end: int) -> str:
+    r"""Given a string called source, replace it with a string called replacement between the start ~ end interval."""
+    replaced = str()
+
+    was_replaced = False
+    i = 0
+    while i < len(source):
+        if i < start or i > end:
+            replaced += source[i]
+        elif not was_replaced:
+            replaced += replacement
+            was_replaced = True
+        i += 1
+
+    return replaced
+
+
 if __name__ == '__main__':
     pass

@@ -1,3 +1,4 @@
 global-include LICENSE.txt
 global-include README.rst
 global-include CONTRIBUTING.rst
+recursive-include md_toc/cmark *.py

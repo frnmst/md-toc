@@ -27,7 +27,8 @@ import sys
 
 import fpyutils
 
-from . import cmark, generic
+from . import generic
+from .cmark import cmark
 from .constants import common_defaults
 from .constants import parser as md_parser
 from .exceptions import (CannotTreatUnicodeString, GithubEmptyLinkLabel,

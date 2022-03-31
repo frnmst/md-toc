@@ -21,10 +21,11 @@
 """The cmark implementation file."""
 
 import copy
+import sys
 
-from .constants import parser as md_parser
-from .exceptions import CannotTreatUnicodeString
-from .generic import _noop
+from ..constants import parser as md_parser
+from ..exceptions import CannotTreatUnicodeString
+from ..generic import _noop, _replace_substring
 
 
 class _cmarkCmarkReference:
@@ -285,6 +286,37 @@ class _cmarkBracket:
         self.image = False
         self.active = True
         self.bracket_after = False
+
+
+# /** Defines the memory allocation functions to be used by CMark
+#  * when parsing and allocating a document tree
+#  */
+# typedef struct cmark_mem {
+#   void *(*calloc)(size_t, size_t);
+#   void *(*realloc)(void *, size_t);
+#   void (*free)(void *);
+# } cmark_mem;
+class _cmarkCmarkMem:
+    pass
+
+
+class _cmarkCmarkStrbuf:
+    def __init__(self):
+        self.mem: _cmarkCmarkMem = None
+        self.ptr: str = str()
+        self.asize: int = 0
+        self.size: int = 0
+
+
+# Should be equivalent to
+#     #define CMARK_BUF_INIT(mem) \
+#       { mem, cmark_strbuf__initbuf, 0, 0 }
+# 0.29, 0.30
+def _cmark_CMARK_BUF_INIT(mem):
+    b = _cmarkCmarkStrbuf()
+    b.mem = mem
+
+    return b
 
 
 # 0.29, 0.30
@@ -997,6 +1029,296 @@ def _cmark_cmark_chunk_rtrim(c: _cmarkCmarkChunk):
         c.length -= 1
 
 
+# 0.30
+def _cmark_isbacktick(c: int) -> int:
+    backtick: int = 0
+    if chr(c) == '`':
+        backtick = 1
+
+    return backtick
+
+
+# Try to process a backtick code span that began with a
+# span of ticks of length openticklength length (already
+# parsed).  Return 0 if you don't find matching closing
+# backticks, otherwise return the position in the subject
+# after the closing backticks.
+# 0.29, 0.30
+def _cmark_scan_to_closing_backticks(subj: _cmarkSubject, openticklength: int) -> int:
+    found: bool = False
+
+    if openticklength > md_parser['cmark']['generic']['MAXBACKTICKS']:
+        # we limit backtick string length because of the array subj->backticks:
+        return 0
+
+    if (subj.scanned_for_backticks and
+       subj.backticks[openticklength] <= subj.pos):
+        # return if we already know there's no closer
+        return 0
+
+    while not found:
+        # read non backticks
+        c: int
+
+        c = _cmark_peek_char(subj)
+        while not _cmark_isbacktick(c):
+            _cmark_advance(subj)
+            c = _cmark_peek_char(subj)
+        if _cmark_is_eof(subj):
+            break
+
+        numticks: int = 0
+        while _cmark_isbacktick(_cmark_peek_char(subj)):
+            _cmark_advance(subj)
+            numticks += 1
+
+        # store position of ender
+        # Ender starting point.
+        if numticks <= md_parser['cmark']['generic']['MAXBACKTICKS']:
+            subj.backticks[numticks] = subj.pos - numticks
+
+        if numticks == openticklength:
+            return subj.pos
+
+    # got through whole input without finding closer
+    subj.scanned_for_backticks = True
+    return 0
+
+
+# Take characters while a predicate holds, and return a string.
+# 0.29, 0.30
+def _cmark_take_while(subj: _cmarkSubject) -> _cmarkCmarkChunk:
+    r"""Get backtick spanning."""
+    c: int
+    startpos: int = subj.pos
+    len: int = 0
+
+    c = _cmark_peek_char(subj)
+    while _cmark_isbacktick(c):
+        _cmark_advance(subj)
+        len += 1
+        c = _cmark_peek_char(subj)
+
+    return _cmark_cmark_chunk_dup(subj.input, startpos, len)
+
+
+# 0.29, 0.30
+def _cmark_cmark_strbuf_grow(buf: _cmarkCmarkStrbuf, target_size: int):
+    # Instead of using assert just raise a ValueError
+    if target_size <= 0:
+        raise ValueError
+
+    if target_size < buf.asize:
+        return
+
+    # Usually it is this value and it is defined in stdint.h.
+    INT32_MAX = (2 << 30) - 1
+
+    # Truncate number to a length of 30 bits.
+    target_size &= INT32_MAX
+
+    if target_size > INT32_MAX / 2:
+        print("[cmark] _cmark_cmark_strbuf_grow requests buffer with size > " + str(INT32_MAX / 2) + ", aborting")
+        sys.exit(1)
+
+    # Oversize the buffer by 50% to guarantee amortized linear time
+    # complexity on append operations.
+    # See also
+    # https://codeyarns.com/tech/2019-03-06-integer-division-in-c.html
+    # for the integer division.
+    new_size: int = target_size + int(target_size / 2)
+    new_size += 1
+    new_size = (new_size + 7) & ~7
+
+    # No need to malloc.
+    # if buf.asize:
+    #     buf->ptr = buf->mem->realloc(buf->ptr, new_size);
+    # else:
+    #     buf->ptr = buf->mem->malloc(newsize)
+
+    buf.asize = new_size
+
+
+# 0.29, 0.30
+def _cmark_cmark_strbuf_clear(buf: _cmarkCmarkStrbuf):
+    buf.size = 0
+
+    if buf.asize > 0:
+        buf.ptr = str()
+
+
+# 0.29, 0.30
+def _cmark_cmark_strbuf_set(buf: _cmarkCmarkStrbuf, data: str, length: int):
+    if length <= 0 or data is None:
+        _cmark_cmark_strbuf_clear(buf)
+    else:
+        if data != buf.ptr:
+            if length >= buf.asize:
+                _cmark_cmark_strbuf_grow(buf, length)
+
+            # alternative to
+            #     memmove(buf->ptr, data, len)
+            buf.ptr = copy.deepcopy(data[0:length])
+        buf.size = length
+
+        # No need to set termination character
+        #     buf.ptr[buf.size] = '\0'
+
+
+# 0.29, 0.30
+def _cmark_cmark_strbuf_truncate(buf: _cmarkCmarkStrbuf, len: int):
+    if len < 0:
+        len = 0
+
+    if len < buf.size:
+        buf.size = len
+
+        # No need for the terminator character.
+        #    buf.ptr[buf.size] = '\0'
+
+
+# 0.29, 0.30
+def _cmark_cmark_strbuf_drop(buf: _cmarkCmarkStrbuf, n: int):
+    if n > 0:
+        if n > buf.size:
+            n = buf.size
+        buf.size = buf.size - n
+        if buf.size:
+            # Alternative to
+            #     memmove(buf->ptr, buf->ptr + n, buf->size);
+            buf.ptr = copy.deepcopy(buf.ptr[n:buf.size])
+
+    # No need for the terminator character.
+    # buf->ptr[buf->size] = '\0';
+
+
+# Destructively modify string, converting newlines to
+# spaces, then removing a single leading + trailing space,
+# unless the code span consists entirely of space characters.
+# 0.29, 0.30
+def _cmark_S_normalize_code(s: _cmarkCmarkStrbuf):
+    r: int = 0
+    w: int = 0
+    contains_nonspace: bool = False
+
+    while r < s.size:
+        if s.ptr[r] == '\r':
+            if (s.ptr[r + 1] != '\n'):
+                s.ptr = _replace_substring(s.ptr, ' ', w, w)
+                w += 1
+        elif s.ptr[r] == '\n':
+            s.ptr = _replace_substring(s.ptr, ' ', w, w)
+            w += 1
+        else:
+            s.ptr = _replace_substring(s.ptr, s.ptr[r], w, w)
+            w += 1
+
+        if s.ptr[r] != ' ':
+            contains_nonspace = True
+
+        r += 1
+
+    # begins and ends with space?
+    if (contains_nonspace
+       and s.ptr[0] == ' '
+       and s.ptr[w - 1] == ' '):
+        _cmark_cmark_strbuf_drop(s, 1)
+        _cmark_cmark_strbuf_truncate(s, w - 2)
+    else:
+        _cmark_cmark_strbuf_truncate(s, w)
+
+
+# 0.29, 0.30
+def _cmark_cmark_strbuf_init(mem: _cmarkCmarkMem, buf: _cmarkCmarkStrbuf, initial_size: int):
+    buf.mem = mem
+    buf.asize = 0
+    buf.size = 0
+    buf.ptr = str()
+
+    if initial_size > 0:
+        _cmark_cmark_strbuf_grow(buf, initial_size)
+
+
+# 0.29, 0.30
+def _cmark_cmark_strbuf_detach(buf: _cmarkCmarkStrbuf) -> str:
+    data: str = buf.ptr
+
+    if buf.asize == 0:
+        # return an empty string
+        #     return (unsigned char *)buf->mem->calloc(1, 1);
+        return str()
+
+    _cmark_cmark_strbuf_init(buf.mem, buf, 0)
+    return data
+
+
+# Return the number of newlines in a given span of text in a subject.  If
+# the number is greater than zero, also return the number of characters
+# between the last newline and the end of the span in `since_newline`.
+# 0.29, 0.30
+def _cmark_count_newlines(subj: _cmarkSubject, start: int, length: int) -> tuple:
+    nls: int = 0
+    since_nl: int = 0
+
+    while length > 0:
+        if subj.input.data[start] == '\n':
+            nls += 1
+            since_nl = 0
+        else:
+            since_nl += 1
+
+        start += 1
+        length -= 1
+
+    if not nls:
+        return 0
+
+    since_newline = since_nl
+    return nls, since_newline
+
+
+# Adjust `node`'s `end_line`, `end_column`, and `subj`'s `line` and
+# `column_offset` according to the number of newlines in a just-matched span
+# of text in `subj`.
+# 0.29, 0.30
+def _cmark_adjust_subj_node_newlines(subj: _cmarkSubject, node: _cmarkCmarkNode, matchlen: int, extra: int, options: int):
+    if not options & md_parser['cmark']['generic']['CMARK_OPT_SOURCEPOS']:
+        return
+
+    newlines: int
+    since_newline: int
+
+    newlines, since_newline = _cmark_count_newlines(subj, subj.pos - matchlen - extra, matchlen)
+    if newlines:
+        subj.line += newlines
+        node.end_line += newlines
+        node.end_column = since_newline
+        subj.column_offset = - subj.pos + since_newline + extra
+
+
+# 0.29, 0.30
+def _cmark_handle_backticks(subj: _cmarkSubject, options: int) -> _cmarkCmarkNode:
+    openticks: _cmarkCmarkChunk = _cmark_take_while(subj)
+    startpos: int = subj.pos
+    endpos: int = _cmark_scan_to_closing_backticks(subj, openticks.length)
+
+    # not found
+    if endpos == 0:
+        # rewind
+        subj.pos = startpos
+        return _cmark_make_str(subj, subj.pos, subj.pos, openticks)
+    else:
+        buf = _cmark_CMARK_BUF_INIT(subj.mem)
+        _cmark_cmark_strbuf_set(buf, subj.input.data[startpos:], endpos - startpos - openticks.length)
+        _cmark_S_normalize_code(buf)
+
+        node: _cmarkCmarkNode = _cmark_make_literal(subj, md_parser['cmark']['cmark_node_type']['CMARK_NODE_CODE'], startpos, endpos - openticks.length - 1)
+        node.len = buf.size
+        node.data = _cmark_cmark_strbuf_detach(buf)
+        _cmark_adjust_subj_node_newlines(subj, node, endpos - startpos, openticks.length, options)
+        return node
+
+
 # 0.29, 0.30
 def _cmark_parse_inline(subj: _cmarkSubject, parent: _cmarkCmarkNode, options: int = 0) -> int:
     r"""Handle all the different elements of a string."""
@@ -1010,9 +1332,11 @@ def _cmark_parse_inline(subj: _cmarkSubject, parent: _cmarkCmarkNode, options: i
     c = _cmark_peek_char(subj)
     if c == 0:
         return 0
-    elif chr(c) == '`':
-        # TODO
+    elif chr(c) == '\r' or chr(c) == '\n':
         _cmark_advance(subj)
+        # TODO
+    elif chr(c) == '`':
+        new_inl = _cmark_handle_backticks(subj, options)
     elif chr(c) == '\\':
         new_inl = _cmark_handle_backslash(subj)
     elif chr(c) == '*' or chr(c) == '_' or chr(c) == '\'' or chr(c) == '"':
@@ -1025,7 +1349,7 @@ def _cmark_parse_inline(subj: _cmarkSubject, parent: _cmarkCmarkNode, options: i
         # TODO
         _cmark_advance(subj)
 
-    # TODO: images, code, HTML tags detection.
+    # TODO: images, HTML tags detection.
 
     else:
         endpos = _cmark_subject_find_special_char(subj, options)
