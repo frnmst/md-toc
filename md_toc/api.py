@@ -779,6 +779,9 @@ def build_anchor_link(header_text_trimmed: str,
     :rtype: str
     :raises: a built-in exception.
 
+    .. note: license B applies for the github part.
+        See docs/copyright_license.rst
+
     .. note: license A applies for the redcarpet part.
         See docs/copyright_license.rst
     """
@@ -917,8 +920,11 @@ def get_atx_heading(line: str,
     :raises: GithubEmptyLinkLabel or GithubOverflowCharsLinkLabel or a
          built-in exception.
 
-    .. note:: license B applies for the github part and license A for redcarpet part.
-         See docs/markdown_specification.rst
+    .. note: license A applies for the redcarpet part.
+         See docs/copyright_license.rst
+
+    .. note:: license B applies for the github part.
+         See docs/copyright_license.rst
     """
     if not keep_header_levels >= 1:
         raise ValueError

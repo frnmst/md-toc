@@ -19,8 +19,6 @@ See also:
 - https://githubengineering.com/a-formal-spec-for-github-markdown/
 - https://github.com/github/cmark/issues/65#issuecomment-343433978
 
-See license B.
-
 Apparently GitHub (and possibly others) filter HTML tags in the anchor links.
 This is an undocumented feature (?) so the ``remove_html_tags`` function was
 added to address this problem. Instead of designing an algorithm to detect HTML tags,
@@ -68,8 +66,6 @@ is used in md-toc. The original version is here:
 
 - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/html.c#L274
 
-See license A.
-
 See also:
 
 - https://github.com/vmg/redcarpet/issues/618#issuecomment-306476184
@@ -84,59 +80,26 @@ link destination.
 ``cmark``,  ``github``, ``gitlab``
 ``````````````````````````````````
 
-At the moment the implementation of the removal is incomplete
+At the moment the implementation of emnphasis removal is incomplete
 because of its complexity. See:
 
 - https://spec.commonmark.org/0.30/#emphasis-and-strong-emphasis
 
-The core functions for this feature have been translated directly
-from the original cmark source in C to Python, with some differences:
+The core functions for this feature have been ported directly
+from the original cmark source with some differences:
+
+#. things such as string manipulation, mallocs, etc are different in Python
 
 #. the ``cmark_utf8proc_charlen`` uses ``length = 1``
-   instead of:
+   instead of ``length = utf8proc_utf8class[ord(line[0])]``
+   (causes list overflow).
 
-   - ``length = cmark_utf8proc_char_len(line[0])``
-   - ``length = utf8proc_utf8class[ord(line)]`` (causes list overflow).
-
-   This is what the ``cmark_utf8proc_char_len`` function should look like in md-toc,
-   which is taken from ``cmark_utf8proc_encode_char`` in the original source:
-
-   .. code-block:: python
-      :linenos:
-
-      def cmark_utf8proc_char_len(char: str) -> int:
-          # Taken from the cmark_utf8proc_encode_char function
-          length = 0
-          uc = ord(char)
-
-          assert (uc >= 0)
-
-          if uc < 0x80:
-              length = 1
-          elif uc < 0x800:
-              length = 2
-          elif uc == 0xFFFF:
-              length = 1
-          elif uc == 0xFFFE:
-              length = 1
-          elif uc < 0x10000:
-              length = 3
-          elif uc < 0x110000:
-              length = 4
-          else:
-              raise ValueError
-
-          return length
+   The ``cmark_utf8proc_charlen`` function is related to
+   the ``cmark_utf8proc_encode_char`` function. Have a look at that function to
+   know character lengths in cmark.
 
    In Python 3, since all characters are UTF-8 by default, they are all
    represented with length 1. See:
 
    - https://rosettacode.org/wiki/String_length#Python
    - https://docs.python.org/3/howto/unicode.html#comparing-strings
-
-The licenses used for all functions with name starting with ``_cmark`` are
-licenses:
-
-- C
-- D
-- E

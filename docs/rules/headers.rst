@@ -32,8 +32,6 @@ Every other rule for ATX headings is applied.
 ``redcarpet``
 -------------
 
-See license A
-
 - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1444
 - https://github.com/vmg/redcarpet/blob/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae/ext/redcarpet/markdown.c#L1981
 

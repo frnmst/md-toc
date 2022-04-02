@@ -39,6 +39,10 @@ def _cmark_cmark_utf8proc_charlen(line: str, line_length: int) -> int:
 
     # Use length = 1 instead of the utf8proc_utf8class[256]
     # list.
+    # Python:
+    #     length = utf8proc_utf8class[ord(line[0])]
+    # C:
+    #     length = utf8proc_utf8class[str[0]];
     # For example:
     # len('ł') == 2 # in Python 2
     # len('ł') == 1 # in Python 3
