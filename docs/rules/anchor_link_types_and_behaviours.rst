@@ -103,3 +103,12 @@ from the original cmark source with some differences:
 
    - https://rosettacode.org/wiki/String_length#Python
    - https://docs.python.org/3/howto/unicode.html#comparing-strings
+
+As of the release md-toc 8.1.2, cmark-gfm is still at version 0.29. Moreover, certain
+code sections used in the emphasis processing are not the same of cmark 0.29. See
+this one for example:
+
+- https://github.com/github/cmark-gfm/blob/0.29.0.gfm.3/src/inlines.c#L639-L654
+- https://github.com/commonmark/cmark/blob/0.29.0/src/inlines.c#L615-L621
+
+For the moment md-toc uses the original cmark source only as reference for emphasis processing.

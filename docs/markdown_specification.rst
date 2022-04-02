@@ -31,8 +31,10 @@ Supported markdown parsers
   - uses a forked version of ``cmark`` with some added extensions.
     This language specification is called GitHub Flavored Markdown.
 
-  - there are subtle differences such as
-    the disallowed raw HTML extension which affects md-toc.
+  - there are subtle differences that affect md-toc such as
+
+    - the disallowed raw HTML extension which affects md-toc
+    - emphasis processing
 
 - ``gitlab``:
 
