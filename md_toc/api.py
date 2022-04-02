@@ -28,7 +28,7 @@ import sys
 import fpyutils
 
 from . import generic
-from .cmark import cmark
+from .cmark import inlines_c, node_h
 from .constants import common_defaults
 from .constants import parser as md_parser
 from .exceptions import (CannotTreatUnicodeString, GithubEmptyLinkLabel,
@@ -712,14 +712,14 @@ def remove_emphasis(line: str, parser: str = 'github') -> list:
         mem = None
         refmap = None
 
-        parent = cmark._cmarkCmarkNode()
+        parent = node_h._cmarkCmarkNode()
         parent.data = line
         parent.length = len(line)
         parent.start_line = 0
         parent.start_column = 0
         parent.internal_offset = 1
 
-        ignore = cmark._cmark_cmark_parse_inlines(mem, parent, refmap, 0)
+        ignore = inlines_c._cmark_cmark_parse_inlines(mem, parent, refmap, 0)
         line = filter_indices_from_line(line, ignore)
 
     elif parser in ['redcarpet']:
