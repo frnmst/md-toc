@@ -24,23 +24,24 @@ import copy
 
 from ..constants import parser as md_parser
 
+# License E applies to this file except for non derivative code:
+# in that case the license header at the top of the file applies.
+# See docs/copyright_license.rst
+
 
 class _cmarkCmarkChunk:
     r"""See chunk.h file."""
-
-    # license E applies here. See docs/copyright_license.rst
 
     def __init__(self, data: str = None, length: int = 0, alloc: int = 0):
         self.data: str = data
         self.length: int = length
 
 
-#  Returns 1 if c is a "whitespace" character as defined by the spec.
+# Returns 1 if c is a "whitespace" character as defined by the spec.
 # int cmark_isspace(char c) { return cmark_ctype_class[(uint8_t)c] == 1; }
 # The only defined whitespaces in the spec are Unicode whitespaces.
 # 0.30
 def _cmark_cmark_chunk_rtrim(c: _cmarkCmarkChunk):
-    # license E applies here. See docs/copyright_license.rst
     while c.length > 0:
         # if (!cmark_isspace(c->data[c->len - 1]))
         if not c.data[c.length - 1] in md_parser['cmark']['pseudo-re']['UWC']:
@@ -51,7 +52,6 @@ def _cmark_cmark_chunk_rtrim(c: _cmarkCmarkChunk):
 
 # 0.30
 def _cmark_cmark_chunk_literal(data: str) -> _cmarkCmarkChunk:
-    # license E applies here. See docs/copyright_license.rst
     length: int
     c: _cmarkCmarkChunk
 
@@ -66,6 +66,9 @@ def _cmark_cmark_chunk_literal(data: str) -> _cmarkCmarkChunk:
 
 # 0.29, 0.30
 def _cmark_cmark_chunk_dup(ch: _cmarkCmarkChunk, pos: int, length: int) -> str:
-    # license E applies here. See docs/copyright_license.rst
     c = _cmarkCmarkChunk(copy.deepcopy(ch.data[pos: pos + length]), length)
     return c
+
+
+if __name__ == '__main__':
+    pass

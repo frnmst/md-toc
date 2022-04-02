@@ -37,17 +37,18 @@ from .utf8_c import (_cmark_cmark_utf8proc_is_punctuation,
                      _cmark_cmark_utf8proc_is_space,
                      _cmark_cmark_utf8proc_iterate)
 
+# License C applies to this file except for non derivative code:
+# in that case the license header at the top of the file applies.
+# See docs/copyright_license.rst
+
 
 # 0.29, 0.30
 def _cmark_make_linebreak(mem):
-    # license C applies here. See docs/copyright_license.rst
     _cmark_make_simple(mem, md_parser['cmark']['cmark_node_type']['CMARK_NODE_LINEBREAK'])
 
 
 class _cmarkDelimiter:
     r"""A list node with attributes useful for processing emphasis."""
-
-    # license C applies here. See docs/copyright_license.rst
 
     def __init__(self, delim_char: str, length: int):
         self.previous = None
@@ -96,7 +97,6 @@ class _cmarkDelimiter:
 
 
 class _cmarkBracket:
-    # license C applies here. See docs/copyright_license.rst
     def __init__(self):
         self.previous = None
         self.previous_delimiter = None
@@ -112,8 +112,6 @@ class _cmarkBracket:
 
 class _cmarkSubject:
     r"""A double linked list useful for processing emphasis."""
-
-    # license C applies here. See docs/copyright_license.rst
 
     def __init__(self):
         # cmark_mem
@@ -199,13 +197,11 @@ class _cmarkSubject:
 
 # 0.30
 def _cmark_S_is_line_end_char(c: str) -> bool:
-    # license C applies here. See docs/copyright_license.rst
     return c == '\n' or c == '\r'
 
 
 # 0.29, 0.30
 def _cmark_make_literal(subj: _cmarkSubject, t: int, start_column: int, end_column: int) -> _cmarkCmarkNode:
-    # license C applies here. See docs/copyright_license.rst
     r"""Create an inline with a literal string value."""
     e = _cmarkCmarkNode()
 
@@ -221,7 +217,6 @@ def _cmark_make_literal(subj: _cmarkSubject, t: int, start_column: int, end_colu
 
 # 0.29, 0.30
 def _cmark_make_simple(mem, t: int) -> _cmarkCmarkNode:
-    # license C applies here. See docs/copyright_license.rst
     e = _cmarkCmarkNode()
     e.mem = copy.deepcopy(mem)
     e.type = t
@@ -230,7 +225,6 @@ def _cmark_make_simple(mem, t: int) -> _cmarkCmarkNode:
 
 # 0.29, 0.30
 def _cmark_make_str(subj: _cmarkSubject, sc: int, ec: int, s: _cmarkCmarkChunk) -> _cmarkCmarkNode:
-    # license C applies here. See docs/copyright_license.rst
     # s = char
     # sc = start column
     # ec = end cloumn
@@ -253,7 +247,6 @@ def _cmark_make_str(subj: _cmarkSubject, sc: int, ec: int, s: _cmarkCmarkChunk) 
 def _cmark_subject_from_buf(mem, line_number: int,
                             block_offset: int, e: _cmarkSubject, chunk: _cmarkCmarkChunk,
                             refmap: _cmarkCmarkReferenceMap):
-    # license C applies here. See docs/copyright_license.rst
     i: int
     e.mem = mem
     e.input = chunk
@@ -282,7 +275,6 @@ def _cmark_isbacktick(c: int) -> int:
 
 # 0.29, 0.30
 def _cmark_peek_char(subj: _cmarkSubject) -> int:
-    # license C applies here. See docs/copyright_license.rst
     # Instead of using assert just raise a ValueError
     if subj.pos < subj.input.length and ord(subj.input.data[subj.pos]) == 0:
         raise ValueError
@@ -295,27 +287,23 @@ def _cmark_peek_char(subj: _cmarkSubject) -> int:
 
 # 0.29, 0.30
 def _cmark_peek_at(subj: _cmarkSubject, pos: int) -> int:
-    # license C applies here. See docs/copyright_license.rst
     return ord(subj.input.data[pos])
 
 
 # 0.30
 def _cmark_is_eof(subj: _cmarkSubject):
     r"""Return true if there are more characters in the subject."""
-    # license C applies here. See docs/copyright_license.rst.
     return subj.pos >= subj.input.length
 
 
 # 0.29, 0.30
 def _cmark_advance(subj: _cmarkSubject):
-    # license C applies here. See docs/copyright_license.rst.
     # Advance the subject.  Doesn't check for eof.
     subj.pos += 1
 
 
 # 0.29, 0.30
 def _cmark_skip_line_end(subj: _cmarkSubject) -> bool:
-    # license C applies here. See docs/copyright_license.rst
     seen_line_end_char: bool = False
 
     if _cmark_peek_char(subj) == '\r':
@@ -328,9 +316,9 @@ def _cmark_skip_line_end(subj: _cmarkSubject) -> bool:
 
 
 # Take characters while a predicate holds, and return a string.
+# Get backtick spanning.
 # 0.29, 0.30
 def _cmark_take_while(subj: _cmarkSubject) -> _cmarkCmarkChunk:
-    r"""Get backtick spanning."""
     c: int
     startpos: int = subj.pos
     len: int = 0
@@ -498,7 +486,6 @@ def _cmark_handle_backticks(subj: _cmarkSubject, options: int) -> _cmarkCmarkNod
 
 # 0.29, 0.30
 def _cmark_scan_delims(subj: _cmarkSubject, c: str) -> tuple:
-    # license C applies here. See docs/copyright_license.rst
     numdelims: int = 0
     before_char_pos: int = 0
     after_char: int = 0
@@ -571,7 +558,6 @@ def _cmark_scan_delims(subj: _cmarkSubject, c: str) -> tuple:
 
 # 0.30
 def _cmark_pop_bracket(subj: _cmarkSubject):
-    # license C applies here. See docs/copyright_license.rst
     b: _cmarkBracket
     if subj.last_bracket is None:
         return
@@ -585,7 +571,6 @@ def _cmark_pop_bracket(subj: _cmarkSubject):
 # 0.29, 0.30
 def _cmark_push_delimiter(subj: _cmarkSubject, c: str, can_open: bool,
                           can_close: bool, inl_text: _cmarkCmarkNode):
-    # license C applies here. See docs/copyright_license.rst
     delim = _cmarkDelimiter(c, inl_text.length)
     delim.can_open = can_open
     delim.can_close = can_close
@@ -596,7 +581,6 @@ def _cmark_push_delimiter(subj: _cmarkSubject, c: str, can_open: bool,
 
 # 0.29, 0.30
 def _cmark_push_bracket(subj: _cmarkSubject, image: bool, inl_text: _cmarkCmarkNode):
-    # license C applies here. See docs/copyright_license.rst
     b = _cmarkBracket()
     if subj.last_bracket is not None:
         subj.last_bracket.bracket_after = True
@@ -613,7 +597,6 @@ def _cmark_push_bracket(subj: _cmarkSubject, image: bool, inl_text: _cmarkCmarkN
 # Assumes the subject has a c at the current position.
 # 0.29, 0.30
 def _cmark_handle_delim(subj: _cmarkSubject, c: str, smart: bool = False) -> _cmarkCmarkNode:
-    # license C applies here. See docs/copyright_license.rst
     numdelims: int
     can_open: bool
     can_close: bool
@@ -642,7 +625,6 @@ def _cmark_handle_delim(subj: _cmarkSubject, c: str, smart: bool = False) -> _cm
 
 # 0.29, 0.30
 def _cmark_process_emphasis(subj: _cmarkSubject, stack_bottom: _cmarkDelimiter, ignore: list) -> list:
-    # license C applies here. See docs/copyright_license.rst
     closer: _cmarkDelimiter = subj.last_delim
     opener: _cmarkDelimiter
     openers_bottom_index: int = 0
@@ -718,7 +700,6 @@ def _cmark_process_emphasis(subj: _cmarkSubject, stack_bottom: _cmarkDelimiter, 
 
 # 0.29, 0.30
 def _cmark_remove_emph(subj: _cmarkSubject, opener: _cmarkDelimiter, closer: _cmarkDelimiter, ignore: list):
-    # license C applies here. See docs/copyright_license.rst
     # This function refers to S_insert_emph()
     delim: _cmarkDelimiter
     tmp_delim: _cmarkDelimiter
@@ -797,10 +778,9 @@ def _cmark_remove_emph(subj: _cmarkSubject, opener: _cmarkDelimiter, closer: _cm
     return closer
 
 
+# Parse backslash-escape or just a backslash, returning an inline.
 # 0.29, 0.30
 def _cmark_handle_backslash(subj: _cmarkSubject):
-    r"""Parse backslash-escape or just a backslash, returning an inline."""
-    # license C applies here. See docs/copyright_license.rst
     _cmark_advance(subj)
     nextchar: str = _cmark_peek_char(subj)
 
@@ -816,7 +796,6 @@ def _cmark_handle_backslash(subj: _cmarkSubject):
 
 # 0.29, 0.30
 def _cmark_subject_find_special_char(subj: _cmarkSubject, options: int) -> int:
-    # license C applies here. See docs/copyright_license.rst
     # "\r\n\\`&_*[]<!"
     SPECIAL_CHARS: list = [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -868,10 +847,9 @@ def _cmark_subject_find_special_char(subj: _cmarkSubject, options: int) -> int:
 
 # Parse an inline, advancing subject, and add it as a child of parent.
 # Return 0 if no inline can be parsed, 1 otherwise.
+# Handle all the different elements of a string.
 # 0.29, 0.30
 def _cmark_parse_inline(subj: _cmarkSubject, parent: _cmarkCmarkNode, options: int = 0) -> int:
-    r"""Handle all the different elements of a string."""
-    # license C applies here. See docs/copyright_license.rst
     new_inl: _cmarkCmarkNode = None
     contents: str
     c: int
@@ -919,11 +897,10 @@ def _cmark_parse_inline(subj: _cmarkSubject, parent: _cmarkCmarkNode, options: i
 
 
 # Parse inlines from parent's string_content, adding as children of parent.
+# Get the ignore list.
 # 0.30
 def _cmark_cmark_parse_inlines(mem, parent: _cmarkCmarkNode,
                                refmap: _cmarkCmarkReferenceMap, options: int) -> list:
-    r"""Get the ignore list."""
-    # license C applies here. See docs/copyright_license.rst
     subj: _cmarkSubject
     content: _cmarkCmarkChunk = _cmarkCmarkChunk(parent.data, parent.length)
     subj = _cmarkSubject()
@@ -944,3 +921,7 @@ def _cmark_cmark_parse_inlines(mem, parent: _cmarkCmarkNode,
         _cmark_pop_bracket(subj)
 
     return ignore
+
+
+if __name__ == '__main__':
+    pass

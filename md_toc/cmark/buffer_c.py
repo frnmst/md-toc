@@ -26,6 +26,10 @@ import sys
 from .buffer_h import _cmark_CMARK_BUF_INIT, _cmarkCmarkStrbuf
 from .cmark_h import _cmarkCmarkMem
 
+# License E applies to this file except for non derivative code:
+# in that case the license header at the top of the file applies.
+# See docs/copyright_license.rst
+
 
 # 0.29, 0.30
 def _cmark_cmark_strbuf_init(mem: _cmarkCmarkMem, buf: _cmarkCmarkStrbuf, initial_size: int):

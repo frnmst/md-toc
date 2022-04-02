@@ -20,9 +20,12 @@
 #
 r"""A cmark implementation file."""
 
+# License C applies to this file except for non derivative code:
+# in that case the license header at the top of the file applies.
+# See docs/copyright_license.rst
+
 
 class _cmarkCmarkNode:
-    # license C applies here. See docs/copyright_license.rst
     def __init__(self):
         # cmark_strbuf
 
@@ -67,3 +70,7 @@ class _cmarkCmarkNode:
         else:
             # Also set first_child if node previously had no children.
             self.first_child = child
+
+
+if __name__ == '__main__':
+    pass

@@ -22,13 +22,20 @@ r"""The cmark implementation file."""
 
 from ..constants import parser as md_parser
 
+# License C applies to this file except for non derivative code:
+# in that case the license header at the top of the file applies.
+# See docs/copyright_license.rst
 
+
+# Return True if c is an ascii punctuation character.
 # 0.29, 0.30
 def _cmark_cmark_ispunct(char: int, parser: str = 'github') -> bool:
-    r"""Return True if c is an ascii punctuation character."""
-    # license C applies here. See docs/copyright_license.rst.
     value = False
     if chr(char) in md_parser[parser]['pseudo-re']['APC']:
         value = True
 
     return value
+
+
+if __name__ == '__main__':
+    pass

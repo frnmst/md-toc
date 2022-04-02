@@ -20,15 +20,18 @@
 #
 r"""A cmark implementation file."""
 
+# License C applies to this file except for non derivative code:
+# in that case the license header at the top of the file applies.
+# See docs/copyright_license.rst
 
-# /** Defines the memory allocation functions to be used by CMark
-#  * when parsing and allocating a document tree
-#  */
-# typedef struct cmark_mem {
-#   void *(*calloc)(size_t, size_t);
-#   void *(*realloc)(void *, size_t);
-#   void (*free)(void *);
-# } cmark_mem;
+
+# Defines the memory allocation functions to be used by CMark
+# when parsing and allocating a document tree
+#     typedef struct cmark_mem {
+#       void *(*calloc)(size_t, size_t);
+#       void *(*realloc)(void *, size_t);
+#       void (*free)(void *);
+#     } cmark_mem;
 class _cmarkCmarkMem:
     pass
 

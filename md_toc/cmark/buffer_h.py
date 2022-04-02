@@ -22,6 +22,10 @@ r"""A cmark implementation file."""
 
 from .cmark_h import _cmarkCmarkMem
 
+# License E applies to this file except for non derivative code:
+# in that case the license header at the top of the file applies.
+# See docs/copyright_license.rst
+
 
 class _cmarkCmarkStrbuf:
     def __init__(self):

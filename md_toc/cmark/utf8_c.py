@@ -24,10 +24,13 @@ from ..constants import parser as md_parser
 from ..exceptions import CannotTreatUnicodeString
 from .cmark_ctype_c import _cmark_cmark_ispunct
 
+# License D applies to this file except for non derivative code:
+# in that case the license header at the top of the file applies.
+# See docs/copyright_license.rst
+
 
 # 0.29, 0.30
 def _cmark_cmark_utf8proc_charlen(line: str, line_length: int) -> int:
-    # license D applies here. See docs/copyright_license.rst
     length: int
     i: int
 
@@ -63,7 +66,6 @@ def _cmark_cmark_utf8proc_charlen(line: str, line_length: int) -> int:
 
 # 0.29, 0.30
 def _cmark_cmark_utf8proc_iterate(line: str, line_len: int) -> tuple:
-    # license D applies here. See docs/copyright_license.rst
     length: int = 0
     uc: int = -1
     dst: int = -1
@@ -99,7 +101,6 @@ def _cmark_cmark_utf8proc_iterate(line: str, line_len: int) -> tuple:
 # 0.29, 0.30
 def _cmark_cmark_utf8proc_is_space(char: int, parser: str = 'github') -> bool:
     r"""Match anything in the Zs class, plus LF, CR, TAB, FF."""
-    # license D applies here. See docs/copyright_license.rst.
     value = False
     if chr(char) in md_parser[parser]['pseudo-re']['UWC']:
         value = True
@@ -110,9 +111,12 @@ def _cmark_cmark_utf8proc_is_space(char: int, parser: str = 'github') -> bool:
 # 0.29, 0.30
 def _cmark_cmark_utf8proc_is_punctuation(char: int, parser: str = 'github') -> bool:
     r"""Match anything in the P[cdefios] classes."""
-    # license C applies here. See docs/copyright_license.rst.
     value = False
     if (char < 128 and _cmark_cmark_ispunct(char)) or chr(char) in md_parser[parser]['pseudo-re']['UPC']:
         value = True
 
     return value
+
+
+if __name__ == '__main__':
+    pass
