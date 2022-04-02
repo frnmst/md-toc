@@ -24,6 +24,7 @@ import copy
 
 from ..constants import parser as md_parser
 from ..generic import _noop
+from .cmark_h import _cmarkCmarkMem
 from .node_h import _cmarkCmarkNode
 
 # License C applies to this file except for non derivative code:
@@ -60,7 +61,7 @@ def _cmark_cmark_node_free(node: _cmarkCmarkNode):
 
 
 # 0.30
-def _cmark_cmark_set_cstr(mem, dst: str, src: str) -> int:
+def _cmark_cmark_set_cstr(mem: _cmarkCmarkMem, dst: str, src: str) -> int:
     old: str = dst
     length: int
 
@@ -100,7 +101,7 @@ def _cmark_cmark_node_set_literal(node: _cmarkCmarkNode, content: str) -> int:
     return 0
 
 
-# 0.30
+# 0.29, 0.30
 # Unlink a node without adjusting its next, prev, and parent pointers.
 def _cmark_S_node_unlink(node: _cmarkCmarkNode):
     if node is None:

@@ -27,6 +27,7 @@ from .cmark_h import _cmarkCmarkMem
 # See docs/copyright_license.rst
 
 
+# 0.29, 0.30
 class _cmarkCmarkStrbuf:
     def __init__(self):
         self.mem: _cmarkCmarkMem = None

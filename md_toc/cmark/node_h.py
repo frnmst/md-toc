@@ -20,6 +20,8 @@
 #
 r"""A cmark implementation file."""
 
+from .cmark_h import _cmarkCmarkMem
+
 # License C applies to this file except for non derivative code:
 # in that case the license header at the top of the file applies.
 # See docs/copyright_license.rst
@@ -30,7 +32,7 @@ class _cmarkCmarkNode:
         # cmark_strbuf
 
         # _cmarkCmarkMem
-        self.mem = None
+        self.mem: _cmarkCmarkMem = None
         self.type = None
 
         # Main.

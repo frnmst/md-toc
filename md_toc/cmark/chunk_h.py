@@ -29,6 +29,7 @@ from ..constants import parser as md_parser
 # See docs/copyright_license.rst
 
 
+# 0.30
 class _cmarkCmarkChunk:
     r"""See chunk.h file."""
 

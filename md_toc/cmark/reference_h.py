@@ -21,12 +21,14 @@
 r"""The cmark implementation file."""
 
 from ..generic import _noop
+from .cmark_h import _cmarkCmarkMem
 
 # License C applies to this file except for non derivative code:
 # in that case the license header at the top of the file applies.
 # See docs/copyright_license.rst
 
 
+# 0.30
 class _cmarkCmarkReference:
     def __init__(self):
         next = None
@@ -44,9 +46,10 @@ class _cmarkCmarkReference:
         _noop(size)
 
 
+# 0.30
 class _cmarkCmarkReferenceMap:
     def __init__(self):
-        mem = None
+        mem: _cmarkCmarkMem = None
         refs: _cmarkCmarkReference
         sorted: _cmarkCmarkReference
         size: int = 0

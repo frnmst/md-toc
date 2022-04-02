@@ -30,9 +30,10 @@ from .buffer_h import _cmark_CMARK_BUF_INIT, _cmarkCmarkStrbuf
 from .chunk_h import (_cmark_cmark_chunk_dup, _cmark_cmark_chunk_literal,
                       _cmark_cmark_chunk_rtrim, _cmarkCmarkChunk)
 from .cmark_ctype_c import _cmark_cmark_ispunct
-from .cmark_reference_h import _cmarkCmarkReferenceMap
+from .cmark_h import _cmarkCmarkMem
 from .node_c import _cmark_cmark_node_free, _cmark_cmark_node_set_literal
 from .node_h import _cmarkCmarkNode
+from .reference_h import _cmarkCmarkReferenceMap
 from .utf8_c import (_cmark_cmark_utf8proc_is_punctuation,
                      _cmark_cmark_utf8proc_is_space,
                      _cmark_cmark_utf8proc_iterate)
@@ -200,12 +201,11 @@ def _cmark_S_is_line_end_char(c: str) -> bool:
     return c == '\n' or c == '\r'
 
 
-# 0.29, 0.30
+# 0.30
 def _cmark_make_literal(subj: _cmarkSubject, t: int, start_column: int, end_column: int) -> _cmarkCmarkNode:
     r"""Create an inline with a literal string value."""
     e = _cmarkCmarkNode()
 
-    # cmark_strbuf_init(subj->mem, &e->content, 0)
     e.mem = copy.deepcopy(subj.mem)
     e.type = t
     e.start_line = e.end_line = subj.line
@@ -215,7 +215,7 @@ def _cmark_make_literal(subj: _cmarkSubject, t: int, start_column: int, end_colu
     return e
 
 
-# 0.29, 0.30
+# 0.30
 def _cmark_make_simple(mem, t: int) -> _cmarkCmarkNode:
     e = _cmarkCmarkNode()
     e.mem = copy.deepcopy(mem)
@@ -223,7 +223,7 @@ def _cmark_make_simple(mem, t: int) -> _cmarkCmarkNode:
     return e
 
 
-# 0.29, 0.30
+# 0.30
 def _cmark_make_str(subj: _cmarkSubject, sc: int, ec: int, s: _cmarkCmarkChunk) -> _cmarkCmarkNode:
     # s = char
     # sc = start column
@@ -243,13 +243,14 @@ def _cmark_make_str(subj: _cmarkSubject, sc: int, ec: int, s: _cmarkCmarkChunk) 
     return e
 
 
-# 0.29, 0.30
+# 0.30
 def _cmark_subject_from_buf(mem, line_number: int,
                             block_offset: int, e: _cmarkSubject, chunk: _cmarkCmarkChunk,
                             refmap: _cmarkCmarkReferenceMap):
     i: int
     e.mem = mem
     e.input = chunk
+    e.flags = 0
     e.line = line_number
     e.pos = 0
     e.block_offset = block_offset
@@ -461,7 +462,7 @@ def _cmark_S_normalize_code(s: _cmarkCmarkStrbuf):
 
 # Parse backtick code section or raw backticks, return an inline.
 # Assumes that the subject has a backtick at the current position.
-# 0.29, 0.30
+# 0.30
 def _cmark_handle_backticks(subj: _cmarkSubject, options: int) -> _cmarkCmarkNode:
     openticks: _cmarkCmarkChunk = _cmark_take_while(subj)
     startpos: int = subj.pos
@@ -484,7 +485,7 @@ def _cmark_handle_backticks(subj: _cmarkSubject, options: int) -> _cmarkCmarkNod
         return node
 
 
-# 0.29, 0.30
+# 0.30
 def _cmark_scan_delims(subj: _cmarkSubject, c: str) -> tuple:
     numdelims: int = 0
     before_char_pos: int = 0
@@ -545,8 +546,9 @@ def _cmark_scan_delims(subj: _cmarkSubject, c: str) -> tuple:
            and (not left_flanking or _cmark_cmark_utf8proc_is_punctuation(after_char))):
             can_close = True
     elif c == '\'' or c == '"':
-        if (left_flanking and not right_flanking and
-           before_char != ']' and before_char != ')'):
+        if (left_flanking and
+           (not right_flanking or before_char == '(' or before_char == '[')
+           and before_char != ']' and before_char != ')'):
             can_open = True
         can_close = right_flanking
     else:
@@ -623,14 +625,14 @@ def _cmark_handle_delim(subj: _cmarkSubject, c: str, smart: bool = False) -> _cm
     return inl_text
 
 
-# 0.29, 0.30
+# 0.30
 def _cmark_process_emphasis(subj: _cmarkSubject, stack_bottom: _cmarkDelimiter, ignore: list) -> list:
     closer: _cmarkDelimiter = subj.last_delim
     opener: _cmarkDelimiter
     openers_bottom_index: int = 0
     opener_found: bool
     openers_bottom_index: int = 0
-    openers_bottom: list = [stack_bottom, stack_bottom, stack_bottom, stack_bottom, stack_bottom, stack_bottom]
+    openers_bottom: list = [stack_bottom, stack_bottom, stack_bottom, stack_bottom, stack_bottom, stack_bottom, stack_bottom, stack_bottom, stack_bottom]
 
     # move back to first relevant delim.
     while closer is not None and closer.previous is not stack_bottom:
@@ -646,7 +648,12 @@ def _cmark_process_emphasis(subj: _cmarkSubject, stack_bottom: _cmarkDelimiter, 
             elif closer.delim_char == '_':
                 openers_bottom_index = 2
             elif closer.delim_char == '*':
-                openers_bottom_index = 3 + (closer.length % 3)
+                openers_bottom_index = 3
+                if closer.can_open:
+                    openers_bottom_index += 3
+                else:
+                    openers_bottom_index += 0
+                openers_bottom_index += closer.length % 3
             else:
                 raise ValueError
 
@@ -891,6 +898,8 @@ def _cmark_parse_inline(subj: _cmarkSubject, parent: _cmarkCmarkNode, options: i
         new_inl = _cmark_make_str(subj, startpos, endpos - 1, contents)
 
     if new_inl is not None:
+        # Equivalent of
+        #   append_child(parent, new_inl);
         parent.append_child_lite(new_inl)
 
     return 1
@@ -899,7 +908,7 @@ def _cmark_parse_inline(subj: _cmarkSubject, parent: _cmarkCmarkNode, options: i
 # Parse inlines from parent's string_content, adding as children of parent.
 # Get the ignore list.
 # 0.30
-def _cmark_cmark_parse_inlines(mem, parent: _cmarkCmarkNode,
+def _cmark_cmark_parse_inlines(mem: _cmarkCmarkMem, parent: _cmarkCmarkNode,
                                refmap: _cmarkCmarkReferenceMap, options: int) -> list:
     subj: _cmarkSubject
     content: _cmarkCmarkChunk = _cmarkCmarkChunk(parent.data, parent.length)
