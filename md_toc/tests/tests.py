@@ -1096,10 +1096,20 @@ class TestApi(unittest.TestCase):
         # Example 477 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*a `*`*'), 'a `*`')
 
+        # Extra examples.
+        self.assertEqual(api.remove_emphasis('*a `****`*'), 'a `****`')
+        self.assertEqual(api.remove_emphasis('*a `** **`*'), 'a `** **`')
+        self.assertEqual(api.remove_emphasis('*a `**** `*'), 'a `**** `')
+
         # Example 456 [Commonmark 0.28].
         # Example 478 [Commonmark 0.29].
         # Example 478 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_a `_`_'), 'a `_`')
+
+        # Extra examples.
+        self.assertEqual(api.remove_emphasis('_a `____`_'), 'a `____`')
+        self.assertEqual(api.remove_emphasis('_a `__ __`_'), 'a `__ __`')
+        self.assertEqual(api.remove_emphasis('_a `____ `_'), 'a `____ `')
 
         # Example 457 [Commonmark 0.28].
         # Example 479 [Commonmark 0.29].
