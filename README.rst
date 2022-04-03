@@ -12,8 +12,8 @@ Markdown Table Of Contents
                :target: https://repology.org/project/md-toc/versions
 
 .. |nix| image:: https://repology.org/badge/version-for-repo/nix_unstable/python:md-toc.svg
-               :alt: nixpkgs unstable package
-               :target: https://repology.org/project/python:md-toc/versions
+           :alt: nixpkgs unstable package
+           :target: https://repology.org/project/python:md-toc/versions
 
 .. |downloads| image:: https://pepy.tech/badge/md-toc
                  :alt: Downloads

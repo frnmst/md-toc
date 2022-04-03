@@ -14,8 +14,10 @@ program.
 Distribution packages
 ---------------------
 
-- A ``PKGBUILD`` for Arch Linux like distributions is available under
-  the ``./packages/aur`` directory as well as on the AUR website.
+Packages exist for Arch Linux, Debian, Ubuntu and Nix. See
+
+- https://repology.org/project/md-toc/versions
+- https://repology.org/project/python:md-toc/versions
 
 Dependencies
 ------------
