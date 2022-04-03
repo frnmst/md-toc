@@ -1,7 +1,7 @@
 Markdown Table Of Contents
 ==========================
 
-|pypiver|    |debian|    |nix|    |pyver|    |downloads|    |dependentrepos|    |pre-commit|	|buymeacoffee|
+|pypiver|    |debian|    |nix|    |downloads|    |dependentrepos|    |pre-commit|	|buymeacoffee|
 
 .. |pypiver| image:: https://img.shields.io/pypi/v/md-toc.svg
                :alt: PyPI md-toc version
@@ -14,9 +14,6 @@ Markdown Table Of Contents
 .. |nix| image:: https://repology.org/badge/version-for-repo/nix_unstable/python:md-toc.svg
                :alt: nixpkgs unstable package
                :target: https://repology.org/project/python:md-toc/versions
-
-.. |pyver| image:: https://img.shields.io/pypi/pyversions/md-toc.svg
-             :alt: PyPI - Python Version
 
 .. |downloads| image:: https://pepy.tech/badge/md-toc
                  :alt: Downloads
