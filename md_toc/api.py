@@ -171,7 +171,7 @@ def build_toc(filename: str,
     if not skip_lines >= 0:
         raise ValueError
 
-    toc = str()
+    toc = list()
     header_type_counter = dict()
     header_type_curr = 0
     header_type_prev = 0
@@ -294,8 +294,8 @@ def build_toc(filename: str,
                     header, ordered, no_links, index, parser, list_marker)
 
                 # Save the TOC line with the indentation.
-                toc += build_toc_line(toc_line_no_indent,
-                                      no_of_indentation_spaces_curr) + newline_string
+                toc.append(build_toc_line(toc_line_no_indent,
+                                      no_of_indentation_spaces_curr) + newline_string)
 
                 header_type_prev = header_type_curr
 
@@ -308,6 +308,8 @@ def build_toc(filename: str,
     # endwhile
 
     f.close()
+
+    toc = ''.join(toc)
 
     return toc
 
@@ -749,12 +751,14 @@ def filter_indices_from_line(line: str, ranges: list) -> str:
     ll = [item for e in rng for item in e]
 
     s = sorted(ll)
-    final = str()
+    final = list()
     i = 0
     while i < len(line):
         if i not in s:
-            final += line[i]
+            final.append(line[i])
         i += 1
+
+    final = ''.join(final)
 
     return final
 
@@ -828,7 +832,7 @@ def build_anchor_link(header_text_trimmed: str,
         header_text_trimmed_len = len(header_text_trimmed)
         inserted = 0
         stripped = 0
-        header_text_trimmed_middle_stage = ''
+        header_text_trimmed_middle_stage = list()
         for i in range(0, header_text_trimmed_len):
             if header_text_trimmed[i] == '<':
                 while i < header_text_trimmed_len and header_text_trimmed[
@@ -843,14 +847,15 @@ def build_anchor_link(header_text_trimmed: str,
             elif not generic._isascii(header_text_trimmed[i]) or STRIPPED.find(
                     header_text_trimmed[i]) != -1:
                 if inserted and not stripped:
-                    header_text_trimmed_middle_stage += '-'
+                    header_text_trimmed_middle_stage.append('-')
                 stripped = 1
             else:
-                header_text_trimmed_middle_stage += header_text_trimmed[
-                    i].lower()
+                header_text_trimmed_middle_stage.append(header_text_trimmed[
+                    i].lower())
                 stripped = 0
                 inserted += 1
 
+        ''.join(header_text_trimmed_middle_stage)
         if stripped > 0 and inserted > 0:
             header_text_trimmed_middle_stage = header_text_trimmed_middle_stage[
                 0:-1]
