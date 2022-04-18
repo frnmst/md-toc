@@ -28,11 +28,10 @@ import sys
 import fpyutils
 
 from . import generic
-from .cmark import inlines_c, node_h
+from .cmark import inlines_c, node_h, references_h
 from .constants import common_defaults
 from .constants import parser as md_parser
-from .exceptions import (CannotTreatUnicodeString, GithubEmptyLinkLabel,
-                         GithubOverflowCharsLinkLabel,
+from .exceptions import (GithubEmptyLinkLabel, GithubOverflowCharsLinkLabel,
                          GithubOverflowOrderedListMarker,
                          StdinIsNotAFileToBeWritten,
                          StringCannotContainNewlines,
@@ -295,7 +294,7 @@ def build_toc(filename: str,
 
                 # Save the TOC line with the indentation.
                 toc.append(build_toc_line(toc_line_no_indent,
-                                      no_of_indentation_spaces_curr) + newline_string)
+                                          no_of_indentation_spaces_curr) + newline_string)
 
                 header_type_prev = header_type_curr
 
@@ -712,7 +711,7 @@ def remove_emphasis(line: str, parser: str = 'github') -> list:
     """
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark', 'redcarpet']:
         mem = None
-        refmap = None
+        refmap = references_h._cmarkCmarkReferenceMap()
 
         parent = node_h._cmarkCmarkNode()
         parent.data = line

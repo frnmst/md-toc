@@ -52,19 +52,56 @@ def _noop(var):
 
 def _replace_substring(source: str, replacement: str, start: int, end: int) -> str:
     r"""Given a string called source, replace it with a string called replacement between the start ~ end interval."""
-    replaced = str()
+    replaced: list = list()
+    was_replaced: bool = False
+    i: int = 0
 
-    was_replaced = False
-    i = 0
     while i < len(source):
         if i < start or i > end:
-            replaced += source[i]
+            replaced.append(source[i])
         elif not was_replaced:
-            replaced += replacement
+            replaced.append(replacement)
             was_replaced = True
         i += 1
 
+    replaced = ''.join(replaced)
     return replaced
+
+
+# A weaker version of C's strncmp: this one does not count the characters
+# it just notify if there are differences.
+def _strncmp(s1: str, s2: str, length: int) -> int:
+    i: int = 0
+    retval: int = 0
+    process: bool = True
+
+    s1_prime: str = s1[:length]
+    s2_prime: str = s2[:length]
+    s1_prime_length: int = len(s1_prime)
+    s2_prime_length: int = len(s2_prime)
+    min_length: int = min(s1_prime_length, s2_prime_length)
+
+    if s1_prime_length < s2_prime_length:
+        retval = -1
+        process = False
+    elif s1_prime_length > s2_prime_length:
+        retval = 1
+        process = False
+
+    while process and i < min_length:
+        int_s1: int = ord(s1_prime[i])
+        int_s2: int = ord(s2_prime[i])
+
+        if int_s1 < int_s2:
+            retval = -1
+            process = False
+        elif int_s1 > int_s2:
+            retval = 1
+            process = False
+
+        i += 1
+
+    return retval
 
 
 if __name__ == '__main__':

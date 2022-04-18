@@ -1069,7 +1069,15 @@ class TestApi(unittest.TestCase):
         # Example 450 [Commonmark 0.28].
         # Example 472 [Commonmark 0.29].
         # Example 472 [Commonmark 0.30].
-#        self.assertEqual(api.remove_emphasis('*[bar*](/url)'), '*[bar*](/url)')
+        self.assertEqual(api.remove_emphasis('*[bar*](/url)'), '*[bar*](/url)')
+
+        # Extra examples.
+        self.assertEqual(api.remove_emphasis('*[*bar](/url)'), '*[*bar](/url)')
+        self.assertEqual(api.remove_emphasis('*[*bar](*/url*)'), '*[*bar](*/url*)')
+        self.assertEqual(api.remove_emphasis('*[bar](/url)*'), '[bar](/url)')
+        self.assertEqual(api.remove_emphasis('*[bar*] (/url)'), '[bar] (/url)')
+        self.assertEqual(api.remove_emphasis('[bar](/url*)*'), '[bar](/url*)*')
+        self.assertEqual(api.remove_emphasis('[bar](/url**)**'), '[bar](/url**)**')
 
         # Example 451 [Commonmark 0.28].
         # Example 473 [Commonmark 0.29].
@@ -1120,6 +1128,236 @@ class TestApi(unittest.TestCase):
         # Example 480 [Commonmark 0.29].
         # Example 480 [Commonmark 0.30].
 #        self.assertEqual(api.remove_emphasis('__a<http://foo.bar/?q=__>'), '__a<http://foo.bar/?q=__>')
+
+        # Examples 481 -> 525 [Commonmark 0.30].
+        # Note: most of these are modified examples for emphasis only.
+
+        # Example 481 [Commonmark 0.30].
+#        self.assertEqual(api.remove_emphasis('*[bar*](/uri "title")'), '*[bar*](/uri "title")')
+#        self.assertEqual(api.remove_emphasis('[bar](/uri *"title")*'), '[bar](/uri *"title")*')
+#        self.assertEqual(api.remove_emphasis('_[bar_](/uri "title")'), '_[bar_](/uri "title")')
+#        self.assertEqual(api.remove_emphasis('[bar](/uri _"title")_'), '[bar](/uri _"title")_')
+
+        # Example 482 [Commonmark 0.30].
+        # ignore
+
+        # Example 483 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis('*[*](./target.md)'), '*[*](./target.md)')
+        self.assertEqual(api.remove_emphasis('[](*./target.md)*'), '[](*./target.md)*')
+        self.assertEqual(api.remove_emphasis('_[_](./target.md)'), '_[_](./target.md)')
+        self.assertEqual(api.remove_emphasis('[](_./target.md)_'), '[](_./target.md)_')
+
+        # Example 484 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis('*[link*]()'), '*[link*]()')
+        self.assertEqual(api.remove_emphasis('[link](*)*'), '[link](*)*')
+        self.assertEqual(api.remove_emphasis('_[link_]()'), '_[link_]()')
+        self.assertEqual(api.remove_emphasis('[link](_)_'), '[link](_)_')
+
+        # Example 485 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis('*[link*](<>)'), '*[link*](<>)')
+        self.assertEqual(api.remove_emphasis('[link](*<>)*'), '[link](*<>)*')
+        self.assertEqual(api.remove_emphasis('_[link_](<>)'), '_[link_](<>)')
+        self.assertEqual(api.remove_emphasis('[link](_<>)_'), '[link](_<>)_')
+
+        # Example 486 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis('*[*]()'), '*[*]()')
+        self.assertEqual(api.remove_emphasis('[](*)*'), '[](*)*')
+        self.assertEqual(api.remove_emphasis('_[_]()'), '_[_]()')
+        self.assertEqual(api.remove_emphasis('[](_)_'), '[](_)_')
+
+        # Example 487 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis('*[link*](/my uri)'), '[link](/my uri)')
+        self.assertEqual(api.remove_emphasis('[link](*/my uri)*'), '[link](/my uri)')
+#        self.assertEqual(api.remove_emphasis('_[link_](/my uri)'), '[link](/my uri)')
+        self.assertEqual(api.remove_emphasis('[link](_/my uri)_'), '[link](/my uri)')
+
+        # Example 488 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis('*[link*](</my uri>)'), '*[link*](</my uri>)')
+        self.assertEqual(api.remove_emphasis('[link](</my *uri>)*'), '[link](</my *uri>)*')
+        self.assertEqual(api.remove_emphasis('_[link_](</my uri>)'), '_[link_](</my uri>)')
+        self.assertEqual(api.remove_emphasis('[link](</my _uri>)_'), '[link](</my _uri>)_')
+
+        # Example 489 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis('*[link*](foo\nbar)'), '[link](foo\nbar)')
+        self.assertEqual(api.remove_emphasis('[link](*foo\nbar)*'), '[link](foo\nbar)')
+#        self.assertEqual(api.remove_emphasis('_[link_](foo\nbar)'), '[link](foo\nbar)')
+        self.assertEqual(api.remove_emphasis('[link](_foo\nbar)_'), '[link](foo\nbar)')
+
+        # Example 490 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis('*[link*](<foo\nbar>)'), '[link](<foo\nbar>)')
+        self.assertEqual(api.remove_emphasis('[link](*<foo\nbar>)*'), '[link](<foo\nbar>)')
+#        self.assertEqual(api.remove_emphasis('_[link_](<foo\nbar>)'), '[link](<foo\nbar>)')
+        self.assertEqual(api.remove_emphasis('[link](_<foo\nbar>)_'), '[link](<foo\nbar>)')
+
+        # Example 491 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis('*[a*](<b)c>)'), '*[a*](<b)c>)')
+        self.assertEqual(api.remove_emphasis('[a](*<b)c>)*'), '[a](*<b)c>)*')
+        self.assertEqual(api.remove_emphasis('_[a_](<b)c>)'), '_[a_](<b)c>)')
+        self.assertEqual(api.remove_emphasis('[a](_<b)c>)_'), '[a](_<b)c>)_')
+
+        # Example 492 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis(r'*[link*](<foo\>)'), r'[link](<foo\>)')
+#        self.assertEqual(api.remove_emphasis('[link](*<foo\>)*'), '[link](<foo\>)')
+#        self.assertEqual(api.remove_emphasis('_[link_](<foo\>)'), '[link](<foo\>)')
+#        self.assertEqual(api.remove_emphasis('[link](_<foo\>)_'), '[link](<foo\>)')
+
+        # Example 493 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis('*[a*](<b)c'), '[a](<b)c')
+#        self.assertEqual(api.remove_emphasis('[a](*<b)c*'), '[a](<b)c')
+#        self.assertEqual(api.remove_emphasis('_[a_](<b)c'), '[a](<b)c')
+#        self.assertEqual(api.remove_emphasis('[a](_<b)c_'), '[a](<b)c')
+
+        self.assertEqual(api.remove_emphasis('*[a*](<b)c>'), '[a](<b)c>')
+#        self.assertEqual(api.remove_emphasis('[a](*<b)c>*'), '[a](<b)c>')
+#        self.assertEqual(api.remove_emphasis('_[a_](<b)c>'), '[a](<b)c>')
+#        self.assertEqual(api.remove_emphasis('[a](_<b)c>_'), '[a](<b)c>')
+
+        self.assertEqual(api.remove_emphasis('*[a*](<b>c)'), '[a](<b>c)')
+#        self.assertEqual(api.remove_emphasis('[a](*<b>c)*'), '[a](<b>c)')
+#        self.assertEqual(api.remove_emphasis('_[a_](<b>c)'), '[a](<b>c)')
+#        self.assertEqual(api.remove_emphasis('[a](_<b>c)_'), '[a](<b>c)')
+
+        # Example 494 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis(r'*[link*](\(foo\))'), r'*[link*](\(foo\))')
+        self.assertEqual(api.remove_emphasis(r'[link](*\(foo\))*'), r'[link](*\(foo\))*')
+        self.assertEqual(api.remove_emphasis(r'_[link_](\(foo\))'), r'_[link_](\(foo\))')
+        self.assertEqual(api.remove_emphasis(r'[link](_\(foo\))_'), r'[link](_\(foo\))_')
+
+        # Example 495 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis('*[link*](foo(and(bar)))'), '*[link*](foo(and(bar)))')
+        self.assertEqual(api.remove_emphasis('[link](*foo(and(bar)))*'), '[link](*foo(and(bar)))*')
+        self.assertEqual(api.remove_emphasis('_[link_](foo(and(bar)))'), '_[link_](foo(and(bar)))')
+        self.assertEqual(api.remove_emphasis('[link](_foo(and(bar)))_'), '[link](_foo(and(bar)))_')
+
+        # Example 496 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis('*[link*](foo(and(bar))'), '[link](foo(and(bar))')
+        self.assertEqual(api.remove_emphasis('[link](*foo(and(bar))*'), '[link](foo(and(bar))')
+#        self.assertEqual(api.remove_emphasis('_[link_](foo(and(bar))'), '[link](foo(and(bar))')
+        self.assertEqual(api.remove_emphasis('[link](_foo(and(bar))_'), '[link](foo(and(bar))')
+
+        # Example 497 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis(r'*[link*](foo\(and\(bar\))'), r'*[link*](foo\(and\(bar\))')
+        self.assertEqual(api.remove_emphasis(r'[link](*foo\(and\(bar\))*'), r'[link](*foo\(and\(bar\))*')
+        self.assertEqual(api.remove_emphasis(r'_[link_](foo\(and\(bar\))'), r'_[link_](foo\(and\(bar\))')
+        self.assertEqual(api.remove_emphasis(r'[link](_foo\(and\(bar\))_'), r'[link](_foo\(and\(bar\))_')
+
+        # Example 498 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis('*[link*](<foo(and(bar)>)'), '*[link*](<foo(and(bar)>)')
+#        self.assertEqual(api.remove_emphasis('[link](*<foo(and(bar)>)*'), '[link](*<foo(and(bar)>)*')
+        self.assertEqual(api.remove_emphasis('_[link_](<foo(and(bar)>)'), '_[link_](<foo(and(bar)>)')
+#        self.assertEqual(api.remove_emphasis('[link](_<foo(and(bar)>)_'), '[link](_<foo(and(bar)>)_')
+
+        # Example 499 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis(r'*[link*](foo\)\:)'), r'*[link*](foo\)\:)')
+        self.assertEqual(api.remove_emphasis(r'[link](*foo\)\:)*'), r'[link](*foo\)\:)*')
+        self.assertEqual(api.remove_emphasis(r'_[link_](foo\)\:)'), r'_[link_](foo\)\:)')
+        self.assertEqual(api.remove_emphasis(r'[link](_foo\)\:)_'), r'[link](_foo\)\:)_')
+
+        # Example 500 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis('*[*link](#fragment)'), '*[*link](#fragment)')
+        self.assertEqual(api.remove_emphasis('[link](#fragment*)*'), '[link](#fragment*)*')
+        self.assertEqual(api.remove_emphasis('_[_link](#fragment)'), '_[_link](#fragment)')
+        self.assertEqual(api.remove_emphasis('[link](#fragment_)_'), '[link](#fragment_)_')
+
+        self.assertEqual(api.remove_emphasis('*[*link](http://example.com#fragment)'), '*[*link](http://example.com#fragment)')
+        self.assertEqual(api.remove_emphasis('[link](http://example.com#fragment*)*'), '[link](http://example.com#fragment*)*')
+        self.assertEqual(api.remove_emphasis('_[_link](http://example.com#fragment)'), '_[_link](http://example.com#fragment)')
+        self.assertEqual(api.remove_emphasis('[link](http://example.com#fragment_)_'), '[link](http://example.com#fragment_)_')
+
+        self.assertEqual(api.remove_emphasis('*[*link](http://example.com?foo=3#frag)'), '*[*link](http://example.com?foo=3#frag)')
+        self.assertEqual(api.remove_emphasis('[link](http://example.com?foo=3#frag*)*'), '[link](http://example.com?foo=3#frag*)*')
+        self.assertEqual(api.remove_emphasis('_[_link](http://example.com?foo=3#frag)'), '_[_link](http://example.com?foo=3#frag)')
+        self.assertEqual(api.remove_emphasis('[link](http://example.com?foo=3#frag_)_'), '[link](http://example.com?foo=3#frag_)_')
+
+        # Example 501 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis(r'*[link*](foo\bar)'), r'*[link*](foo\bar)')
+        self.assertEqual(api.remove_emphasis(r'[link](*foo\bar)*'), r'[link](*foo\bar)*')
+        self.assertEqual(api.remove_emphasis(r'_[link_](foo\bar)'), r'_[link_](foo\bar)')
+        self.assertEqual(api.remove_emphasis(r'[link](_foo\bar)_'), r'[link](_foo\bar)_')
+
+        # Example 502 [Commonmark 0.30].
+#        self.assertEqual(api.remove_emphasis(r'*[link*](foo%20b&auml;)'), r'*[link*](foo%20b&auml;)')
+#        self.assertEqual(api.remove_emphasis(r'[link](*foo%20b&auml;)*'), r'[link](*foo%20b&auml;)*')
+#        self.assertEqual(api.remove_emphasis(r'_[link_](foo%20b&auml;)'), r'_[link_](foo%20b&auml;)')
+#        self.assertEqual(api.remove_emphasis(r'[link](_foo%20b&auml;)_'), r'[link](_foo%20b&auml;)_')
+
+        # Example 503 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis(r'*[link*]("title")'), r'*[link*]("title")')
+        self.assertEqual(api.remove_emphasis(r'[link](*"title")*'), r'[link](*"title")*')
+        self.assertEqual(api.remove_emphasis(r'_[link_]("title")'), r'_[link_]("title")')
+        self.assertEqual(api.remove_emphasis(r'[link](_"title")_'), r'[link](_"title")_')
+
+        # Example 504 [Commonmark 0.30].
+#        self.assertEqual(api.remove_emphasis(r'*[link*](/url "title")'), r'*[link*](/url "title")')
+
+#        self.assertEqual(api.remove_emphasis(r"*[link*](/url 'title')"), r"*[link*](/url 'title')")
+
+#        self.assertEqual(api.remove_emphasis(r'*[link*](/url (title))'), r'*[link*](/url (title))')
+
+        # Example 505 [Commonmark 0.30].
+#        self.assertEqual(api.remove_emphasis(r'*[link*](/url "title \"&quot;")'), r'*[link*](/url "title \"&quot;")')
+
+        # Example 506 [Commonmark 0.30].
+#        self.assertEqual(api.remove_emphasis(r'*[link*](/url "title")'), r'*[link*](/url "title")')
+
+        # Example 507 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis(r'*[link*](/url "title "and" title")'), r'[link](/url "title "and" title")')
+
+        # Example 508 [Commonmark 0.30].
+#        self.assertEqual(api.remove_emphasis("*[link*](/url 'title \"and\" title')"), "*[link*](/url 'title \"and\" title')")
+
+        # Example 509 [Commonmark 0.30].
+#        self.assertEqual(api.remove_emphasis('*[link*](   /uri\n  "title"  )'), '*[link*](   /uri\n  "title"  )')
+
+        # Example 510 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis(r'*[link*] (uri)'), r'[link] (uri)')
+
+        # Example 511 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis(r'*[link* [foo [bar]]](/uri)'), r'*[link* [foo [bar]]](/uri)')
+
+        # Example 512 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis(r'*[link*] (uri)'), r'[link] (uri)')
+
+        # Example 513 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis(r'*[link* *[bar*](/uri)'), r'[link *[bar*](/uri)')
+
+        # Example 514 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis(r'*[link* *\[bar*](/uri)'), r'*[link* \[bar](/uri)')
+
+        # Example 515 [Commonmark 0.30].
+#        self.assertEqual(api.remove_emphasis(r'[link *foo **bar** `#`*](/uri)'), r'[link foo bar `#`](/uri)')
+
+        # Example 516 [Commonmark 0.30].
+#        self.assertEqual(api.remove_emphasis(r'[![moon](moon.jpg)](/uri)'), r'[![moon](moon.jpg)](/uri)')
+
+        # Example 517 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis(r'*[foo* [bar](/uri)](/uri)'), r'[foo [bar](/uri)](/uri)')
+
+        # Example 518 [Commonmark 0.30].
+#        self.assertEqual(api.remove_emphasis(r'[foo *[bar [baz](/uri)](/uri)*](/uri)'), r'[foo [bar [baz](/uri)](/uri)](/uri)')
+
+        # Example 519 [Commonmark 0.30].
+#        self.assertEqual(api.remove_emphasis(r'![[[foo](uri1)](uri2)](uri3)'), r'![[[foo](uri1)](uri2)](uri3)')
+
+        # Example 520 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis(r'*[foo*](/uri)'), r'*[foo*](/uri)')
+
+        # Example 521 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis(r'[foo *bar](baz*)'), r'[foo *bar](baz*)')
+
+        # Example 522 [Commonmark 0.30].
+        self.assertEqual(api.remove_emphasis(r'*foo [bar* baz]'), r'foo [bar baz]')
+
+        # Example 523 [Commonmark 0.30].
+#        self.assertEqual(api.remove_emphasis(r'[foo <bar attr="](baz)">'), r'[foo <bar attr="](baz)">')
+
+        # Example 524 [Commonmark 0.30].
+#        self.assertEqual(api.remove_emphasis(r'[foo`](/uri)`'), r'[foo`](/uri)`')
+
+        # Example 525 [Commonmark 0.30].
+#        self.assertEqual(api.remove_emphasis(r'[foo<http://example.com/?search=](uri)>'), r'[foo<http://example.com/?search=](uri)>')
+
+        # Possibly all the way up to 592 [Commonmark 0.30]?
 
         # Extra examples.
         self.assertEqual(api.remove_emphasis(r'_j\_'), '_j' + LINE_ESCAPE + '_')

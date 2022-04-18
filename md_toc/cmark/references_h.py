@@ -1,5 +1,5 @@
 #
-# cmark_reference_h.py
+# reference_h.py
 #
 # Copyright (C) 2017-2022 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
 #
@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with md-toc.  If not, see <http://www.gnu.org/licenses/>.
 #
-r"""The cmark implementation file."""
+r"""A cmark implementation file."""
 
 from ..generic import _noop
 from .cmark_h import _cmarkCmarkMem
@@ -30,36 +30,43 @@ from .cmark_h import _cmarkCmarkMem
 
 # 0.30
 class _cmarkCmarkReference:
-    def __init__(self):
-        next = None
-        label: str = None
-        url: str = None
-        title: str = None
-        age: int = 0
-        size: int = 0
+    __slots__ = [
+        'next',
+        'label',
+        'url',
+        'title',
+        'age',
+        'size',
+    ]
 
-        _noop(next)
-        _noop(label)
-        _noop(url)
-        _noop(title)
-        _noop(age)
-        _noop(size)
+    def __init__(self):
+        self.next: _cmarkCmarkReference = None
+        self.label: str = None
+        self.url: str = None
+        self.title: str = None
+        self.age: int = 0
+        self.size: int = 0
 
 
 # 0.30
 class _cmarkCmarkReferenceMap:
-    def __init__(self):
-        mem: _cmarkCmarkMem = None
-        refs: _cmarkCmarkReference
-        sorted: _cmarkCmarkReference
-        size: int = 0
-        ref_size: int = 0
-        max_ref_size: int = 0
+    __slots__ = [
+        'mem',
+        'refs',
+        'sorted',
+        'size',
+        'ref_size',
+        'max_ref_size'
+    ]
 
-        _noop(mem)
-        _noop(size)
-        _noop(ref_size)
-        _noop(max_ref_size)
+    def __init__(self):
+        self.mem: _cmarkCmarkMem = None
+        self.refs: _cmarkCmarkReference = None
+        # A list of _cmarkCmarkReference
+        self.sorted: list = None
+        self.size: int = 0
+        self.ref_size: int = 0
+        self.max_ref_size: int = 0
 
 
 if __name__ == '__main__':

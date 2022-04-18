@@ -1,5 +1,5 @@
 #
-# buffer_h.py
+# houdini_h.py
 #
 # Copyright (C) 2017-2022 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
 #
@@ -20,39 +20,10 @@
 #
 r"""A cmark implementation file."""
 
-from .cmark_h import _cmarkCmarkMem
 
-# License E applies to this file except for non derivative code:
-# in that case the license header at the top of the file applies.
-# See docs/copyright_license.rst
+def _cmark_HOUDINI_ESCAPED_SIZE(x: int) -> int:
+    return (x * 12) / 10
 
 
-# 0.29, 0.30
-class _cmarkCmarkStrbuf:
-    __slots__ = [
-        'mem',
-        'ptr',
-        'asize',
-        'size',
-    ]
-
-    def __init__(self):
-        self.mem: _cmarkCmarkMem = None
-        self.ptr: str = str()
-        self.asize: int = 0
-        self.size: int = 0
-
-
-# Should be equivalent to
-#     #define CMARK_BUF_INIT(mem) \
-#       { mem, cmark_strbuf__initbuf, 0, 0 }
-# 0.29, 0.30
-def _cmark_CMARK_BUF_INIT(mem: _cmarkCmarkMem):
-    b = _cmarkCmarkStrbuf()
-    b.mem = mem
-
-    return b
-
-
-if __name__ == '__main__':
-    pass
+def _cmark_HOUDINI_UNESCAPED_SIZE(x: int) -> int:
+    return x

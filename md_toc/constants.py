@@ -21,6 +21,7 @@
 """A file that contains all the global constants."""
 
 import copy
+import html
 import os
 
 common_defaults = dict()
@@ -39,7 +40,23 @@ parser['cmark']['code fence'] = dict()
 parser['redcarpet'] = dict()
 parser['redcarpet']['list'] = dict()
 
-# github.
+#########
+# cmark #
+#########
+_entities5 = html.entities.html5
+# remove keys without semicolons.  For some reason the list
+# has duplicates of a few things, like auml, one with and one
+# without a semicolon.
+_ents = sorted([(k[:-1], _entities5[k].encode('utf-8')) for k in _entities5.keys() if k[-1] == ';'])
+
+# Use a list instead of a class for simplicity.
+# For this reason the cmark/entities.inc file is missing.
+_entities: list = list()
+for (ent, bs) in _ents:
+    _entities.append({'entity': ent, 'bytes': (' '.join(map(str, bs)) + ' 0').split(' ')})
+    # Transform each entity into a list of integers from a list of strings.
+    _entities[-1]['bytes'] = [int(n) for n in _entities[-1]['bytes']]
+
 parser['cmark']['generic'] = {
     'EMDASH': '\xE2\x80\x94',
     'ENDASH': '\xE2\x80\x93',
@@ -86,10 +103,10 @@ parser['cmark']['cmark_node_type'] = {
     'CMARK_NODE_IMAGE': 20,
 }
 
-parser['cmark']['cmark_node_type']['CMARK_NODE_FIRST_BLOCK'] = 'CMARK_NODE_DOCUMENT'
-parser['cmark']['cmark_node_type']['CMARK_NODE_LAST_BLOCK'] = 'CMARK_NODE_THEMATIC_BREAK'
-parser['cmark']['cmark_node_type']['CMARK_NODE_FIRST_INLINE'] = 'CMARK_NODE_TEXT'
-parser['cmark']['cmark_node_type']['CMARK_NODE_LAST_INLINE'] = 'CMARK_NODE_IMAGE'
+parser['cmark']['cmark_node_type']['CMARK_NODE_FIRST_BLOCK'] = parser['cmark']['cmark_node_type']['CMARK_NODE_DOCUMENT']
+parser['cmark']['cmark_node_type']['CMARK_NODE_LAST_BLOCK'] = parser['cmark']['cmark_node_type']['CMARK_NODE_THEMATIC_BREAK']
+parser['cmark']['cmark_node_type']['CMARK_NODE_FIRST_INLINE'] = parser['cmark']['cmark_node_type']['CMARK_NODE_TEXT']
+parser['cmark']['cmark_node_type']['CMARK_NODE_LAST_INLINE'] = parser['cmark']['cmark_node_type']['CMARK_NODE_IMAGE']
 
 parser['cmark']['link'] = {
     'max chars label': 999,
@@ -939,7 +956,7 @@ parser['cmark']['pseudo-re']['UPC'] = (
 # These refer to inline HTML.
 parser['cmark']['re'] = {
     # [0.30] only.
-    'SPACETAB': '(\u0009|\u0020)',
+    'SPACETAB': '[\u0009\u0020]',
     # Line ending.
     'LE': '(\u000a|\u000d|\u000d\u000a)',
 
@@ -976,6 +993,22 @@ parser['cmark']['re'] = {
     'CDB': r'(?:(?!\]\]>).)+',
     # End.
     'CDE': r'\]\]>',
+}
+
+# Regular expressions related to scanners functions.
+# See scanners.re and scanners.c files.
+parser['cmark']['re']['SCANNERS'] = {
+    'spacechar': '[\u0009\u000A\u000B\u000C\u000D\u0020]+',
+    'escaped_char': '[\\][!"#$%&\'()*+,./:;<=>?@[\\\\]^_`{|}~-]'
+}
+
+# Regular expressions related to entities functions.
+# See make_entities_inc.py and entities.inc files.
+parser['cmark']['re']['ENTITIES'] = {
+    'CMARK_ENTITY_MIN_LENGTH': 2,
+    'CMARK_ENTITY_MAX_LENGTH': 32,
+    'CMARK_NUM_ENTITIES': len(_entities),
+    'entities': _entities,
 }
 
 # Attribute value.
@@ -1031,7 +1064,9 @@ parser['cmark']['re']['DE'] = parser['cmark']['re']['DES'] + parser['cmark']['re
 # 6. CDATA.
 parser['cmark']['re']['CD'] = parser['cmark']['re']['CDS'] + parser['cmark']['re']['CDB'] + parser['cmark']['re']['CDE']
 
-# github
+##########
+# github #
+##########
 parser['github'] = copy.deepcopy(parser['cmark'])
 
 # FIXME
@@ -1039,80 +1074,81 @@ parser['github'] = copy.deepcopy(parser['cmark'])
 # FIXME
 # Regular expressions.
 # These refer to inline HTML.
-parser['github']['re'] = {
-    # See https://spec.commonmark.org/0.28/#raw-html
-    # 1. Open tag and 2. close tag.
-    'DQAV': '"[^"]*"',
-    'SQAV': "'[^']*'",
-    'UAV': "[^\u0020\"'=<>`]+",
-    'WS': '(\u0020|\u0009|\u000a|\u000b|\u000c|\u000d)',
+parser['github']['re']['UAV'] = "[^\u0020\"'=<>`]+"
+parser['github']['re']['WS'] = '(\u0020|\u0009|\u000a|\u000b|\u000c|\u000d)'
+del parser['github']['re']['SPACETAB']
+del parser['github']['re']['LE']
 
-    # OK
-    'AN': r'([A-Za-z]|_|:)([A-Za-z]|[0-9]|_|\.|:|-)*',
+parser['github']['re']['AV'] = (
+    '('
+    + parser['github']['re']['UAV']
+    + '|' + parser['github']['re']['SQAV']
+    + '|' + parser['github']['re']['DQAV']
+    + ')'
+)
 
-    'TN prime': '[A-Za-z]([A-Za-z]|[0-9]|-)*',
+parser['github']['re']['AVS'] = (
+    parser['github']['re']['WS'] + '*' + '='
+    + parser['github']['re']['WS'] + '*'
+    + parser['github']['re']['AV']
+)
 
-    # 3. HTML comment.
-    'COS': '<!--',
-    'COT': '((?!>|->)(?:(?!--).))+(?!-).?',
-    'COE': '-->',
-
-    # 4. Processing instructions.
-    'PIS': r'<\?',
-    'PIB': r'(?:(?!\?>).)*',
-    'PIE': r'\?>',
-
-    # 5. Declarations.
-    'DES': '<!',
-    'DEN': '[A-Z]+',
-    'DEB': '(?:(?!>).)+',
-    'DEE': '>',
-
-    # 6. CDATA
-    'CDS': r'<!\[CDATA\[',
-    'CDB': r'(?:(?!\]\]>).)+',
-    'CDE': r'\]\]>',
-}
-
-parser['github']['re']['AV'] = '(' + parser['github']['re']['UAV'] + '|' + parser['github']['re']['SQAV'] + '|' + parser['github']['re']['DQAV'] + ')'
-parser['github']['re']['AVS'] = parser['github']['re']['WS'] + '*' + '=' + parser['github']['re']['WS'] + '*' + parser['github']['re']['AV']
 # Attribute.
-parser['github']['re']['AT'] = parser['github']['re']['WS'] + '+' + parser['github']['re']['AN'] + '(' + parser['github']['re']['AVS'] + ')?'
+parser['github']['re']['AT'] = (
+    parser['github']['re']['WS'] + '+'
+    + parser['github']['re']['AN']
+    + '(' + parser['github']['re']['AVS'] + ')?'
+)
 
 # Remember: https://developmentality.wordpress.com/2011/09/22/python-gotcha-word-boundaries-in-regular-expressions/
 # Github Flavored Markdown Disallowed Raw HTML (specific to GFM and not to cmark')
-# See https://github.github.com/gfm/#disallowed-raw-html-extension-
+# See
+# https://github.github.com/gfm/#disallowed-raw-html-extension-
+# This RE are specific to GFM.
 parser['github']['re']['GDRH'] = r'''(\b[tT][iI][tT][lL][eE]\b|\b[tT][eE][xX][tT][aA][rR][eE][aA]\b|\b[sS][tT][yY][lL][eE]\b|\b[xX][mM][pP]\b|\b[iI][fF][rR][aA][mM][eE]\b|\b[nN][oO][eE][mM][bB][eE][dD]\b|\b[nN][oO][fF][rR][aA][mM][eE][sS]\b|\b[sS][cC][rR][iI][pP][tT]\b|\b[pP][lL][aA][iI][nN][tT][eE][xX][tT]\b)'''
-parser['github']['re']['TN'] = parser['github']['re']['TN prime']
 parser['github']['re']['DEW'] = parser['github']['re']['WS'] + '+'
+parser['github']['re']['TN'] = (
+    '(?!' + parser['github']['re']['GDRH'] + ')'
+    + parser['github']['re']['TN']
+)
 
 # 1. Open tag.
-parser['github']['re']['OT'] = '<' + parser['github']['re']['TN'] + '(' + parser['github']['re']['AT'] + ')*' + '(' + parser['github']['re']['WS'] + ')*' + '(/)?' + '>'
+parser['github']['re']['OT'] = (
+    '<'
+    + parser['github']['re']['TN']
+    + '(' + parser['github']['re']['AT'] + ')*'
+    + '(' + parser['github']['re']['WS'] + ')*'
+    + '(/)?'
+    + '>'
+)
 # 2. Close tag.
-parser['github']['re']['CT'] = '</' + parser['github']['re']['TN'] + parser['github']['re']['WS'] + '?' + '>'
-# 3. HTML comment.
-parser['github']['re']['CO'] = parser['github']['re']['COS'] + parser['github']['re']['COT'] + parser['github']['re']['COE']
-# 4. Processing instructions.
-parser['github']['re']['PI'] = parser['github']['re']['PIS'] + parser['github']['re']['PIB'] + parser['github']['re']['PIE']
+parser['github']['re']['CT'] = (
+    '</'
+    + parser['github']['re']['TN']
+    + parser['github']['re']['WS']
+    + '?'
+    + '>'
+)
 # 5. Declarations.
-parser['github']['re']['DE'] = parser['github']['re']['DES'] + parser['github']['re']['DEN'] + parser['github']['re']['DEW'] + parser['github']['re']['DEB'] + parser['github']['re']['DEE']
-# 6. CDATA.
-parser['github']['re']['CD'] = parser['github']['re']['CDS'] + parser['github']['re']['CDB'] + parser['github']['re']['CDE']
+parser['github']['re']['DE'] = (
+    parser['github']['re']['DES']
+    + parser['github']['re']['DEN']
+    + parser['github']['re']['DEW']
+    + parser['github']['re']['DEB']
+    + parser['github']['re']['DEE']
+)
 
-# Override for github only.
-parser['github']['re']['TN'] = '(?!' + parser['github']['re']['GDRH'] + ')' + parser['github']['re']['TN prime']
-parser['github']['re']['OT'] = '<' + parser['github']['re']['TN'] + '(' + parser['github']['re']['AT'] + ')*' + '(' + parser['github']['re']['WS'] + ')*' + '(/)?' + '>'
-parser['github']['re']['CT'] = '</' + parser['github']['re']['TN'] + parser['github']['re']['WS'] + '?' + '>'
+##########################################
 
-
-# Do not move these after the github override re expressions.
+# Do not move these.
 parser['gitlab'] = copy.deepcopy(parser['cmark'])
 parser['goldmark'] = copy.deepcopy(parser['cmark'])
 
 parser['commonmarker'] = copy.deepcopy(parser['github'])
 
-
-# redcarpet.
+#############
+# redcarpet #
+#############
 parser['redcarpet']['list']['ordered'] = {
     # FIXME
     'min marker number': 0,
@@ -1129,6 +1165,7 @@ parser['redcarpet']['header'] = {
     'max levels': 6,
     'default keep levels': 3
 }
+
 
 if __name__ == '__main__':
     pass

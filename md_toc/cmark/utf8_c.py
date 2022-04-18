@@ -20,13 +20,43 @@
 #
 r"""A cmark implementation file."""
 
+import unicodedata
+
 from ..constants import parser as md_parser
-from ..exceptions import CannotTreatUnicodeString
+from .buffer_c import _cmark_cmark_strbuf_put
+from .buffer_h import _cmarkCmarkStrbuf
 from .cmark_ctype_c import _cmark_cmark_ispunct
 
 # License D applies to this file except for non derivative code:
 # in that case the license header at the top of the file applies.
 # See docs/copyright_license.rst
+
+
+def _cmark_encode_unknown(buf: _cmarkCmarkStrbuf):
+    # static const uint8_t repl[] = {239, 191, 189};
+
+    # man 3 printf
+    #
+    # #include <stdio.h>
+    # #include <stdint.h>
+    #
+    # int main(void)
+    # {
+    #     static const uint8_t repl[] = {239, 191, 189};
+    #     printf ("%hhu", repl);
+    #
+    #     return 0;
+    # }
+    #
+    # gcc a.c
+    # ./a.out
+    # 9
+    #
+    # python3
+    # >>> chr(9)
+    # '\t'
+    repl = '\t'
+    _cmark_cmark_strbuf_put(buf, repl, 3)
 
 
 # 0.29, 0.30
@@ -47,16 +77,12 @@ def _cmark_cmark_utf8proc_charlen(line: str, line_length: int) -> int:
     # len('ł') == 2 # in Python 2
     # len('ł') == 1 # in Python 3
     # See the documentation.
-    # In Python 3 since all strings are unicode by default
-    # they all have length of 1.
+    # In Python 3 all strings are unicode by default
+    # and they all have length of 1.
     length = 1
-    if len(line) > 1:
-        # See
-        # https://docs.python.org/3/howto/unicode.html#comparing-strings
-        raise CannotTreatUnicodeString
 
-    if not length:
-        return -1
+    #     if (!length)
+    #       return -1;
 
     if line_length >= 0 and length > line_length:
         return -line_length
@@ -80,19 +106,10 @@ def _cmark_cmark_utf8proc_iterate(line: str, line_len: int) -> tuple:
 
     if length == 1:
         uc = ord(line[0])
-    elif length == 2:
-        uc = ((ord(line[0]) & 0x1F) << 6) + (ord(line[1]) & 0x3F)
-        if uc < 0x80:
-            uc = -1
-    elif length == 3:
-        uc = ((ord(line[0]) & 0x0F) << 12) + ((ord(line[1]) & 0x3F) << 6) + (ord(line[2]) & 0x3F)
-        if uc < 0x800 or (uc >= 0xD800 and uc < 0xE000):
-            uc = -1
-    elif length == 4:
-        uc = (((ord(line[0]) & 0x07) << 18) + ((ord(line[1]) & 0x3F) << 12) +
-              ((ord(line[2]) & 0x3F) << 6) + (ord(line[3]) & 0x3F))
-        if uc < 0x10000 or uc >= 0x110000:
-            uc = -1
+
+    # In Python 3 all strings are unicode by default
+    # and they all have length of 1.
+    # All the original C code here is omitted for this reason.
 
     if uc < 0:
         return -1, dst
@@ -102,21 +119,63 @@ def _cmark_cmark_utf8proc_iterate(line: str, line_len: int) -> tuple:
     return length, dst
 
 
+# 0.30
+def _cmark_cmark_utf8proc_encode_char(uc: int, buf: _cmarkCmarkStrbuf):
+    dst: str
+    length: int = 0
+
+    if uc < 0:
+        raise ValueError
+
+    # In Python 3 all strings are unicode by default
+    # and they all have length of 1.
+    # Omitted code.
+    length = 1
+    if len(uc) > 1 or uc >= 0x110000:
+        _cmark_encode_unknown(buf)
+        return
+
+    dst = str(uc)
+    _cmark_cmark_strbuf_put(buf, dst, length)
+
+
+# 0.30
+def _cmark_cmark_utf8proc_case_fold(dest: _cmarkCmarkStrbuf, string: str,
+                                    length: int):
+    c: int
+
+    while (length > 0):
+        char_len, c = _cmark_cmark_utf8proc_iterate(string, length)
+
+        if char_len >= 0:
+            # FIXME: unsure about this. See original C source code.
+            _cmark_cmark_utf8proc_encode_char(unicodedata.normalize('NFC', chr(c)).casefold(), dest)
+        else:
+            _cmark_encode_unknown(dest)
+            char_len = -char_len
+
+        # Advance pointer.
+        #     str += char_len;
+        string = string[char_len:]
+        # Reduce string length.
+        length -= char_len
+
+
 # 0.29, 0.30
-def _cmark_cmark_utf8proc_is_space(char: int, parser: str = 'github') -> bool:
+def _cmark_cmark_utf8proc_is_space(char: int) -> bool:
     r"""Match anything in the Zs class, plus LF, CR, TAB, FF."""
     value = False
-    if chr(char) in md_parser[parser]['pseudo-re']['UWC']:
+    if chr(char) in md_parser['cmark']['pseudo-re']['UWC']:
         value = True
 
     return value
 
 
 # 0.29, 0.30
-def _cmark_cmark_utf8proc_is_punctuation(char: int, parser: str = 'github') -> bool:
+def _cmark_cmark_utf8proc_is_punctuation(char: int) -> bool:
     r"""Match anything in the P[cdefios] classes."""
     value = False
-    if (char < 128 and _cmark_cmark_ispunct(char)) or chr(char) in md_parser[parser]['pseudo-re']['UPC']:
+    if (char < 128 and _cmark_cmark_ispunct(char)) or chr(char) in md_parser['cmark']['pseudo-re']['UPC']:
         value = True
 
     return value

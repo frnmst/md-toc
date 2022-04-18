@@ -27,11 +27,21 @@ from ..constants import parser as md_parser
 # See docs/copyright_license.rst
 
 
+# Return True if c is a "whitespace" character as defined by the spec.
+# 0.30
+def _cmark_cmark_isspace(char: int) -> bool:
+    value = False
+    if chr(char) in md_parser['cmark']['pseudo-re']['UWC']:
+        value = True
+
+    return value
+
+
 # Return True if c is an ascii punctuation character.
 # 0.29, 0.30
-def _cmark_cmark_ispunct(char: int, parser: str = 'github') -> bool:
+def _cmark_cmark_ispunct(char: int) -> bool:
     value = False
-    if chr(char) in md_parser[parser]['pseudo-re']['APC']:
+    if chr(char) in md_parser['cmark']['pseudo-re']['APC']:
         value = True
 
     return value

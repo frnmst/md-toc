@@ -46,4 +46,7 @@ class StringCannotContainNewlines(Exception):
 
 
 class CannotTreatUnicodeString(Exception):
-    """Cannot treat unicode string."""
+    """Cannot treat unicode string.
+
+    .. note:: This exception is deprecated and will be removed in the next major release.
+    """
