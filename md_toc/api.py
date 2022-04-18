@@ -854,7 +854,7 @@ def build_anchor_link(header_text_trimmed: str,
                 stripped = 0
                 inserted += 1
 
-        ''.join(header_text_trimmed_middle_stage)
+        header_text_trimmed_middle_stage = ''.join(header_text_trimmed_middle_stage)
         if stripped > 0 and inserted > 0:
             header_text_trimmed_middle_stage = header_text_trimmed_middle_stage[
                 0:-1]
