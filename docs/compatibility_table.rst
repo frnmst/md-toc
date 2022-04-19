@@ -50,9 +50,9 @@ Status
 =======================   =====================   ============   ========================================================================================================  =============================================
 Parser                    Status                  Alias of       Supported parser version                                                                                  Source
 =======================   =====================   ============   ========================================================================================================  =============================================
-``cmark``                 |most|                                 Version 0.30 (2021-06-19) (a.k.a 0.30.0)                                                                  https://github.com/commonmark/cmark
+``cmark``                 |most|                                 Version 0.30 (2021-06-19) (GIT tag 0.30.0)                                                                https://github.com/commonmark/cmark
 ``commonmarker``          |good|                  ``github``                                                                                                               https://github.com/gjtorikian/commonmarker
-``github``                |good|                                 Version 0.29-gfm (2019-04-06) (a.k.a 0.29.gfm.0)                                                          https://github.com/github/cmark-gfm
+``github``                |good|                                 Version 0.29-gfm (2019-04-06) (GIT tag 0.29.gfm.0)                                                        https://github.com/github/cmark-gfm
 ``goldmark``              |most|                  ``cmark``                                                                                                                https://github.com/yuin/goldmark
 ``gitlab``                |partial|                              Latest unknown version                                                                                    https://docs.gitlab.com/ee/user/markdown.html
 ``redcarpet``             |low|                                  `Redcarpet v3.5.0 <https://github.com/vmg/redcarpet/tree/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae>`_      https://github.com/vmg/redcarpet
