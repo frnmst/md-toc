@@ -26,6 +26,11 @@ import re
 from ..constants import parser as md_parser
 from .chunk_h import _cmarkCmarkChunk
 
+# License C applies to this file except for non derivative code:
+# in that case the license header at the top of the file applies.
+# See docs/copyright_license.rst
+
+
 # These functions have been re-written to avoid GOTO jumps,
 # also using the scanners.re source file.
 # The original C source states:

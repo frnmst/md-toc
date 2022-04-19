@@ -13,12 +13,22 @@ Scope
 | Most of md-toc's API                    | all                                           |
 +-----------------------------------------+-----------------------------------------------+
 
+Files
+`````
+
+- ``./md_toc/api.py``
+- ``./md_toc/cli.py``
+- ``./md_toc/constants.py``
+- ``./md_toc/exceptions.py``
+- ``./md_toc/generic.py``
+- ``./md_toc/__init__.py``
+- ``./md_toc/tests/tests.py``
+- ``./md_toc/tests/__init__.py``
+
 Text
 ````
 
-
 ::
-
 
     Copyright (C) 2017-2022 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
 
@@ -46,14 +56,19 @@ Scope
 | Applies to                              | Parsers                                       |
 +-----------------------------------------+-----------------------------------------------+
 | Headers                                 | ``redcarpet``                                 |
++-----------------------------------------+-----------------------------------------------+
 | Anchor link types and behaviours        | ``redcarpet``                                 |
 +-----------------------------------------+-----------------------------------------------+
+
+Files
+`````
+
+- ``./md_toc/api.py``
 
 Text
 ````
 
 ::
-
 
     Copyright (c) 2009, Natacha Porté
     Copyright (c) 2015, Vicent Marti
@@ -89,11 +104,15 @@ Scope
 | Anchor link types and behaviours        | ``cmark``, ``github``                         |
 +-----------------------------------------+-----------------------------------------------+
 
+Files
+`````
+
+- ``./md_toc/api.py``
+
 Text
 ````
 
 ::
-
 
     Copyright (c) 2012 GitHub Inc. and Jerry Cheung
     Copyright (c) 2018, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
@@ -129,14 +148,27 @@ Scope
 +-----------------------------------------+-----------------------------------------------+
 | Applies to                              | Parsers                                       |
 +-----------------------------------------+-----------------------------------------------+
-| Most ``md_toc/cmark.py`` code           | ``cmark``, ``github``, ``gitlab``             |
+| Emphasis in anchor links                | ``cmark``, ``github``, ``gitlab``             |
 +-----------------------------------------+-----------------------------------------------+
+
+Files
+`````
+
+- ``./md_toc/constants.py``
+- ``./md_toc/cmark/cmark_ctype_c.py``
+- ``./md_toc/cmark/cmark_h.py``
+- ``./md_toc/cmark/inlines_c.py``
+- ``./md_toc/cmark/node_c.py``
+- ``./md_toc/cmark/node_h.py``
+- ``./md_toc/cmark/references_c.py``
+- ``./md_toc/cmark/references_h.py``
+- ``./md_toc/cmark/scanners_c.py``
+- ``./md_toc/cmark/scanners_h.py``
 
 Text
 ````
 
 ::
-
 
     Copyright (c) 2014, John MacFarlane
     Copyright (c) 2021-2022, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
@@ -176,14 +208,18 @@ Scope
 +-----------------------------------------+-----------------------------------------------+
 | Applies to                              | Parsers                                       |
 +-----------------------------------------+-----------------------------------------------+
-| Emphasis                                | ``cmark``, ``github``, ``gitlab``             |
+| Emphasis in anchor links                | ``cmark``, ``github``, ``gitlab``             |
 +-----------------------------------------+-----------------------------------------------+
+
+Files
+`````
+
+- ``./md_toc/cmark/utf8_c.py``
 
 Text
 ````
 
 ::
-
 
     utf8.c and utf8.c
 
@@ -220,19 +256,71 @@ Scope
 +-----------------------------------------+-----------------------------------------------+
 | Applies to                              | Parsers                                       |
 +-----------------------------------------+-----------------------------------------------+
-| Emphasis                                | ``cmark``, ``github``, ``gitlab``             |
+| Emphasis in anchor links                | ``cmark``, ``github``, ``gitlab``             |
 +-----------------------------------------+-----------------------------------------------+
+
+Files
+`````
+
+- ``./md_toc/cmark/buffer_h.py``
+- ``./md_toc/cmark/buffer_c.py``
+- ``./md_toc/cmark/chunk_h.py``
 
 Text
 ````
 
 ::
 
-
     buffer.h, buffer.c, chunk.h
 
     are derived from code (C) 2012 Github, Inc.
     Copyright (C) 2021-2022, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of
+    this software and associated documentation files (the "Software"), to deal in
+    the Software without restriction, including without limitation the rights to
+    use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+    of the Software, and to permit persons to whom the Software is furnished to do
+    so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+
+
+License F
+---------
+
++-----------------------------------------+-----------------------------------------------+
+| Applies to                              | Parsers                                       |
++-----------------------------------------+-----------------------------------------------+
+| Emphasis in anchor links                | ``cmark``, ``github``, ``gitlab``             |
++-----------------------------------------+-----------------------------------------------+
+
+Files
+`````
+
+- ``./md_toc/cmark/houdini_h.py``
+- ``./md_toc/cmark/houdini_html_u.c``
+
+Text
+````
+
+::
+
+    houdini.h, houdini_href_e.c, houdini_html_e.c, houdini_html_u.c
+
+    derive from https://github.com/vmg/houdini (with some modifications)
+
+    Copyright (C) 2012 Vicent Martí
+    Copyright (C) 2022, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
     this software and associated documentation files (the "Software"), to deal in

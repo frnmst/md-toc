@@ -30,6 +30,10 @@ from .buffer_h import _cmarkCmarkStrbuf
 from .houdini_h import _cmark_HOUDINI_UNESCAPED_SIZE
 from .utf8_c import _cmark_cmark_utf8proc_encode_char
 
+# License F applies to this file except for non derivative code:
+# in that case the license header at the top of the file applies.
+# See docs/copyright_license.rst
+
 
 # Recursive function of a binary search.
 # 0.30.

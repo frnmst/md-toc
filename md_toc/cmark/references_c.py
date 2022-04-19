@@ -32,6 +32,10 @@ from .cmark_h import _cmarkCmarkMem
 from .references_h import _cmarkCmarkReference, _cmarkCmarkReferenceMap
 from .utf8_c import _cmark_cmark_utf8proc_case_fold
 
+# License C applies to this file except for non derivative code:
+# in that case the license header at the top of the file applies.
+# See docs/copyright_license.rst
+
 
 # normalize reference:  collapse internal whitespace to single space,
 # remove leading/trailing whitespace, case fold

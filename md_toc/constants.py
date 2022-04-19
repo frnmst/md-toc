@@ -24,6 +24,10 @@ import copy
 import html
 import os
 
+# License C applies to the cmark entities part.
+# See docs/copyright_license.rst
+
+
 common_defaults = dict()
 
 common_defaults = {
