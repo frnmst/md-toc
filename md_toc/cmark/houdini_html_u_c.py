@@ -36,15 +36,16 @@ from .utf8_c import _cmark_cmark_utf8proc_encode_char
 def _cmark_S_lookup(i: int, low: int, hi: int, s: str, length: int) -> str:
     j: int
     cmp: int = _strncmp(s, md_parser['cmark']['re']['ENTITIES']['entities'][i]['entity'], length)
-    if cmp == 0 and md_parser['cmark']['re']['ENTITIES']['entities'][i]['entity'][length] == 0:
+    #  if (cmp == 0 && cmark_entities[i].entity[len] == 0) {
+    if cmp == 0 and length == len(md_parser['cmark']['re']['ENTITIES']['entities'][i]['entity']):
         return md_parser['cmark']['re']['ENTITIES']['entities'][i]['bytes']
     elif cmp == -1 and i > low:
-        j = i - ((i - low) / 2)
+        j = i - int((i - low) / 2)
         if j == i:
             j -= 1
         return _cmark_S_lookup(j, low, i - 1, s, length)
     elif cmp == 1 and i < hi:
-        j = i + ((hi - i) / 2)
+        j = i + int((hi - i) / 2)
         if j == i:
             j += 1
         return _cmark_S_lookup(j, i + 1, hi, s, length)
@@ -54,7 +55,7 @@ def _cmark_S_lookup(i: int, low: int, hi: int, s: str, length: int) -> str:
 
 # 0.30.
 def _cmark_S_lookup_entity(s: str, length: int):
-    return _cmark_S_lookup(md_parser['cmark']['re']['ENTITIES']['CMARK_NUM_ENTITIES'] / 2, 0, md_parser['cmark']['re']['ENTITIES']['CMARK_NUM_ENTITIES'] - 1, s, length)
+    return _cmark_S_lookup(int(md_parser['cmark']['re']['ENTITIES']['CMARK_NUM_ENTITIES'] / 2), 0, md_parser['cmark']['re']['ENTITIES']['CMARK_NUM_ENTITIES'] - 1, s, length)
 
 
 # 0.30.

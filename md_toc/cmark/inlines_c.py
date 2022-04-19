@@ -23,7 +23,7 @@ r"""A cmark implementation file."""
 import copy
 
 from ..constants import parser as md_parser
-from ..generic import _noop, _replace_substring
+from ..generic import _replace_substring
 from .buffer_c import (_cmark_cmark_strbuf_detach, _cmark_cmark_strbuf_drop,
                        _cmark_cmark_strbuf_set, _cmark_cmark_strbuf_truncate,
                        _cmark_cmark_strbuf_unescape)

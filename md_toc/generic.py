@@ -44,12 +44,6 @@ def _isascii(c):
     return 0 <= _ctoi(c) <= 127
 
 
-def _noop(var):
-    # Black hole for unused variables
-    # to avoid triggering flake8.
-    pass
-
-
 def _replace_substring(source: str, replacement: str, start: int, end: int) -> str:
     r"""Given a string called source, replace it with a string called replacement between the start ~ end interval."""
     replaced: list = list()
@@ -102,6 +96,76 @@ def _strncmp(s1: str, s2: str, length: int) -> int:
         i += 1
 
     return retval
+
+
+def _utf8_array_to_string(array: list) -> str:
+    r"""Given an array of integers corresponding to the representation of a UTF-8 string like this.
+
+    >>> list(chr(0x10348).encode('UTF-8'))
+    [240, 144, 141, 136]
+
+    revert back to the original UTF-8 character.
+
+    See the UTF-8 wikipedia page for these examples:
+
+    vv = [240, 144, 141, 136]
+    a = _utf8_array_to_string(vv)
+    assert a == chr(66376)
+
+    vv = [226, 130, 172]
+    a = _utf8_array_to_string(vv)
+    assert a == chr(8364)
+
+    vv = [194, 163]
+    a = _utf8_array_to_string(vv)
+    assert a == chr(163)
+
+    vv = [36]
+    a = _utf8_array_to_string(vv)
+    assert a == chr(36)
+    """
+    array_length: int = len(array)
+    result: str
+
+    # Not a UTF-8 array.
+    if array_length < 1 or array_length > 4:
+        raise ValueError
+
+    if array_length == 1:
+        ll: list = [array[0] - (array[0] & 0x0)]
+        binary: list = [bin(f).replace('0b', '') for f in ll]
+        raw_binary_8_bit: list = [binary[0].zfill(7)]
+
+    if array_length == 2:
+        ll: list = [array[0] - (array[0] & 0xC0),
+                    array[1] - (array[1] & 0x80)]
+        binary: list = [bin(f).replace('0b', '') for f in ll]
+        raw_binary_8_bit: list = [binary[0].zfill(4),
+                                  binary[1].zfill(6)]
+
+    if array_length == 3:
+        ll: list = [array[0] - (array[0] & 0xE0),
+                    array[1] - (array[1] & 0x80),
+                    array[2] - (array[2] & 0x80)]
+        binary: list = [bin(f).replace('0b', '') for f in ll]
+        raw_binary_8_bit: list = [binary[0].zfill(4),
+                                  binary[1].zfill(6),
+                                  binary[2].zfill(6)]
+
+    if array_length == 4:
+        ll: list = [array[0] - (array[0] & 0xF0),
+                    array[1] - (array[1] & 0x80),
+                    array[2] - (array[2] & 0x80),
+                    array[3] - (array[3] & 0x80)]
+        binary: list = [bin(f).replace('0b', '') for f in ll]
+        raw_binary_8_bit: list = [binary[0].zfill(3),
+                                  binary[1].zfill(6),
+                                  binary[2].zfill(6),
+                                  binary[3].zfill(6)]
+
+    result = chr(int(''.join(raw_binary_8_bit), 2))
+
+    return result
 
 
 if __name__ == '__main__':

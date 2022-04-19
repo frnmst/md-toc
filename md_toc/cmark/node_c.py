@@ -23,7 +23,6 @@ r"""A cmark implementation file."""
 import copy
 
 from ..constants import parser as md_parser
-from ..generic import _noop
 from .cmark_h import _cmarkCmarkMem
 from .node_h import _cmarkCmarkNode
 

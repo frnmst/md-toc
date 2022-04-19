@@ -1311,6 +1311,9 @@ class TestApi(unittest.TestCase):
 
         # Example 510 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'*[link*] (uri)'), r'[link] (uri)')
+        self.assertEqual(api.remove_emphasis(r'[link] (*uri)*'), r'[link] (uri)')
+#        self.assertEqual(api.remove_emphasis(r'_[link_] (uri)'), r'[link] (uri)')
+        self.assertEqual(api.remove_emphasis(r'[link] (_uri)_'), r'[link] (uri)')
 
         # Example 511 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'*[link* [foo [bar]]](/uri)'), r'*[link* [foo [bar]]](/uri)')

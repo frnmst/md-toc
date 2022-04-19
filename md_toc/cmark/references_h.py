@@ -20,7 +20,6 @@
 #
 r"""A cmark implementation file."""
 
-from ..generic import _noop
 from .cmark_h import _cmarkCmarkMem
 
 # License C applies to this file except for non derivative code:
