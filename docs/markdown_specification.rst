@@ -121,12 +121,3 @@ Steps to add an unsupported markdown parser
 4. Write or adapt an algorithm for that section.
 5. Write unit tests for it.
 6. Add the new parser to the CLI interface.
-
-Curiosities
------------
-
-- GitLab added an extension called ``Table of contents`` to
-  its `Gitlab Flavored Mardown`. See:
-  https://docs.gitlab.com/ee/user/markdown.html#table-of-contents
-- in March 2021 GitHub added an interactive TOC button on the readme files of repositories which works
-  works for markdown and other systems.
