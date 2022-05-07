@@ -15,7 +15,7 @@ to improve document readability.
 
 ## Video
 
-[![image](https://asciinema.org/a/452384.png){.align-center}](https://asciinema.org/a/452384)
+[![image](https://asciinema.org/a/452384.png)](https://asciinema.org/a/452384)
 
 ## Description
 
