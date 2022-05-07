@@ -22,14 +22,17 @@ r"""setup.py."""
 
 from setuptools import find_packages, setup
 
+with open('README.md', 'r', encoding='utf-8') as f:
+    readme = f.read()
+
 setup(
     name='md_toc',
     version='8.1.3',
     packages=find_packages(exclude=['*tests*']),
     license='GPLv3+',
     description='A utility that is able to generate a table of contents for a markdown file.',
-    long_description=open('README.rst').read(),
-    long_description_content_type='text/x-rst',
+    long_description=readme,
+    long_description_content_type='text/markdown',
     package_data={
         '': ['*.txt', '*.rst'],
     },

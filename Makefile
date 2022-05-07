@@ -68,7 +68,9 @@ upload:
 	pipenv run twine upload dist/*
 
 clean:
-	rm -rf build dist *.egg-info tests/benchmark-results *.md
+	rm -rf build dist *.egg-info tests/benchmark-results
+	# Remove all markdown files except the readme.
+	find -regex ".*\.[mM][dD]" ! -name 'README.md' ! -name 'CONTRIBUTING.md' -type f -exec rm -f {} +
 	pipenv run $(MAKE) -C docs clean
 
 .PHONY: default doc install uninstall install-dev uninstall-dev update test clean demo
