@@ -11,6 +11,8 @@
 Automatically generate a compliant table of contents for a markdown file
 to improve document readability.
 
+<!--TOC-->
+
 ## Video
 
 [![image](https://asciinema.org/a/452384.png){.align-center}](https://asciinema.org/a/452384)
