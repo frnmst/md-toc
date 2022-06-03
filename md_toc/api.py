@@ -61,22 +61,46 @@ def write_string_on_file_between_markers(filename: str, string: str,
         raise StdinIsNotAFileToBeWritten
 
     final_string = marker + '\n\n' + string.rstrip() + '\n\n' + marker + '\n'
-    marker_line_positions = fpyutils.filelines.get_line_matches(
-        filename, marker, 2, loose_matching=True)
+    marker_line_positions, lines = fpyutils.filelines.get_line_matches(
+        filename, marker, 0, loose_matching=True, keep_all_lines=True)
+    marker_line_positions_length: int = len(marker_line_positions)
 
-    if 1 in marker_line_positions:
-        if 2 in marker_line_positions:
+    first_marker: int = 1
+    second_marker: int = 2
+    in_loop: bool = False
+    done: bool = False
+    first_marker_position: int = 0
+
+    if marker_line_positions_length > 0:
+        first_marker_position = marker_line_positions[first_marker]
+
+    # Find appropriate TOC markers.
+    while not done and marker_line_positions_length >= 2:
+        interval: str = generic._read_line_interval(lines, marker_line_positions[first_marker] + 1, marker_line_positions[second_marker] - 1)
+        interval_with_offset: str = generic._read_line_interval(lines, marker_line_positions[first_marker] + 2, marker_line_positions[second_marker] - 2)
+        # TODO: add code fence detection.
+        if generic._detect_toc_list(interval_with_offset) or generic._string_empty(interval):
             fpyutils.filelines.remove_line_interval(
-                filename, marker_line_positions[1], marker_line_positions[2],
+                filename, marker_line_positions[first_marker], marker_line_positions[second_marker],
                 filename)
-        else:
-            fpyutils.filelines.remove_line_interval(
-                filename, marker_line_positions[1], marker_line_positions[1],
-                filename)
+            first_marker_position = marker_line_positions[first_marker]
+            done = True
+
+        first_marker += 1
+        second_marker += 1
+        marker_line_positions_length -= 1
+        in_loop = True
+
+    if not in_loop and marker_line_positions_length == 1:
+        fpyutils.filelines.remove_line_interval(
+            filename, marker_line_positions[1], marker_line_positions[1],
+            filename)
+
+    if marker_line_positions_length >= 1:
         fpyutils.filelines.insert_string_at_line(
             filename,
             final_string,
-            marker_line_positions[1],
+            first_marker_position,
             filename,
             append=False,
             newline_character=newline_string)

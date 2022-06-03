@@ -55,6 +55,6 @@ setup(
         'Programming Language :: Python :: 3',
     ],
     install_requires=[
-        'fpyutils>=2.1,<3'
+        'fpyutils>=2.2,<3'
     ],
 )

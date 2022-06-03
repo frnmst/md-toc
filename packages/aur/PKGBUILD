@@ -9,7 +9,8 @@ url="https://blog.franco.net.eu.org/software/#md-toc"
 license=('GPL3')
 depends=('python'
          'python-fpyutils=2.1.0'
-         'python-setuptools')
+         'python-setuptools'
+         'python-pyfakefs')
 options=(!emptydirs)
 source=("https://blog.franco.net.eu.org/software/md-toc-${pkgver}/md-toc-${pkgver}.tar.gz.sig" "https://blog.franco.net.eu.org/software/md-toc-${pkgver}/md-toc-${pkgver}.tar.gz")
 sha512sums=('SKIP' 'SKIP')
