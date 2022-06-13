@@ -45,34 +45,34 @@ documentations and by reverse engineering the source codes.
 GitHub and GitLab have introduced their version of the markdown TOC
 after md-toc and similar tools were created:
 
--   in March 2021 GitHub added an interactive TOC button on the readme
-    files of repositories which works for markdown and other systems.
-    See:
-    <https://github.blog/changelog/2021-04-13-table-of-contents-support-in-markdown-files/>
--   GitLab added an extension called `Table of contents` to its [Gitlab
-    Flavored Mardown]{.title-ref}. See:
-    <https://docs.gitlab.com/ee/user/markdown.html#table-of-contents>
+- in March 2021 GitHub added an interactive TOC button on the readme
+  files of repositories which works for markdown and other systems.
+  See:
+  <https://github.blog/changelog/2021-04-13-table-of-contents-support-in-markdown-files/>
+- GitLab added an extension called `Table of contents` to its [Gitlab
+  Flavored Mardown]{.title-ref}. See:
+  <https://docs.gitlab.com/ee/user/markdown.html#table-of-contents>
 
 ## Features
 
--   works offline
--   edits file in place using a TOC marker (default `<!--TOC-->`) or
-    output to standard output
--   selection of indentation level
--   list indentation based on heading, which can optionally be disabled
--   outputs an ordered or unordered TOC list
--   creates anchor links to markdown headings by default or a plain list
-    as alternative
--   checks if heading level is coherent: this avoid creating an
-    erroneous TOC. This feature can be disabled if needed
--   skip any number lines before generating the TOC
--   can read content from standard input
--   handles multiple files at once
--   selection of newline string
--   selection of list marker
--   supports GitHub, GitLab, Commonmark, Redcarpet and others
--   [pre-commit](https://pre-commit.com/)
-    [hook](https://docs.franco.net.eu.org/md-toc/pre_commit_hook.html)
+- works offline
+- edits file in place using a TOC marker (default `<!--TOC-->`) or
+  output to standard output
+- selection of indentation level
+- list indentation based on heading, which can optionally be disabled
+- outputs an ordered or unordered TOC list
+- creates anchor links to markdown headings by default or a plain list
+  as alternative
+- checks if heading level is coherent: this avoid creating an
+  erroneous TOC. This feature can be disabled if needed
+- skip any number lines before generating the TOC
+- can read content from standard input
+- handles multiple files at once
+- selection of newline string
+- selection of list marker
+- supports GitHub, GitLab, Commonmark, Redcarpet and others
+- [pre-commit](https://pre-commit.com/)
+  [hook](https://docs.franco.net.eu.org/md-toc/pre_commit_hook.html)
 
 ## Examples
 
