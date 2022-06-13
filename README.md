@@ -12,6 +12,7 @@ Automatically generate a compliant table of contents for a markdown file
 to improve document readability.
 
 <!--TOC-->
+<!--TOC-->
 
 ## Video
 
@@ -66,8 +67,8 @@ You can use md-toc in your blog, documentation based on markdown,
 etc...
 
 I use it in [my Jekyll-based blog](https://blog.franco.net.eu.org/)
-along with its [pre-commit
-hook](https://software.franco.net.eu.org/frnmst/blog/src/branch/master/.pre-commit-config.yaml).
+along with its
+[pre-commit hook](https://software.franco.net.eu.org/frnmst/blog/src/branch/master/.pre-commit-config.yaml).
 I also use it in most repositories where markdown README files are
 present.
 
@@ -208,8 +209,8 @@ Changelogs, instructions, sources and keys can be found at
 
 ## Crypto donations
 
--   Bitcoin: bc1qnkflazapw3hjupawj0lm39dh9xt88s7zal5mwu
--   Monero:
-    84KHWDTd9hbPyGwikk33Qp5GW7o7zRwPb8kJ6u93zs4sNMpDSnM5ZTWVnUp2cudRYNT6rNqctnMQ9NbUewbj7MzCBUcrQEY
--   Dogecoin: DMB5h2GhHiTNW7EcmDnqkYpKs6Da2wK3zP
--   Vertcoin: vtc1qd8n3jvkd2vwrr6cpejkd9wavp4ld6xfu9hkhh0
+- Bitcoin: bc1qnkflazapw3hjupawj0lm39dh9xt88s7zal5mwu
+- Monero:
+  84KHWDTd9hbPyGwikk33Qp5GW7o7zRwPb8kJ6u93zs4sNMpDSnM5ZTWVnUp2cudRYNT6rNqctnMQ9NbUewbj7MzCBUcrQEY
+- Dogecoin: DMB5h2GhHiTNW7EcmDnqkYpKs6Da2wK3zP
+- Vertcoin: vtc1qd8n3jvkd2vwrr6cpejkd9wavp4ld6xfu9hkhh0
