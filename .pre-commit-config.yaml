@@ -55,7 +55,6 @@ repos:
     hooks:
     -    id: md-toc
          args: [-p, 'cmark', '-l6']  # CLI options
-         exclude: README.md
 
 -   repo: https://github.com/mgedmin/check-manifest
     rev: "0.48"

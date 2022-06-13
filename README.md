@@ -12,6 +12,19 @@ Automatically generate a compliant table of contents for a markdown file
 to improve document readability.
 
 <!--TOC-->
+
+- [Markdown Table Of Contents](#markdown-table-of-contents)
+  - [Video](#video)
+  - [Description](#description)
+  - [Features](#features)
+  - [Examples](#examples)
+  - [API examples](#api-examples)
+  - [Documentation](#documentation)
+  - [CLI Helps](#cli-helps)
+  - [License](#license)
+  - [Changelog and trusted source](#changelog-and-trusted-source)
+  - [Crypto donations](#crypto-donations)
+
 <!--TOC-->
 
 ## Video
