@@ -45,13 +45,11 @@ documentations and by reverse engineering the source codes.
 GitHub and GitLab have introduced their version of the markdown TOC
 after md-toc and similar tools were created:
 
-- in March 2021 GitHub added an interactive TOC button on the readme
-  files of repositories which works for markdown and other systems.
-  See:
-  <https://github.blog/changelog/2021-04-13-table-of-contents-support-in-markdown-files/>
-- GitLab added an extension called `Table of contents` to its [Gitlab
-  Flavored Mardown]{.title-ref}. See:
-  <https://docs.gitlab.com/ee/user/markdown.html#table-of-contents>
+- in March 2021 GitHub added an
+  [interactive TOC button](https://github.blog/changelog/2021-04-13-table-of-contents-support-in-markdown-files/)
+  at the top-left of readme files. This system works for markdown and others
+- GitLab added an [extension](https://docs.gitlab.com/ee/user/markdown.html#table-of-contents)
+  called `Table of contents` to its Gitlab Flavored Mardown
 
 ## Features
 
