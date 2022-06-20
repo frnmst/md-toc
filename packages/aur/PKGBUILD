@@ -8,7 +8,7 @@ arch=('any')
 url="https://blog.franco.net.eu.org/software/#md-toc"
 license=('GPL3')
 depends=('python'
-         'python-fpyutils=2.1.0'
+         'python-fpyutils=2.2.0'
          'python-setuptools'
          'python-pyfakefs')
 options=(!emptydirs)
