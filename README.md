@@ -177,8 +177,8 @@ program. The easiest way to build one for a markdown file is:
 
 <https://docs.franco.net.eu.org/md-toc/>
 
-Please read carefully the [Markdown
-specification](https://docs.franco.net.eu.org/md-toc/markdown_specification.html)
+Please read carefully the
+[Markdown specification](https://docs.franco.net.eu.org/md-toc/markdown_specification.html)
 section of the documentation to learn how this program parsers markdown
 files and builds a correct output.
 
@@ -221,7 +221,6 @@ Changelogs, instructions, sources and keys can be found at
 ## Crypto donations
 
 - Bitcoin: bc1qnkflazapw3hjupawj0lm39dh9xt88s7zal5mwu
-- Monero:
-  84KHWDTd9hbPyGwikk33Qp5GW7o7zRwPb8kJ6u93zs4sNMpDSnM5ZTWVnUp2cudRYNT6rNqctnMQ9NbUewbj7MzCBUcrQEY
+- Monero: 84KHWDTd9hbPyGwikk33Qp5GW7o7zRwPb8kJ6u93zs4sNMpDSnM5ZTWVnUp2cudRYNT6rNqctnMQ9NbUewbj7MzCBUcrQEY
 - Dogecoin: DMB5h2GhHiTNW7EcmDnqkYpKs6Da2wK3zP
 - Vertcoin: vtc1qd8n3jvkd2vwrr6cpejkd9wavp4ld6xfu9hkhh0
