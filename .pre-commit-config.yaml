@@ -22,7 +22,7 @@ repos:
         args: ['--style', '{based_on_style: pep8; indent_width: 4}']
 
 -   repo: https://github.com/pycqa/flake8
-    rev: '4.0.1'  # Use the sha / tag you want to point at
+    rev: '5.0.4'  # Use the sha / tag you want to point at
     hooks:
     -   id: flake8
         args: ['--ignore=E501,W503,W504,F401']
