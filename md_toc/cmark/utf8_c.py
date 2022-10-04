@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # utf8_c.py
 #
@@ -131,7 +132,7 @@ def _cmark_cmark_utf8proc_encode_char(uc: int, buf: _cmarkCmarkStrbuf):
     # and they all have length of 1.
     # Omitted code.
     length = 1
-    if len(uc) > 1 or uc >= 0x110000:
+    if uc > 1 or uc >= 0x110000:
         _cmark_encode_unknown(buf)
         return
 
@@ -140,8 +141,10 @@ def _cmark_cmark_utf8proc_encode_char(uc: int, buf: _cmarkCmarkStrbuf):
 
 
 # 0.30
-def _cmark_cmark_utf8proc_case_fold(dest: _cmarkCmarkStrbuf, string: str,
-                                    length: int):
+def _cmark_cmark_utf8proc_case_fold(
+    dest: _cmarkCmarkStrbuf, string: str,
+    length: int,
+):
     c: int
 
     while (length > 0):

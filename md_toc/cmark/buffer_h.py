@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # buffer_h.py
 #

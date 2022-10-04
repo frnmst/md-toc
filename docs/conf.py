@@ -128,8 +128,10 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'md-toc.tex', 'md-toc Documentation',
-     'Franco Masotti', 'manual'),
+    (
+        master_doc, 'md-toc.tex', 'md-toc Documentation',
+        'Franco Masotti', 'manual',
+    ),
 ]
 
 
@@ -138,8 +140,10 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'md-toc', 'md-toc Documentation',
-     [author], 1)
+    (
+        master_doc, 'md-toc', 'md-toc Documentation',
+        [author], 1,
+    ),
 ]
 
 
@@ -149,9 +153,11 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'md-toc', 'md-toc Documentation',
-     author, 'md-toc', 'One line description of project.',
-     'Miscellaneous'),
+    (
+        master_doc, 'md-toc', 'md-toc Documentation',
+        author, 'md-toc', 'One line description of project.',
+        'Miscellaneous',
+    ),
 ]
 
 
@@ -166,7 +172,7 @@ html_theme_options = {
     'sticky_navigation': True,
     'navigation_depth': -1,
     'includehidden': True,
-    'titles_only': False
+    'titles_only': False,
 }
 
 # These paths are either relative to html_static_path

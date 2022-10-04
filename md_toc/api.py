@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # api.py
 #
@@ -38,8 +39,10 @@ from .exceptions import (GithubEmptyLinkLabel, GithubOverflowCharsLinkLabel,
                          TocDoesNotRenderAsCoherentList)
 
 
-def write_string_on_file_between_markers(filename: str, string: str,
-                                         marker: str, newline_string: str = common_defaults['newline string']):
+def write_string_on_file_between_markers(
+    filename: str, string: str,
+    marker: str, newline_string: str = common_defaults['newline string'],
+):
     r"""Write the table of contents on a single file.
 
     :parameter filename: the file that needs to be read or modified.
@@ -62,7 +65,8 @@ def write_string_on_file_between_markers(filename: str, string: str,
 
     final_string = marker + '\n\n' + string.rstrip() + '\n\n' + marker + '\n'
     marker_line_positions, lines = fpyutils.filelines.get_line_matches(
-        filename, marker, 0, loose_matching=True, keep_all_lines=True)
+        filename, marker, 0, loose_matching=True, keep_all_lines=True,
+    )
     marker_line_positions_length: int = len(marker_line_positions)
 
     first_marker: int = 1
@@ -82,7 +86,8 @@ def write_string_on_file_between_markers(filename: str, string: str,
         if generic._detect_toc_list(interval_with_offset) or generic._string_empty(interval):
             fpyutils.filelines.remove_line_interval(
                 filename, marker_line_positions[first_marker], marker_line_positions[second_marker],
-                filename)
+                filename,
+            )
             first_marker_position = marker_line_positions[first_marker]
             done = True
 
@@ -94,7 +99,8 @@ def write_string_on_file_between_markers(filename: str, string: str,
     if not in_loop and marker_line_positions_length == 1:
         fpyutils.filelines.remove_line_interval(
             filename, marker_line_positions[1], marker_line_positions[1],
-            filename)
+            filename,
+        )
 
     if marker_line_positions_length >= 1:
         fpyutils.filelines.insert_string_at_line(
@@ -103,11 +109,14 @@ def write_string_on_file_between_markers(filename: str, string: str,
             first_marker_position,
             filename,
             append=False,
-            newline_character=newline_string)
+            newline_character=newline_string,
+        )
 
 
-def write_strings_on_files_between_markers(filenames: list, strings: list,
-                                           marker: str, newline_string: str = common_defaults['newline string']):
+def write_strings_on_files_between_markers(
+    filenames: list, strings: list,
+    marker: str, newline_string: str = common_defaults['newline string'],
+):
     r"""Write the table of contents on multiple files.
 
     :parameter filenames: the files that needs to be read or modified.
@@ -142,17 +151,19 @@ def write_strings_on_files_between_markers(filenames: list, strings: list,
         file_id += 1
 
 
-def build_toc(filename: str,
-              ordered: bool = False,
-              no_links: bool = False,
-              no_indentation: bool = False,
-              no_list_coherence: bool = False,
-              keep_header_levels: int = 3,
-              parser: str = 'github',
-              list_marker: str = '-',
-              skip_lines: int = 0,
-              constant_ordered_list: bool = False,
-              newline_string: str = common_defaults['newline string']) -> str:
+def build_toc(
+    filename: str,
+    ordered: bool = False,
+    no_links: bool = False,
+    no_indentation: bool = False,
+    no_list_coherence: bool = False,
+    keep_header_levels: int = 3,
+    parser: str = 'github',
+    list_marker: str = '-',
+    skip_lines: int = 0,
+    constant_ordered_list: bool = False,
+    newline_string: str = common_defaults['newline string'],
+) -> str:
     r"""Build the table of contents of a single file.
 
     :parameter filename: the file that needs to be read.
@@ -194,12 +205,12 @@ def build_toc(filename: str,
     if not skip_lines >= 0:
         raise ValueError
 
-    toc = list()
-    header_type_counter = dict()
-    header_type_curr = 0
-    header_type_prev = 0
-    header_type_first = 0
-    header_duplicate_counter = dict()
+    toc: list = list()
+    header_type_counter: dict = dict()
+    header_type_curr: int = 0
+    header_type_prev: int = 0
+    header_type_first: int = 0
+    header_duplicate_counter: dict = dict()
 
     if filename == '-':
         f = sys.stdin
@@ -219,7 +230,8 @@ def build_toc(filename: str,
     # This avoids an AssertionError later on.
     if (ordered and list_marker == md_parser[parser]['list']['unordered']['default marker']):
         list_marker = md_parser[parser]['list']['ordered'][
-            'default closing marker']
+            'default closing marker'
+        ]
     if constant_ordered_list:
         ordered = True
     if ordered and (list_marker is None or list_marker not in md_parser[parser]['list']['ordered']['closing markers']):
@@ -260,7 +272,8 @@ def build_toc(filename: str,
         # Code fence detection.
         if is_within_code_fence:
             is_within_code_fence = not is_closing_code_fence(
-                line, code_fence, is_document_end, parser)
+                line, code_fence, is_document_end, parser,
+            )
         else:
             code_fence = is_opening_code_fence(line, parser)
             if code_fence is not None:
@@ -270,8 +283,10 @@ def build_toc(filename: str,
         if not is_within_code_fence or code_fence is None:
 
             # Header detection and gathering.
-            headers = get_md_header(line, header_duplicate_counter,
-                                    keep_header_levels, parser, no_links)
+            headers = get_md_header(
+                line, header_duplicate_counter,
+                keep_header_levels, parser, no_links,
+            )
 
             # We only need to get the first element since all the lines
             # have been already separated here.
@@ -282,9 +297,11 @@ def build_toc(filename: str,
 
                 # Take care of the ordered TOC.
                 if ordered and not constant_ordered_list:
-                    increase_index_ordered_list(header_type_counter,
-                                                header_type_prev,
-                                                header_type_curr, parser)
+                    increase_index_ordered_list(
+                        header_type_counter,
+                        header_type_prev,
+                        header_type_curr, parser,
+                    )
                     index = header_type_counter[header_type_curr]
                 elif constant_ordered_list:
                     # This value should work on most parsers.
@@ -303,22 +320,30 @@ def build_toc(filename: str,
                             header_type_first = header_type_curr
                         if not toc_renders_as_coherent_list(
                                 header_type_curr, header_type_first,
-                                indentation_list, parser):
+                                indentation_list, parser,
+                        ):
                             raise TocDoesNotRenderAsCoherentList
 
                     compute_toc_line_indentation_spaces(
                         header_type_curr, header_type_prev, parser, ordered,
-                        list_marker, indentation_log, index)
+                        list_marker, indentation_log, index,
+                    )
                     no_of_indentation_spaces_curr = indentation_log[
-                        header_type_curr]['indentation spaces']
+                        header_type_curr
+                    ]['indentation spaces']
 
                 # Build a single TOC line.
                 toc_line_no_indent = build_toc_line_without_indentation(
-                    header, ordered, no_links, index, parser, list_marker)
+                    header, ordered, no_links, index, parser, list_marker,
+                )
 
                 # Save the TOC line with the indentation.
-                toc.append(build_toc_line(toc_line_no_indent,
-                                          no_of_indentation_spaces_curr) + newline_string)
+                toc.append(
+                    build_toc_line(
+                        toc_line_no_indent,
+                        no_of_indentation_spaces_curr,
+                    ) + newline_string,
+                )
 
                 header_type_prev = header_type_curr
 
@@ -332,22 +357,24 @@ def build_toc(filename: str,
 
     f.close()
 
-    toc = ''.join(toc)
+    toc_str = ''.join(toc)
 
-    return toc
+    return toc_str
 
 
-def build_multiple_tocs(filenames: list,
-                        ordered: bool = False,
-                        no_links: bool = False,
-                        no_indentation: bool = False,
-                        no_list_coherence: bool = False,
-                        keep_header_levels: int = 3,
-                        parser: str = 'github',
-                        list_marker: str = '-',
-                        skip_lines: int = 0,
-                        constant_ordered_list: bool = False,
-                        newline_string: str = common_defaults['newline string']) -> list:
+def build_multiple_tocs(
+    filenames: list,
+    ordered: bool = False,
+    no_links: bool = False,
+    no_indentation: bool = False,
+    no_list_coherence: bool = False,
+    keep_header_levels: int = 3,
+    parser: str = 'github',
+    list_marker: str = '-',
+    skip_lines: int = 0,
+    constant_ordered_list: bool = False,
+    newline_string: str = common_defaults['newline string'],
+) -> list:
     r"""Parse files by line and build the table of contents of each file.
 
     :parameter filenames: the files that needs to be read.
@@ -401,18 +428,23 @@ def build_multiple_tocs(filenames: list,
     toc_struct = list()
     while file_id < len(filenames):
         toc_struct.append(
-            build_toc(filenames[file_id], ordered, no_links, no_indentation,
-                      no_list_coherence, keep_header_levels, parser,
-                      list_marker, skip_lines, constant_ordered_list, newline_string))
+            build_toc(
+                filenames[file_id], ordered, no_links, no_indentation,
+                no_list_coherence, keep_header_levels, parser,
+                list_marker, skip_lines, constant_ordered_list, newline_string,
+            ),
+        )
         file_id += 1
 
     return toc_struct
 
 
-def increase_index_ordered_list(header_type_count: dict,
-                                header_type_prev: int,
-                                header_type_curr: int,
-                                parser: str = 'github'):
+def increase_index_ordered_list(
+    header_type_count: dict,
+    header_type_prev: int,
+    header_type_curr: int,
+    parser: str = 'github',
+):
     r"""Compute the current index for ordered list table of contents.
 
     :parameter header_type_count: the count of each header type.
@@ -437,21 +469,28 @@ def increase_index_ordered_list(header_type_count: dict,
     # Base cases for a new table of contents or a new index type.
     if header_type_prev == 0:
         header_type_prev = header_type_curr
-    if (header_type_curr not in header_type_count
-            or header_type_prev < header_type_curr):
+    if (
+        header_type_curr not in header_type_count
+        or header_type_prev < header_type_curr
+    ):
         header_type_count[header_type_curr] = 0
 
     header_type_count[header_type_curr] += 1
 
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
+    if (
+        parser == 'github' or parser == 'cmark' or parser == 'gitlab'
+        or parser == 'commonmarker'
+    ):
         if header_type_count[header_type_curr] > md_parser['github']['list'][
-                'ordered']['max marker number']:
+                'ordered'
+        ]['max marker number']:
             raise GithubOverflowOrderedListMarker
 
 
-def init_indentation_log(parser: str = 'github',
-                         list_marker: str = '-') -> dict:
+def init_indentation_log(
+    parser: str = 'github',
+    list_marker: str = '-',
+) -> dict:
     r"""Create a data structure that holds list marker information.
 
     :parameter parser: decides rules on how compute indentations.
@@ -475,7 +514,7 @@ def init_indentation_log(parser: str = 'github',
         indentation_log[i] = {
             'index': md_parser[parser]['list']['ordered']['min marker number'],
             'list marker': list_marker,
-            'indentation spaces': 0
+            'indentation spaces': 0,
         }
 
     return indentation_log
@@ -488,7 +527,8 @@ def compute_toc_line_indentation_spaces(
         ordered: bool = False,
         list_marker: str = '-',
         indentation_log: dict = init_indentation_log('github', '-'),
-        index: int = 1):
+        index: int = 1,
+):
     r"""Compute the number of indentation spaces for the TOC list element.
 
     :parameter header_type_curr: the current type of header (h[1,...,Inf]).
@@ -558,7 +598,8 @@ def compute_toc_line_indentation_spaces(
                 index_length = 0
             else:
                 index_length = len(
-                    str(indentation_log[header_type_prev]['index']))
+                    str(indentation_log[header_type_prev]['index']),
+                )
         else:
             index_length = 0
 
@@ -569,16 +610,21 @@ def compute_toc_line_indentation_spaces(
             # More indentation.
             indentation_log[header_type_curr]['indentation spaces'] = (
                 indentation_log[header_type_prev]['indentation spaces'] + len(
-                    indentation_log[header_type_prev]['list marker']) +
-                index_length + len(' '))
+                    indentation_log[header_type_prev]['list marker'],
+                ) +
+                index_length + len(' ')
+            )
         elif header_type_curr < header_type_prev:
             # Less indentation. Since we went "back" we must reset
             # all the sublists in the data structure. The indentation spaces are the ones
             # computed before.
-            for i in range(header_type_curr + 1,
-                           md_parser['github']['header']['max levels'] + 1):
+            for i in range(
+                header_type_curr + 1,
+                md_parser['github']['header']['max levels'] + 1,
+            ):
                 indentation_log[i]['index'] = md_parser['github']['list'][
-                    'ordered']['min marker number']
+                    'ordered'
+                ]['min marker number']
                 indentation_log[i]['indentation spaces'] = 0
                 indentation_log[i]['list marker'] = list_marker
         # And finally, in case of same indentation we have: header_type_curr = header_type_prev
@@ -591,15 +637,18 @@ def compute_toc_line_indentation_spaces(
 
     elif parser in ['redcarpet']:
         indentation_log[header_type_curr]['indentation spaces'] = 4 * (
-            header_type_curr - 1)
+            header_type_curr - 1
+        )
 
 
-def build_toc_line_without_indentation(header: dict,
-                                       ordered: bool = False,
-                                       no_links: bool = False,
-                                       index: int = 1,
-                                       parser: str = 'github',
-                                       list_marker: str = '-') -> str:
+def build_toc_line_without_indentation(
+    header: dict,
+    ordered: bool = False,
+    no_links: bool = False,
+    index: int = 1,
+    parser: str = 'github',
+    list_marker: str = '-',
+) -> str:
     r"""Return a list element of the table of contents.
 
     :parameter header: a data structure that contains the original
@@ -666,14 +715,17 @@ def build_toc_line_without_indentation(header: dict,
             line = header['text_original']
         else:
             line = '[' + header['text_original'] + ']' + '(#' + header[
-                'text_anchor_link'] + ')'
+                'text_anchor_link'
+            ] + ')'
         toc_line_no_indent = list_marker + ' ' + line
 
     return toc_line_no_indent
 
 
-def build_toc_line(toc_line_no_indent: str,
-                   no_of_indentation_spaces: int = 0) -> str:
+def build_toc_line(
+    toc_line_no_indent: str,
+    no_of_indentation_spaces: int = 0,
+) -> str:
     r"""Build the TOC line.
 
     :parameter toc_line_no_indent: the TOC line without indentation.
@@ -719,7 +771,7 @@ def remove_html_tags(line: str, parser: str = 'github') -> str:
     return line
 
 
-def remove_emphasis(line: str, parser: str = 'github') -> list:
+def remove_emphasis(line: str, parser: str = 'github') -> str:
     r"""Remove markdown emphasis.
 
     :parameter line: a string.
@@ -781,14 +833,16 @@ def filter_indices_from_line(line: str, ranges: list) -> str:
             final.append(line[i])
         i += 1
 
-    final = ''.join(final)
+    final_str = ''.join(final)
 
-    return final
+    return final_str
 
 
-def build_anchor_link(header_text_trimmed: str,
-                      header_duplicate_counter: dict,
-                      parser: str = 'github') -> str:
+def build_anchor_link(
+    header_text_trimmed: str,
+    header_duplicate_counter: dict,
+    parser: str = 'github',
+) -> str:
     r"""Apply the specified slug rule to build the anchor link.
 
     :parameter header_text_trimmed: the text that needs to be transformed
@@ -845,7 +899,8 @@ def build_anchor_link(header_text_trimmed: str,
             header_duplicate_counter[header_text_trimmed] = 0
         if header_duplicate_counter[header_text_trimmed] > 0:
             header_text_trimmed = header_text_trimmed + '-' + str(
-                header_duplicate_counter[header_text_trimmed])
+                header_duplicate_counter[header_text_trimmed],
+            )
         header_duplicate_counter[ht] += 1
         return header_text_trimmed
     elif parser in ['redcarpet']:
@@ -859,29 +914,34 @@ def build_anchor_link(header_text_trimmed: str,
         for i in range(0, header_text_trimmed_len):
             if header_text_trimmed[i] == '<':
                 while i < header_text_trimmed_len and header_text_trimmed[
-                        i] != '>':
+                        i
+                ] != '>':
                     i += 1
             elif header_text_trimmed[i] == '&':
                 while i < header_text_trimmed_len and header_text_trimmed[
-                        i] != ';':
+                        i
+                ] != ';':
                     i += 1
             # str.find() == -1 if character is not found in str.
             # https://docs.python.org/3.6/library/stdtypes.html?highlight=find#str.find
             elif not generic._isascii(header_text_trimmed[i]) or STRIPPED.find(
-                    header_text_trimmed[i]) != -1:
+                    header_text_trimmed[i],
+            ) != -1:
                 if inserted and not stripped:
                     header_text_trimmed_middle_stage.append('-')
                 stripped = 1
             else:
-                header_text_trimmed_middle_stage.append(header_text_trimmed[
-                    i].lower())
+                header_text_trimmed_middle_stage.append(
+                    header_text_trimmed[i].lower(),
+                )
                 stripped = 0
                 inserted += 1
 
-        header_text_trimmed_middle_stage = ''.join(header_text_trimmed_middle_stage)
+        header_text_trimmed_middle_stage_str: str = ''.join(header_text_trimmed_middle_stage)
         if stripped > 0 and inserted > 0:
-            header_text_trimmed_middle_stage = header_text_trimmed_middle_stage[
-                0:-1]
+            header_text_trimmed_middle_stage_str = header_text_trimmed_middle_stage_str[
+                0:-1
+            ]
 
         if inserted == 0 and header_text_trimmed_len > 0:
             hash = 5381
@@ -894,9 +954,11 @@ def build_anchor_link(header_text_trimmed: str,
             # This is equivalent to %x in C. In Python we don't have
             # the length problem so %x is equal to %lx in this case.
             # Apparently there is no %l in Python...
-            header_text_trimmed_middle_stage = 'part-' + '{0:x}'.format(hash)
+            header_text_trimmed_middle_stage_str = 'part-' + '{0:x}'.format(hash)
 
-        return header_text_trimmed_middle_stage
+        return header_text_trimmed_middle_stage_str
+
+    return None
 
 
 def replace_and_split_newlines(line: str) -> list:
@@ -917,15 +979,17 @@ def replace_and_split_newlines(line: str) -> list:
     line = line.lstrip('\n')
     line = line.rstrip('\n')
 
-    line = line.split('\n')
+    line_list: list = line.split('\n')
 
-    return line
+    return line_list
 
 
-def get_atx_heading(line: str,
-                    keep_header_levels: int = 3,
-                    parser: str = 'github',
-                    no_links: bool = False) -> list:
+def get_atx_heading(
+    line: str,
+    keep_header_levels: int = 3,
+    parser: str = 'github',
+    no_links: bool = False,
+) -> list:
     r"""Given a line extract the link label and its type.
 
     :parameter line: the line to be examined. This string may include newline
@@ -957,7 +1021,7 @@ def get_atx_heading(line: str,
     if not keep_header_levels >= 1:
         raise ValueError
 
-    struct = list()
+    struct: list = list()
 
     if len(line) == 0:
         return [{'header type': None, 'header text trimmed': None}]
@@ -977,7 +1041,8 @@ def get_atx_heading(line: str,
             # Preceding.
             i = 0
             while i < len(subl) and subl[i] == ' ' and i <= md_parser['github'][
-                    'header']['max space indentation']:
+                    'header'
+            ]['max space indentation']:
                 i += 1
             if i > md_parser['github']['header']['max space indentation']:
                 continue
@@ -985,10 +1050,12 @@ def get_atx_heading(line: str,
             # ATX characters.
             offset = i
             while i < len(subl) and subl[i] == '#' and i <= md_parser['github'][
-                    'header']['max levels'] + offset:
+                    'header'
+            ]['max levels'] + offset:
                 i += 1
             if i - offset > md_parser['github']['header'][
-                    'max levels'] or i - offset > keep_header_levels or i - offset == 0:
+                    'max levels'
+            ] or i - offset > keep_header_levels or i - offset == 0:
                 continue
 
             current_headers = i - offset
@@ -1057,8 +1124,10 @@ def get_atx_heading(line: str,
 
             # Cut spaces and hashes.
             while go and i < len_subl - cs_start:
-                if (subl_prime[i] not in spaces + ['#']
-                        or hash_char_rounds > 1):
+                if (
+                    subl_prime[i] not in spaces + ['#']
+                    or hash_char_rounds > 1
+                ):
                     if i > hash_round_start and hash_char_rounds > 0:
                         cs_end = len_subl - hash_round_start
                     else:
@@ -1081,10 +1150,12 @@ def get_atx_heading(line: str,
                     final_line += ' '
                 if len(
                         final_line.strip('\u0020').strip('\u0009').strip('\u000a').
-                        strip('\u000b').strip('\u000c').strip('\u000d')) == 0:
+                        strip('\u000b').strip('\u000c').strip('\u000d'),
+                ) == 0:
                     raise GithubEmptyLinkLabel
-                if len(final_line
-                       ) > md_parser['github']['link']['max chars label']:
+                if len(
+                    final_line,
+                ) > md_parser['github']['link']['max chars label']:
                     raise GithubOverflowCharsLinkLabel
 
                 i = 0
@@ -1097,13 +1168,12 @@ def get_atx_heading(line: str,
                             consecutive_escape_characters += 1
                             j -= 1
                         if ((consecutive_escape_characters > 0
-                             and consecutive_escape_characters % 2 == 0)
-                                or consecutive_escape_characters == 0):
+                           and consecutive_escape_characters % 2 == 0)
+                           or consecutive_escape_characters == 0):
                             tmp = '\u005c'
                         else:
                             tmp = str()
-                        final_line = final_line[0:i] + tmp + final_line[i:len(
-                            final_line)]
+                        final_line = final_line[0:i] + tmp + final_line[i:]
                         i += 1 + len(tmp)
                     else:
                         i += 1
@@ -1119,9 +1189,11 @@ def get_atx_heading(line: str,
                 continue
 
             i = 0
-            while (i < len(subl)
-                   and i < md_parser['redcarpet']['header']['max levels']
-                   and subl[i] == '#'):
+            while (
+                i < len(subl)
+                and i < md_parser['redcarpet']['header']['max levels']
+                and subl[i] == '#'
+            ):
                 i += 1
             current_headers = i
 
@@ -1161,11 +1233,13 @@ def get_atx_heading(line: str,
     return struct
 
 
-def get_md_header(header_text_line: str,
-                  header_duplicate_counter: dict,
-                  keep_header_levels: int = 3,
-                  parser: str = 'github',
-                  no_links: bool = False) -> dict:
+def get_md_header(
+    header_text_line: str,
+    header_duplicate_counter: dict,
+    keep_header_levels: int = 3,
+    parser: str = 'github',
+    no_links: bool = False,
+) -> list:
     r"""Build a data structure with the elements needed to create a TOC line.
 
     :parameter header_text_line: a single markdown line that needs to be
@@ -1193,10 +1267,12 @@ def get_md_header(header_text_line: str,
     .. note::
          This works like a wrapper to other functions.
     """
-    result = get_atx_heading(header_text_line, keep_header_levels, parser,
-                             no_links)
+    result = get_atx_heading(
+        header_text_line, keep_header_levels, parser,
+        no_links,
+    )
 
-    headers = list()
+    headers: list = list()
     for r in result:
         if r == {'header type': None, 'header text trimmed': None}:
             headers.append(None)
@@ -1208,8 +1284,10 @@ def get_md_header(header_text_line: str,
                 'text_original':
                 header_text_trimmed,
                 'text_anchor_link':
-                build_anchor_link(header_text_trimmed, header_duplicate_counter,
-                                  parser)
+                build_anchor_link(
+                    header_text_trimmed, header_duplicate_counter,
+                    parser,
+                ),
             })
 
     return headers
@@ -1229,11 +1307,12 @@ def is_valid_code_fence_indent(line: str, parser: str = 'github') -> bool:
     :raises: a built-in exception.
     """
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
-        return len(line) - len(line.lstrip(
-            ' ')) <= md_parser['github']['code fence']['min marker characters']
+        return len(line) - len(line.lstrip(' ')) <= md_parser['github']['code fence']['min marker characters']
     elif parser in ['redcarpet']:
         # TODO.
         return False
+
+    return False
 
 
 def is_opening_code_fence(line: str, parser: str = 'github'):
@@ -1253,7 +1332,8 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
         markers = md_parser['github']['code fence']['marker']
         marker_min_length = md_parser['github']['code fence'][
-            'min marker characters']
+            'min marker characters'
+        ]
 
         if not is_valid_code_fence_indent(line):
             return None
@@ -1305,11 +1385,15 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
         # TODO.
         return None
 
+    return None
 
-def is_closing_code_fence(line: str,
-                          fence: str,
-                          is_document_end: bool = False,
-                          parser: str = 'github') -> bool:
+
+def is_closing_code_fence(
+    line: str,
+    fence: str,
+    is_document_end: bool = False,
+    parser: str = 'github',
+) -> bool:
     r"""Determine if the given line is the end of a fenced code block.
 
     :parameter line: a single markdown line to evaluate.
@@ -1332,7 +1416,8 @@ def is_closing_code_fence(line: str,
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
         markers = md_parser['github']['code fence']['marker']
         marker_min_length = md_parser['github']['code fence'][
-            'min marker characters']
+            'min marker characters'
+        ]
 
         if not is_valid_code_fence_indent(line):
             return False
@@ -1397,6 +1482,8 @@ def is_closing_code_fence(line: str,
         # TODO.
         return False
 
+    return False
+
 
 def init_indentation_status_list(parser: str = 'github'):
     r"""Create a data structure that holds the state of indentations.
@@ -1422,7 +1509,8 @@ def toc_renders_as_coherent_list(
         header_type_curr: int = 1,
         header_type_first: int = 1,
         indentation_list: list = init_indentation_status_list('github'),
-        parser: str = 'github') -> bool:
+        parser: str = 'github',
+) -> bool:
     r"""Check if the TOC will render as a working list.
 
     :parameter header_type_curr: the current type of header (h[1,...,Inf]).
@@ -1456,8 +1544,10 @@ def toc_renders_as_coherent_list(
         indentation_list[header_type_curr - 1] = True
 
         # Reset next cells to False, as a detection mechanism.
-        for i in range(header_type_curr,
-                       md_parser['github']['header']['max levels']):
+        for i in range(
+            header_type_curr,
+            md_parser['github']['header']['max levels'],
+        ):
             indentation_list[i] = False
 
         # Check for previous False cells. If there is a "hole" in the list

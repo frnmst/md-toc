@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # reference_h.py
 #
@@ -55,7 +56,7 @@ class _cmarkCmarkReferenceMap:
         'sorted',
         'size',
         'ref_size',
-        'max_ref_size'
+        'max_ref_size',
     ]
 
     def __init__(self):

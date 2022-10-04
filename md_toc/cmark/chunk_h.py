@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # chunk_h.py
 #
@@ -56,8 +57,8 @@ def _cmark_cmark_chunk_free(c: _cmarkCmarkChunk):
 # 0.30
 def _cmark_cmark_chunk_ltrim(c: _cmarkCmarkChunk):
     while c.length > 0 and _cmark_cmark_isspace(ord(c.data[0])):
-        c.data += 1
-        c.len -= 1
+        c.data = c.data[1:]
+        c.length -= 1
 
 
 # 0.30

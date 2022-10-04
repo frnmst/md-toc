@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # houdini_html_u_c.py
 #
@@ -102,13 +103,17 @@ def _cmark_houdini_unescape_ent(ob: _cmarkCmarkStrbuf, src: str, size: int) -> i
             num_digits = i - 2
             max_digits = 6
 
-        if (num_digits >= 1
-           and num_digits <= max_digits
-           and i < size
-           and src[i] == ';'):
-            if (codepoint == 0
-               or (codepoint >= 0xD800 and codepoint < 0xE000)
-               or codepoint >= 0x110000):
+        if (
+            num_digits >= 1
+            and num_digits <= max_digits
+            and i < size
+            and src[i] == ';'
+        ):
+            if (
+                codepoint == 0
+                or (codepoint >= 0xD800 and codepoint < 0xE000)
+                or codepoint >= 0x110000
+            ):
                 codepoint = 0xFFFD
 
             _cmark_cmark_utf8proc_encode_char(codepoint, ob)
@@ -135,8 +140,10 @@ def _cmark_houdini_unescape_ent(ob: _cmarkCmarkStrbuf, src: str, size: int) -> i
 
 
 # 0.30.
-def _cmark_houdini_unescape_html(ob: _cmarkCmarkStrbuf, src: str,
-                                 size: int) -> int:
+def _cmark_houdini_unescape_html(
+    ob: _cmarkCmarkStrbuf, src: str,
+    size: int,
+) -> int:
     i: int = 0
     org: int
     ent: int
@@ -171,8 +178,10 @@ def _cmark_houdini_unescape_html(ob: _cmarkCmarkStrbuf, src: str,
     return 1
 
 
-def _cmark_houdini_unescape_html_f(ob: _cmarkCmarkStrbuf,
-                                   src: str,
-                                   size: int):
+def _cmark_houdini_unescape_html_f(
+    ob: _cmarkCmarkStrbuf,
+    src: str,
+    size: int,
+):
     if not _cmark_houdini_unescape_html(ob, src, size):
         _cmark_cmark_strbuf_put(ob, src, size)

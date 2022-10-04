@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # scanners_h.py
 #
@@ -34,3 +35,31 @@ def _cmark_scan_spacechars(c: _cmarkCmarkChunk, n: int) -> int:
 
 def _cmark_scan_link_title(c: _cmarkCmarkChunk, n: int) -> int:
     return _cmark__scan_at('_cmark__scan_link_title', c, n)
+
+
+def _cmark_scan_autolink_uri(c: _cmarkCmarkChunk, n: int) -> int:
+    return _cmark__scan_at('_cmark__scan_autolink_uri', c, n)
+
+
+def _cmark_scan_autolink_email(c: _cmarkCmarkChunk, n: int) -> int:
+    return _cmark__scan_at('_cmark__scan_autolink_email', c, n)
+
+
+def _cmark_scan_html_comment(c: _cmarkCmarkChunk, n: int) -> int:
+    return _cmark__scan_at('_cmark__scan_html_comment', c, n)
+
+
+def _cmark_scan_html_cdata(c: _cmarkCmarkChunk, n: int) -> int:
+    return _cmark__scan_at('_cmark__scan_cdata', c, n)
+
+
+def _cmark_scan_html_tag(c: _cmarkCmarkChunk, n: int) -> int:
+    return _cmark__scan_at('_cmark__scan_html_tag', c, n)
+
+
+def _cmark_scan_html_declaration(c: _cmarkCmarkChunk, n: int) -> int:
+    return _cmark__scan_at('_cmark__scan_html_declaration', c, n)
+
+
+def _cmark_scan_html_pi(c: _cmarkCmarkChunk, n: int) -> int:
+    return _cmark__scan_at('_cmark__scan_html_pi', c, n)

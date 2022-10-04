@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # node_c.py
 #
@@ -35,23 +36,29 @@ from .node_h import _cmarkCmarkNode
 def _cmark_S_is_block(node: _cmarkCmarkNode) -> bool:
     if node is None:
         return False
-    return (node.type >= md_parser['cmark']['cmark_node_type']['CMARK_NODE_FIRST_BLOCK']
-            and node.type <= md_parser['cmark']['cmark_node_type']['CMARK_NODE_LAST_BLOCK'])
+    return (
+        node.type >= md_parser['cmark']['cmark_node_type']['CMARK_NODE_FIRST_BLOCK']
+        and node.type <= md_parser['cmark']['cmark_node_type']['CMARK_NODE_LAST_BLOCK']
+    )
 
 
 # 0.30
 def _cmark_S_is_inline(node: _cmarkCmarkNode) -> bool:
     if node is None:
         return False
-    return (node.type >= md_parser['cmark']['cmark_node_type']['CMARK_NODE_FIRST_INLINE']
-            and node.type <= md_parser['cmark']['cmark_node_type']['CMARK_NODE_LAST_INLINE'])
+    return (
+        node.type >= md_parser['cmark']['cmark_node_type']['CMARK_NODE_FIRST_INLINE']
+        and node.type <= md_parser['cmark']['cmark_node_type']['CMARK_NODE_LAST_INLINE']
+    )
 
 
 # 0.30
 def _cmark_S_can_contain(node: _cmarkCmarkNode, child: _cmarkCmarkNode) -> bool:
-    if (node is None
-       or child is None
-       or node == child):
+    if (
+        node is None
+        or child is None
+        or node == child
+    ):
         return False
 
     # Verify that child is not an ancestor of node.
@@ -66,9 +73,11 @@ def _cmark_S_can_contain(node: _cmarkCmarkNode, child: _cmarkCmarkNode) -> bool:
     if child.type == md_parser['cmark']['cmark_node_type']['CMARK_NODE_DOCUMENT']:
         return False
 
-    if node.type in [md_parser['cmark']['cmark_node_type']['CMARK_NODE_DOCUMENT'],
-                     md_parser['cmark']['cmark_node_type']['CMARK_NODE_BLOCK_QUOTE'],
-                     md_parser['cmark']['cmark_node_type']['CMARK_NODE_ITEM']]:
+    if node.type in [
+        md_parser['cmark']['cmark_node_type']['CMARK_NODE_DOCUMENT'],
+        md_parser['cmark']['cmark_node_type']['CMARK_NODE_BLOCK_QUOTE'],
+        md_parser['cmark']['cmark_node_type']['CMARK_NODE_ITEM'],
+    ]:
         return _cmark_S_is_block(child) and child.type != md_parser['cmark']['cmark_node_type']['CMARK_NODE_ITEM']
 
     elif node.type in [md_parser['cmark']['cmark_node_type']['CMARK_NODE_LIST']]:
@@ -77,13 +86,15 @@ def _cmark_S_can_contain(node: _cmarkCmarkNode, child: _cmarkCmarkNode) -> bool:
     elif node.type in [md_parser['cmark']['cmark_node_type']['CMARK_NODE_CUSTOM_BLOCK']]:
         return True
 
-    elif node.type in [md_parser['cmark']['cmark_node_type']['CMARK_NODE_PARAGRAPH'],
-                       md_parser['cmark']['cmark_node_type']['CMARK_NODE_HEADING'],
-                       md_parser['cmark']['cmark_node_type']['CMARK_NODE_EMPH'],
-                       md_parser['cmark']['cmark_node_type']['CMARK_NODE_STRONG'],
-                       md_parser['cmark']['cmark_node_type']['CMARK_NODE_LINK'],
-                       md_parser['cmark']['cmark_node_type']['CMARK_NODE_IMAGE'],
-                       md_parser['cmark']['cmark_node_type']['CMARK_NODE_CUSTOM_INLINE']]:
+    elif node.type in [
+        md_parser['cmark']['cmark_node_type']['CMARK_NODE_PARAGRAPH'],
+        md_parser['cmark']['cmark_node_type']['CMARK_NODE_HEADING'],
+        md_parser['cmark']['cmark_node_type']['CMARK_NODE_EMPH'],
+        md_parser['cmark']['cmark_node_type']['CMARK_NODE_STRONG'],
+        md_parser['cmark']['cmark_node_type']['CMARK_NODE_LINK'],
+        md_parser['cmark']['cmark_node_type']['CMARK_NODE_IMAGE'],
+        md_parser['cmark']['cmark_node_type']['CMARK_NODE_CUSTOM_INLINE'],
+    ]:
         return _cmark_S_is_inline(child)
 
     return False
@@ -101,20 +112,26 @@ def _cmark_S_free_nodes(e: _cmarkCmarkNode):
             del e.as_code.info
             e.data = str()
             e.as_code.info = str()
-        elif e.type in [md_parser['cmark']['cmark_node_type']['CMARK_NODE_TEXT'],
-                        md_parser['cmark']['cmark_node_type']['CMARK_NODE_HTML_INLINE'],
-                        md_parser['cmark']['cmark_node_type']['CMARK_NODE_CODE'],
-                        md_parser['cmark']['cmark_node_type']['CMARK_NODE_HTML_BLOCK']]:
+        elif e.type in [
+            md_parser['cmark']['cmark_node_type']['CMARK_NODE_TEXT'],
+            md_parser['cmark']['cmark_node_type']['CMARK_NODE_HTML_INLINE'],
+            md_parser['cmark']['cmark_node_type']['CMARK_NODE_CODE'],
+            md_parser['cmark']['cmark_node_type']['CMARK_NODE_HTML_BLOCK'],
+        ]:
             del e.data
             e.data = str()
-        elif e.type in [md_parser['cmark']['cmark_node_type']['CMARK_NODE_LINK'],
-                        md_parser['cmark']['cmark_node_type']['CMARK_NODE_IMAGE']]:
+        elif e.type in [
+            md_parser['cmark']['cmark_node_type']['CMARK_NODE_LINK'],
+            md_parser['cmark']['cmark_node_type']['CMARK_NODE_IMAGE'],
+        ]:
             del e.as_link.url
             del e.as_link.title
             e.as_link.url = str()
             e.as_link.title = str()
-        elif e.type in [md_parser['cmark']['cmark_node_type']['CMARK_NODE_CUSTOM_BLOCK'],
-                        md_parser['cmark']['cmark_node_type']['CMARK_NODE_CUSTOM_INLINE']]:
+        elif e.type in [
+            md_parser['cmark']['cmark_node_type']['CMARK_NODE_CUSTOM_BLOCK'],
+            md_parser['cmark']['cmark_node_type']['CMARK_NODE_CUSTOM_INLINE'],
+        ]:
             del e.as_custom.on_enter
             del e.as_custom.on_exit
             e.as_custom.on_enter = str()
@@ -152,28 +169,34 @@ def _cmark_cmark_set_cstr(mem: _cmarkCmarkMem, dst: str, src: str) -> int:
         dst = copy.deepcopy(src[:length + 1])
     else:
         length = 0
-        dst = None
+        dst = str()
 
     if old:
         # Alternative to:
         #     mem->free(old);
         del old
         del dst
+        dst = str()
 
-    return length
+    return length, dst
 
 
 # 0.30
 def _cmark_cmark_node_set_literal(node: _cmarkCmarkNode, content: str) -> int:
+    length: int
+    data: str
+
     if node is None:
         return 0
 
-    if (node.type == md_parser['cmark']['cmark_node_type']['CMARK_NODE_HTML_BLOCK']
-       or node.type == md_parser['cmark']['cmark_node_type']['CMARK_NODE_TEXT']
-       or node.type == md_parser['cmark']['cmark_node_type']['CMARK_NODE_HTML_INLINE']
-       or node.type == md_parser['cmark']['cmark_node_type']['CMARK_NODE_CODE']
-       or node.type == md_parser['cmark']['cmark_node_type']['CMARK_NODE_CODE_BLOCK']):
-        length, data = _cmark_cmark_set_cstr(node.mem, content)
+    if (
+        node.type == md_parser['cmark']['cmark_node_type']['CMARK_NODE_HTML_BLOCK']
+        or node.type == md_parser['cmark']['cmark_node_type']['CMARK_NODE_TEXT']
+        or node.type == md_parser['cmark']['cmark_node_type']['CMARK_NODE_HTML_INLINE']
+        or node.type == md_parser['cmark']['cmark_node_type']['CMARK_NODE_CODE']
+        or node.type == md_parser['cmark']['cmark_node_type']['CMARK_NODE_CODE_BLOCK']
+    ):
+        length, data = _cmark_cmark_set_cstr(node.mem, node.data, content)
         node.length = length
         node.data = data
         return 1

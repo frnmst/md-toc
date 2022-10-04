@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # buffer_c.py
 #
@@ -32,6 +33,25 @@ from .cmark_h import _cmarkCmarkMem
 # License E applies to this file except for non derivative code:
 # in that case the license header at the top of the file applies.
 # See docs/copyright_license.rst
+
+cmark_strbuf__initbuf: str = str()
+
+
+# 0.30
+def _cmark_cmark_strbuf_len(buf: _cmarkCmarkStrbuf) -> int:
+    return buf.size
+
+
+# 0.30
+def _cmark_strbuf_free(buf: _cmarkCmarkStrbuf):
+    if not buf:
+        return
+
+    if buf.ptr != cmark_strbuf__initbuf:
+        # buf.mem.free(buf.ptr)
+        del buf.ptr
+
+    _cmark_cmark_strbuf_init(buf.mem, buf, 0)
 
 
 # 0.29, 0.30
@@ -126,8 +146,10 @@ def _cmark_cmark_strbuf_putc(buf: _cmarkCmarkStrbuf, c: int):
 
 
 # 0.30
-def _cmark_cmark_strbuf_put(buf: _cmarkCmarkStrbuf, data: str,
-                            length: int):
+def _cmark_cmark_strbuf_put(
+    buf: _cmarkCmarkStrbuf, data: str,
+    length: int,
+):
     if length <= 0:
         return
 
@@ -165,6 +187,25 @@ def _cmark_cmark_strbuf_detach(buf: _cmarkCmarkStrbuf) -> str:
     return data
 
 
+# 0.30
+def _cmark_cmark_strbuf_strchr(buf: _cmarkCmarkStrbuf, c: int, pos: int) -> int:
+    if pos >= buf.size:
+        return -1
+    if pos < 0:
+        pos = 0
+
+    # const unsigned char *p =
+    #  (unsigned char *)memchr(buf.ptr + pos, c, buf.size - pos);
+    p = buf.ptr[pos:buf.size - pos + 1].find(chr(c))
+
+    if p == -1:
+        return -1
+
+    # return (bufsize_t)(p - (const unsigned char *)buf->ptr);
+    # return int(ss[p:] - buf.ptr)
+    return 0
+
+
 # 0.29, 0.30
 def _cmark_cmark_strbuf_truncate(buf: _cmarkCmarkStrbuf, length: int):
     if length < 0:
@@ -197,7 +238,7 @@ def _cmark_cmark_strbuf_rtrim(buf: _cmarkCmarkStrbuf):
         return
 
     while buf.size > 0:
-        if not _cmark_cmark_isspace(buf.ptr[buf.size - 1]):
+        if not _cmark_cmark_isspace(ord(buf.ptr[buf.size - 1])):
             break
 
         buf.size -= 1
@@ -212,7 +253,7 @@ def _cmark_cmark_strbuf_trim(buf: _cmarkCmarkStrbuf):
     if not buf.size:
         return
 
-    while i < buf.size and _cmark_cmark_isspace(buf.ptr[i]):
+    while i < buf.size and _cmark_cmark_isspace(ord(buf.ptr[i])):
         i += 1
 
     _cmark_cmark_strbuf_drop(buf, i)
@@ -229,7 +270,7 @@ def _cmark_cmark_strbuf_normalize_whitespace(s: _cmarkCmarkStrbuf):
     w: int = 0
 
     for r in range(0, s.size):
-        if _cmark_cmark_isspace(s.ptr[r]):
+        if _cmark_cmark_isspace(ord(s.ptr[r])):
             if not last_char_was_space:
                 s.ptr = s.ptr[0:w - 1] + ' ' + s.ptr[w + 1:]
                 w += 1

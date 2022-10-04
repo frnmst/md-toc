@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # cmark_ctype_c.py
 #

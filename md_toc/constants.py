@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # constants.py
 #
@@ -72,6 +73,8 @@ parser['cmark']['generic'] = {
     'CMARK_OPT_SMART': 1 << 10,
     'CMARK_OPT_SOURCEPOS': 1 << 1,
     'MAXBACKTICKS': 1000,
+    'FLAG_SKIP_HTML_CDATA': 1 << 0,
+    'FLAG_SKIP_HTML_DECLARATION': 1 << 1,
 }
 
 parser['cmark']['cmark_node_type'] = {
@@ -168,7 +171,7 @@ parser['cmark']['pseudo-re'] = {
         '\u200A',
         '\u202F',
         '\u205F',
-        '\u3000'
+        '\u3000',
     ],
     # ASCII punctuation characters.
     'APC': [
@@ -201,7 +204,7 @@ parser['cmark']['pseudo-re'] = {
         '\u007B',
         '\u007C',
         '\u007D',
-        '\u007E'
+        '\u007E',
     ],
     # Punctuation General Unicode Categories.
     'PGUCPC': [
@@ -214,7 +217,7 @@ parser['cmark']['pseudo-re'] = {
         '\uFE4D',
         '\uFE4E',
         '\uFE4F',
-        '\uFF3F'
+        '\uFF3F',
     ],
 
     'PGUCPD': [
@@ -242,7 +245,7 @@ parser['cmark']['pseudo-re'] = {
         '\uFE58',
         '\uFE63',
         '\uFF0D',
-        '\u10EAD'
+        '\u10EAD',
     ],
     'PGUCPF': [
         '\u00BB',
@@ -254,7 +257,7 @@ parser['cmark']['pseudo-re'] = {
         '\u2E0A',
         '\u2E0D',
         '\u2E1D',
-        '\u2E21'
+        '\u2E21',
     ],
     'PGUCPI': [
         '\u00AB',
@@ -268,7 +271,7 @@ parser['cmark']['pseudo-re'] = {
         '\u2E09',
         '\u2E0C',
         '\u2E1C',
-        '\u2E20'
+        '\u2E20',
     ],
     'PGUCPO': [
         '\u0021',
@@ -863,7 +866,7 @@ parser['cmark']['pseudo-re'] = {
         '\u1DA8A',
         '\u1DA8B',
         '\u1E95E',
-        '\u1E95F'
+        '\u1E95F',
     ],
     'PGUCPS': [
         '\u0028',
@@ -940,7 +943,7 @@ parser['cmark']['pseudo-re'] = {
         '\uFF3B',
         '\uFF5B',
         '\uFF5F',
-        '\uFF62'
+        '\uFF62',
     ],
 }
 
@@ -956,8 +959,28 @@ parser['cmark']['pseudo-re']['UPC'] = (
     + parser['cmark']['pseudo-re']['PGUCPS']
 )
 
-# Regular expressions.
-# These refer to inline HTML.
+# Regular expressions related to scanners functions.
+# See scanners.re and scanners.c files.
+# FIXME
+# Some of these expressions are a duplicate of parser['cmark']['re'] dicts.
+__cmark_spacechar = '([ \t\v\f\r\n])'
+__cmark_escaped_char = '([\\][!"#$%&\'()*+,./:;<=>?@[\\\\]^_`{|}~-])'
+__cmark_tagname = '([A-Za-z][A-Za-z0-9-]*)'
+__cmark_attributename = '([a-zA-Z_:][a-zA-Z0-9:._-]*)'
+__cmark_unquotedvalue = "([^ \t\r\n\v\f\"'=<>`\x00]+)"
+__cmark_singlequotedvalue = "(['][^'\x00]*['])"
+__cmark_doublequotedvalue = '(["][^"\x00]*["])'
+__cmark_attributevalue = '(' + __cmark_unquotedvalue + '|' + __cmark_singlequotedvalue + '|' + __cmark_doublequotedvalue + ')'
+__cmark_attributevaluespec = __cmark_spacechar + '*[=]' + __cmark_spacechar + '*' + __cmark_attributevalue
+__cmark_attribute = '(' + __cmark_spacechar + '+' + __cmark_attributename + __cmark_attributevaluespec + '?)'
+__cmark_opentag = __cmark_tagname + __cmark_attribute + '*' + __cmark_spacechar + '*[/]?[>]'
+__cmark_closetag = '[/]' + __cmark_tagname + __cmark_spacechar + '*[>]'
+__cmark_declaration = '[A-Z]+' + __cmark_spacechar + '+' + '[^>\x00]*'
+# Excludes tag opening.
+__cmark_cdata = r'CDATA\[([^\]\x00]+|\][^\]\x00]|\]\][^>\x00])*'
+__cmark_htmlcomment = "(--->|(-([-]?[^\x00>-])([-]?[^\x00-])*-->))"
+__cmark_processinginstruction = '([^?>\x00]+|[?][^>\x00]|[>])+'
+
 parser['cmark']['re'] = {
     # [0.30] only.
     'SPACETAB': '[\u0009\u0020]',
@@ -966,13 +989,13 @@ parser['cmark']['re'] = {
 
     # See https://spec.commonmark.org/0.28/#raw-html
     # 1. Open tag and 2. close tag.
-    'DQAV': '"[^"]*"',
-    'SQAV': "'[^']*'",
-    'UAV': "[^((?!\u000a\u000d)\u000d\u000a|(?!\u000a\u000d)\u000d|(?!\u000a\u000d)\u000a|(?!\u000a\u000d)\u0020|(?!\u000a\u000d)\u0009)\"'=<>`]+",
+    'DQAV': __cmark_doublequotedvalue,
+    'SQAV': __cmark_singlequotedvalue,
+    'UAV': __cmark_unquotedvalue,
 
     # 2.
-    'AN': r'([A-Za-z]|_|:)([A-Za-z]|[0-9]|_|\.|:|-)*',
-    'TN': '[A-Za-z]([A-Za-z]|[0-9]|-)*',
+    'AN': __cmark_attributename,
+    'TN': __cmark_tagname,
 
     # 3. HTML comment.
     'COS': '<!--',
@@ -999,13 +1022,6 @@ parser['cmark']['re'] = {
     'CDE': r'\]\]>',
 }
 
-# Regular expressions related to scanners functions.
-# See scanners.re and scanners.c files.
-parser['cmark']['re']['SCANNERS'] = {
-    'spacechar': '[\u0009\u000A\u000B\u000C\u000D\u0020]+',
-    'escaped_char': '[\\][!"#$%&\'()*+,./:;<=>?@[\\\\]^_`{|}~-]'
-}
-
 # Regular expressions related to entities functions.
 # See make_entities_inc.py and entities.inc files.
 parser['cmark']['re']['ENTITIES'] = {
@@ -1015,22 +1031,22 @@ parser['cmark']['re']['ENTITIES'] = {
     'entities': _entities,
 }
 
+#
+parser['cmark']['_scanners.re'] = {
+    'spacechar': __cmark_spacechar,
+    'escaped_char': __cmark_escaped_char,
+    'cdata': __cmark_cdata,
+    'htmltag': '(' + __cmark_opentag + '|' + __cmark_closetag + ')',
+    'htmlcomment': __cmark_htmlcomment,
+    'declaration': __cmark_declaration,
+    'processinginstruction': __cmark_processinginstruction,
+}
+
 # Attribute value.
-parser['cmark']['re']['AV'] = (
-    '('
-    + parser['cmark']['re']['UAV']
-    + '|' + parser['cmark']['re']['SQAV']
-    + '|' + parser['cmark']['re']['DQAV']
-    + ')'
-)
+parser['cmark']['re']['AV'] = __cmark_attributevalue
 
 # Attribute value specification.
-parser['cmark']['re']['AVS'] = (
-    '(' + parser['cmark']['re']['SPACETAB'] + '*' + '|' + parser['cmark']['re']['LE'] + '?' + ')'
-    + '='
-    + '(' + parser['cmark']['re']['SPACETAB'] + '*' + '|' + parser['cmark']['re']['LE'] + '?' + ')'
-    + parser['cmark']['re']['AV']
-)
+parser['cmark']['re']['AVS'] = __cmark_attributevaluespec
 
 # Attribute.
 # [0.30]
@@ -1052,6 +1068,7 @@ parser['cmark']['re']['OT'] = (
     + '(/)?'
     + '>'
 )
+
 # 2. Close tag.
 parser['cmark']['re']['CT'] = (
     '</'
@@ -1059,12 +1076,16 @@ parser['cmark']['re']['CT'] = (
     + '(' + parser['cmark']['re']['SPACETAB'] + '*' + '|' + parser['cmark']['re']['LE'] + '?' + ')'
     + '>'
 )
+
 # 3. HTML comment.
 parser['cmark']['re']['CO'] = parser['cmark']['re']['COS'] + parser['cmark']['re']['COT'] + parser['cmark']['re']['COE']
+
 # 4. Processing instructions.
 parser['cmark']['re']['PI'] = parser['cmark']['re']['PIS'] + parser['cmark']['re']['PIB'] + parser['cmark']['re']['PIE']
+
 # 5. Declarations.
 parser['cmark']['re']['DE'] = parser['cmark']['re']['DES'] + parser['cmark']['re']['DEN'] + parser['cmark']['re']['DEB'] + parser['cmark']['re']['DEE']
+
 # 6. CDATA.
 parser['cmark']['re']['CD'] = parser['cmark']['re']['CDS'] + parser['cmark']['re']['CDB'] + parser['cmark']['re']['CDE']
 
@@ -1109,6 +1130,7 @@ parser['github']['re']['AT'] = (
 # See
 # https://github.github.com/gfm/#disallowed-raw-html-extension-
 # This RE are specific to GFM.
+parser['github']['re']['WS'] = '(\u0020|\u0009|\u000a|\u000b|\u000c|\u000d)'
 parser['github']['re']['GDRH'] = r'''(\b[tT][iI][tT][lL][eE]\b|\b[tT][eE][xX][tT][aA][rR][eE][aA]\b|\b[sS][tT][yY][lL][eE]\b|\b[xX][mM][pP]\b|\b[iI][fF][rR][aA][mM][eE]\b|\b[nN][oO][eE][mM][bB][eE][dD]\b|\b[nN][oO][fF][rR][aA][mM][eE][sS]\b|\b[sS][cC][rR][iI][pP][tT]\b|\b[pP][lL][aA][iI][nN][tT][eE][xX][tT]\b)'''
 parser['github']['re']['DEW'] = parser['github']['re']['WS'] + '+'
 parser['github']['re']['TN'] = (
@@ -1157,17 +1179,17 @@ parser['redcarpet']['list']['ordered'] = {
     # FIXME
     'min marker number': 0,
     'closing markers': ['.'],
-    'default closing marker': '.'
+    'default closing marker': '.',
 }
 parser['redcarpet']['list']['unordered'] = {
     'bullet markers': ['-', '+', '*'],
-    'default marker': '-'
+    'default marker': '-',
 }
 
 parser['redcarpet']['header'] = {
     'max space indentation': 0,
     'max levels': 6,
-    'default keep levels': 3
+    'default keep levels': 3,
 }
 
 

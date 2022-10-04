@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # reference_c.py
 #
@@ -112,8 +113,10 @@ def _cmark_sort_references(map: _cmarkCmarkReferenceMap):
 # Returns reference if refmap contains a reference with matching
 # label, otherwise NULL.
 # 0.30
-def _cmark_cmark_reference_lookup(map: _cmarkCmarkReferenceMap,
-                                  label: _cmarkCmarkChunk) -> _cmarkCmarkReference:
+def _cmark_cmark_reference_lookup(
+    map: _cmarkCmarkReferenceMap,
+    label: _cmarkCmarkChunk,
+) -> _cmarkCmarkReference:
     # A list of _cmarkCmarkReference
     ref: list = None
     r: _cmarkCmarkReference = None

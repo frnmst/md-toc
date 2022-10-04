@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # node_h.py
 #
@@ -100,29 +101,31 @@ class _cmarkCmarkCustom:
 
 
 class _cmarkCmarkNode:
-    __slots__ = ['mem',
-                 'next',
-                 'prev',
-                 'parent',
-                 'first_child',
-                 'last_child',
-                 'user_data',
-                 'data',
-                 'length',
-                 'start_line',
-                 'start_column',
-                 'end_line',
-                 'end_column',
-                 'internal_offset',
-                 'type',
-                 'flags',
-                 'as_list',
-                 'as_code',
-                 'as_heading',
-                 'as_link',
-                 'as_custom',
-                 'as_html_block_type',
-                 'numdelims']
+    __slots__ = [
+        'mem',
+        'next',
+        'prev',
+        'parent',
+        'first_child',
+        'last_child',
+        'user_data',
+        'data',
+        'length',
+        'start_line',
+        'start_column',
+        'end_line',
+        'end_column',
+        'internal_offset',
+        'type',
+        'flags',
+        'as_list',
+        'as_code',
+        'as_heading',
+        'as_link',
+        'as_custom',
+        'as_html_block_type',
+        'numdelims',
+    ]
 
     def __init__(self):
         self.mem: _cmarkCmarkMem = None

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # houdini_h.py
 #
@@ -25,7 +26,7 @@ r"""A cmark implementation file."""
 # See docs/copyright_license.rst
 
 
-def _cmark_HOUDINI_ESCAPED_SIZE(x: int) -> int:
+def _cmark_HOUDINI_ESCAPED_SIZE(x: int) -> float:
     return (x * 12) / 10
 
 
