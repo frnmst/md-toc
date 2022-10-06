@@ -34,6 +34,7 @@ sphinx-tabs = '>=3,<4'
 twine = '>=3,<4'
 pre-commit = '>=2,<3'
 pyfakefs = '>=4,<5'
+asciinema = '>=2,<3'
 
 [packages]
 fpyutils = '>=2.2,<3'
