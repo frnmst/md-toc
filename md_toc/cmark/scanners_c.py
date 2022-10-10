@@ -67,6 +67,8 @@ def _cmark__scan_at(
             res = _cmark__scan_html_tag(ptr, offset)
         if scanner_function_name == '_cmark__scan_html_declaration':
             res = _cmark__scan_html_declaration(ptr, offset)
+        if scanner_function_name == '_cmark__scan_html_pi':
+            res = _cmark__scan_html_pi(ptr, offset)
 
         #     ptr[c.length] = lim
 

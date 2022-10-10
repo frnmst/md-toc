@@ -75,6 +75,7 @@ parser['cmark']['generic'] = {
     'MAXBACKTICKS': 1000,
     'FLAG_SKIP_HTML_CDATA': 1 << 0,
     'FLAG_SKIP_HTML_DECLARATION': 1 << 1,
+    'FLAG_SKIP_HTML_PI': 1 << 2,
 }
 
 parser['cmark']['cmark_node_type'] = {
