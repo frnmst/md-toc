@@ -304,7 +304,7 @@ def _cmark_cmark_clean_autolink(mem: _cmarkCmarkMem, url: _cmarkCmarkChunk, is_e
     if is_email:
         _cmark_cmark_strbuf_puts(buf, "mailto:")
 
-    _cmark_houdini_unescape_html_f(buf, url.data, url.len)
+    _cmark_houdini_unescape_html_f(buf, url.data, url.length)
     return _cmark_cmark_strbuf_detach(buf)
 
 
