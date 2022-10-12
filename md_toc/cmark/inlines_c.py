@@ -1019,7 +1019,7 @@ def _cmark_handle_pointy_brace(subj: _cmarkSubject, options: int) -> _cmarkCmark
 # 0.29, 0.30
 def _cmark_handle_backslash(subj: _cmarkSubject):
     _cmark_advance(subj)
-    nextchar: str = _cmark_peek_char(subj)
+    nextchar: int = _cmark_peek_char(subj)
 
     if _cmark_cmark_ispunct(nextchar):  # only ascii symbols and newline can be escaped
         _cmark_advance(subj)

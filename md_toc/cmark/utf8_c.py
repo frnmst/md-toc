@@ -152,7 +152,7 @@ def _cmark_cmark_utf8proc_case_fold(
 
         if char_len >= 0:
             # FIXME: unsure about this. See original C source code.
-            _cmark_cmark_utf8proc_encode_char(unicodedata.normalize('NFC', chr(c)).casefold(), dest)
+            _cmark_cmark_utf8proc_encode_char(ord(unicodedata.normalize('NFC', chr(c)).casefold()), dest)
         else:
             _cmark_encode_unknown(dest)
             char_len = -char_len

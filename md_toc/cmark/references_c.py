@@ -71,7 +71,7 @@ def _cmark_normalize_reference(mem: _cmarkCmarkMem, ref: _cmarkCmarkChunk) -> st
 
 
 def _cmark_labelcmp(a: str, b: str) -> bool:
-    return int(a == b)
+    return a == b
 
 
 def _cmark_refcmp(p1: _cmarkCmarkReference, p2: _cmarkCmarkReference) -> int:

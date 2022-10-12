@@ -156,7 +156,7 @@ def _cmark_cmark_node_free(node: _cmarkCmarkNode):
 
 
 # 0.30
-def _cmark_cmark_set_cstr(mem: _cmarkCmarkMem, dst: str, src: str) -> int:
+def _cmark_cmark_set_cstr(mem: _cmarkCmarkMem, dst: str, src: str) -> tuple:
     old: str = dst
     length: int
 
