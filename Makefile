@@ -2,7 +2,7 @@
 #
 # Makefile
 #
-# Copyright (C) 2017-2021 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
+# Copyright (C) 2017-2022 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
 #
 # This file is part of md-toc.
 #
@@ -73,5 +73,9 @@ clean:
 	# Remove all markdown files except the readme.
 	find -regex ".*\.[mM][dD]" ! -name 'README.md' ! -name 'CONTRIBUTING.md' -type f -exec rm -f {} +
 	pipenv run $(MAKE) -C docs clean
+
+# This serves both as beanchmarch and as fuzzer.
+benchmark:
+	pipenv run python3 -m md_toc.tests.benchmark
 
 .PHONY: default doc install uninstall install-dev uninstall-dev update test clean demo
