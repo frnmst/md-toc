@@ -31,14 +31,31 @@ import traceback
 
 import md_toc
 
-# ~100M characters
-CHAR_SIZE = 1024 * 1024 * 100
+# ~10M characters
+CHAR_SIZE = 1024 * 1024 * 10
 ITERATIONS = 100
 
 
-def _generate_random_characters(size: int) -> str:
-    pattern = string.ascii_letters + string.digits + '#\n '
-    return ''.join([secrets.choice(pattern) for i in range(0, size)])
+def _generate_random_characters(size: int, add_end: bool = False) -> str:
+    end: str = str()
+    if add_end:
+        end = '_'
+
+    file_content = ''.join([secrets.choice(string.printable) for i in range(0, size)])
+
+    content: str = str()
+    i: int = 1
+    j: int = 0
+    for line in file_content.splitlines():
+        if j % 10000 == 0:
+            print('lines: ' + str(j))
+        if i % 6 == 1:
+            i = 1
+        content = ''.join([content, '\n', i * '#', ' ', line, end])
+        i += 1
+        j += 1
+
+    return content
 
 
 if __name__ == '__main__':
@@ -49,6 +66,7 @@ if __name__ == '__main__':
     total: dict = dict()
 
     parsers = ['github', 'cmark', 'redcarpet', 'gitlab']
+    line_ending = True
     parsers.sort()
 
     for p in parsers:
@@ -56,15 +74,20 @@ if __name__ == '__main__':
         i = 0
         avg = list()
         while ok and i < ITERATIONS:
-            print(i)
+            print('iteration: ' + str(i))
             with tempfile.NamedTemporaryFile() as fp:
                 print('generating random file...')
-                fp.write(_generate_random_characters(CHAR_SIZE).encode('UTF-8'))
+                fp.write(_generate_random_characters(CHAR_SIZE, add_end=line_ending).encode('UTF-8'))
                 print('building TOC...')
                 try:
-                    start = time.time()
-                    md_toc.build_toc(filename=fp.name, parser='cmark', no_links=True, no_list_coherence=True)
-                    end = time.time()
+                    if line_ending:
+                        start = time.time()
+                        md_toc.build_toc(filename=fp.name, parser='cmark')
+                        end = time.time()
+                    else:
+                        start = time.time()
+                        md_toc.build_toc(filename=fp.name, parser='cmark', no_links=True, no_list_coherence=True)
+                        end = time.time()
                     avg.append(end - start)
                     print('total_time: ' + str(avg[-1]))
                 except Exception:
@@ -82,11 +105,12 @@ if __name__ == '__main__':
     #   1   parser name
     #   2   number of characters
     #   3   number of iterations
-    #   4   total execution time in seconds
-    #   5   average execution time in seconds
+    #   4   add deterministic line ending
+    #   5   total execution time in seconds
+    #   6   average execution time in seconds
     md_toc_version = subprocess.check_output(['/usr/bin/git', 'rev-parse', 'HEAD']).decode('UTF-8').strip()
     with open('benchmark.csv', 'a') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for p in parsers:
-            spamwriter.writerow([md_toc_version, p, CHAR_SIZE, ITERATIONS, total[p], average[p]])
+            spamwriter.writerow([md_toc_version, p, CHAR_SIZE, ITERATIONS, line_ending, total[p], average[p]])

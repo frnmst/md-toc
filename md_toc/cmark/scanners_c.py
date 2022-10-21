@@ -119,7 +119,7 @@ def _cmark__scan_autolink_email(ptr: str, p: int) -> int:
 
 
 def _cmark__scan_html_comment(ptr: str, p: int) -> int:
-    return _common_scan(md_parser['cmark']['_scanners.re']['html_comment'], ptr, p)
+    return _common_scan(md_parser['cmark']['_scanners.re']['htmlcomment'], ptr, p)
 
 
 def _cmark__scan_cdata(ptr: str, p: int) -> int:
