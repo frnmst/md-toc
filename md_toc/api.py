@@ -1053,6 +1053,7 @@ def get_atx_heading(
                     'header'
             ]['max levels'] + offset:
                 i += 1
+
             if i - offset > md_parser['github']['header'][
                     'max levels'
             ] or i - offset > keep_header_levels or i - offset == 0:
@@ -1516,6 +1517,7 @@ def toc_renders_as_coherent_list(
     :parameter header_type_curr: the current type of header (h[1,...,Inf]).
     :parameter header_type_first: the type of header first encountered (h[1,...,Inf]).
          This must correspond to the one with the least indentation.
+    :parameter indentation_list: a list that holds the state of indentations.
     :parameter parser: decides rules on how to generate ordered list markers.
     :type header_type_curr: int
     :type header_type_first: int
