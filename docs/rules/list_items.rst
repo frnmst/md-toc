@@ -35,8 +35,6 @@ Now, let's take the previous example and reverse the order of the lines:
 
 .. code-block:: markdown
 
- ::
-
    ### baz
    ## bar
    # foo
