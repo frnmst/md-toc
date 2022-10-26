@@ -168,22 +168,27 @@ def build_toc(
 
     :parameter filename: the file that needs to be read.
     :parameter ordered: decides whether to build an ordered list or not.
-         Defaults to ``False``.
+        Defaults to ``False``.
     :parameter no_links: disables the use of links.
-         Defaults to ``False``.
+        Defaults to ``False``.
     :parameter no_indentation: disables indentation in the list.
-         Defaults to ``False``.
+        Defaults to ``False``.
+    :parameter no_list_coherence: if set to ``False`` checks
+        header levels for consecutiveness. If they are not consecutive
+        an exception is raised. For example: ``# ONE\n### TWO\n``
+        are not consecutive header levels while ``# ONE\n## TWO\n``
+        are. Defaults to ``False``.
     :parameter keep_header_levels: the maximum level of headers to be
-         considered as such when building the table of contents.
-         Defaults to ``3``.
+        considered as such when building the table of contents.
+        Defaults to ``3``.
     :parameter parser: decides rules on how to generate anchor links.
-         Defaults to ``github``.
+        Defaults to ``github``.
     :parameter list_marker: a string that contains some of the first
-         characters of the list element.
-         Defaults to ``-``.
+        characters of the list element.
+        Defaults to ``-``.
     :parameter skip_lines: the number of lines to be skipped from
-         the start of file before parsing for table of contents.
-         Defaults to ``0```.
+        the start of file before parsing for table of contents.
+        Defaults to ``0```.
     :parameter constant_ordered_list: use a single integer
         as list marker. This sets ordered to ``True``.
     :parameter newline_string: the newline separator.
@@ -192,6 +197,7 @@ def build_toc(
     :type ordered: bool
     :type no_links: bool
     :type no_indentation: bool
+    :type no_list_coherence: bool
     :type keep_header_levels: int
     :type parser: str
     :type list_marker: str
