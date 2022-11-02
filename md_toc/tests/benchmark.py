@@ -21,6 +21,7 @@
 r"""A simple benchmark file to be used to check for hidden errors as well."""
 
 import csv
+import platform
 import random
 import secrets
 import string
@@ -113,4 +114,4 @@ if __name__ == '__main__':
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for p in parsers:
-            spamwriter.writerow([md_toc_version, p, CHAR_SIZE, ITERATIONS, line_ending, total[p], average[p]])
+            spamwriter.writerow([md_toc_version, p, CHAR_SIZE, ITERATIONS, line_ending, total[p], average[p], platform.python_version(), ' '.join(platform.architecture()), platform.machine(), platform.python_implementation(), platform.python_compiler(), ' '.join(platform.libc_ver())])

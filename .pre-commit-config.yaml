@@ -52,7 +52,7 @@ repos:
         args: ['--configuration-file', '.allowed_licenses.yml']
 
 -   repo: https://codeberg.org/frnmst/md-toc
-    rev: '8.1.4'  # or a specific git tag from md-toc
+    rev: '8.1.5'  # or a specific git tag from md-toc
     hooks:
     -    id: md-toc
          args: [-p, 'cmark', '-l6']  # CLI options

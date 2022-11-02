@@ -38,7 +38,6 @@ install-dev:
 	pipenv run pre-commit install
 	pipenv run pre-commit install --hook-type commit-msg
 	pipenv graph
-	pipenv check
 
 uninstall-dev:
 	rm -f Pipfile.lock
@@ -78,4 +77,4 @@ clean:
 benchmark:
 	pipenv run python3 -m md_toc.tests.benchmark
 
-.PHONY: default doc install uninstall install-dev uninstall-dev update test clean demo
+.PHONY: default doc install uninstall install-dev uninstall-dev update test clean demo benchmark
