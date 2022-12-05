@@ -298,7 +298,8 @@ def build_toc(
             # have been already separated here.
             header = headers[0]
 
-            if header is not None:
+            # Ignore invalid or to-be-invisible headers.
+            if header is not None and header['visible']:
                 header_type_curr = header['type']
 
                 # Take care of the ordered TOC.
@@ -1010,10 +1011,17 @@ def get_atx_heading(
     :type keep_header_levels: int
     :type parser: str
     :type no_links: bool
-    :returns: struct, a list of dictionaries with ``header type`` (int)
-        and ``header text trimmed`` (str) keys. Both values are
-        set to ``None`` if the line does not contain header elements according to
-        the rules of the selected markdown parser.
+    :returns: struct, a list of dictionaries with
+
+        - ``header type`` (int)
+        - ``header text trimmed`` (str)
+        - ``visible`` (bool)
+
+        as keys. ``header type`` and ``header text trimmed`` are
+        set to ``None`` if the line does not contain header elements according
+        to the rules of the selected markdown parser.
+        ``visible`` is set to ``True`` if the line needs to be saved, ``False``
+        if it just needed for duplicate counting.
     :rtype: list
     :raises: GithubEmptyLinkLabel or GithubOverflowCharsLinkLabel or a
          built-in exception.
@@ -1028,9 +1036,10 @@ def get_atx_heading(
         raise ValueError
 
     struct: list = list()
+    line_visible: bool = True
 
     if len(line) == 0:
-        return [{'header type': None, 'header text trimmed': None}]
+        return [{'header type': None, 'header text trimmed': None, 'visible': False}]
 
     for subl in replace_and_split_newlines(line):
         current_headers = None
@@ -1038,7 +1047,7 @@ def get_atx_heading(
 
         if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
 
-            struct.append({'header type': None, 'header text trimmed': None})
+            struct.append({'header type': None, 'header text trimmed': None, 'visible': False})
 
             # Empty substring or backslash.
             if len(subl) == 0 or subl[0] == '\u005c':
@@ -1060,10 +1069,14 @@ def get_atx_heading(
             ]['max levels'] + offset:
                 i += 1
 
-            if i - offset > md_parser['github']['header'][
-                    'max levels'
-            ] or i - offset > keep_header_levels or i - offset == 0:
+            if (i - offset > md_parser['github']['header']['max levels']
+               or i - offset == 0):
                 continue
+
+            # We need to continue parsing to find possible duplicate headers
+            # in other functions if we set keep_header_levels < max_levels.
+            if i - offset > keep_header_levels:
+                line_visible: bool = False
 
             current_headers = i - offset
 
@@ -1186,11 +1199,10 @@ def get_atx_heading(
                         i += 1
 
             # Overwrite the element with None as values.
-            struct[-1] = {'header type': current_headers, 'header text trimmed': final_line}
+            struct[-1] = {'header type': current_headers, 'header text trimmed': final_line, 'visible': line_visible}
 
         elif parser in ['redcarpet']:
-
-            struct.append({'header type': None, 'header text trimmed': None})
+            struct.append({'header type': None, 'header text trimmed': None, 'visible': False})
 
             if len(subl) == 0 or subl[0] != '#':
                 continue
@@ -1229,11 +1241,13 @@ def get_atx_heading(
 
             if final_line is None:
                 current_headers = None
+                line_visible = False
 
-            struct[-1] = {'header type': current_headers, 'header text trimmed': final_line}
+            struct[-1] = {'header type': current_headers, 'header text trimmed': final_line, 'visible': line_visible}
 
         # TODO: escape or remove '[', ']', '(', ')' in inline links for redcarpet,
         # TODO: check link label rules for redcarpet.
+        # TODO: check live_visible
 
     # endfor
 
@@ -1281,20 +1295,20 @@ def get_md_header(
 
     headers: list = list()
     for r in result:
-        if r == {'header type': None, 'header text trimmed': None}:
+        if r['header type'] is None and r['header text trimmed'] is None:
             headers.append(None)
         else:
-            header_type, header_text_trimmed = r['header type'], r['header text trimmed']
             headers.append({
                 'type':
-                header_type,
+                r['header type'],
                 'text_original':
-                header_text_trimmed,
+                r['header text trimmed'],
                 'text_anchor_link':
                 build_anchor_link(
-                    header_text_trimmed, header_duplicate_counter,
+                    r['header text trimmed'], header_duplicate_counter,
                     parser,
                 ),
+                'visible': r['visible'],
             })
 
     return headers

@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.3.0
+    rev: 'v4.3.0'
     hooks:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
@@ -41,12 +41,12 @@ repos:
 #        args: ['--no-strict-optional', '--ignore-missing-imports', '--show-error-context', '--show-error-codes', '--follow-imports', 'silent']
 
 -   repo: https://github.com/pycqa/isort
-    rev: 5.10.1
+    rev: '5.10.1'
     hooks:
     -   id: isort
 
 -   repo: https://codeberg.org/frnmst/licheck
-    rev: 1.0.0
+    rev: '1.0.0'
     hooks:
     -   id: licheck
         args: ['--configuration-file', '.allowed_licenses.yml']
@@ -58,7 +58,7 @@ repos:
          args: [-p, 'cmark', '-l6']  # CLI options
 
 -   repo: https://github.com/mgedmin/check-manifest
-    rev: "0.48"
+    rev: '0.48'
     hooks:
     -   id: check-manifest
         args: ['--ignore','docs/*,docs/assets/*,docs/rules/*,docs/_static/*,docs/_static/css/*,Pipfile,Makefile,asciinema/*,*.yaml,*.yml,assets/*,md_toc/tests/*,packages/aur/*']

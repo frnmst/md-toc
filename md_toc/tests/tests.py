@@ -23,7 +23,7 @@
 r"""The tests module."""
 
 import unittest
-from unittest.mock import mock_open, patch
+from unittest.mock import patch
 
 from pyfakefs.fake_filesystem_unittest import TestCase as pyfakefsTestCase
 
@@ -1984,80 +1984,80 @@ class TestApi(pyfakefsTestCase):
         # Example 62 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(H1 + T1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
         self.assertEqual(
             api.get_atx_heading(H1 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
 
         self.assertEqual(
             api.get_atx_heading(H2 + S1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(H2 + T1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
         self.assertEqual(
             api.get_atx_heading(H2 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
-            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
 
         self.assertEqual(
             api.get_atx_heading(H3 + S1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(H3 + T1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
         self.assertEqual(
             api.get_atx_heading(H3 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
 
         self.assertEqual(
             api.get_atx_heading(H4 + S1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': 4, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 4, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(H4 + T1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
         self.assertEqual(
             api.get_atx_heading(H4 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
-            [{'header type': 4, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 4, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
 
         self.assertEqual(
             api.get_atx_heading(H5 + S1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': 5, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 5, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(H5 + T1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
         self.assertEqual(
             api.get_atx_heading(H5 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
-            [{'header type': 5, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 5, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
 
         self.assertEqual(
             api.get_atx_heading(H6 + S1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': 6, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 6, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(H6 + T1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
         self.assertEqual(
             api.get_atx_heading(H6 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
-            [{'header type': 6, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 6, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
 
         # Example 33 [Commonmark 0.28].
@@ -2065,7 +2065,7 @@ class TestApi(pyfakefsTestCase):
         # Example 63 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H7 + S1 + CMARK_LINE_FOO, 7, 'github'),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
 
         # Example 34 [Commonmark 0.28].
@@ -2073,7 +2073,7 @@ class TestApi(pyfakefsTestCase):
         # Example 64 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H1 + CMARK_LINE_5_BOLT + LINE_LINE_FEED + LINE_LINE_FEED + H1 + CMARK_LINE_HASHTAG, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None}, {'header type': None, 'header text trimmed': None}, {'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}, {'header type': None, 'header text trimmed': None, 'visible': False}, {'header type': None, 'header text trimmed': None, 'visible': False}],
         )
 
         # Example 35 [Commonmark 0.28].
@@ -2083,7 +2083,7 @@ class TestApi(pyfakefsTestCase):
                 LINE_ESCAPE + H1 + S1 + CMARK_LINE_FOO,
                 m_github, 'github',
             ),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
 
         # Example 65 [Commonmark 0.30].
@@ -2092,7 +2092,7 @@ class TestApi(pyfakefsTestCase):
                 LINE_ESCAPE + H2 + S1 + CMARK_LINE_FOO,
                 m_github, 'github',
             ),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
 
         # Example 66 [Commonmark 0.30].
@@ -2104,7 +2104,8 @@ class TestApi(pyfakefsTestCase):
             ),
             [{
                 'header type': 1,
-                'header text trimmed': CMARK_LINE_FOO + S1 + '*' + CMARK_LINE_BAR + '*' + S1 + LINE_ESCAPE + '*' + CMARK_LINE_BAZ + LINE_ESCAPE + '*', }],
+                'header text trimmed': CMARK_LINE_FOO + S1 + '*' + CMARK_LINE_BAR + '*' + S1 + LINE_ESCAPE + '*' + CMARK_LINE_BAZ + LINE_ESCAPE + '*',
+                'visible': True}],
         )
 
         # Example 36 [Commonmark 0.28].
@@ -2114,7 +2115,7 @@ class TestApi(pyfakefsTestCase):
                 H1 + S1 + CMARK_LINE_FOO + S1 + CMARK_LINE_BAR_BAZ, 3,
                 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + S1 + CMARK_LINE_BAR_BAZ}],
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + S1 + CMARK_LINE_BAR_BAZ, 'visible': True}],
         )
 
         # Example 37 [Commonmark 0.28].
@@ -2125,21 +2126,21 @@ class TestApi(pyfakefsTestCase):
                 H1 + S18 + CMARK_LINE_FOO + S21, m_github,
                 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H1 + T18 + CMARK_LINE_FOO + T21, m_github,
                 'github',
             ),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H1 + T18 + CMARK_LINE_FOO + T21, m_github,
                 'cmark',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
 
         # Example 38 [Commonmark 0.28].
@@ -2150,21 +2151,21 @@ class TestApi(pyfakefsTestCase):
                 S1 + H3 + S1 + CMARK_LINE_FOO, m_github,
                 'github',
             ),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(
                 S2 + H2 + S1 + CMARK_LINE_FOO, m_github,
                 'github',
             ),
-            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(
                 S3 + H1 + S1 + CMARK_LINE_FOO, m_github,
                 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
 
         # Example 39 [Commonmark 0.28].
@@ -2175,7 +2176,7 @@ class TestApi(pyfakefsTestCase):
                 S4 + H1 + S1 + CMARK_LINE_FOO, m_github,
                 'github',
             ),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
 
         # Example 40 [Commonmark 0.28].
@@ -2186,7 +2187,7 @@ class TestApi(pyfakefsTestCase):
                 CMARK_LINE_FOO + LINE_LINE_FEED + S4 + H1 + S1 + CMARK_LINE_BAR, m_github,
                 'github',
             ),
-            [{'header type': None, 'header text trimmed': None}, {'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}, {'header type': None, 'header text trimmed': None, 'visible': False}],
         )
 
         # Example 41 [Commonmark 0.28].
@@ -2197,14 +2198,14 @@ class TestApi(pyfakefsTestCase):
                 H2 + S1 + CMARK_LINE_FOO + S1 + H2, m_github,
                 'github',
             ),
-            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(
                 S2 + H3 + S3 + CMARK_LINE_BAR + S4 + H3,
                 m_github, 'github',
             ),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_BAR}],
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_BAR, 'visible': True}],
         )
 
         # Example 42 [Commonmark 0.28].
@@ -2215,7 +2216,7 @@ class TestApi(pyfakefsTestCase):
                 H1 + S1 + CMARK_LINE_FOO + S1 + H34, m_github,
                 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
 
         self.assertEqual(
@@ -2223,13 +2224,13 @@ class TestApi(pyfakefsTestCase):
                 H5 + S1 + CMARK_LINE_FOO + S1 + H2, m_github,
                 'github',
             ),
-            [{'header type': 5, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 5, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
 
         # Extra test.
         self.assertEqual(
             api.get_atx_heading(H5 * 7, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
 
         # Example 43 [Commonmark 0.28].
@@ -2240,21 +2241,21 @@ class TestApi(pyfakefsTestCase):
                 H3 + S1 + CMARK_LINE_FOO + S1 + H3 + S5,
                 m_github, 'github',
             ),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H3 + S1 + CMARK_LINE_FOO + S1 + H3 + T5,
                 m_github, 'github',
             ),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO + S1 + H3 + T5}],
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO + S1 + H3 + T5, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H3 + S1 + CMARK_LINE_FOO + S1 + H3 + T5,
                 m_github, 'cmark',
             ),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
 
         # Example 44 [Commonmark 0.28].
@@ -2265,7 +2266,7 @@ class TestApi(pyfakefsTestCase):
                 H3 + S1 + CMARK_LINE_FOO + S1 + H3 + S1 + CMARK_LINE_B,
                 m_github, 'github',
             ),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO + S1 + H3 + S1 + CMARK_LINE_B}],
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO + S1 + H3 + S1 + CMARK_LINE_B, 'visible': True}],
         )
 
         # Example 45 [Commonmark 0.28].
@@ -2276,28 +2277,28 @@ class TestApi(pyfakefsTestCase):
                 H1 + S1 + CMARK_LINE_FOO + H1, m_github,
                 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + H1}],
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + H1, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_FOO + S1 + H1, m_github,
                 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_FOO + T1 + H1, m_github,
                 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + T1 + H1}],
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + T1 + H1, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_FOO + T1 + H1, m_github,
                 'cmark',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO}],
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
         )
 
         # Example 46 [Commonmark 0.28].
@@ -2316,21 +2317,21 @@ class TestApi(pyfakefsTestCase):
                 H3 + S1 + CMARK_LINE_FOO + S1 + LINE_ESCAPE + H3, m_github,
                 'github',
             ),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO + S1 + LINE_ESCAPE + H3}],
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO + S1 + LINE_ESCAPE + H3, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H2 + S1 + CMARK_LINE_FOO + S1 + H1 + LINE_ESCAPE + H2,
                 m_github, 'github',
             ),
-            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO + S1 + H1 + LINE_ESCAPE + H2}],
+            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO + S1 + H1 + LINE_ESCAPE + H2, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_FOO + S1 + LINE_ESCAPE + H1, m_github,
                 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + S1 + LINE_ESCAPE + H1}],
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + S1 + LINE_ESCAPE + H1, 'visible': True}],
         )
 
         # Example 47 [Commonmark 0.28].
@@ -2341,7 +2342,7 @@ class TestApi(pyfakefsTestCase):
                 '****' + LINE_LINE_FEED + H2 + S1 + CMARK_LINE_FOO + LINE_LINE_FEED + '****', m_github,
                 'github',
             ),
-            [{'header type': None, 'header text trimmed': None}, {'header type': 2, 'header text trimmed': CMARK_LINE_FOO}, {'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}, {'header type': 2, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}, {'header type': None, 'header text trimmed': None, 'visible': False}],
         )
 
         # Example 48 [Commonmark 0.28].
@@ -2352,7 +2353,7 @@ class TestApi(pyfakefsTestCase):
                 'Foo' + S1 + CMARK_LINE_BAR + LINE_LINE_FEED + H1 + S1 + CMARK_LINE_BAZ + LINE_LINE_FEED + 'Bar' + S1 + CMARK_LINE_FOO, m_github,
                 'github',
             ),
-            [{'header type': None, 'header text trimmed': None}, {'header type': 1, 'header text trimmed': CMARK_LINE_BAZ}, {'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}, {'header type': 1, 'header text trimmed': CMARK_LINE_BAZ, 'visible': True}, {'header type': None, 'header text trimmed': None, 'visible': False}],
         )
 
         # Example 49 [Commonmark 0.28].
@@ -2360,15 +2361,15 @@ class TestApi(pyfakefsTestCase):
         # Example 79 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H2 + S1, m_github, 'github', True),
-            [{'header type': 2, 'header text trimmed': LINE_EMPTY}],
+            [{'header type': 2, 'header text trimmed': LINE_EMPTY, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(H1, m_github, 'github', True),
-            [{'header type': 1, 'header text trimmed': LINE_EMPTY}],
+            [{'header type': 1, 'header text trimmed': LINE_EMPTY, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(H3 + S1 + H3, m_github, 'github', True),
-            [{'header type': 3, 'header text trimmed': LINE_EMPTY}],
+            [{'header type': 3, 'header text trimmed': LINE_EMPTY, 'visible': True}],
         )
 
         # Example 49 with link labels: link lables cannot be empty
@@ -2395,14 +2396,14 @@ class TestApi(pyfakefsTestCase):
                 'header type': 1, 'header text trimmed': LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO +
                 S1 + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + CMARK_LINE_BAR +
                 LINE_ESCAPE + LINE_SQUARE_BRACKET_CLOSE + LINE_ESCAPE +
-                LINE_SQUARE_BRACKET_CLOSE, }],
+                LINE_SQUARE_BRACKET_CLOSE, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + LINE_ESCAPE + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN
                 + S1 + CMARK_LINE_FOO, m_github, 'github',
             ),
-            [{'header type': 1, 'header text trimmed': LINE_ESCAPE + LINE_ESCAPE + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO}],
+            [{'header type': 1, 'header text trimmed': LINE_ESCAPE + LINE_ESCAPE + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO, 'visible': True}],
         )
 
         # Test escape character space workaround.
@@ -2411,7 +2412,7 @@ class TestApi(pyfakefsTestCase):
                 H2 + S1 + CMARK_LINE_FOO + LINE_ESCAPE,
                 m_github, 'github',
             ),
-            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO + LINE_ESCAPE + S1}],
+            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO + LINE_ESCAPE + S1, 'visible': True}],
         )
 
         # Test MD_PARSER_CMARK_MAX_CHARS_LINK_LABEL
@@ -2424,7 +2425,7 @@ class TestApi(pyfakefsTestCase):
         # Test an empty line.
         self.assertEqual(
             api.get_atx_heading(LINE_EMPTY, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
 
         # Test multiple lines at once.
@@ -2435,23 +2436,23 @@ class TestApi(pyfakefsTestCase):
                 + CMARK_LINE_FOO + LINE_LINE_FEED, m_github, 'github',
             ),
             [
-                {'header type': 1, 'header text trimmed': CMARK_LINE_FOO},
-                {'header type': None, 'header text trimmed': None},
-                {'header type': 1, 'header text trimmed': CMARK_LINE_FOO},
+                {'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True},
+                {'header type': None, 'header text trimmed': None, 'visible': False},
+                {'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True},
             ],
         )
 
         # Test line endings.
         self.assertEqual(
             api.get_atx_heading(H1 + LINE_LINE_FEED, m_github, 'github', True),
-            [{'header type': 1, 'header text trimmed': LINE_EMPTY}],
+            [{'header type': 1, 'header text trimmed': LINE_EMPTY, 'visible': True}],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H1 + LINE_CARRIAGE_RETURN, m_github, 'github',
                 True,
             ),
-            [{'header type': 1, 'header text trimmed': LINE_EMPTY}],
+            [{'header type': 1, 'header text trimmed': LINE_EMPTY, 'visible': True}],
         )
 
         # CRLF marker tests.
@@ -2460,7 +2461,7 @@ class TestApi(pyfakefsTestCase):
                 H1 + S1 + CMARK_LINE_FOO + LINE_LINE_FEED + CMARK_LINE_FOO,
                 m_github, 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO}, {'header type': None, 'header text trimmed': None}],
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}, {'header type': None, 'header text trimmed': None, 'visible': False}],
         )
 
         self.assertEqual(
@@ -2468,7 +2469,7 @@ class TestApi(pyfakefsTestCase):
                 H1 + S1 + CMARK_LINE_FOO + LINE_CARRIAGE_RETURN +
                 CMARK_LINE_FOO, m_github, 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO}, {'header type': None, 'header text trimmed': None}],
+            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}, {'header type': None, 'header text trimmed': None, 'visible': False}],
         )
 
         # Test line endings with link labels.
@@ -2479,6 +2480,34 @@ class TestApi(pyfakefsTestCase):
                 H1 + LINE_CARRIAGE_RETURN, m_github, 'github',
                 False,
             )
+
+        # Test valid lines with header levels > keep_header_levels
+        # (and header levels < max_header_levels since they are all valid
+        # headers)
+        self.assertEqual(
+            api.get_atx_heading(
+                H2 + S1 + CMARK_LINE_FOO, 1, 'github',
+            ),
+            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, 'visible': False}],
+        )
+        self.assertEqual(
+            api.get_atx_heading(
+                H3 + S1 + CMARK_LINE_FOO, 1, 'github',
+            ),
+            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, 'visible': False}],
+        )
+        self.assertEqual(
+            api.get_atx_heading(
+                H5 + S1 + CMARK_LINE_FOO, 2, 'github',
+            ),
+            [{'header type': 5, 'header text trimmed': CMARK_LINE_FOO, 'visible': False}],
+        )
+        self.assertEqual(
+            api.get_atx_heading(
+                H6 + S1 + CMARK_LINE_FOO, 5, 'github',
+            ),
+            [{'header type': 6, 'header text trimmed': CMARK_LINE_FOO, 'visible': False}],
+        )
 
         # readcarpet
         # It does not seem that there are exaustive tests so we have to invent
@@ -2491,7 +2520,7 @@ class TestApi(pyfakefsTestCase):
                 S1 + H1 + S1 + REDCARPET_LINE_FOO, m_redcarpet,
                 'redcarpet',
             ),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
 
         self.assertEqual(
@@ -2499,7 +2528,7 @@ class TestApi(pyfakefsTestCase):
                 H1 + S1 + REDCARPET_LINE_FOO, m_redcarpet,
                 'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO}],
+            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO, 'visible': True}],
         )
 
         self.assertEqual(
@@ -2507,7 +2536,7 @@ class TestApi(pyfakefsTestCase):
                 H1 + S1 + REDCARPET_LINE_FOO + S1 + H1,
                 m_redcarpet, 'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO}],
+            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO, 'visible': True}],
         )
 
         self.assertEqual(
@@ -2515,7 +2544,7 @@ class TestApi(pyfakefsTestCase):
                 H1 + S1 + REDCARPET_LINE_FOO + S1 + H3,
                 m_redcarpet, 'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO}],
+            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO, 'visible': True}],
         )
 
         self.assertEqual(
@@ -2523,7 +2552,7 @@ class TestApi(pyfakefsTestCase):
                 H3 + S1 + REDCARPET_LINE_FOO + S1 + H3 + LINE_LINE_FEED,
                 m_redcarpet, 'redcarpet',
             ),
-            [{'header type': 3, 'header text trimmed': REDCARPET_LINE_FOO}],
+            [{'header type': 3, 'header text trimmed': REDCARPET_LINE_FOO, 'visible': True}],
         )
 
         self.assertEqual(
@@ -2531,7 +2560,7 @@ class TestApi(pyfakefsTestCase):
                 H1 + S1 + REDCARPET_LINE_FOO + S1 + H3 + S1,
                 m_redcarpet, 'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO + S1 + H3}],
+            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO + S1 + H3, 'visible': True}],
         )
 
         self.assertEqual(
@@ -2539,7 +2568,7 @@ class TestApi(pyfakefsTestCase):
                 H1 + S1 + REDCARPET_LINE_FOO + S1 + H1 + LINE_ESCAPE +
                 LINE_ESCAPE + H2, m_redcarpet, 'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO + S1 + H1 + LINE_ESCAPE + LINE_ESCAPE}],
+            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO + S1 + H1 + LINE_ESCAPE + LINE_ESCAPE, 'visible': True}],
         )
 
         self.assertEqual(
@@ -2547,7 +2576,7 @@ class TestApi(pyfakefsTestCase):
                 H1 + S1 + REDCARPET_LINE_FOO + H1 + LINE_ESCAPE + H1 + S1 + H1,
                 m_redcarpet, 'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO + H1 + LINE_ESCAPE + H1}],
+            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO + H1 + LINE_ESCAPE + H1, 'visible': True}],
         )
 
         # Test escape character space workaround.
@@ -2556,19 +2585,19 @@ class TestApi(pyfakefsTestCase):
                 H1 + S1 + REDCARPET_LINE_FOO + S1 + LINE_ESCAPE, m_redcarpet,
                 'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO + S1 + LINE_ESCAPE + S1}],
+            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO + S1 + LINE_ESCAPE + S1, 'visible': True}],
         )
 
         # Test an empty line.
         self.assertEqual(
             api.get_atx_heading(LINE_EMPTY, m_redcarpet, 'redcarpet'),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
 
         # Test newline.
         self.assertEqual(
             api.get_atx_heading(H1 + LINE_LINE_FEED, m_redcarpet, 'redcarpet'),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
 
         self.assertEqual(
@@ -2576,31 +2605,54 @@ class TestApi(pyfakefsTestCase):
                 H1 + S1 + REDCARPET_LINE_FOO + LINE_LINE_FEED +
                 REDCARPET_LINE_FOO, m_redcarpet, 'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO}, {'header type': None, 'header text trimmed': None}],
+            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO, 'visible': True}, {'header type': None, 'header text trimmed': None, 'visible': False}],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H1 + LINE_CARRIAGE_RETURN, m_redcarpet,
                 'redcarpet',
             ),
-            [{'header type': None, 'header text trimmed': None}],
+            [{'header type': None, 'header text trimmed': None, 'visible': False}],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + REDCARPET_LINE_FOO + LINE_CARRIAGE_RETURN +
                 REDCARPET_LINE_FOO, m_redcarpet, 'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO}, {'header type': None, 'header text trimmed': None}],
+            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO, 'visible': True}, {'header type': None, 'header text trimmed': None, 'visible': False}],
         )
 
-    @unittest.skip("empty test")
     def test_get_md_header(self):
-        r"""Test building of the header data structure.
+        r"""Test building of the header data structure."""
+        # Mock the get_atx_heading, build_anchor_link function calls.
+        # result = [{None None False}]:
+        # First if.
+        with patch('md_toc.api.get_atx_heading', return_value=[{'header type': None, 'header text trimmed': None, 'visible': False}]):
+            with patch('md_toc.api.build_anchor_link', return_value=str()):
+                self.assertEqual(api.get_md_header(CMARK_LINE_FOO, dict(), 1),
+                                 [None])
 
-        There is no need to test this since it is a wrapper for several
-        other functions. None is retruned when get_md_header_type
-        returns None.
-        """
+        # Cannot happen.
+        # result = [{None None True}]
+        # First if.
+        with patch('md_toc.api.get_atx_heading', return_value=[{'header type': None, 'header text trimmed': None, 'visible': True}]):
+            with patch('md_toc.api.build_anchor_link', return_value=str()):
+                self.assertEqual(api.get_md_header(CMARK_LINE_FOO, dict(), 1),
+                                 [None])
+
+        # result = [{alpha beta False}]
+        # Second if.
+        with patch('md_toc.api.get_atx_heading', return_value=[{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, 'visible': False}]):
+            with patch('md_toc.api.build_anchor_link', return_value=CMARK_LINE_FOO):
+                self.assertEqual(api.get_md_header(H2 + S1 + CMARK_LINE_FOO, dict(), 1),
+                                 [{'type': 2, 'text_original': CMARK_LINE_FOO, 'text_anchor_link': CMARK_LINE_FOO, 'visible': False}])
+
+        # result = [{alpha beta True}]
+        # Second if.
+        with patch('md_toc.api.get_atx_heading', return_value=[{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}]):
+            with patch('md_toc.api.build_anchor_link', return_value=CMARK_LINE_FOO):
+                self.assertEqual(api.get_md_header(H1 + S1 + CMARK_LINE_FOO, dict(), 1),
+                                 [{'type': 1, 'text_original': CMARK_LINE_FOO, 'text_anchor_link': CMARK_LINE_FOO, 'visible': True}])
 
     def test_is_opening_code_fence(self):
         r"""Test detection of opening code fence."""
