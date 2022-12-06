@@ -51,10 +51,8 @@ release = '8.1.5'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
-    'sphinx_rtd_theme',
-    'sphinx.ext.githubpages',
     'sphinx.ext.graphviz',
-    'sphinx_tabs.tabs',
+    'sphinx_copybutton'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -92,7 +90,7 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'sphinx_book_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -160,20 +158,14 @@ texinfo_documents = [
     ),
 ]
 
-
 html_theme_options = {
-    'logo_only': False,
-    'display_version': True,
-    'prev_next_buttons_location': 'both',
-    'style_external_links': False,
-    'style_nav_header_background': 'light-blue',
-    # Toc options
-    'collapse_navigation': True,
-    'sticky_navigation': True,
-    'navigation_depth': -1,
-    'includehidden': True,
-    'titles_only': False,
+    'repository_url': 'https://software.franco.net.eu.org/frnmst/md-toc',
+    'use_repository_button': True,
+    'use_download_button': True,
+    'use_issues_button': True,
 }
+
+html_baseurl = 'https://docs.franco.net.eu.org/md-toc/'
 
 # These paths are either relative to html_static_path
 # or fully qualified paths (eg. https://...)
@@ -181,5 +173,17 @@ html_css_files = [
     'css/custom.css',
 ]
 
-pygments_style = 'monokai'
+pygments_style = 'default'
 html_last_updated_fmt = '%Y-%m-%d %H:%M:%S %z'
+copybutton_line_continuation_character = '\\'
+
+# Epub.
+epub_theme = 'epub'
+epub_author = 'Franco Masotti'
+epub_theme_options = {
+    "relbar1": False,
+    "footer": False,
+}
+epub_css_style = [
+    'css/epub.css',
+]

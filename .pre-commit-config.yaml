@@ -61,7 +61,7 @@ repos:
     rev: '0.48'
     hooks:
     -   id: check-manifest
-        args: ['--ignore','docs/*,docs/assets/*,docs/rules/*,docs/_static/*,docs/_static/css/*,Pipfile,Makefile,asciinema/*,*.yaml,*.yml,assets/*,md_toc/tests/*,packages/aur/*']
+        args: ['--verbose','--ignore','docs/*,docs/assets/*,docs/rules/*,docs/_static/*,docs/_static/css/*,docs/_build/*,Pipfile,Makefile,asciinema/*,*.yaml,*.yml,assets/*,md_toc/tests/*,packages/aur/*']
 
 -   repo: local
     hooks:

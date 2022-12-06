@@ -2,4 +2,4 @@ global-include LICENSE.txt
 global-include README.md
 global-include CONTRIBUTING.md
 recursive-include md_toc/cmark *.py
-global-exclude *.csv
+global-exclude *.csv *.txt
