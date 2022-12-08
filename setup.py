@@ -28,7 +28,7 @@ with open('README.md', 'r', encoding='utf-8') as f:
 
 setup(
     name='md_toc',
-    version='8.1.5',
+    version='8.1.6',
     packages=find_packages(exclude=['*tests*']),
     license='GPLv3+',
     description='A utility that is able to generate a table of contents for a markdown file.',

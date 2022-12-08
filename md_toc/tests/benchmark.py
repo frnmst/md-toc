@@ -62,6 +62,10 @@ def _generate_random_characters(size: int, add_end: bool = False) -> str:
 if __name__ == '__main__':
     ok: bool = True
     i: int = 0
+    j: int = 0
+    total_iterations: int
+    percent_progress: int
+    current_parser_counter: int = 0
     avg: list
     average: dict = dict()
     total: dict = dict()
@@ -70,12 +74,15 @@ if __name__ == '__main__':
     line_ending = True
     parsers.sort()
 
-    for p in parsers:
+    total_iterations = len(parsers) * ITERATIONS
+    for current_parser_counter, p in enumerate(parsers):
         print('parser: ' + p + ', ' + str(ITERATIONS) + ' iterations with ' + str(CHAR_SIZE) + ' characters each')
         i = 0
         avg = list()
         while ok and i < ITERATIONS:
-            print('iteration: ' + str(i))
+            print('parser ' + str(p) + ' (' + str(current_parser_counter + 1) + ' of ' + str(len(parsers)) + '), iteration: ' + str(i + 1) + ' of ' + str(ITERATIONS))
+            percent_progress = (j / total_iterations) * 100
+            print('total progress percent = ' + str(percent_progress))
             with tempfile.NamedTemporaryFile() as fp:
                 print('generating random file...')
                 fp.write(_generate_random_characters(CHAR_SIZE, add_end=line_ending).encode('UTF-8'))
@@ -95,6 +102,7 @@ if __name__ == '__main__':
                     ok = False
                     traceback.print_exc()
             i += 1
+            j += 1
         total[p] = sum(avg)
         average[p] = total[p] / len(avg)
         print('total = ' + str(total[p]) + '\n')
