@@ -143,8 +143,10 @@ class TestGeneric(unittest.TestCase):
         self.assertTrue(generic._string_empty('\u0020'))
         self.assertTrue(generic._string_empty('\u000d\u000a'))
         self.assertTrue(generic._string_empty('\u0020\u000d\u000a'))
-        self.assertTrue(generic._string_empty('\u0020\u000d\u000d\u000a\u000d'))
-        self.assertFalse(generic._string_empty('\u0020\u000d\u000a\u000a\u000d'))
+        self.assertTrue(
+            generic._string_empty('\u0020\u000d\u000d\u000a\u000d'))
+        self.assertFalse(
+            generic._string_empty('\u0020\u000d\u000a\u000a\u000d'))
 
         # \n\r
         self.assertFalse(generic._string_empty('\u000a\u000d'))
@@ -230,13 +232,21 @@ class TestGeneric(unittest.TestCase):
         self.assertEqual(generic._read_line_interval('a\u000da', 1, 1), 'a')
         self.assertEqual(generic._read_line_interval('a\u000da', 1, 2), 'aa')
         self.assertEqual(generic._read_line_interval('a\u000da', 2, 2), 'a')
-        self.assertEqual(generic._read_line_interval('a\u000d\u000aa', 2, 2), 'a')
-        self.assertEqual(generic._read_line_interval('a\u000a\u000db', 1, 1), 'a\u000a\u000db')
-        self.assertEqual(generic._read_line_interval('a\u000a\u000db\u000d\u000ac', 1, 2), 'a\u000a\u000dbc')
-        self.assertEqual(generic._read_line_interval('ab\u000d\u000ac', 1, 2), 'abc')
-        self.assertEqual(generic._read_line_interval('ab\u000d\u000ac', 2, 2), 'c')
-        self.assertEqual(generic._read_line_interval('ab\u000d\u000a\u000ac', 2, 2), str())
-        self.assertEqual(generic._read_line_interval('ab\u000d\u000a\u000ac', 2, 3), 'c')
+        self.assertEqual(generic._read_line_interval('a\u000d\u000aa', 2, 2),
+                         'a')
+        self.assertEqual(generic._read_line_interval('a\u000a\u000db', 1, 1),
+                         'a\u000a\u000db')
+        self.assertEqual(
+            generic._read_line_interval('a\u000a\u000db\u000d\u000ac', 1, 2),
+            'a\u000a\u000dbc')
+        self.assertEqual(generic._read_line_interval('ab\u000d\u000ac', 1, 2),
+                         'abc')
+        self.assertEqual(generic._read_line_interval('ab\u000d\u000ac', 2, 2),
+                         'c')
+        self.assertEqual(
+            generic._read_line_interval('ab\u000d\u000a\u000ac', 2, 2), str())
+        self.assertEqual(
+            generic._read_line_interval('ab\u000d\u000a\u000ac', 2, 3), 'c')
 
 
 class TestApi(pyfakefsTestCase):
@@ -253,12 +263,18 @@ class TestApi(pyfakefsTestCase):
         for the unit tests.
         """
         with self.assertRaises(exceptions.StdinIsNotAFileToBeWritten):
-            api.write_string_on_file_between_markers('-', LINE, LINE, newline_string='\n')
+            api.write_string_on_file_between_markers('-',
+                                                     LINE,
+                                                     LINE,
+                                                     newline_string='\n')
 
         # 0 TOC markers.
         with open('foo.md', 'w') as f:
             f.write('hello')
-        api.write_string_on_file_between_markers('foo.md', LINE, MARKER, newline_string='\n')
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
         with open('foo.md', 'r') as f:
             lines = f.readlines()
         lines = ''.join(lines)
@@ -267,16 +283,24 @@ class TestApi(pyfakefsTestCase):
         # 1 TOC markers.
         with open('foo.md', 'w') as f:
             f.write('hello' + '\n' + MARKER)
-        api.write_string_on_file_between_markers('foo.md', LINE, MARKER, newline_string='\n')
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
         with open('foo.md', 'r') as f:
             lines = f.readlines()
         lines = ''.join(lines)
-        self.assertEqual(lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
+        self.assertEqual(
+            lines,
+            'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
 
         # 2 consecutive TOC markers.
         with open('foo.md', 'w') as f:
             f.write('hello' + '\n' + MARKER + MARKER)
-        api.write_string_on_file_between_markers('foo.md', LINE, MARKER, newline_string='\n')
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
         with open('foo.md', 'r') as f:
             lines = f.readlines()
         lines = ''.join(lines)
@@ -284,75 +308,121 @@ class TestApi(pyfakefsTestCase):
 
         # 2 TOC markers, valid list, not empty.
         with open('foo.md', 'w') as f:
-            f.write('hello' + '\n' + MARKER + '\n\n' + '- [hi](#hi)' + '\n\n' + MARKER)
-        api.write_string_on_file_between_markers('foo.md', LINE, MARKER, newline_string='\n')
+            f.write('hello' + '\n' + MARKER + '\n\n' + '- [hi](#hi)' + '\n\n' +
+                    MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
         with open('foo.md', 'r') as f:
             lines = f.readlines()
         lines = ''.join(lines)
-        self.assertEqual(lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
+        self.assertEqual(
+            lines,
+            'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
 
         # 2 TOC markers, valid list, less space, not empty.
         with open('foo.md', 'w') as f:
-            f.write('hello' + '\n' + MARKER + '\n' + '- [hi](#hi)' + '\n' + MARKER)
-        api.write_string_on_file_between_markers('foo.md', LINE, MARKER, newline_string='\n')
+            f.write('hello' + '\n' + MARKER + '\n' + '- [hi](#hi)' + '\n' +
+                    MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
         with open('foo.md', 'r') as f:
             lines = f.readlines()
         lines = ''.join(lines)
-        self.assertEqual(lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n' + MARKER + '\n' + '- [hi](#hi)' + '\n' + MARKER)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
+            '\n' + MARKER + '\n' + '- [hi](#hi)' + '\n' + MARKER)
 
         # 2 TOC markers, invalid list, not empty.
         with open('foo.md', 'w') as f:
-            f.write('hello' + '\n' + MARKER + '\n\n' + ' - [hi](#hi)' + '\n\n' + MARKER)
-        api.write_string_on_file_between_markers('foo.md', LINE, MARKER, newline_string='\n')
+            f.write('hello' + '\n' + MARKER + '\n\n' + ' - [hi](#hi)' +
+                    '\n\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
         with open('foo.md', 'r') as f:
             lines = f.readlines()
         lines = ''.join(lines)
-        self.assertEqual(lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n' + MARKER + '\n\n' + ' - [hi](#hi)' + '\n\n' + MARKER)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
+            '\n' + MARKER + '\n\n' + ' - [hi](#hi)' + '\n\n' + MARKER)
 
         # 2 TOC markers, invalid list, not empty, less space.
         with open('foo.md', 'w') as f:
-            f.write('hello' + '\n' + MARKER + '\n' + ' - [hi](#hi)' + '\n' + MARKER)
-        api.write_string_on_file_between_markers('foo.md', LINE, MARKER, newline_string='\n')
+            f.write('hello' + '\n' + MARKER + '\n' + ' - [hi](#hi)' + '\n' +
+                    MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
         with open('foo.md', 'r') as f:
             lines = f.readlines()
         lines = ''.join(lines)
-        self.assertEqual(lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n' + MARKER + '\n' + ' - [hi](#hi)' + '\n' + MARKER)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
+            '\n' + MARKER + '\n' + ' - [hi](#hi)' + '\n' + MARKER)
 
         # 2 TOC markers, no list, empty.
         with open('foo.md', 'w') as f:
             f.write('hello' + '\n' + MARKER + '\n\n' + MARKER)
-        api.write_string_on_file_between_markers('foo.md', LINE, MARKER, newline_string='\n')
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
         with open('foo.md', 'r') as f:
             lines = f.readlines()
         lines = ''.join(lines)
-        self.assertEqual(lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
+        self.assertEqual(
+            lines,
+            'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
 
         # 2 TOC markers, no list, empty, less space.
         with open('foo.md', 'w') as f:
             f.write('hello' + '\n' + MARKER + '\n' + MARKER)
-        api.write_string_on_file_between_markers('foo.md', LINE, MARKER, newline_string='\n')
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
         with open('foo.md', 'r') as f:
             lines = f.readlines()
         lines = ''.join(lines)
-        self.assertEqual(lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
+        self.assertEqual(
+            lines,
+            'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
 
         # More than 2 TOC markers, valid list.
         with open('foo.md', 'w') as f:
-            f.write('hello' + '\n' + MARKER + '\n' + MARKER + '\n' + '- [hi](#hi)' + '\n' + MARKER)
-        api.write_string_on_file_between_markers('foo.md', LINE, MARKER, newline_string='\n')
+            f.write('hello' + '\n' + MARKER + '\n' + MARKER + '\n' +
+                    '- [hi](#hi)' + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
         with open('foo.md', 'r') as f:
             lines = f.readlines()
         lines = ''.join(lines)
-        self.assertEqual(lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n' + '- [hi](#hi)' + '\n' + MARKER)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
+            '\n' + '- [hi](#hi)' + '\n' + MARKER)
 
         # More than 2 TOC markers, valid list first.
         with open('foo.md', 'w') as f:
-            f.write('hello' + '\n' + MARKER + '\n\n' + '- [hi](#hi)' + '\n\n' + MARKER + '\n' + MARKER)
-        api.write_string_on_file_between_markers('foo.md', LINE, MARKER, newline_string='\n')
+            f.write('hello' + '\n' + MARKER + '\n\n' + '- [hi](#hi)' + '\n\n' +
+                    MARKER + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
         with open('foo.md', 'r') as f:
             lines = f.readlines()
         lines = ''.join(lines)
-        self.assertEqual(lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n' + MARKER)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
+            '\n' + MARKER)
 
     @unittest.skip("empty test")
     def test_write_strings_on_files_between_markers(self):
@@ -393,8 +463,7 @@ class TestApi(pyfakefsTestCase):
 
         # Check overflow rule for github.
         ht[1] = md_parser['github']['list']['ordered'][
-            'max marker number'
-        ] = 999999999
+            'max marker number'] = 999999999
         with self.assertRaises(exceptions.GithubOverflowOrderedListMarker):
             api.increase_index_ordered_list(ht, 1, 1)
 
@@ -406,8 +475,14 @@ class TestApi(pyfakefsTestCase):
         """
 
     def _test_helper_assert_compute_toc_line_indentation_spaces(
-            self, parser, log, header_type_curr, header_type_prev,
-            expected_indentation_spaces, expected_index, expected_list_marker,
+        self,
+        parser,
+        log,
+        header_type_curr,
+        header_type_prev,
+        expected_indentation_spaces,
+        expected_index,
+        expected_list_marker,
     ):
         self.assertEqual(
             log[header_type_curr]['indentation spaces'],
@@ -443,26 +518,41 @@ class TestApi(pyfakefsTestCase):
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             BASE_CASE_HEADER_TYPE_PREV,
-            'github', False, '-', log,
+            'github',
+            False,
+            '-',
+            log,
         )
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            'github', log, GENERIC_HEADER_TYPE_CURR,
-            BASE_CASE_HEADER_TYPE_PREV, 0, 0, '-',
+            'github',
+            log,
+            GENERIC_HEADER_TYPE_CURR,
+            BASE_CASE_HEADER_TYPE_PREV,
+            0,
+            0,
+            '-',
         )
 
         # 2. First TOC line with the incorrect number of indentation spaces.
         log = api.init_indentation_log('github', '-')
         log[GENERIC_HEADER_TYPE_CURR][
-            'indentation spaces'
-        ] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             BASE_CASE_HEADER_TYPE_PREV,
-            'github', False, '-', log,
+            'github',
+            False,
+            '-',
+            log,
         )
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            'github', log, GENERIC_HEADER_TYPE_CURR,
-            BASE_CASE_HEADER_TYPE_PREV, 0, 0, '-',
+            'github',
+            log,
+            GENERIC_HEADER_TYPE_CURR,
+            BASE_CASE_HEADER_TYPE_PREV,
+            0,
+            0,
+            '-',
         )
 
         # 3. A generic TOC line with number of previous indentation spaces = 0.
@@ -471,42 +561,64 @@ class TestApi(pyfakefsTestCase):
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             GENERIC_HEADER_TYPE_PREV,
-            'github', False, '-', log,
+            'github',
+            False,
+            '-',
+            log,
         )
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            'github', log, GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_PREV,
-            len(UNORDERED_LIST_SYMBOL) + len(S1), 0, '-',
+            'github',
+            log,
+            GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_PREV,
+            len(UNORDERED_LIST_SYMBOL) + len(S1),
+            0,
+            '-',
         )
 
         # 4. Base case same indentation.
         log = api.init_indentation_log('github', '-')
         log[GENERIC_HEADER_TYPE_CURR][
-            'indentation spaces'
-        ] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             GENERIC_HEADER_TYPE_CURR,
-            'github', False, '-', log,
+            'github',
+            False,
+            '-',
+            log,
         )
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            'github', log, GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_CURR,
-            GENERIC_NUMBER_OF_INDENTATION_SPACES, 0, '-',
+            'github',
+            log,
+            GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_CURR,
+            GENERIC_NUMBER_OF_INDENTATION_SPACES,
+            0,
+            '-',
         )
 
         # 5. Generic case more indentation.
         log = api.init_indentation_log('github', '-')
         log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'
-        ] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             GENERIC_HEADER_TYPE_PREV,
-            'github', False, '-', log,
+            'github',
+            False,
+            '-',
+            log,
         )
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            'github', log, GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_PREV,
+            'github',
+            log,
+            GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_PREV,
             GENERIC_NUMBER_OF_INDENTATION_SPACES + len(UNORDERED_LIST_SYMBOL) +
-            len(S1), 0, '-',
+            len(S1),
+            0,
+            '-',
         )
 
         # 6. Generic case less indentation.
@@ -515,16 +627,23 @@ class TestApi(pyfakefsTestCase):
         #       function input, in respect to the usual positions.
         log = api.init_indentation_log('github', '-')
         log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'
-        ] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_PREV,
             GENERIC_HEADER_TYPE_CURR,
-            'github', False, '-', log,
+            'github',
+            False,
+            '-',
+            log,
         )
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            'github', log, GENERIC_HEADER_TYPE_PREV, GENERIC_HEADER_TYPE_CURR,
-            GENERIC_NUMBER_OF_INDENTATION_SPACES, 0, '-',
+            'github',
+            log,
+            GENERIC_HEADER_TYPE_PREV,
+            GENERIC_HEADER_TYPE_CURR,
+            GENERIC_NUMBER_OF_INDENTATION_SPACES,
+            0,
+            '-',
         )
 
         # Ordered TOC.
@@ -533,26 +652,45 @@ class TestApi(pyfakefsTestCase):
         log = api.init_indentation_log('github', '.')
         log[GENERIC_HEADER_TYPE_CURR]['indentation spaces'] = 0
         api.compute_toc_line_indentation_spaces(
-            GENERIC_HEADER_TYPE_CURR, BASE_CASE_HEADER_TYPE_PREV, 'github',
-            True, '.', log, GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
+            GENERIC_HEADER_TYPE_CURR,
+            BASE_CASE_HEADER_TYPE_PREV,
+            'github',
+            True,
+            '.',
+            log,
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
         )
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            'github', log, GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_PREV,
-            0, GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX, '.',
+            'github',
+            log,
+            GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_PREV,
+            0,
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
+            '.',
         )
 
         # 8. First TOC line with the incorrect number of indentation spaces.
         log = api.init_indentation_log('github', '.')
         log[GENERIC_HEADER_TYPE_CURR][
-            'indentation spaces'
-        ] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
-            GENERIC_HEADER_TYPE_CURR, BASE_CASE_HEADER_TYPE_PREV, 'github',
-            True, '.', log, GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
+            GENERIC_HEADER_TYPE_CURR,
+            BASE_CASE_HEADER_TYPE_PREV,
+            'github',
+            True,
+            '.',
+            log,
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
         )
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            'github', log, GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_PREV,
-            0, GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX, '.',
+            'github',
+            log,
+            GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_PREV,
+            0,
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
+            '.',
         )
 
         # 9. A generic TOC line with no_of_indentation_spaces_prev=0.
@@ -561,16 +699,26 @@ class TestApi(pyfakefsTestCase):
         log[2]['index'] = 999
         log[3]['index'] = 1001
         expected_indentation_spaces = log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'
-        ] + len(str(log[GENERIC_HEADER_TYPE_PREV]['index'])) + len('.') + len(S1)
+            'indentation spaces'] + len(
+                str(log[GENERIC_HEADER_TYPE_PREV]['index'])) + len('.') + len(
+                    S1)
         api.compute_toc_line_indentation_spaces(
-            GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_PREV, 'github', True,
-            '.', log, GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
+            GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_PREV,
+            'github',
+            True,
+            '.',
+            log,
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
         )
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            'github', log, GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_PREV,
+            'github',
+            log,
+            GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_PREV,
             expected_indentation_spaces,
-            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX, '.',
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
+            '.',
         )
 
         # 10. Another base case.
@@ -579,16 +727,24 @@ class TestApi(pyfakefsTestCase):
         log[2]['index'] = 999
         log[3]['index'] = 1001
         log[GENERIC_HEADER_TYPE_CURR][
-            'indentation spaces'
-        ] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
-            GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_CURR, 'github', True,
-            '.', log, GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
+            GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_CURR,
+            'github',
+            True,
+            '.',
+            log,
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
         )
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            'github', log, GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_CURR,
+            'github',
+            log,
+            GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_CURR,
             GENERIC_NUMBER_OF_INDENTATION_SPACES,
-            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX, '.',
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
+            '.',
         )
 
         # 11. Generic case more indentation. This is very similar to example 9.
@@ -597,19 +753,28 @@ class TestApi(pyfakefsTestCase):
         log[2]['index'] = 999
         log[3]['index'] = 1001
         log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'
-        ] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         expected_indentation_spaces = log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'
-        ] + len(str(log[GENERIC_HEADER_TYPE_PREV]['index'])) + len('.') + len(S1)
+            'indentation spaces'] + len(
+                str(log[GENERIC_HEADER_TYPE_PREV]['index'])) + len('.') + len(
+                    S1)
         api.compute_toc_line_indentation_spaces(
-            GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_PREV, 'github', True,
-            '.', log, GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
+            GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_PREV,
+            'github',
+            True,
+            '.',
+            log,
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
         )
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            'github', log, GENERIC_HEADER_TYPE_CURR, GENERIC_HEADER_TYPE_PREV,
+            'github',
+            log,
+            GENERIC_HEADER_TYPE_CURR,
+            GENERIC_HEADER_TYPE_PREV,
             expected_indentation_spaces,
-            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX, '.',
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
+            '.',
         )
 
         # 12. Generic case less indentation. See example 6.
@@ -618,19 +783,26 @@ class TestApi(pyfakefsTestCase):
         log[2]['index'] = 999
         log[3]['index'] = 1001
         log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'
-        ] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         expected_indentation_spaces = log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'
-        ]
+            'indentation spaces']
         api.compute_toc_line_indentation_spaces(
-            GENERIC_HEADER_TYPE_PREV, GENERIC_HEADER_TYPE_CURR, 'github', True,
-            '.', log, GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
+            GENERIC_HEADER_TYPE_PREV,
+            GENERIC_HEADER_TYPE_CURR,
+            'github',
+            True,
+            '.',
+            log,
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
         )
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            'github', log, GENERIC_HEADER_TYPE_PREV, GENERIC_HEADER_TYPE_CURR,
+            'github',
+            log,
+            GENERIC_HEADER_TYPE_PREV,
+            GENERIC_HEADER_TYPE_CURR,
             expected_indentation_spaces,
-            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX, '.',
+            GENERIC_LIST_MARKER_LOG_ORDERED_NEXT_INDEX,
+            '.',
         )
 
         # redcarpet.
@@ -641,12 +813,19 @@ class TestApi(pyfakefsTestCase):
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             GENERIC_HEADER_TYPE_PREV,
-            'redcarpet', False, '-', log,
+            'redcarpet',
+            False,
+            '-',
+            log,
         )
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            'redcarpet', log, GENERIC_HEADER_TYPE_CURR,
+            'redcarpet',
+            log,
+            GENERIC_HEADER_TYPE_CURR,
             GENERIC_HEADER_TYPE_PREV,
-            LIST_INDENTATION * (GENERIC_HEADER_TYPE_CURR - 1), 0, '-',
+            LIST_INDENTATION * (GENERIC_HEADER_TYPE_CURR - 1),
+            0,
+            '-',
         )
 
         # 2. Less indentation.
@@ -654,12 +833,19 @@ class TestApi(pyfakefsTestCase):
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_PREV,
             GENERIC_HEADER_TYPE_CURR,
-            'redcarpet', False, '-', log,
+            'redcarpet',
+            False,
+            '-',
+            log,
         )
         self._test_helper_assert_compute_toc_line_indentation_spaces(
-            'redcarpet', log, GENERIC_HEADER_TYPE_PREV,
+            'redcarpet',
+            log,
+            GENERIC_HEADER_TYPE_PREV,
             GENERIC_HEADER_TYPE_CURR,
-            LIST_INDENTATION * (GENERIC_HEADER_TYPE_PREV - 1), 0, '-',
+            LIST_INDENTATION * (GENERIC_HEADER_TYPE_PREV - 1),
+            0,
+            '-',
         )
 
     def test_build_toc_line_without_indentation(self):
@@ -674,14 +860,20 @@ class TestApi(pyfakefsTestCase):
         # Unordered.
         self.assertEqual(
             api.build_toc_line_without_indentation(
-                header, ordered=False, no_links=True, parser='github',
+                header,
+                ordered=False,
+                no_links=True,
+                parser='github',
             ),
             UNORDERED_LIST_SYMBOL + S1 + LINE,
         )
 
         self.assertEqual(
             api.build_toc_line_without_indentation(
-                header, ordered=False, no_links=False, parser='github',
+                header,
+                ordered=False,
+                no_links=False,
+                parser='github',
             ),
             UNORDERED_LIST_SYMBOL + S1 + '[' + LINE + ']' + '(#' + LINE + ')',
         )
@@ -694,7 +886,8 @@ class TestApi(pyfakefsTestCase):
                 no_links=True,
                 list_marker=ORDERED_LIST_SYMBOL,
                 parser='github',
-            ), '1' + ORDERED_LIST_SYMBOL + S1 + LINE,
+            ),
+            '1' + ORDERED_LIST_SYMBOL + S1 + LINE,
         )
 
         self.assertEqual(
@@ -704,8 +897,9 @@ class TestApi(pyfakefsTestCase):
                 no_links=False,
                 list_marker=ORDERED_LIST_SYMBOL,
                 parser='github',
-            ), '1' + ORDERED_LIST_SYMBOL + S1 + '[' + LINE +
-            ']' + '(#' + LINE + ')',
+            ),
+            '1' + ORDERED_LIST_SYMBOL + S1 + '[' + LINE + ']' + '(#' + LINE +
+            ')',
         )
 
     @unittest.skip("empty test")
@@ -720,12 +914,19 @@ class TestApi(pyfakefsTestCase):
 
     def test_filter_indices_from_line(self):
         r"""Test removing indices from a string."""
-        self.assertEqual(api.filter_indices_from_line('foo', [range(0, 3)]), str())
-        self.assertEqual(api.filter_indices_from_line(str(), [range(0, 1024)]), str())
-        self.assertEqual(api.filter_indices_from_line(str(), [range(0, 0)]), str())
-        self.assertEqual(api.filter_indices_from_line(512 * '1', [range(0, 512 - 1)]), '1')
-        self.assertEqual(api.filter_indices_from_line(512 * '1', []), 512 * '1')
-        self.assertEqual(api.filter_indices_from_line('foo bar', [range(1, 2), range(4, 7)]), 'fo ')
+        self.assertEqual(api.filter_indices_from_line('foo', [range(0, 3)]),
+                         str())
+        self.assertEqual(api.filter_indices_from_line(str(), [range(0, 1024)]),
+                         str())
+        self.assertEqual(api.filter_indices_from_line(str(), [range(0, 0)]),
+                         str())
+        self.assertEqual(
+            api.filter_indices_from_line(512 * '1', [range(0, 512 - 1)]), '1')
+        self.assertEqual(api.filter_indices_from_line(512 * '1', []),
+                         512 * '1')
+        self.assertEqual(
+            api.filter_indices_from_line(
+                'foo bar', [range(1, 2), range(4, 7)]), 'fo ')
 
     def test_remove_emphasis(self):
         r"""Test that removing emphasis works correctly correctly.
@@ -791,7 +992,8 @@ class TestApi(pyfakefsTestCase):
         # Example 342 [Commonmark 0.28].
         # Example 361 [Commonmark 0.29].
         # Example 361 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('пристаням_стремятся_'), 'пристаням_стремятся_')
+        self.assertEqual(api.remove_emphasis('пристаням_стремятся_'),
+                         'пристаням_стремятся_')
 
         # Example 343 [Commonmark 0.28].
         # Example 362 [Commonmark 0.29].
@@ -856,7 +1058,8 @@ class TestApi(pyfakefsTestCase):
         # Example 355 [Commonmark 0.28].
         # Example 374 [Commonmark 0.29].
         # Example 374 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('_пристаням_стремятся'), '_пристаням_стремятся')
+        self.assertEqual(api.remove_emphasis('_пристаням_стремятся'),
+                         '_пристаням_стремятся')
 
         # Example 356 [Commonmark 0.28].
         # Example 375 [Commonmark 0.29].
@@ -921,12 +1124,14 @@ class TestApi(pyfakefsTestCase):
         # Example 368 [Commonmark 0.28].
         # Example 387 [Commonmark 0.29].
         # Example 387 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('пристаням__стремятся__'), 'пристаням__стремятся__')
+        self.assertEqual(api.remove_emphasis('пристаням__стремятся__'),
+                         'пристаням__стремятся__')
 
         # Example 369 [Commonmark 0.28].
         # Example 388 [Commonmark 0.29].
         # Example 388 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('__foo, __bar__, baz__'), 'foo, bar, baz')
+        self.assertEqual(api.remove_emphasis('__foo, __bar__, baz__'),
+                         'foo, bar, baz')
 
         # Example 370 [Commonmark 0.28].
         # Example 389 [Commonmark 0.29].
@@ -951,12 +1156,18 @@ class TestApi(pyfakefsTestCase):
         # Example 374 [Commonmark 0.28].
         # Example 393 [Commonmark 0.29].
         # Example 393 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('**Gomphocarpus (*Gomphocarpus physocarpus*, syn.\n*Asclepias physocarpa*)**'), 'Gomphocarpus (Gomphocarpus physocarpus, syn.\nAsclepias physocarpa)')
+        self.assertEqual(
+            api.remove_emphasis(
+                '**Gomphocarpus (*Gomphocarpus physocarpus*, syn.\n*Asclepias physocarpa*)**'
+            ),
+            'Gomphocarpus (Gomphocarpus physocarpus, syn.\nAsclepias physocarpa)'
+        )
 
         # Example 375 [Commonmark 0.28].
         # Example 394 [Commonmark 0.29].
         # Example 394 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('**foo "*bar*" foo**'), 'foo "bar" foo')
+        self.assertEqual(api.remove_emphasis('**foo "*bar*" foo**'),
+                         'foo "bar" foo')
 
         # Example 376 [Commonmark 0.28].
         # Example 395 [Commonmark 0.29].
@@ -986,12 +1197,14 @@ class TestApi(pyfakefsTestCase):
         # Example 381 [Commonmark 0.28].
         # Example 400 [Commonmark 0.29].
         # Example 400 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('__пристаням__стремятся'), '__пристаням__стремятся')
+        self.assertEqual(api.remove_emphasis('__пристаням__стремятся'),
+                         '__пристаням__стремятся')
 
         # Example 382 [Commonmark 0.28].
         # Example 401 [Commonmark 0.29].
         # Example 401 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('__foo__bar__baz__'), 'foo__bar__baz')
+        self.assertEqual(api.remove_emphasis('__foo__bar__baz__'),
+                         'foo__bar__baz')
 
         # Example 383 [Commonmark 0.28].
         # Example 402 [Commonmark 0.29].
@@ -1001,7 +1214,8 @@ class TestApi(pyfakefsTestCase):
         # Example 384 [Commonmark 0.28].
         # Example 403 [Commonmark 0.29].
         # Example 403 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*foo [bar](/url)*'), 'foo [bar](/url)')
+        self.assertEqual(api.remove_emphasis('*foo [bar](/url)*'),
+                         'foo [bar](/url)')
 
         # Example 385 [Commonmark 0.28].
         # Example 404 [Commonmark 0.29].
@@ -1011,7 +1225,8 @@ class TestApi(pyfakefsTestCase):
         # Example 386 [Commonmark 0.28].
         # Example 405 [Commonmark 0.29].
         # Example 405 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('_foo __bar__ baz_'), 'foo bar baz')
+        self.assertEqual(api.remove_emphasis('_foo __bar__ baz_'),
+                         'foo bar baz')
 
         # Example 387 [Commonmark 0.28].
         # Example 406 [Commonmark 0.29].
@@ -1031,7 +1246,8 @@ class TestApi(pyfakefsTestCase):
         # Example 390 [Commonmark 0.28].
         # Example 409 [Commonmark 0.29].
         # Example 409 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*foo **bar** baz*'), 'foo bar baz')
+        self.assertEqual(api.remove_emphasis('*foo **bar** baz*'),
+                         'foo bar baz')
 
         # Example 391 [Commonmark 0.28].
         # Example 410 [Commonmark 0.29].
@@ -1063,32 +1279,39 @@ class TestApi(pyfakefsTestCase):
 
         # Example 416 [Commonmark 0.29].
         # Example 416 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('foo******bar*********baz'), 'foobar***baz')
+        self.assertEqual(api.remove_emphasis('foo******bar*********baz'),
+                         'foobar***baz')
 
         # Example 395 [Commonmark 0.28].
         # Example 417 [Commonmark 0.29].
         # Example 417 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*foo **bar *baz* bim** bop*'), 'foo bar baz bim bop')
+        self.assertEqual(api.remove_emphasis('*foo **bar *baz* bim** bop*'),
+                         'foo bar baz bim bop')
 
         # Example 396 [Commonmark 0.28].
         # Example 418 [Commonmark 0.29].
         # Example 418 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*foo [*bar*](/url)*'), 'foo [bar](/url)')
+        self.assertEqual(api.remove_emphasis('*foo [*bar*](/url)*'),
+                         'foo [bar](/url)')
 
         # Example 397 [Commonmark 0.28].
         # Example 419 [Commonmark 0.29].
         # Example 419 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('** is not an empty emphasis'), '** is not an empty emphasis')
+        self.assertEqual(api.remove_emphasis('** is not an empty emphasis'),
+                         '** is not an empty emphasis')
 
         # Example 398 [Commonmark 0.28].
         # Example 420 [Commonmark 0.29].
         # Example 420 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('**** is not an empty strong emphasis'), '**** is not an empty strong emphasis')
+        self.assertEqual(
+            api.remove_emphasis('**** is not an empty strong emphasis'),
+            '**** is not an empty strong emphasis')
 
         # Example 399 [Commonmark 0.28].
         # Example 421 [Commonmark 0.29].
         # Example 421 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('**foo [bar](/url)**'), 'foo [bar](/url)')
+        self.assertEqual(api.remove_emphasis('**foo [bar](/url)**'),
+                         'foo [bar](/url)')
 
         # Example 400 [Commonmark 0.28].
         # Example 422 [Commonmark 0.29].
@@ -1098,12 +1321,14 @@ class TestApi(pyfakefsTestCase):
         # Example 401 [Commonmark 0.28].
         # Example 423 [Commonmark 0.29].
         # Example 423 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('__foo _bar_ baz__'), 'foo bar baz')
+        self.assertEqual(api.remove_emphasis('__foo _bar_ baz__'),
+                         'foo bar baz')
 
         # Example 402 [Commonmark 0.28].
         # Example 424 [Commonmark 0.29].
         # Example 424 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('__foo __bar__ baz__'), 'foo bar baz')
+        self.assertEqual(api.remove_emphasis('__foo __bar__ baz__'),
+                         'foo bar baz')
 
         # Example 403 [Commonmark 0.28].
         # Example 425 [Commonmark 0.29].
@@ -1118,7 +1343,8 @@ class TestApi(pyfakefsTestCase):
         # Example 405 [Commonmark 0.28].
         # Example 427 [Commonmark 0.29].
         # Example 427 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('**foo *bar* baz**'), 'foo bar baz')
+        self.assertEqual(api.remove_emphasis('**foo *bar* baz**'),
+                         'foo bar baz')
 
         # Example 406 [Commonmark 0.28].
         # Example 428 [Commonmark 0.29].
@@ -1137,22 +1363,27 @@ class TestApi(pyfakefsTestCase):
         # Example 409 [Commonmark 0.28].
         # Example 431 [Commonmark 0.29].
         # Example 431 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('**foo *bar **baz**\nbim* bop**'), 'foo bar baz\nbim bop')
+        self.assertEqual(api.remove_emphasis('**foo *bar **baz**\nbim* bop**'),
+                         'foo bar baz\nbim bop')
 
         # Example 410 [Commonmark 0.28].
         # Example 432 [Commonmark 0.29].
         # Example 432 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('**foo [*bar*](/url)**'), 'foo [bar](/url)')
+        self.assertEqual(api.remove_emphasis('**foo [*bar*](/url)**'),
+                         'foo [bar](/url)')
 
         # Example 411 [Commonmark 0.28].
         # Example 433 [Commonmark 0.29].
         # Example 433 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('__ is not an empty emphasis'), '__ is not an empty emphasis')
+        self.assertEqual(api.remove_emphasis('__ is not an empty emphasis'),
+                         '__ is not an empty emphasis')
 
         # Example 412 [Commonmark 0.28].
         # Example 434 [Commonmark 0.29].
         # Example 434 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('____ is not an empty strong emphasis'), '____ is not an empty strong emphasis')
+        self.assertEqual(
+            api.remove_emphasis('____ is not an empty strong emphasis'),
+            '____ is not an empty strong emphasis')
 
         # Example 413 [Commonmark 0.28].
         # Example 435 [Commonmark 0.29].
@@ -1164,8 +1395,11 @@ class TestApi(pyfakefsTestCase):
         # Example 436 [Commonmark 0.30].
         # Removing backslashes is not implemented for these cases because they are already removed
         # with a regex in the build_anchor_link function.
-        self.assertEqual(api.remove_emphasis(r'foo *\**').replace(LINE_ESCAPE, ''), ('foo ' + LINE_ESCAPE + '*').replace(LINE_ESCAPE, ''))
-        self.assertEqual(api.remove_emphasis(r'foo *\**'), 'foo ' + LINE_ESCAPE + '*')
+        self.assertEqual(
+            api.remove_emphasis(r'foo *\**').replace(LINE_ESCAPE, ''),
+            ('foo ' + LINE_ESCAPE + '*').replace(LINE_ESCAPE, ''))
+        self.assertEqual(api.remove_emphasis(r'foo *\**'),
+                         'foo ' + LINE_ESCAPE + '*')
 
         # Example 415 [Commonmark 0.28].
         # Example 437 [Commonmark 0.29].
@@ -1180,8 +1414,11 @@ class TestApi(pyfakefsTestCase):
         # Example 417 [Commonmark 0.28].
         # Example 439 [Commonmark 0.29].
         # Example 439 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'foo **\***').replace(LINE_ESCAPE, ''), ('foo ' + LINE_ESCAPE + '*').replace(LINE_ESCAPE, ''))
-        self.assertEqual(api.remove_emphasis(r'foo **\***'), 'foo ' + LINE_ESCAPE + '*')
+        self.assertEqual(
+            api.remove_emphasis(r'foo **\***').replace(LINE_ESCAPE, ''),
+            ('foo ' + LINE_ESCAPE + '*').replace(LINE_ESCAPE, ''))
+        self.assertEqual(api.remove_emphasis(r'foo **\***'),
+                         'foo ' + LINE_ESCAPE + '*')
 
         # Example 418 [Commonmark 0.28].
         # Example 440 [Commonmark 0.29].
@@ -1226,8 +1463,11 @@ class TestApi(pyfakefsTestCase):
         # Example 426 [Commonmark 0.28].
         # Example 448 [Commonmark 0.29].
         # Example 448 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'foo _\__').replace(LINE_ESCAPE, ''), ('foo ' + LINE_ESCAPE + '_').replace(LINE_ESCAPE, ''))
-        self.assertEqual(api.remove_emphasis(r'foo _\__'), 'foo ' + LINE_ESCAPE + '_')
+        self.assertEqual(
+            api.remove_emphasis(r'foo _\__').replace(LINE_ESCAPE, ''),
+            ('foo ' + LINE_ESCAPE + '_').replace(LINE_ESCAPE, ''))
+        self.assertEqual(api.remove_emphasis(r'foo _\__'),
+                         'foo ' + LINE_ESCAPE + '_')
 
         # Example 427 [Commonmark 0.28].
         # Example 449 [Commonmark 0.29].
@@ -1242,8 +1482,11 @@ class TestApi(pyfakefsTestCase):
         # Example 429 [Commonmark 0.28].
         # Example 451 [Commonmark 0.29].
         # Example 451 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'foo __\___').replace(LINE_ESCAPE, ''), ('foo ' + LINE_ESCAPE + '_').replace(LINE_ESCAPE, ''))
-        self.assertEqual(api.remove_emphasis(r'foo __\___'), 'foo ' + LINE_ESCAPE + '_')
+        self.assertEqual(
+            api.remove_emphasis(r'foo __\___').replace(LINE_ESCAPE, ''),
+            ('foo ' + LINE_ESCAPE + '_').replace(LINE_ESCAPE, ''))
+        self.assertEqual(api.remove_emphasis(r'foo __\___'),
+                         'foo ' + LINE_ESCAPE + '_')
 
         # Example 430 [Commonmark 0.28].
         # Example 452 [Commonmark 0.29].
@@ -1328,17 +1571,20 @@ class TestApi(pyfakefsTestCase):
         # Example 446 [Commonmark 0.28].
         # Example 468 [Commonmark 0.29].
         # Example 468 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*foo _bar* baz_'), 'foo _bar baz_')
+        self.assertEqual(api.remove_emphasis('*foo _bar* baz_'),
+                         'foo _bar baz_')
 
         # Example 447 [Commonmark 0.28].
         # Example 469 [Commonmark 0.29].
         # Example 469 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*foo __bar *baz bim__ bam*'), 'foo bar *baz bim bam')
+        self.assertEqual(api.remove_emphasis('*foo __bar *baz bim__ bam*'),
+                         'foo bar *baz bim bam')
 
         # Example 448 [Commonmark 0.28].
         # Example 470 [Commonmark 0.29].
         # Example 470 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('**foo **bar baz**'), '**foo bar baz')
+        self.assertEqual(api.remove_emphasis('**foo **bar baz**'),
+                         '**foo bar baz')
 
         # Example 449 [Commonmark 0.28].
         # Example 471 [Commonmark 0.29].
@@ -1352,31 +1598,37 @@ class TestApi(pyfakefsTestCase):
 
         # Extra examples.
         self.assertEqual(api.remove_emphasis('*[*bar](/url)'), '*[*bar](/url)')
-        self.assertEqual(api.remove_emphasis('*[*bar](*/url*)'), '*[*bar](*/url*)')
+        self.assertEqual(api.remove_emphasis('*[*bar](*/url*)'),
+                         '*[*bar](*/url*)')
         self.assertEqual(api.remove_emphasis('*[bar](/url)*'), '[bar](/url)')
         self.assertEqual(api.remove_emphasis('*[bar*] (/url)'), '[bar] (/url)')
         self.assertEqual(api.remove_emphasis('[bar](/url*)*'), '[bar](/url*)*')
-        self.assertEqual(api.remove_emphasis('[bar](/url**)**'), '[bar](/url**)**')
+        self.assertEqual(api.remove_emphasis('[bar](/url**)**'),
+                         '[bar](/url**)**')
 
         # Example 451 [Commonmark 0.28].
         # Example 473 [Commonmark 0.29].
         # Example 473 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('_foo [bar_](/url)'), '_foo [bar_](/url)')
+        self.assertEqual(api.remove_emphasis('_foo [bar_](/url)'),
+                         '_foo [bar_](/url)')
 
         # Example 452 [Commonmark 0.28].
         # Example 474 [Commonmark 0.29].
         # Example 474 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*<img src="foo" title="*"/>'), '*<img src="foo" title="*"/>')
+        self.assertEqual(api.remove_emphasis('*<img src="foo" title="*"/>'),
+                         '*<img src="foo" title="*"/>')
 
         # Example 453 [Commonmark 0.28].
         # Example 475 [Commonmark 0.29].
         # Example 475 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('**<a href="**">'), '**<a href="**">')
+        self.assertEqual(api.remove_emphasis('**<a href="**">'),
+                         '**<a href="**">')
 
         # Example 454 [Commonmark 0.28].
         # Example 476 [Commonmark 0.29].
         # Example 476 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('__<a href="__">'), '__<a href="__">')
+        self.assertEqual(api.remove_emphasis('__<a href="__">'),
+                         '__<a href="__">')
 
         # Example 455 [Commonmark 0.28].
         # Example 477 [Commonmark 0.29].
@@ -1401,30 +1653,36 @@ class TestApi(pyfakefsTestCase):
         # Example 457 [Commonmark 0.28].
         # Example 479 [Commonmark 0.29].
         # Example 479 [Commonmark 0.30].
-#        self.assertEqual(api.remove_emphasis('**a<http://foo.bar/?q=**>'), '**a<http://foo.bar/?q=**>')
+        #        self.assertEqual(api.remove_emphasis('**a<http://foo.bar/?q=**>'), '**a<http://foo.bar/?q=**>')
 
         # Example 458 [Commonmark 0.28].
         # Example 480 [Commonmark 0.29].
         # Example 480 [Commonmark 0.30].
-#        self.assertEqual(api.remove_emphasis('__a<http://foo.bar/?q=__>'), '__a<http://foo.bar/?q=__>')
+        #        self.assertEqual(api.remove_emphasis('__a<http://foo.bar/?q=__>'), '__a<http://foo.bar/?q=__>')
 
         # Examples 481 -> 525 [Commonmark 0.30].
         # Note: most of these are modified examples for emphasis only.
 
         # Example 481 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*[bar*](/uri "title")'), '*[bar*](/uri "title")')
-#        self.assertEqual(api.remove_emphasis('[bar](/uri *"title")*'), '[bar](/uri *"title")*')
-        self.assertEqual(api.remove_emphasis('_[bar_](/uri "title")'), '_[bar_](/uri "title")')
-#        self.assertEqual(api.remove_emphasis('[bar](/uri _"title")_'), '[bar](/uri _"title")_')
+        self.assertEqual(api.remove_emphasis('*[bar*](/uri "title")'),
+                         '*[bar*](/uri "title")')
+        #        self.assertEqual(api.remove_emphasis('[bar](/uri *"title")*'), '[bar](/uri *"title")*')
+        self.assertEqual(api.remove_emphasis('_[bar_](/uri "title")'),
+                         '_[bar_](/uri "title")')
+        #        self.assertEqual(api.remove_emphasis('[bar](/uri _"title")_'), '[bar](/uri _"title")_')
 
         # Example 482 [Commonmark 0.30].
         # ignore
 
         # Example 483 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*[*](./target.md)'), '*[*](./target.md)')
-        self.assertEqual(api.remove_emphasis('[](*./target.md)*'), '[](*./target.md)*')
-        self.assertEqual(api.remove_emphasis('_[_](./target.md)'), '_[_](./target.md)')
-        self.assertEqual(api.remove_emphasis('[](_./target.md)_'), '[](_./target.md)_')
+        self.assertEqual(api.remove_emphasis('*[*](./target.md)'),
+                         '*[*](./target.md)')
+        self.assertEqual(api.remove_emphasis('[](*./target.md)*'),
+                         '[](*./target.md)*')
+        self.assertEqual(api.remove_emphasis('_[_](./target.md)'),
+                         '_[_](./target.md)')
+        self.assertEqual(api.remove_emphasis('[](_./target.md)_'),
+                         '[](_./target.md)_')
 
         # Example 484 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*[link*]()'), '*[link*]()')
@@ -1445,28 +1703,41 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(api.remove_emphasis('[](_)_'), '[](_)_')
 
         # Example 487 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*[link*](/my uri)'), '[link](/my uri)')
-        self.assertEqual(api.remove_emphasis('[link](*/my uri)*'), '[link](/my uri)')
-#        self.assertEqual(api.remove_emphasis('_[link_](/my uri)'), '[link](/my uri)')
-        self.assertEqual(api.remove_emphasis('[link](_/my uri)_'), '[link](/my uri)')
+        self.assertEqual(api.remove_emphasis('*[link*](/my uri)'),
+                         '[link](/my uri)')
+        self.assertEqual(api.remove_emphasis('[link](*/my uri)*'),
+                         '[link](/my uri)')
+        #        self.assertEqual(api.remove_emphasis('_[link_](/my uri)'), '[link](/my uri)')
+        self.assertEqual(api.remove_emphasis('[link](_/my uri)_'),
+                         '[link](/my uri)')
 
         # Example 488 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*[link*](</my uri>)'), '*[link*](</my uri>)')
-        self.assertEqual(api.remove_emphasis('[link](</my *uri>)*'), '[link](</my *uri>)*')
-        self.assertEqual(api.remove_emphasis('_[link_](</my uri>)'), '_[link_](</my uri>)')
-        self.assertEqual(api.remove_emphasis('[link](</my _uri>)_'), '[link](</my _uri>)_')
+        self.assertEqual(api.remove_emphasis('*[link*](</my uri>)'),
+                         '*[link*](</my uri>)')
+        self.assertEqual(api.remove_emphasis('[link](</my *uri>)*'),
+                         '[link](</my *uri>)*')
+        self.assertEqual(api.remove_emphasis('_[link_](</my uri>)'),
+                         '_[link_](</my uri>)')
+        self.assertEqual(api.remove_emphasis('[link](</my _uri>)_'),
+                         '[link](</my _uri>)_')
 
         # Example 489 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*[link*](foo\nbar)'), '[link](foo\nbar)')
-        self.assertEqual(api.remove_emphasis('[link](*foo\nbar)*'), '[link](foo\nbar)')
-#        self.assertEqual(api.remove_emphasis('_[link_](foo\nbar)'), '[link](foo\nbar)')
-        self.assertEqual(api.remove_emphasis('[link](_foo\nbar)_'), '[link](foo\nbar)')
+        self.assertEqual(api.remove_emphasis('*[link*](foo\nbar)'),
+                         '[link](foo\nbar)')
+        self.assertEqual(api.remove_emphasis('[link](*foo\nbar)*'),
+                         '[link](foo\nbar)')
+        #        self.assertEqual(api.remove_emphasis('_[link_](foo\nbar)'), '[link](foo\nbar)')
+        self.assertEqual(api.remove_emphasis('[link](_foo\nbar)_'),
+                         '[link](foo\nbar)')
 
         # Example 490 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*[link*](<foo\nbar>)'), '[link](<foo\nbar>)')
-        self.assertEqual(api.remove_emphasis('[link](*<foo\nbar>)*'), '[link](<foo\nbar>)')
-#        self.assertEqual(api.remove_emphasis('_[link_](<foo\nbar>)'), '[link](<foo\nbar>)')
-        self.assertEqual(api.remove_emphasis('[link](_<foo\nbar>)_'), '[link](<foo\nbar>)')
+        self.assertEqual(api.remove_emphasis('*[link*](<foo\nbar>)'),
+                         '[link](<foo\nbar>)')
+        self.assertEqual(api.remove_emphasis('[link](*<foo\nbar>)*'),
+                         '[link](<foo\nbar>)')
+        #        self.assertEqual(api.remove_emphasis('_[link_](<foo\nbar>)'), '[link](<foo\nbar>)')
+        self.assertEqual(api.remove_emphasis('[link](_<foo\nbar>)_'),
+                         '[link](<foo\nbar>)')
 
         # Example 491 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*[a*](<b)c>)'), '*[a*](<b)c>)')
@@ -1475,174 +1746,238 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(api.remove_emphasis('[a](_<b)c>)_'), '[a](_<b)c>)_')
 
         # Example 492 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'*[link*](<foo\>)'), r'[link](<foo\>)')
-#        self.assertEqual(api.remove_emphasis('[link](*<foo\>)*'), '[link](<foo\>)')
-#        self.assertEqual(api.remove_emphasis('_[link_](<foo\>)'), '[link](<foo\>)')
-#        self.assertEqual(api.remove_emphasis('[link](_<foo\>)_'), '[link](<foo\>)')
+        self.assertEqual(api.remove_emphasis(r'*[link*](<foo\>)'),
+                         r'[link](<foo\>)')
+        #        self.assertEqual(api.remove_emphasis('[link](*<foo\>)*'), '[link](<foo\>)')
+        #        self.assertEqual(api.remove_emphasis('_[link_](<foo\>)'), '[link](<foo\>)')
+        #        self.assertEqual(api.remove_emphasis('[link](_<foo\>)_'), '[link](<foo\>)')
 
         # Example 493 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*[a*](<b)c'), '[a](<b)c')
-#        self.assertEqual(api.remove_emphasis('[a](*<b)c*'), '[a](<b)c')
-#        self.assertEqual(api.remove_emphasis('_[a_](<b)c'), '[a](<b)c')
-#        self.assertEqual(api.remove_emphasis('[a](_<b)c_'), '[a](<b)c')
+        #        self.assertEqual(api.remove_emphasis('[a](*<b)c*'), '[a](<b)c')
+        #        self.assertEqual(api.remove_emphasis('_[a_](<b)c'), '[a](<b)c')
+        #        self.assertEqual(api.remove_emphasis('[a](_<b)c_'), '[a](<b)c')
 
         self.assertEqual(api.remove_emphasis('*[a*](<b)c>'), '[a](<b)c>')
-#        self.assertEqual(api.remove_emphasis('[a](*<b)c>*'), '[a](<b)c>')
-#        self.assertEqual(api.remove_emphasis('_[a_](<b)c>'), '[a](<b)c>')
-#        self.assertEqual(api.remove_emphasis('[a](_<b)c>_'), '[a](<b)c>')
+        #        self.assertEqual(api.remove_emphasis('[a](*<b)c>*'), '[a](<b)c>')
+        #        self.assertEqual(api.remove_emphasis('_[a_](<b)c>'), '[a](<b)c>')
+        #        self.assertEqual(api.remove_emphasis('[a](_<b)c>_'), '[a](<b)c>')
 
         self.assertEqual(api.remove_emphasis('*[a*](<b>c)'), '[a](<b>c)')
-#        self.assertEqual(api.remove_emphasis('[a](*<b>c)*'), '[a](<b>c)')
-#        self.assertEqual(api.remove_emphasis('_[a_](<b>c)'), '[a](<b>c)')
-#        self.assertEqual(api.remove_emphasis('[a](_<b>c)_'), '[a](<b>c)')
+        #        self.assertEqual(api.remove_emphasis('[a](*<b>c)*'), '[a](<b>c)')
+        #        self.assertEqual(api.remove_emphasis('_[a_](<b>c)'), '[a](<b>c)')
+        #        self.assertEqual(api.remove_emphasis('[a](_<b>c)_'), '[a](<b>c)')
 
         # Example 494 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'*[link*](\(foo\))'), r'*[link*](\(foo\))')
-        self.assertEqual(api.remove_emphasis(r'[link](*\(foo\))*'), r'[link](*\(foo\))*')
-        self.assertEqual(api.remove_emphasis(r'_[link_](\(foo\))'), r'_[link_](\(foo\))')
-        self.assertEqual(api.remove_emphasis(r'[link](_\(foo\))_'), r'[link](_\(foo\))_')
+        self.assertEqual(api.remove_emphasis(r'*[link*](\(foo\))'),
+                         r'*[link*](\(foo\))')
+        self.assertEqual(api.remove_emphasis(r'[link](*\(foo\))*'),
+                         r'[link](*\(foo\))*')
+        self.assertEqual(api.remove_emphasis(r'_[link_](\(foo\))'),
+                         r'_[link_](\(foo\))')
+        self.assertEqual(api.remove_emphasis(r'[link](_\(foo\))_'),
+                         r'[link](_\(foo\))_')
 
         # Example 495 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*[link*](foo(and(bar)))'), '*[link*](foo(and(bar)))')
-        self.assertEqual(api.remove_emphasis('[link](*foo(and(bar)))*'), '[link](*foo(and(bar)))*')
-        self.assertEqual(api.remove_emphasis('_[link_](foo(and(bar)))'), '_[link_](foo(and(bar)))')
-        self.assertEqual(api.remove_emphasis('[link](_foo(and(bar)))_'), '[link](_foo(and(bar)))_')
+        self.assertEqual(api.remove_emphasis('*[link*](foo(and(bar)))'),
+                         '*[link*](foo(and(bar)))')
+        self.assertEqual(api.remove_emphasis('[link](*foo(and(bar)))*'),
+                         '[link](*foo(and(bar)))*')
+        self.assertEqual(api.remove_emphasis('_[link_](foo(and(bar)))'),
+                         '_[link_](foo(and(bar)))')
+        self.assertEqual(api.remove_emphasis('[link](_foo(and(bar)))_'),
+                         '[link](_foo(and(bar)))_')
 
         # Example 496 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*[link*](foo(and(bar))'), '[link](foo(and(bar))')
-        self.assertEqual(api.remove_emphasis('[link](*foo(and(bar))*'), '[link](foo(and(bar))')
-#        self.assertEqual(api.remove_emphasis('_[link_](foo(and(bar))'), '[link](foo(and(bar))')
-        self.assertEqual(api.remove_emphasis('[link](_foo(and(bar))_'), '[link](foo(and(bar))')
+        self.assertEqual(api.remove_emphasis('*[link*](foo(and(bar))'),
+                         '[link](foo(and(bar))')
+        self.assertEqual(api.remove_emphasis('[link](*foo(and(bar))*'),
+                         '[link](foo(and(bar))')
+        #        self.assertEqual(api.remove_emphasis('_[link_](foo(and(bar))'), '[link](foo(and(bar))')
+        self.assertEqual(api.remove_emphasis('[link](_foo(and(bar))_'),
+                         '[link](foo(and(bar))')
 
         # Example 497 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'*[link*](foo\(and\(bar\))'), r'*[link*](foo\(and\(bar\))')
-        self.assertEqual(api.remove_emphasis(r'[link](*foo\(and\(bar\))*'), r'[link](*foo\(and\(bar\))*')
-        self.assertEqual(api.remove_emphasis(r'_[link_](foo\(and\(bar\))'), r'_[link_](foo\(and\(bar\))')
-        self.assertEqual(api.remove_emphasis(r'[link](_foo\(and\(bar\))_'), r'[link](_foo\(and\(bar\))_')
+        self.assertEqual(api.remove_emphasis(r'*[link*](foo\(and\(bar\))'),
+                         r'*[link*](foo\(and\(bar\))')
+        self.assertEqual(api.remove_emphasis(r'[link](*foo\(and\(bar\))*'),
+                         r'[link](*foo\(and\(bar\))*')
+        self.assertEqual(api.remove_emphasis(r'_[link_](foo\(and\(bar\))'),
+                         r'_[link_](foo\(and\(bar\))')
+        self.assertEqual(api.remove_emphasis(r'[link](_foo\(and\(bar\))_'),
+                         r'[link](_foo\(and\(bar\))_')
 
         # Example 498 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*[link*](<foo(and(bar)>)'), '*[link*](<foo(and(bar)>)')
-#        self.assertEqual(api.remove_emphasis('[link](*<foo(and(bar)>)*'), '[link](*<foo(and(bar)>)*')
-        self.assertEqual(api.remove_emphasis('_[link_](<foo(and(bar)>)'), '_[link_](<foo(and(bar)>)')
-#        self.assertEqual(api.remove_emphasis('[link](_<foo(and(bar)>)_'), '[link](_<foo(and(bar)>)_')
+        self.assertEqual(api.remove_emphasis('*[link*](<foo(and(bar)>)'),
+                         '*[link*](<foo(and(bar)>)')
+        #        self.assertEqual(api.remove_emphasis('[link](*<foo(and(bar)>)*'), '[link](*<foo(and(bar)>)*')
+        self.assertEqual(api.remove_emphasis('_[link_](<foo(and(bar)>)'),
+                         '_[link_](<foo(and(bar)>)')
+        #        self.assertEqual(api.remove_emphasis('[link](_<foo(and(bar)>)_'), '[link](_<foo(and(bar)>)_')
 
         # Example 499 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'*[link*](foo\)\:)'), r'*[link*](foo\)\:)')
-        self.assertEqual(api.remove_emphasis(r'[link](*foo\)\:)*'), r'[link](*foo\)\:)*')
-        self.assertEqual(api.remove_emphasis(r'_[link_](foo\)\:)'), r'_[link_](foo\)\:)')
-        self.assertEqual(api.remove_emphasis(r'[link](_foo\)\:)_'), r'[link](_foo\)\:)_')
+        self.assertEqual(api.remove_emphasis(r'*[link*](foo\)\:)'),
+                         r'*[link*](foo\)\:)')
+        self.assertEqual(api.remove_emphasis(r'[link](*foo\)\:)*'),
+                         r'[link](*foo\)\:)*')
+        self.assertEqual(api.remove_emphasis(r'_[link_](foo\)\:)'),
+                         r'_[link_](foo\)\:)')
+        self.assertEqual(api.remove_emphasis(r'[link](_foo\)\:)_'),
+                         r'[link](_foo\)\:)_')
 
         # Example 500 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('*[*link](#fragment)'), '*[*link](#fragment)')
-        self.assertEqual(api.remove_emphasis('[link](#fragment*)*'), '[link](#fragment*)*')
-        self.assertEqual(api.remove_emphasis('_[_link](#fragment)'), '_[_link](#fragment)')
-        self.assertEqual(api.remove_emphasis('[link](#fragment_)_'), '[link](#fragment_)_')
+        self.assertEqual(api.remove_emphasis('*[*link](#fragment)'),
+                         '*[*link](#fragment)')
+        self.assertEqual(api.remove_emphasis('[link](#fragment*)*'),
+                         '[link](#fragment*)*')
+        self.assertEqual(api.remove_emphasis('_[_link](#fragment)'),
+                         '_[_link](#fragment)')
+        self.assertEqual(api.remove_emphasis('[link](#fragment_)_'),
+                         '[link](#fragment_)_')
 
-        self.assertEqual(api.remove_emphasis('*[*link](http://example.com#fragment)'), '*[*link](http://example.com#fragment)')
-        self.assertEqual(api.remove_emphasis('[link](http://example.com#fragment*)*'), '[link](http://example.com#fragment*)*')
-        self.assertEqual(api.remove_emphasis('_[_link](http://example.com#fragment)'), '_[_link](http://example.com#fragment)')
-        self.assertEqual(api.remove_emphasis('[link](http://example.com#fragment_)_'), '[link](http://example.com#fragment_)_')
+        self.assertEqual(
+            api.remove_emphasis('*[*link](http://example.com#fragment)'),
+            '*[*link](http://example.com#fragment)')
+        self.assertEqual(
+            api.remove_emphasis('[link](http://example.com#fragment*)*'),
+            '[link](http://example.com#fragment*)*')
+        self.assertEqual(
+            api.remove_emphasis('_[_link](http://example.com#fragment)'),
+            '_[_link](http://example.com#fragment)')
+        self.assertEqual(
+            api.remove_emphasis('[link](http://example.com#fragment_)_'),
+            '[link](http://example.com#fragment_)_')
 
-        self.assertEqual(api.remove_emphasis('*[*link](http://example.com?foo=3#frag)'), '*[*link](http://example.com?foo=3#frag)')
-        self.assertEqual(api.remove_emphasis('[link](http://example.com?foo=3#frag*)*'), '[link](http://example.com?foo=3#frag*)*')
-        self.assertEqual(api.remove_emphasis('_[_link](http://example.com?foo=3#frag)'), '_[_link](http://example.com?foo=3#frag)')
-        self.assertEqual(api.remove_emphasis('[link](http://example.com?foo=3#frag_)_'), '[link](http://example.com?foo=3#frag_)_')
+        self.assertEqual(
+            api.remove_emphasis('*[*link](http://example.com?foo=3#frag)'),
+            '*[*link](http://example.com?foo=3#frag)')
+        self.assertEqual(
+            api.remove_emphasis('[link](http://example.com?foo=3#frag*)*'),
+            '[link](http://example.com?foo=3#frag*)*')
+        self.assertEqual(
+            api.remove_emphasis('_[_link](http://example.com?foo=3#frag)'),
+            '_[_link](http://example.com?foo=3#frag)')
+        self.assertEqual(
+            api.remove_emphasis('[link](http://example.com?foo=3#frag_)_'),
+            '[link](http://example.com?foo=3#frag_)_')
 
         # Example 501 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'*[link*](foo\bar)'), r'*[link*](foo\bar)')
-        self.assertEqual(api.remove_emphasis(r'[link](*foo\bar)*'), r'[link](*foo\bar)*')
-        self.assertEqual(api.remove_emphasis(r'_[link_](foo\bar)'), r'_[link_](foo\bar)')
-        self.assertEqual(api.remove_emphasis(r'[link](_foo\bar)_'), r'[link](_foo\bar)_')
+        self.assertEqual(api.remove_emphasis(r'*[link*](foo\bar)'),
+                         r'*[link*](foo\bar)')
+        self.assertEqual(api.remove_emphasis(r'[link](*foo\bar)*'),
+                         r'[link](*foo\bar)*')
+        self.assertEqual(api.remove_emphasis(r'_[link_](foo\bar)'),
+                         r'_[link_](foo\bar)')
+        self.assertEqual(api.remove_emphasis(r'[link](_foo\bar)_'),
+                         r'[link](_foo\bar)_')
 
         # Example 502 [Commonmark 0.30].
-#        self.assertEqual(api.remove_emphasis(r'*[link*](foo%20b&auml;)'), r'*[link*](foo%20b&auml;)')
-#        self.assertEqual(api.remove_emphasis(r'[link](*foo%20b&auml;)*'), r'[link](*foo%20b&auml;)*')
-#        self.assertEqual(api.remove_emphasis(r'_[link_](foo%20b&auml;)'), r'_[link_](foo%20b&auml;)')
-#        self.assertEqual(api.remove_emphasis(r'[link](_foo%20b&auml;)_'), r'[link](_foo%20b&auml;)_')
+        #        self.assertEqual(api.remove_emphasis(r'*[link*](foo%20b&auml;)'), r'*[link*](foo%20b&auml;)')
+        #        self.assertEqual(api.remove_emphasis(r'[link](*foo%20b&auml;)*'), r'[link](*foo%20b&auml;)*')
+        #        self.assertEqual(api.remove_emphasis(r'_[link_](foo%20b&auml;)'), r'_[link_](foo%20b&auml;)')
+        #        self.assertEqual(api.remove_emphasis(r'[link](_foo%20b&auml;)_'), r'[link](_foo%20b&auml;)_')
 
         # Example 503 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'*[link*]("title")'), r'*[link*]("title")')
-        self.assertEqual(api.remove_emphasis(r'[link](*"title")*'), r'[link](*"title")*')
-        self.assertEqual(api.remove_emphasis(r'_[link_]("title")'), r'_[link_]("title")')
-        self.assertEqual(api.remove_emphasis(r'[link](_"title")_'), r'[link](_"title")_')
+        self.assertEqual(api.remove_emphasis(r'*[link*]("title")'),
+                         r'*[link*]("title")')
+        self.assertEqual(api.remove_emphasis(r'[link](*"title")*'),
+                         r'[link](*"title")*')
+        self.assertEqual(api.remove_emphasis(r'_[link_]("title")'),
+                         r'_[link_]("title")')
+        self.assertEqual(api.remove_emphasis(r'[link](_"title")_'),
+                         r'[link](_"title")_')
 
         # Example 504 [Commonmark 0.30].
-#        self.assertEqual(api.remove_emphasis(r'*[link*](/url "title")'), r'*[link*](/url "title")')
+        #        self.assertEqual(api.remove_emphasis(r'*[link*](/url "title")'), r'*[link*](/url "title")')
 
-#        self.assertEqual(api.remove_emphasis(r"*[link*](/url 'title')"), r"*[link*](/url 'title')")
+        #        self.assertEqual(api.remove_emphasis(r"*[link*](/url 'title')"), r"*[link*](/url 'title')")
 
-#        self.assertEqual(api.remove_emphasis(r'*[link*](/url (title))'), r'*[link*](/url (title))')
+        #        self.assertEqual(api.remove_emphasis(r'*[link*](/url (title))'), r'*[link*](/url (title))')
 
         # Example 505 [Commonmark 0.30].
-#        self.assertEqual(api.remove_emphasis(r'*[link*](/url "title \"&quot;")'), r'*[link*](/url "title \"&quot;")')
+        #        self.assertEqual(api.remove_emphasis(r'*[link*](/url "title \"&quot;")'), r'*[link*](/url "title \"&quot;")')
 
         # Example 506 [Commonmark 0.30].
-#        self.assertEqual(api.remove_emphasis(r'*[link*](/url "title")'), r'*[link*](/url "title")')
+        #        self.assertEqual(api.remove_emphasis(r'*[link*](/url "title")'), r'*[link*](/url "title")')
 
         # Example 507 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'*[link*](/url "title "and" title")'), r'[link](/url "title "and" title")')
+        self.assertEqual(
+            api.remove_emphasis(r'*[link*](/url "title "and" title")'),
+            r'[link](/url "title "and" title")')
 
         # Example 508 [Commonmark 0.30].
-#        self.assertEqual(api.remove_emphasis("*[link*](/url 'title \"and\" title')"), "*[link*](/url 'title \"and\" title')")
+        #        self.assertEqual(api.remove_emphasis("*[link*](/url 'title \"and\" title')"), "*[link*](/url 'title \"and\" title')")
 
         # Example 509 [Commonmark 0.30].
-#        self.assertEqual(api.remove_emphasis('*[link*](   /uri\n  "title"  )'), '*[link*](   /uri\n  "title"  )')
+        #        self.assertEqual(api.remove_emphasis('*[link*](   /uri\n  "title"  )'), '*[link*](   /uri\n  "title"  )')
 
         # Example 510 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'*[link*] (uri)'), r'[link] (uri)')
-        self.assertEqual(api.remove_emphasis(r'[link] (*uri)*'), r'[link] (uri)')
-#        self.assertEqual(api.remove_emphasis(r'_[link_] (uri)'), r'[link] (uri)')
-        self.assertEqual(api.remove_emphasis(r'[link] (_uri)_'), r'[link] (uri)')
+        self.assertEqual(api.remove_emphasis(r'*[link*] (uri)'),
+                         r'[link] (uri)')
+        self.assertEqual(api.remove_emphasis(r'[link] (*uri)*'),
+                         r'[link] (uri)')
+        #        self.assertEqual(api.remove_emphasis(r'_[link_] (uri)'), r'[link] (uri)')
+        self.assertEqual(api.remove_emphasis(r'[link] (_uri)_'),
+                         r'[link] (uri)')
 
         # Example 511 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'*[link* [foo [bar]]](/uri)'), r'*[link* [foo [bar]]](/uri)')
+        self.assertEqual(api.remove_emphasis(r'*[link* [foo [bar]]](/uri)'),
+                         r'*[link* [foo [bar]]](/uri)')
 
         # Example 512 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'*[link*] (uri)'), r'[link] (uri)')
+        self.assertEqual(api.remove_emphasis(r'*[link*] (uri)'),
+                         r'[link] (uri)')
 
         # Example 513 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'*[link* *[bar*](/uri)'), r'[link *[bar*](/uri)')
+        self.assertEqual(api.remove_emphasis(r'*[link* *[bar*](/uri)'),
+                         r'[link *[bar*](/uri)')
 
         # Example 514 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'*[link* *\[bar*](/uri)'), r'*[link* \[bar](/uri)')
+        self.assertEqual(api.remove_emphasis(r'*[link* *\[bar*](/uri)'),
+                         r'*[link* \[bar](/uri)')
 
         # Example 515 [Commonmark 0.30].
-#        self.assertEqual(api.remove_emphasis(r'[link *foo **bar** `#`*](/uri)'), r'[link foo bar `#`](/uri)')
+        #        self.assertEqual(api.remove_emphasis(r'[link *foo **bar** `#`*](/uri)'), r'[link foo bar `#`](/uri)')
 
         # Example 516 [Commonmark 0.30].
-#        self.assertEqual(api.remove_emphasis(r'[![moon](moon.jpg)](/uri)'), r'[![moon](moon.jpg)](/uri)')
+        #        self.assertEqual(api.remove_emphasis(r'[![moon](moon.jpg)](/uri)'), r'[![moon](moon.jpg)](/uri)')
 
         # Example 517 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'*[foo* [bar](/uri)](/uri)'), r'[foo [bar](/uri)](/uri)')
+        self.assertEqual(api.remove_emphasis(r'*[foo* [bar](/uri)](/uri)'),
+                         r'[foo [bar](/uri)](/uri)')
 
         # Example 518 [Commonmark 0.30].
-#        self.assertEqual(api.remove_emphasis(r'[foo *[bar [baz](/uri)](/uri)*](/uri)'), r'[foo [bar [baz](/uri)](/uri)](/uri)')
+        #        self.assertEqual(api.remove_emphasis(r'[foo *[bar [baz](/uri)](/uri)*](/uri)'), r'[foo [bar [baz](/uri)](/uri)](/uri)')
 
         # Example 519 [Commonmark 0.30].
-#        self.assertEqual(api.remove_emphasis(r'![[[foo](uri1)](uri2)](uri3)'), r'![[[foo](uri1)](uri2)](uri3)')
+        #        self.assertEqual(api.remove_emphasis(r'![[[foo](uri1)](uri2)](uri3)'), r'![[[foo](uri1)](uri2)](uri3)')
 
         # Example 520 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'*[foo*](/uri)'), r'*[foo*](/uri)')
+        self.assertEqual(api.remove_emphasis(r'*[foo*](/uri)'),
+                         r'*[foo*](/uri)')
 
         # Example 521 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'[foo *bar](baz*)'), r'[foo *bar](baz*)')
+        self.assertEqual(api.remove_emphasis(r'[foo *bar](baz*)'),
+                         r'[foo *bar](baz*)')
 
         # Example 522 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis(r'*foo [bar* baz]'), r'foo [bar baz]')
+        self.assertEqual(api.remove_emphasis(r'*foo [bar* baz]'),
+                         r'foo [bar baz]')
 
         # Example 523 [Commonmark 0.30].
-#        self.assertEqual(api.remove_emphasis(r'[foo <bar attr="](baz)">'), r'[foo <bar attr="](baz)">')
+        #        self.assertEqual(api.remove_emphasis(r'[foo <bar attr="](baz)">'), r'[foo <bar attr="](baz)">')
 
         # Example 524 [Commonmark 0.30].
-#        self.assertEqual(api.remove_emphasis(r'[foo`](/uri)`'), r'[foo`](/uri)`')
+        #        self.assertEqual(api.remove_emphasis(r'[foo`](/uri)`'), r'[foo`](/uri)`')
 
         # Example 525 [Commonmark 0.30].
-#        self.assertEqual(api.remove_emphasis(r'[foo<http://example.com/?search=](uri)>'), r'[foo<http://example.com/?search=](uri)>')
+        #        self.assertEqual(api.remove_emphasis(r'[foo<http://example.com/?search=](uri)>'), r'[foo<http://example.com/?search=](uri)>')
 
         # Possibly all the way up to 592 [Commonmark 0.30]?
 
         # Extra examples.
-        self.assertEqual(api.remove_emphasis(r'_j\_'), '_j' + LINE_ESCAPE + '_')
+        self.assertEqual(api.remove_emphasis(r'_j\_'),
+                         '_j' + LINE_ESCAPE + '_')
 
     def test_remove_html_tags(self):
         r"""Test remove html tags."""
@@ -1651,10 +1986,12 @@ class TestApi(pyfakefsTestCase):
         # Example 612 [Commonmark 0.30].
         # Example 632 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('<a><bab><c2c>', 'github'), str(),
+            api.remove_html_tags('<a><bab><c2c>', 'github'),
+            str(),
         )
         self.assertEqual(
-            api.remove_html_tags('<a><bab><c2c>', 'cmark'), str(),
+            api.remove_html_tags('<a><bab><c2c>', 'cmark'),
+            str(),
         )
 
         # Example 585 [Commonmark 0.28].
@@ -1662,10 +1999,12 @@ class TestApi(pyfakefsTestCase):
         # Example 613 [Commonmark 0.30].
         # Example 633 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('<a/><b2/>', 'github'), str(),
+            api.remove_html_tags('<a/><b2/>', 'github'),
+            str(),
         )
         self.assertEqual(
-            api.remove_html_tags('<a/><b2/>', 'cmark'), str(),
+            api.remove_html_tags('<a/><b2/>', 'cmark'),
+            str(),
         )
 
         # Example 586 [Commonmark 0.28].
@@ -1674,43 +2013,55 @@ class TestApi(pyfakefsTestCase):
         # Example 634 [GFM 0.29.0.gfm.2].
         # Original example with extensions.
         self.assertEqual(
-            api.remove_html_tags('<a  /><b2\ndata="foo" >', 'github'), str(),
+            api.remove_html_tags('<a  /><b2\ndata="foo" >', 'github'),
+            str(),
         )
         self.assertEqual(
-            api.remove_html_tags('<a  /><b2\r\ndata="foo" >', 'github'), str(),
+            api.remove_html_tags('<a  /><b2\r\ndata="foo" >', 'github'),
+            str(),
         )
         self.assertEqual(
-            api.remove_html_tags('<a  /><b2\rdata="foo" >', 'github'), str(),
+            api.remove_html_tags('<a  /><b2\rdata="foo" >', 'github'),
+            str(),
         )
         self.assertEqual(
-            api.remove_html_tags('<a  /><b2\n\rdata="foo" >', 'github'), str(),
+            api.remove_html_tags('<a  /><b2\n\rdata="foo" >', 'github'),
+            str(),
         )
         self.assertEqual(
-            api.remove_html_tags('<a\t/><b2\ndata="foo" >', 'github'), str(),
+            api.remove_html_tags('<a\t/><b2\ndata="foo" >', 'github'),
+            str(),
         )
         # Two newlines.
         self.assertEqual(
-            api.remove_html_tags('<a\t\t  /><b2\n\ndata="foo" >', 'github'), str(),
+            api.remove_html_tags('<a\t\t  /><b2\n\ndata="foo" >', 'github'),
+            str(),
         )
 
         self.assertEqual(
-            api.remove_html_tags('<a  /><b2\ndata="foo" >', 'cmark'), str(),
+            api.remove_html_tags('<a  /><b2\ndata="foo" >', 'cmark'),
+            str(),
         )
         self.assertEqual(
-            api.remove_html_tags('<a  /><b2\r\ndata="foo" >', 'cmark'), str(),
+            api.remove_html_tags('<a  /><b2\r\ndata="foo" >', 'cmark'),
+            str(),
         )
         self.assertEqual(
-            api.remove_html_tags('<a  /><b2\rdata="foo" >', 'cmark'), str(),
+            api.remove_html_tags('<a  /><b2\rdata="foo" >', 'cmark'),
+            str(),
         )
         self.assertEqual(
-            api.remove_html_tags('<a  /><b2\n\rdata="foo" >', 'cmark'), '<b2\n\rdata="foo" >',
+            api.remove_html_tags('<a  /><b2\n\rdata="foo" >', 'cmark'),
+            '<b2\n\rdata="foo" >',
         )
         self.assertEqual(
-            api.remove_html_tags('<a\t\t  /><b2\ndata="foo" >', 'cmark'), str(),
+            api.remove_html_tags('<a\t\t  /><b2\ndata="foo" >', 'cmark'),
+            str(),
         )
         # Two newlines.
         self.assertEqual(
-            api.remove_html_tags('<a\t/><b2\n\ndata="foo" >', 'cmark'), '<b2\n\ndata="foo" >',
+            api.remove_html_tags('<a\t/><b2\n\ndata="foo" >', 'cmark'),
+            '<b2\n\ndata="foo" >',
         )
 
         # Example 587 [Commonmark 0.28].
@@ -1718,10 +2069,16 @@ class TestApi(pyfakefsTestCase):
         # Example 615 [Commonmark 0.30].
         # Example 635 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('<a foo="bar" bam = \'baz <em>"</em>\'\n_boolean zoop:33=zoop:33 />', 'github'), str(),
+            api.remove_html_tags(
+                '<a foo="bar" bam = \'baz <em>"</em>\'\n_boolean zoop:33=zoop:33 />',
+                'github'),
+            str(),
         )
         self.assertEqual(
-            api.remove_html_tags('<a foo="bar" bam = \'baz <em>"</em>\'\n_boolean zoop:33=zoop:33 />', 'cmark'), str(),
+            api.remove_html_tags(
+                '<a foo="bar" bam = \'baz <em>"</em>\'\n_boolean zoop:33=zoop:33 />',
+                'cmark'),
+            str(),
         )
 
         # Example 588 [Commonmark 0.28].
@@ -1729,10 +2086,14 @@ class TestApi(pyfakefsTestCase):
         # Example 616 [Commonmark 0.30].
         # Example 636 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('Foo <responsive-image src="foo.jpg" />', 'github'), 'Foo ',
+            api.remove_html_tags('Foo <responsive-image src="foo.jpg" />',
+                                 'github'),
+            'Foo ',
         )
         self.assertEqual(
-            api.remove_html_tags('Foo <responsive-image src="foo.jpg" />', 'cmark'), 'Foo ',
+            api.remove_html_tags('Foo <responsive-image src="foo.jpg" />',
+                                 'cmark'),
+            'Foo ',
         )
 
         # Example 589 [Commonmark 0.28].
@@ -1740,10 +2101,12 @@ class TestApi(pyfakefsTestCase):
         # Example 617 [Commonmark 0.30].
         # Example 637 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('<33> <__>', 'github'), '<33> <__>',
+            api.remove_html_tags('<33> <__>', 'github'),
+            '<33> <__>',
         )
         self.assertEqual(
-            api.remove_html_tags('<33> <__>', 'cmark'), '<33> <__>',
+            api.remove_html_tags('<33> <__>', 'cmark'),
+            '<33> <__>',
         )
 
         # Example 590 [Commonmark 0.28].
@@ -1751,10 +2114,12 @@ class TestApi(pyfakefsTestCase):
         # Example 618 [Commonmark 0.30].
         # Example 638 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('<a h*#ref="hi">', 'github'), '<a h*#ref="hi">',
+            api.remove_html_tags('<a h*#ref="hi">', 'github'),
+            '<a h*#ref="hi">',
         )
         self.assertEqual(
-            api.remove_html_tags('<a h*#ref="hi">', 'cmark'), '<a h*#ref="hi">',
+            api.remove_html_tags('<a h*#ref="hi">', 'cmark'),
+            '<a h*#ref="hi">',
         )
 
         # Example 591 [Commonmark 0.28].
@@ -1762,10 +2127,12 @@ class TestApi(pyfakefsTestCase):
         # Example 619 [Commonmark 0.30].
         # Example 639 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('<a href="hi\'> <a href=hi\'>', 'github'), '<a href="hi\'> <a href=hi\'>',
+            api.remove_html_tags('<a href="hi\'> <a href=hi\'>', 'github'),
+            '<a href="hi\'> <a href=hi\'>',
         )
         self.assertEqual(
-            api.remove_html_tags('<a href="hi\'> <a href=hi\'>', 'cmark'), '<a href="hi\'> <a href=hi\'>',
+            api.remove_html_tags('<a href="hi\'> <a href=hi\'>', 'cmark'),
+            '<a href="hi\'> <a href=hi\'>',
         )
 
         # Example 592 [Commonmark 0.28].
@@ -1773,10 +2140,12 @@ class TestApi(pyfakefsTestCase):
         # Example 620 [Commonmark 0.30].
         # Example 640 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('< a><\nfoo><bar/ >', 'github'), '< a><\nfoo><bar/ >',
+            api.remove_html_tags('< a><\nfoo><bar/ >', 'github'),
+            '< a><\nfoo><bar/ >',
         )
         self.assertEqual(
-            api.remove_html_tags('< a><\nfoo><bar/ >', 'cmark'), '< a><\nfoo><bar/ >',
+            api.remove_html_tags('< a><\nfoo><bar/ >', 'cmark'),
+            '< a><\nfoo><bar/ >',
         )
 
         # Example 593 [Commonmark 0.28].
@@ -1784,10 +2153,12 @@ class TestApi(pyfakefsTestCase):
         # Example 621 [Commonmark 0.30].
         # Example 641 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags(r"<a href='bar'title=title>", 'github'), r"<a href='bar'title=title>",
+            api.remove_html_tags(r"<a href='bar'title=title>", 'github'),
+            r"<a href='bar'title=title>",
         )
         self.assertEqual(
-            api.remove_html_tags(r"<a href='bar'title=title>", 'cmark'), r"<a href='bar'title=title>",
+            api.remove_html_tags(r"<a href='bar'title=title>", 'cmark'),
+            r"<a href='bar'title=title>",
         )
 
         # Example 594 [Commonmark 0.28].
@@ -1795,10 +2166,12 @@ class TestApi(pyfakefsTestCase):
         # Example 622 [Commonmark 0.30].
         # Example 642 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('</a></foo >', 'github'), str(),
+            api.remove_html_tags('</a></foo >', 'github'),
+            str(),
         )
         self.assertEqual(
-            api.remove_html_tags('</a></foo >', 'cmark'), str(),
+            api.remove_html_tags('</a></foo >', 'cmark'),
+            str(),
         )
 
         # Example 595 [Commonmark 0.28].
@@ -1806,10 +2179,12 @@ class TestApi(pyfakefsTestCase):
         # Example 623 [Commonmark 0.30].
         # Example 643 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('</a href="foo">', 'github'), '</a href="foo">',
+            api.remove_html_tags('</a href="foo">', 'github'),
+            '</a href="foo">',
         )
         self.assertEqual(
-            api.remove_html_tags('</a href="foo">', 'cmark'), '</a href="foo">',
+            api.remove_html_tags('</a href="foo">', 'cmark'),
+            '</a href="foo">',
         )
 
         # Example 596 [Commonmark 0.28].
@@ -1817,10 +2192,14 @@ class TestApi(pyfakefsTestCase):
         # Example 624 [Commonmark 0.30].
         # Example 644 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('foo <!-- this is a\ncomment - with hyphen -->', 'github'), 'foo ',
+            api.remove_html_tags(
+                'foo <!-- this is a\ncomment - with hyphen -->', 'github'),
+            'foo ',
         )
         self.assertEqual(
-            api.remove_html_tags('foo <!-- this is a\ncomment - with hyphen -->', 'cmark'), 'foo ',
+            api.remove_html_tags(
+                'foo <!-- this is a\ncomment - with hyphen -->', 'cmark'),
+            'foo ',
         )
 
         # Example 597 [Commonmark 0.28].
@@ -1828,10 +2207,14 @@ class TestApi(pyfakefsTestCase):
         # Example 625 [Commonmark 0.30].
         # Example 645 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('foo <!-- not a comment -- two hyphens -->', 'github'), 'foo <!-- not a comment -- two hyphens -->',
+            api.remove_html_tags('foo <!-- not a comment -- two hyphens -->',
+                                 'github'),
+            'foo <!-- not a comment -- two hyphens -->',
         )
         self.assertEqual(
-            api.remove_html_tags('foo <!-- not a comment -- two hyphens -->', 'cmark'), 'foo <!-- not a comment -- two hyphens -->',
+            api.remove_html_tags('foo <!-- not a comment -- two hyphens -->',
+                                 'cmark'),
+            'foo <!-- not a comment -- two hyphens -->',
         )
 
         # Example 598 [Commonmark 0.28].
@@ -1839,16 +2222,20 @@ class TestApi(pyfakefsTestCase):
         # Example 626 [Commonmark 0.30].
         # Example 646 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('foo <!--> foo -->', 'cmark'), 'foo <!--> foo -->',
+            api.remove_html_tags('foo <!--> foo -->', 'cmark'),
+            'foo <!--> foo -->',
         )
         self.assertEqual(
-            api.remove_html_tags('foo <!-- foo--->', 'cmark'), 'foo <!-- foo--->',
+            api.remove_html_tags('foo <!-- foo--->', 'cmark'),
+            'foo <!-- foo--->',
         )
         self.assertEqual(
-            api.remove_html_tags('foo <!--> foo -->', 'cmark'), 'foo <!--> foo -->',
+            api.remove_html_tags('foo <!--> foo -->', 'cmark'),
+            'foo <!--> foo -->',
         )
         self.assertEqual(
-            api.remove_html_tags('foo <!-- foo--->', 'cmark'), 'foo <!-- foo--->',
+            api.remove_html_tags('foo <!-- foo--->', 'cmark'),
+            'foo <!-- foo--->',
         )
 
         # Example 599 [Commonmark 0.28].
@@ -1856,10 +2243,12 @@ class TestApi(pyfakefsTestCase):
         # Example 627 [Commonmark 0.30].
         # Example 647 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('foo <?php echo $a; ?>', 'github'), 'foo ',
+            api.remove_html_tags('foo <?php echo $a; ?>', 'github'),
+            'foo ',
         )
         self.assertEqual(
-            api.remove_html_tags('foo <?php echo $a; ?>', 'cmark'), 'foo ',
+            api.remove_html_tags('foo <?php echo $a; ?>', 'cmark'),
+            'foo ',
         )
 
         # Example 600 [Commonmark 0.28].
@@ -1867,10 +2256,12 @@ class TestApi(pyfakefsTestCase):
         # Example 628 [Commonmark 0.30].
         # Example 648 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('foo <!ELEMENT br EMPTY>', 'github'), 'foo ',
+            api.remove_html_tags('foo <!ELEMENT br EMPTY>', 'github'),
+            'foo ',
         )
         self.assertEqual(
-            api.remove_html_tags('foo <!ELEMENT br EMPTY>', 'cmark'), 'foo ',
+            api.remove_html_tags('foo <!ELEMENT br EMPTY>', 'cmark'),
+            'foo ',
         )
 
         # Example 601 [Commonmark 0.28].
@@ -1878,10 +2269,12 @@ class TestApi(pyfakefsTestCase):
         # Example 629 [Commonmark 0.30].
         # Example 649 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('foo <![CDATA[>&<]]>', 'github'), 'foo ',
+            api.remove_html_tags('foo <![CDATA[>&<]]>', 'github'),
+            'foo ',
         )
         self.assertEqual(
-            api.remove_html_tags('foo <![CDATA[>&<]]>', 'cmark'), 'foo ',
+            api.remove_html_tags('foo <![CDATA[>&<]]>', 'cmark'),
+            'foo ',
         )
 
         # Example 602 [Commonmark 0.28].
@@ -1889,10 +2282,12 @@ class TestApi(pyfakefsTestCase):
         # Example 630 [Commonmark 0.30].
         # Example 650 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('foo <a href="&ouml;">', 'github'), 'foo ',
+            api.remove_html_tags('foo <a href="&ouml;">', 'github'),
+            'foo ',
         )
         self.assertEqual(
-            api.remove_html_tags('foo <a href="&ouml;">', 'cmark'), 'foo ',
+            api.remove_html_tags('foo <a href="&ouml;">', 'cmark'),
+            'foo ',
         )
 
         # Example 603 [Commonmark 0.28].
@@ -1900,10 +2295,12 @@ class TestApi(pyfakefsTestCase):
         # Example 631 [Commonmark 0.30].
         # Example 651 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags(r'foo <a href="\*">', 'github'), 'foo ',
+            api.remove_html_tags(r'foo <a href="\*">', 'github'),
+            'foo ',
         )
         self.assertEqual(
-            api.remove_html_tags(r'foo <a href="\*">', 'cmark'), 'foo ',
+            api.remove_html_tags(r'foo <a href="\*">', 'cmark'),
+            'foo ',
         )
 
         # Example 604 [Commonmark 0.28].
@@ -1911,25 +2308,34 @@ class TestApi(pyfakefsTestCase):
         # Example 632 [Commonmark 0.30].
         # Example 652 [GFM 0.29.0.gfm.2].
         self.assertEqual(
-            api.remove_html_tags('<a href="\"">', 'github'), '<a href="\"">',
+            api.remove_html_tags('<a href="\"">', 'github'),
+            '<a href="\"">',
         )
         self.assertEqual(
-            api.remove_html_tags('<a href="\"">', 'cmark'), '<a href="\"">',
+            api.remove_html_tags('<a href="\"">', 'cmark'),
+            '<a href="\"">',
         )
 
         # GitHub Flavored Markdown Disallowed Raw HTML (extension).
         # Paragraph 6.11.
         # See https://github.github.com/gfm/#disallowed-raw-html-extension-
         self.assertEqual(api.remove_html_tags('<title>', 'github'), '<title>')
-        self.assertEqual(api.remove_html_tags('<textarea>', 'github'), '<textarea>')
+        self.assertEqual(api.remove_html_tags('<textarea>', 'github'),
+                         '<textarea>')
         self.assertEqual(api.remove_html_tags('<style>', 'github'), '<style>')
         self.assertEqual(api.remove_html_tags('<xmp>', 'github'), '<xmp>')
-        self.assertEqual(api.remove_html_tags('<iframe>', 'github'), '<iframe>')
-        self.assertEqual(api.remove_html_tags('<noembed>', 'github'), '<noembed>')
-        self.assertEqual(api.remove_html_tags('<noembed>', 'github'), '<noembed>')
-        self.assertEqual(api.remove_html_tags('<noframes>', 'github'), '<noframes>')
-        self.assertEqual(api.remove_html_tags('<script>', 'github'), '<script>')
-        self.assertEqual(api.remove_html_tags('<plaintext>', 'github'), '<plaintext>')
+        self.assertEqual(api.remove_html_tags('<iframe>', 'github'),
+                         '<iframe>')
+        self.assertEqual(api.remove_html_tags('<noembed>', 'github'),
+                         '<noembed>')
+        self.assertEqual(api.remove_html_tags('<noembed>', 'github'),
+                         '<noembed>')
+        self.assertEqual(api.remove_html_tags('<noframes>', 'github'),
+                         '<noframes>')
+        self.assertEqual(api.remove_html_tags('<script>', 'github'),
+                         '<script>')
+        self.assertEqual(api.remove_html_tags('<plaintext>', 'github'),
+                         '<plaintext>')
 
     def test_build_anchor_link(self):
         r"""Test anchor link generation.
@@ -1946,24 +2352,65 @@ class TestApi(pyfakefsTestCase):
         # Check if the exception is raised for newlines.
         header_duplicate_counter = dict()
         with self.assertRaises(exceptions.StringCannotContainNewlines):
-            api.build_anchor_link(CMARK_LINE_FOO + LINE_LINE_FEED + CMARK_LINE_FOO, header_duplicate_counter, parser='github')
+            api.build_anchor_link(CMARK_LINE_FOO + LINE_LINE_FEED +
+                                  CMARK_LINE_FOO,
+                                  header_duplicate_counter,
+                                  parser='github')
 
         # Check the GitLab Flavored Markdown multiple dash rule.
         header_duplicate_counter = dict()
-        self.assertEqual(api.build_anchor_link(CMARK_LINE_FOO + S3 + CMARK_LINE_FOO, header_duplicate_counter, parser='gitlab'), CMARK_LINE_FOO + LINE_DASH + CMARK_LINE_FOO)
+        self.assertEqual(
+            api.build_anchor_link(CMARK_LINE_FOO + S3 + CMARK_LINE_FOO,
+                                  header_duplicate_counter,
+                                  parser='gitlab'),
+            CMARK_LINE_FOO + LINE_DASH + CMARK_LINE_FOO)
         header_duplicate_counter = dict()
-        self.assertEqual(api.build_anchor_link(CMARK_LINE_FOO + LINE_DASH * 6 + CMARK_LINE_FOO, header_duplicate_counter, parser='gitlab'), CMARK_LINE_FOO + LINE_DASH + CMARK_LINE_FOO)
-        self.assertEqual(api.build_anchor_link(CMARK_LINE_FOO + LINE_DASH * 6, header_duplicate_counter, parser='gitlab'), CMARK_LINE_FOO + LINE_DASH)
-        self.assertEqual(api.build_anchor_link(LINE_DASH * 6 + CMARK_LINE_FOO, header_duplicate_counter, parser='gitlab'), LINE_DASH + CMARK_LINE_FOO)
+        self.assertEqual(
+            api.build_anchor_link(
+                CMARK_LINE_FOO + LINE_DASH * 6 + CMARK_LINE_FOO,
+                header_duplicate_counter,
+                parser='gitlab'), CMARK_LINE_FOO + LINE_DASH + CMARK_LINE_FOO)
+        self.assertEqual(
+            api.build_anchor_link(CMARK_LINE_FOO + LINE_DASH * 6,
+                                  header_duplicate_counter,
+                                  parser='gitlab'), CMARK_LINE_FOO + LINE_DASH)
+        self.assertEqual(
+            api.build_anchor_link(LINE_DASH * 6 + CMARK_LINE_FOO,
+                                  header_duplicate_counter,
+                                  parser='gitlab'), LINE_DASH + CMARK_LINE_FOO)
 
     def test_replace_and_split_newlines(self):
         r"""Test the replacement and splitting of newlines in a string."""
-        self.assertEqual(api.replace_and_split_newlines(LINE_LINE_FEED + CMARK_LINE_FOO + LINE_LINE_FEED), [CMARK_LINE_FOO])
-        self.assertEqual(api.replace_and_split_newlines(LINE_LINE_FEED + LINE_CARRIAGE_RETURN + CMARK_LINE_FOO + LINE_LINE_FEED), [CMARK_LINE_FOO])
-        self.assertEqual(api.replace_and_split_newlines(CMARK_LINE_BAR + LINE_CARRIAGE_RETURN + LINE_LINE_FEED + CMARK_LINE_FOO + LINE_LINE_FEED), [CMARK_LINE_BAR, CMARK_LINE_FOO])
-        self.assertEqual(api.replace_and_split_newlines(LINE_CARRIAGE_RETURN + LINE_LINE_FEED + LINE_LINE_FEED + LINE_LINE_FEED + CMARK_LINE_BAR), [CMARK_LINE_BAR])
-        self.assertEqual(api.replace_and_split_newlines(LINE_LINE_FEED + LINE_LINE_FEED + LINE_LINE_FEED + CMARK_LINE_BAR), [CMARK_LINE_BAR])
-        self.assertEqual(api.replace_and_split_newlines(LINE_LINE_FEED + CMARK_LINE_FOO + LINE_LINE_FEED + LINE_LINE_FEED + LINE_CARRIAGE_RETURN + LINE_LINE_FEED + CMARK_LINE_BAR), [CMARK_LINE_FOO, str(), str(), CMARK_LINE_BAR])
+        self.assertEqual(
+            api.replace_and_split_newlines(LINE_LINE_FEED + CMARK_LINE_FOO +
+                                           LINE_LINE_FEED), [CMARK_LINE_FOO])
+        self.assertEqual(
+            api.replace_and_split_newlines(LINE_LINE_FEED +
+                                           LINE_CARRIAGE_RETURN +
+                                           CMARK_LINE_FOO + LINE_LINE_FEED),
+            [CMARK_LINE_FOO])
+        self.assertEqual(
+            api.replace_and_split_newlines(CMARK_LINE_BAR +
+                                           LINE_CARRIAGE_RETURN +
+                                           LINE_LINE_FEED + CMARK_LINE_FOO +
+                                           LINE_LINE_FEED),
+            [CMARK_LINE_BAR, CMARK_LINE_FOO])
+        self.assertEqual(
+            api.replace_and_split_newlines(LINE_CARRIAGE_RETURN +
+                                           LINE_LINE_FEED + LINE_LINE_FEED +
+                                           LINE_LINE_FEED + CMARK_LINE_BAR),
+            [CMARK_LINE_BAR])
+        self.assertEqual(
+            api.replace_and_split_newlines(LINE_LINE_FEED + LINE_LINE_FEED +
+                                           LINE_LINE_FEED + CMARK_LINE_BAR),
+            [CMARK_LINE_BAR])
+        self.assertEqual(
+            api.replace_and_split_newlines(LINE_LINE_FEED + CMARK_LINE_FOO +
+                                           LINE_LINE_FEED + LINE_LINE_FEED +
+                                           LINE_CARRIAGE_RETURN +
+                                           LINE_LINE_FEED + CMARK_LINE_BAR),
+            [CMARK_LINE_FOO, str(),
+             str(), CMARK_LINE_BAR])
 
     def test_get_atx_heading(self):
         r"""Test the title gathering for edge cases and various parsers.
@@ -1984,80 +2431,152 @@ class TestApi(pyfakefsTestCase):
         # Example 62 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(H1 + T1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(H1 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
 
         self.assertEqual(
             api.get_atx_heading(H2 + S1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 2,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(H2 + T1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(H2 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
-            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 2,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
 
         self.assertEqual(
             api.get_atx_heading(H3 + S1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 3,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(H3 + T1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(H3 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 3,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
 
         self.assertEqual(
             api.get_atx_heading(H4 + S1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': 4, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 4,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(H4 + T1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(H4 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
-            [{'header type': 4, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 4,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
 
         self.assertEqual(
             api.get_atx_heading(H5 + S1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': 5, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 5,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(H5 + T1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(H5 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
-            [{'header type': 5, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 5,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
 
         self.assertEqual(
             api.get_atx_heading(H6 + S1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': 6, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 6,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(H6 + T1 + CMARK_LINE_FOO, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(H6 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
-            [{'header type': 6, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 6,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
 
         # Example 33 [Commonmark 0.28].
@@ -2065,15 +2584,33 @@ class TestApi(pyfakefsTestCase):
         # Example 63 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H7 + S1 + CMARK_LINE_FOO, 7, 'github'),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
 
         # Example 34 [Commonmark 0.28].
         # Example 34 [Commonmark 0.29].
         # Example 64 [Commonmark 0.30].
         self.assertEqual(
-            api.get_atx_heading(H1 + CMARK_LINE_5_BOLT + LINE_LINE_FEED + LINE_LINE_FEED + H1 + CMARK_LINE_HASHTAG, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}, {'header type': None, 'header text trimmed': None, 'visible': False}, {'header type': None, 'header text trimmed': None, 'visible': False}],
+            api.get_atx_heading(
+                H1 + CMARK_LINE_5_BOLT + LINE_LINE_FEED + LINE_LINE_FEED + H1 +
+                CMARK_LINE_HASHTAG, m_github, 'github'),
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }, {
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }, {
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
 
         # Example 35 [Commonmark 0.28].
@@ -2081,41 +2618,64 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 LINE_ESCAPE + H1 + S1 + CMARK_LINE_FOO,
-                m_github, 'github',
+                m_github,
+                'github',
             ),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
 
         # Example 65 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(
                 LINE_ESCAPE + H2 + S1 + CMARK_LINE_FOO,
-                m_github, 'github',
+                m_github,
+                'github',
             ),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
 
         # Example 66 [Commonmark 0.30].
         # Note: emphasis is trated separately.
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + CMARK_LINE_FOO + S1 + '*' + CMARK_LINE_BAR + '*' + S1 + LINE_ESCAPE + '*' + CMARK_LINE_BAZ + LINE_ESCAPE + '*',
-                m_github, 'github',
+                H1 + S1 + CMARK_LINE_FOO + S1 + '*' + CMARK_LINE_BAR + '*' +
+                S1 + LINE_ESCAPE + '*' + CMARK_LINE_BAZ + LINE_ESCAPE + '*',
+                m_github,
+                'github',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': CMARK_LINE_FOO + S1 + '*' + CMARK_LINE_BAR + '*' + S1 + LINE_ESCAPE + '*' + CMARK_LINE_BAZ + LINE_ESCAPE + '*',
-                'visible': True}],
+                'header type':
+                1,
+                'header text trimmed':
+                CMARK_LINE_FOO + S1 + '*' + CMARK_LINE_BAR + '*' + S1 +
+                LINE_ESCAPE + '*' + CMARK_LINE_BAZ + LINE_ESCAPE + '*',
+                'visible':
+                True
+            }],
         )
 
         # Example 36 [Commonmark 0.28].
         # Example 36 [Commonmark 0.29].
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + CMARK_LINE_FOO + S1 + CMARK_LINE_BAR_BAZ, 3,
+                H1 + S1 + CMARK_LINE_FOO + S1 + CMARK_LINE_BAR_BAZ,
+                3,
                 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + S1 + CMARK_LINE_BAR_BAZ, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed':
+                CMARK_LINE_FOO + S1 + CMARK_LINE_BAR_BAZ,
+                'visible': True
+            }],
         )
 
         # Example 37 [Commonmark 0.28].
@@ -2123,24 +2683,39 @@ class TestApi(pyfakefsTestCase):
         # Example 67 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S18 + CMARK_LINE_FOO + S21, m_github,
+                H1 + S18 + CMARK_LINE_FOO + S21,
+                m_github,
                 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
-                H1 + T18 + CMARK_LINE_FOO + T21, m_github,
+                H1 + T18 + CMARK_LINE_FOO + T21,
+                m_github,
                 'github',
             ),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
-                H1 + T18 + CMARK_LINE_FOO + T21, m_github,
+                H1 + T18 + CMARK_LINE_FOO + T21,
+                m_github,
                 'cmark',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
 
         # Example 38 [Commonmark 0.28].
@@ -2148,24 +2723,39 @@ class TestApi(pyfakefsTestCase):
         # Example 68 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(
-                S1 + H3 + S1 + CMARK_LINE_FOO, m_github,
+                S1 + H3 + S1 + CMARK_LINE_FOO,
+                m_github,
                 'github',
             ),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 3,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
-                S2 + H2 + S1 + CMARK_LINE_FOO, m_github,
+                S2 + H2 + S1 + CMARK_LINE_FOO,
+                m_github,
                 'github',
             ),
-            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 2,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
-                S3 + H1 + S1 + CMARK_LINE_FOO, m_github,
+                S3 + H1 + S1 + CMARK_LINE_FOO,
+                m_github,
                 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
 
         # Example 39 [Commonmark 0.28].
@@ -2173,10 +2763,15 @@ class TestApi(pyfakefsTestCase):
         # Example 69 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(
-                S4 + H1 + S1 + CMARK_LINE_FOO, m_github,
+                S4 + H1 + S1 + CMARK_LINE_FOO,
+                m_github,
                 'github',
             ),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
 
         # Example 40 [Commonmark 0.28].
@@ -2184,10 +2779,20 @@ class TestApi(pyfakefsTestCase):
         # Example 70 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(
-                CMARK_LINE_FOO + LINE_LINE_FEED + S4 + H1 + S1 + CMARK_LINE_BAR, m_github,
+                CMARK_LINE_FOO + LINE_LINE_FEED + S4 + H1 + S1 +
+                CMARK_LINE_BAR,
+                m_github,
                 'github',
             ),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}, {'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }, {
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
 
         # Example 41 [Commonmark 0.28].
@@ -2195,17 +2800,27 @@ class TestApi(pyfakefsTestCase):
         # Example 71 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(
-                H2 + S1 + CMARK_LINE_FOO + S1 + H2, m_github,
+                H2 + S1 + CMARK_LINE_FOO + S1 + H2,
+                m_github,
                 'github',
             ),
-            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 2,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
                 S2 + H3 + S3 + CMARK_LINE_BAR + S4 + H3,
-                m_github, 'github',
+                m_github,
+                'github',
             ),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_BAR, 'visible': True}],
+            [{
+                'header type': 3,
+                'header text trimmed': CMARK_LINE_BAR,
+                'visible': True
+            }],
         )
 
         # Example 42 [Commonmark 0.28].
@@ -2213,24 +2828,38 @@ class TestApi(pyfakefsTestCase):
         # Example 72 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + CMARK_LINE_FOO + S1 + H34, m_github,
+                H1 + S1 + CMARK_LINE_FOO + S1 + H34,
+                m_github,
                 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
 
         self.assertEqual(
             api.get_atx_heading(
-                H5 + S1 + CMARK_LINE_FOO + S1 + H2, m_github,
+                H5 + S1 + CMARK_LINE_FOO + S1 + H2,
+                m_github,
                 'github',
             ),
-            [{'header type': 5, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 5,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
 
         # Extra test.
         self.assertEqual(
             api.get_atx_heading(H5 * 7, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
 
         # Example 43 [Commonmark 0.28].
@@ -2239,23 +2868,38 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H3 + S1 + CMARK_LINE_FOO + S1 + H3 + S5,
-                m_github, 'github',
+                m_github,
+                'github',
             ),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 3,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H3 + S1 + CMARK_LINE_FOO + S1 + H3 + T5,
-                m_github, 'github',
+                m_github,
+                'github',
             ),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO + S1 + H3 + T5, 'visible': True}],
+            [{
+                'header type': 3,
+                'header text trimmed': CMARK_LINE_FOO + S1 + H3 + T5,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H3 + S1 + CMARK_LINE_FOO + S1 + H3 + T5,
-                m_github, 'cmark',
+                m_github,
+                'cmark',
             ),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 3,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
 
         # Example 44 [Commonmark 0.28].
@@ -2264,9 +2908,15 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H3 + S1 + CMARK_LINE_FOO + S1 + H3 + S1 + CMARK_LINE_B,
-                m_github, 'github',
+                m_github,
+                'github',
             ),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO + S1 + H3 + S1 + CMARK_LINE_B, 'visible': True}],
+            [{
+                'header type': 3,
+                'header text trimmed':
+                CMARK_LINE_FOO + S1 + H3 + S1 + CMARK_LINE_B,
+                'visible': True
+            }],
         )
 
         # Example 45 [Commonmark 0.28].
@@ -2274,31 +2924,51 @@ class TestApi(pyfakefsTestCase):
         # Example 75 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + CMARK_LINE_FOO + H1, m_github,
+                H1 + S1 + CMARK_LINE_FOO + H1,
+                m_github,
                 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + H1, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': CMARK_LINE_FOO + H1,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + CMARK_LINE_FOO + S1 + H1, m_github,
+                H1 + S1 + CMARK_LINE_FOO + S1 + H1,
+                m_github,
                 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + CMARK_LINE_FOO + T1 + H1, m_github,
+                H1 + S1 + CMARK_LINE_FOO + T1 + H1,
+                m_github,
                 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + T1 + H1, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': CMARK_LINE_FOO + T1 + H1,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + CMARK_LINE_FOO + T1 + H1, m_github,
+                H1 + S1 + CMARK_LINE_FOO + T1 + H1,
+                m_github,
                 'cmark',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }],
         )
 
         # Example 46 [Commonmark 0.28].
@@ -2314,24 +2984,40 @@ class TestApi(pyfakefsTestCase):
         # https://spec.commonmark.org/0.28/#ascii-punctuation-character
         self.assertEqual(
             api.get_atx_heading(
-                H3 + S1 + CMARK_LINE_FOO + S1 + LINE_ESCAPE + H3, m_github,
+                H3 + S1 + CMARK_LINE_FOO + S1 + LINE_ESCAPE + H3,
+                m_github,
                 'github',
             ),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO + S1 + LINE_ESCAPE + H3, 'visible': True}],
+            [{
+                'header type': 3,
+                'header text trimmed': CMARK_LINE_FOO + S1 + LINE_ESCAPE + H3,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H2 + S1 + CMARK_LINE_FOO + S1 + H1 + LINE_ESCAPE + H2,
-                m_github, 'github',
+                m_github,
+                'github',
             ),
-            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO + S1 + H1 + LINE_ESCAPE + H2, 'visible': True}],
+            [{
+                'header type': 2,
+                'header text trimmed':
+                CMARK_LINE_FOO + S1 + H1 + LINE_ESCAPE + H2,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + CMARK_LINE_FOO + S1 + LINE_ESCAPE + H1, m_github,
+                H1 + S1 + CMARK_LINE_FOO + S1 + LINE_ESCAPE + H1,
+                m_github,
                 'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO + S1 + LINE_ESCAPE + H1, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': CMARK_LINE_FOO + S1 + LINE_ESCAPE + H1,
+                'visible': True
+            }],
         )
 
         # Example 47 [Commonmark 0.28].
@@ -2339,10 +3025,24 @@ class TestApi(pyfakefsTestCase):
         # Example 77 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(
-                '****' + LINE_LINE_FEED + H2 + S1 + CMARK_LINE_FOO + LINE_LINE_FEED + '****', m_github,
+                '****' + LINE_LINE_FEED + H2 + S1 + CMARK_LINE_FOO +
+                LINE_LINE_FEED + '****',
+                m_github,
                 'github',
             ),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}, {'header type': 2, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}, {'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }, {
+                'header type': 2,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }, {
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
 
         # Example 48 [Commonmark 0.28].
@@ -2350,10 +3050,24 @@ class TestApi(pyfakefsTestCase):
         # Example 78 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(
-                'Foo' + S1 + CMARK_LINE_BAR + LINE_LINE_FEED + H1 + S1 + CMARK_LINE_BAZ + LINE_LINE_FEED + 'Bar' + S1 + CMARK_LINE_FOO, m_github,
+                'Foo' + S1 + CMARK_LINE_BAR + LINE_LINE_FEED + H1 + S1 +
+                CMARK_LINE_BAZ + LINE_LINE_FEED + 'Bar' + S1 + CMARK_LINE_FOO,
+                m_github,
                 'github',
             ),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}, {'header type': 1, 'header text trimmed': CMARK_LINE_BAZ, 'visible': True}, {'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }, {
+                'header type': 1,
+                'header text trimmed': CMARK_LINE_BAZ,
+                'visible': True
+            }, {
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
 
         # Example 49 [Commonmark 0.28].
@@ -2361,15 +3075,27 @@ class TestApi(pyfakefsTestCase):
         # Example 79 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H2 + S1, m_github, 'github', True),
-            [{'header type': 2, 'header text trimmed': LINE_EMPTY, 'visible': True}],
+            [{
+                'header type': 2,
+                'header text trimmed': LINE_EMPTY,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(H1, m_github, 'github', True),
-            [{'header type': 1, 'header text trimmed': LINE_EMPTY, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': LINE_EMPTY,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(H3 + S1 + H3, m_github, 'github', True),
-            [{'header type': 3, 'header text trimmed': LINE_EMPTY, 'visible': True}],
+            [{
+                'header type': 3,
+                'header text trimmed': LINE_EMPTY,
+                'visible': True
+            }],
         )
 
         # Example 49 with link labels: link lables cannot be empty
@@ -2387,89 +3113,158 @@ class TestApi(pyfakefsTestCase):
         # A modified Example 302 and Example 496 (for square brackets).
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO + S1
-                + LINE_SQUARE_BRACKET_OPEN + CMARK_LINE_BAR +
+                H1 + S1 + LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO + S1 +
+                LINE_SQUARE_BRACKET_OPEN + CMARK_LINE_BAR +
                 LINE_SQUARE_BRACKET_CLOSE + LINE_SQUARE_BRACKET_CLOSE,
-                m_github, 'github',
+                m_github,
+                'github',
             ),
             [{
-                'header type': 1, 'header text trimmed': LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO +
+                'header type':
+                1,
+                'header text trimmed':
+                LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO +
                 S1 + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + CMARK_LINE_BAR +
                 LINE_ESCAPE + LINE_SQUARE_BRACKET_CLOSE + LINE_ESCAPE +
-                LINE_SQUARE_BRACKET_CLOSE, 'visible': True}],
+                LINE_SQUARE_BRACKET_CLOSE,
+                'visible':
+                True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + LINE_ESCAPE + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN
-                + S1 + CMARK_LINE_FOO, m_github, 'github',
+                H1 + S1 + LINE_ESCAPE + LINE_ESCAPE +
+                LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO,
+                m_github,
+                'github',
             ),
-            [{'header type': 1, 'header text trimmed': LINE_ESCAPE + LINE_ESCAPE + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO, 'visible': True}],
+            [{
+                'header type':
+                1,
+                'header text trimmed':
+                LINE_ESCAPE + LINE_ESCAPE + LINE_ESCAPE +
+                LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO,
+                'visible':
+                True
+            }],
         )
 
         # Test escape character space workaround.
         self.assertEqual(
             api.get_atx_heading(
                 H2 + S1 + CMARK_LINE_FOO + LINE_ESCAPE,
-                m_github, 'github',
+                m_github,
+                'github',
             ),
-            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO + LINE_ESCAPE + S1, 'visible': True}],
+            [{
+                'header type': 2,
+                'header text trimmed': CMARK_LINE_FOO + LINE_ESCAPE + S1,
+                'visible': True
+            }],
         )
 
         # Test MD_PARSER_CMARK_MAX_CHARS_LINK_LABEL
         with self.assertRaises(exceptions.GithubOverflowCharsLinkLabel):
             api.get_atx_heading(
-                H1 + S1 + CMARK_LINE_1000_CHARS, m_github,
+                H1 + S1 + CMARK_LINE_1000_CHARS,
+                m_github,
                 'github',
             )
 
         # Test an empty line.
         self.assertEqual(
             api.get_atx_heading(LINE_EMPTY, m_github, 'github'),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
 
         # Test multiple lines at once.
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + CMARK_LINE_FOO
-                + LINE_LINE_FEED + LINE_LINE_FEED + H1 + S1
-                + CMARK_LINE_FOO + LINE_LINE_FEED, m_github, 'github',
+                H1 + S1 + CMARK_LINE_FOO + LINE_LINE_FEED + LINE_LINE_FEED +
+                H1 + S1 + CMARK_LINE_FOO + LINE_LINE_FEED,
+                m_github,
+                'github',
             ),
             [
-                {'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True},
-                {'header type': None, 'header text trimmed': None, 'visible': False},
-                {'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True},
+                {
+                    'header type': 1,
+                    'header text trimmed': CMARK_LINE_FOO,
+                    'visible': True
+                },
+                {
+                    'header type': None,
+                    'header text trimmed': None,
+                    'visible': False
+                },
+                {
+                    'header type': 1,
+                    'header text trimmed': CMARK_LINE_FOO,
+                    'visible': True
+                },
             ],
         )
 
         # Test line endings.
         self.assertEqual(
             api.get_atx_heading(H1 + LINE_LINE_FEED, m_github, 'github', True),
-            [{'header type': 1, 'header text trimmed': LINE_EMPTY, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': LINE_EMPTY,
+                'visible': True
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
-                H1 + LINE_CARRIAGE_RETURN, m_github, 'github',
+                H1 + LINE_CARRIAGE_RETURN,
+                m_github,
+                'github',
                 True,
             ),
-            [{'header type': 1, 'header text trimmed': LINE_EMPTY, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': LINE_EMPTY,
+                'visible': True
+            }],
         )
 
         # CRLF marker tests.
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_FOO + LINE_LINE_FEED + CMARK_LINE_FOO,
-                m_github, 'github',
+                m_github,
+                'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}, {'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': 1,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }, {
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
 
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_FOO + LINE_CARRIAGE_RETURN +
-                CMARK_LINE_FOO, m_github, 'github',
+                CMARK_LINE_FOO,
+                m_github,
+                'github',
             ),
-            [{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}, {'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': 1,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': True
+            }, {
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
 
         # Test line endings with link labels.
@@ -2477,7 +3272,9 @@ class TestApi(pyfakefsTestCase):
             api.get_atx_heading(H1 + LINE_LINE_FEED, m_github, 'github', False)
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
             api.get_atx_heading(
-                H1 + LINE_CARRIAGE_RETURN, m_github, 'github',
+                H1 + LINE_CARRIAGE_RETURN,
+                m_github,
+                'github',
                 False,
             )
 
@@ -2486,27 +3283,51 @@ class TestApi(pyfakefsTestCase):
         # headers)
         self.assertEqual(
             api.get_atx_heading(
-                H2 + S1 + CMARK_LINE_FOO, 1, 'github',
+                H2 + S1 + CMARK_LINE_FOO,
+                1,
+                'github',
             ),
-            [{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, 'visible': False}],
+            [{
+                'header type': 2,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': False
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
-                H3 + S1 + CMARK_LINE_FOO, 1, 'github',
+                H3 + S1 + CMARK_LINE_FOO,
+                1,
+                'github',
             ),
-            [{'header type': 3, 'header text trimmed': CMARK_LINE_FOO, 'visible': False}],
+            [{
+                'header type': 3,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': False
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
-                H5 + S1 + CMARK_LINE_FOO, 2, 'github',
+                H5 + S1 + CMARK_LINE_FOO,
+                2,
+                'github',
             ),
-            [{'header type': 5, 'header text trimmed': CMARK_LINE_FOO, 'visible': False}],
+            [{
+                'header type': 5,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': False
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
-                H6 + S1 + CMARK_LINE_FOO, 5, 'github',
+                H6 + S1 + CMARK_LINE_FOO,
+                5,
+                'github',
             ),
-            [{'header type': 6, 'header text trimmed': CMARK_LINE_FOO, 'visible': False}],
+            [{
+                'header type': 6,
+                'header text trimmed': CMARK_LINE_FOO,
+                'visible': False
+            }],
         )
 
         # readcarpet
@@ -2517,109 +3338,193 @@ class TestApi(pyfakefsTestCase):
 
         self.assertEqual(
             api.get_atx_heading(
-                S1 + H1 + S1 + REDCARPET_LINE_FOO, m_redcarpet,
+                S1 + H1 + S1 + REDCARPET_LINE_FOO,
+                m_redcarpet,
                 'redcarpet',
             ),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
 
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + REDCARPET_LINE_FOO, m_redcarpet,
+                H1 + S1 + REDCARPET_LINE_FOO,
+                m_redcarpet,
                 'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': REDCARPET_LINE_FOO,
+                'visible': True
+            }],
         )
 
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + REDCARPET_LINE_FOO + S1 + H1,
-                m_redcarpet, 'redcarpet',
+                m_redcarpet,
+                'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': REDCARPET_LINE_FOO,
+                'visible': True
+            }],
         )
 
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + REDCARPET_LINE_FOO + S1 + H3,
-                m_redcarpet, 'redcarpet',
+                m_redcarpet,
+                'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': REDCARPET_LINE_FOO,
+                'visible': True
+            }],
         )
 
         self.assertEqual(
             api.get_atx_heading(
                 H3 + S1 + REDCARPET_LINE_FOO + S1 + H3 + LINE_LINE_FEED,
-                m_redcarpet, 'redcarpet',
+                m_redcarpet,
+                'redcarpet',
             ),
-            [{'header type': 3, 'header text trimmed': REDCARPET_LINE_FOO, 'visible': True}],
+            [{
+                'header type': 3,
+                'header text trimmed': REDCARPET_LINE_FOO,
+                'visible': True
+            }],
         )
 
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + REDCARPET_LINE_FOO + S1 + H3 + S1,
-                m_redcarpet, 'redcarpet',
+                m_redcarpet,
+                'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO + S1 + H3, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed': REDCARPET_LINE_FOO + S1 + H3,
+                'visible': True
+            }],
         )
 
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + REDCARPET_LINE_FOO + S1 + H1 + LINE_ESCAPE +
-                LINE_ESCAPE + H2, m_redcarpet, 'redcarpet',
+                LINE_ESCAPE + H2,
+                m_redcarpet,
+                'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO + S1 + H1 + LINE_ESCAPE + LINE_ESCAPE, 'visible': True}],
+            [{
+                'header type':
+                1,
+                'header text trimmed':
+                REDCARPET_LINE_FOO + S1 + H1 + LINE_ESCAPE + LINE_ESCAPE,
+                'visible':
+                True
+            }],
         )
 
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + REDCARPET_LINE_FOO + H1 + LINE_ESCAPE + H1 + S1 + H1,
-                m_redcarpet, 'redcarpet',
+                m_redcarpet,
+                'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO + H1 + LINE_ESCAPE + H1, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed':
+                REDCARPET_LINE_FOO + H1 + LINE_ESCAPE + H1,
+                'visible': True
+            }],
         )
 
         # Test escape character space workaround.
         self.assertEqual(
             api.get_atx_heading(
-                H1 + S1 + REDCARPET_LINE_FOO + S1 + LINE_ESCAPE, m_redcarpet,
+                H1 + S1 + REDCARPET_LINE_FOO + S1 + LINE_ESCAPE,
+                m_redcarpet,
                 'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO + S1 + LINE_ESCAPE + S1, 'visible': True}],
+            [{
+                'header type': 1,
+                'header text trimmed':
+                REDCARPET_LINE_FOO + S1 + LINE_ESCAPE + S1,
+                'visible': True
+            }],
         )
 
         # Test an empty line.
         self.assertEqual(
             api.get_atx_heading(LINE_EMPTY, m_redcarpet, 'redcarpet'),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
 
         # Test newline.
         self.assertEqual(
             api.get_atx_heading(H1 + LINE_LINE_FEED, m_redcarpet, 'redcarpet'),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
 
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + REDCARPET_LINE_FOO + LINE_LINE_FEED +
-                REDCARPET_LINE_FOO, m_redcarpet, 'redcarpet',
+                REDCARPET_LINE_FOO,
+                m_redcarpet,
+                'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO, 'visible': True}, {'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': 1,
+                'header text trimmed': REDCARPET_LINE_FOO,
+                'visible': True
+            }, {
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
-                H1 + LINE_CARRIAGE_RETURN, m_redcarpet,
+                H1 + LINE_CARRIAGE_RETURN,
+                m_redcarpet,
                 'redcarpet',
             ),
-            [{'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + REDCARPET_LINE_FOO + LINE_CARRIAGE_RETURN +
-                REDCARPET_LINE_FOO, m_redcarpet, 'redcarpet',
+                REDCARPET_LINE_FOO,
+                m_redcarpet,
+                'redcarpet',
             ),
-            [{'header type': 1, 'header text trimmed': REDCARPET_LINE_FOO, 'visible': True}, {'header type': None, 'header text trimmed': None, 'visible': False}],
+            [{
+                'header type': 1,
+                'header text trimmed': REDCARPET_LINE_FOO,
+                'visible': True
+            }, {
+                'header type': None,
+                'header text trimmed': None,
+                'visible': False
+            }],
         )
 
     def test_get_md_header(self):
@@ -2627,7 +3532,12 @@ class TestApi(pyfakefsTestCase):
         # Mock the get_atx_heading, build_anchor_link function calls.
         # result = [{None None False}]:
         # First if.
-        with patch('md_toc.api.get_atx_heading', return_value=[{'header type': None, 'header text trimmed': None, 'visible': False}]):
+        with patch('md_toc.api.get_atx_heading',
+                   return_value=[{
+                       'header type': None,
+                       'header text trimmed': None,
+                       'visible': False
+                   }]):
             with patch('md_toc.api.build_anchor_link', return_value=str()):
                 self.assertEqual(api.get_md_header(CMARK_LINE_FOO, dict(), 1),
                                  [None])
@@ -2635,24 +3545,53 @@ class TestApi(pyfakefsTestCase):
         # Cannot happen.
         # result = [{None None True}]
         # First if.
-        with patch('md_toc.api.get_atx_heading', return_value=[{'header type': None, 'header text trimmed': None, 'visible': True}]):
+        with patch('md_toc.api.get_atx_heading',
+                   return_value=[{
+                       'header type': None,
+                       'header text trimmed': None,
+                       'visible': True
+                   }]):
             with patch('md_toc.api.build_anchor_link', return_value=str()):
                 self.assertEqual(api.get_md_header(CMARK_LINE_FOO, dict(), 1),
                                  [None])
 
         # result = [{alpha beta False}]
         # Second if.
-        with patch('md_toc.api.get_atx_heading', return_value=[{'header type': 2, 'header text trimmed': CMARK_LINE_FOO, 'visible': False}]):
-            with patch('md_toc.api.build_anchor_link', return_value=CMARK_LINE_FOO):
-                self.assertEqual(api.get_md_header(H2 + S1 + CMARK_LINE_FOO, dict(), 1),
-                                 [{'type': 2, 'text_original': CMARK_LINE_FOO, 'text_anchor_link': CMARK_LINE_FOO, 'visible': False}])
+        with patch('md_toc.api.get_atx_heading',
+                   return_value=[{
+                       'header type': 2,
+                       'header text trimmed': CMARK_LINE_FOO,
+                       'visible': False
+                   }]):
+            with patch('md_toc.api.build_anchor_link',
+                       return_value=CMARK_LINE_FOO):
+                self.assertEqual(
+                    api.get_md_header(H2 + S1 + CMARK_LINE_FOO, dict(), 1),
+                    [{
+                        'type': 2,
+                        'text_original': CMARK_LINE_FOO,
+                        'text_anchor_link': CMARK_LINE_FOO,
+                        'visible': False
+                    }])
 
         # result = [{alpha beta True}]
         # Second if.
-        with patch('md_toc.api.get_atx_heading', return_value=[{'header type': 1, 'header text trimmed': CMARK_LINE_FOO, 'visible': True}]):
-            with patch('md_toc.api.build_anchor_link', return_value=CMARK_LINE_FOO):
-                self.assertEqual(api.get_md_header(H1 + S1 + CMARK_LINE_FOO, dict(), 1),
-                                 [{'type': 1, 'text_original': CMARK_LINE_FOO, 'text_anchor_link': CMARK_LINE_FOO, 'visible': True}])
+        with patch('md_toc.api.get_atx_heading',
+                   return_value=[{
+                       'header type': 1,
+                       'header text trimmed': CMARK_LINE_FOO,
+                       'visible': True
+                   }]):
+            with patch('md_toc.api.build_anchor_link',
+                       return_value=CMARK_LINE_FOO):
+                self.assertEqual(
+                    api.get_md_header(H1 + S1 + CMARK_LINE_FOO, dict(), 1),
+                    [{
+                        'type': 1,
+                        'text_original': CMARK_LINE_FOO,
+                        'text_anchor_link': CMARK_LINE_FOO,
+                        'visible': True
+                    }])
 
     def test_is_opening_code_fence(self):
         r"""Test detection of opening code fence."""
@@ -2662,8 +3601,7 @@ class TestApi(pyfakefsTestCase):
         self.assertIsNone(api.is_opening_code_fence(LINE_EMPTY))
         self.assertIsNone(api.is_opening_code_fence(CMARK_LINE_FOO))
         self.assertIsNone(
-            api.is_opening_code_fence(CMARK_LINE_FOO + LINE_LINE_FEED),
-        )
+            api.is_opening_code_fence(CMARK_LINE_FOO + LINE_LINE_FEED), )
 
         self.assertIsNone(api.is_opening_code_fence(S1))
         self.assertIsNone(api.is_opening_code_fence(S2))
@@ -2702,18 +3640,16 @@ class TestApi(pyfakefsTestCase):
         self.assertIsNone(api.is_opening_code_fence(BACKTICK1))
         self.assertIsNone(api.is_opening_code_fence(BACKTICK2))
         self.assertIsNone(
-            api.is_opening_code_fence(BACKTICK2 + CMARK_LINE_FOO),
-        )
+            api.is_opening_code_fence(BACKTICK2 + CMARK_LINE_FOO), )
         self.assertIsNone(
-            api.is_opening_code_fence(BACKTICK2 + LINE_LINE_FEED + BACKTICK1),
-        )
+            api.is_opening_code_fence(BACKTICK2 + LINE_LINE_FEED +
+                                      BACKTICK1), )
 
         self.assertIsNone(api.is_opening_code_fence(TILDE1))
         self.assertIsNone(api.is_opening_code_fence(TILDE2))
         self.assertIsNone(api.is_opening_code_fence(TILDE2 + CMARK_LINE_FOO))
         self.assertIsNone(
-            api.is_opening_code_fence(TILDE2 + LINE_LINE_FEED + TILDE1),
-        )
+            api.is_opening_code_fence(TILDE2 + LINE_LINE_FEED + TILDE1), )
 
         # Example 91 -> 97 [Commonmark 0.28].
         # Example 92 -> 98 [Commonmark 0.29].
@@ -2725,16 +3661,14 @@ class TestApi(pyfakefsTestCase):
         # Example 129 [Commonmark 0.30].
         self.assertEqual(
             api.is_opening_code_fence(
-                BACKTICK3 + LINE_LINE_FEED + LINE_LINE_FEED +
-                S2,
-            ), BACKTICK3,
+                BACKTICK3 + LINE_LINE_FEED + LINE_LINE_FEED + S2, ),
+            BACKTICK3,
         )
 
         self.assertEqual(
             api.is_opening_code_fence(
-                TILDE3 + LINE_LINE_FEED + LINE_LINE_FEED +
-                S2,
-            ), TILDE3,
+                TILDE3 + LINE_LINE_FEED + LINE_LINE_FEED + S2, ),
+            TILDE3,
         )
 
         # Example 99 [Commonmark 0.28].
@@ -2776,7 +3710,8 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(api.is_opening_code_fence(S3 + BACKTICK3), BACKTICK3)
         self.assertEqual(api.is_opening_code_fence(S3 + BACKTICK4), BACKTICK4)
         self.assertEqual(
-            api.is_opening_code_fence(S3 + BACKTICK10), BACKTICK10,
+            api.is_opening_code_fence(S3 + BACKTICK10),
+            BACKTICK10,
         )
 
         self.assertEqual(api.is_opening_code_fence(S3 + TILDE3), TILDE3)
@@ -2792,11 +3727,11 @@ class TestApi(pyfakefsTestCase):
         # Example 108 [Commonmark 0.29].
         # Example 138 [Commonmark 0.30].
         self.assertIsNone(
-            api.is_opening_code_fence(BACKTICK3 + S1 + BACKTICK3),
-        )
+            api.is_opening_code_fence(BACKTICK3 + S1 + BACKTICK3), )
 
         self.assertEqual(
-            api.is_opening_code_fence(TILDE3 + S1 + TILDE3), TILDE3,
+            api.is_opening_code_fence(TILDE3 + S1 + TILDE3),
+            TILDE3,
         )
 
         # Example 108 [Commonmark 0.28].
@@ -2811,7 +3746,8 @@ class TestApi(pyfakefsTestCase):
 
         # Example 24 [Commonmark 0.30].
         self.assertEqual(
-            api.is_opening_code_fence(BACKTICK3 + S1 + CMARK_LINE_FOO + LINE_ESCAPE + CMARK_LINE_BAR),
+            api.is_opening_code_fence(BACKTICK3 + S1 + CMARK_LINE_FOO +
+                                      LINE_ESCAPE + CMARK_LINE_BAR),
             BACKTICK3,
         )
 
@@ -2850,7 +3786,8 @@ class TestApi(pyfakefsTestCase):
             BACKTICK3,
         )
         self.assertEqual(
-            api.is_opening_code_fence(BACKTICK3 + S3 + CMARK_INFO_STRING_FOO, 'cmark'),
+            api.is_opening_code_fence(BACKTICK3 + S3 + CMARK_INFO_STRING_FOO,
+                                      'cmark'),
             BACKTICK3,
         )
         self.assertEqual(
@@ -2858,15 +3795,18 @@ class TestApi(pyfakefsTestCase):
             BACKTICK3,
         )
         self.assertEqual(
-            api.is_opening_code_fence(BACKTICK3 + T3 + CMARK_INFO_STRING_FOO, 'cmark'),
+            api.is_opening_code_fence(BACKTICK3 + T3 + CMARK_INFO_STRING_FOO,
+                                      'cmark'),
             BACKTICK3,
         )
 
         self.assertEqual(
-            api.is_opening_code_fence(TILDE3 + CMARK_INFO_STRING_FOO), TILDE3,
+            api.is_opening_code_fence(TILDE3 + CMARK_INFO_STRING_FOO),
+            TILDE3,
         )
         self.assertEqual(
-            api.is_opening_code_fence(TILDE4 + CMARK_INFO_STRING_FOO), TILDE4,
+            api.is_opening_code_fence(TILDE4 + CMARK_INFO_STRING_FOO),
+            TILDE4,
         )
         self.assertEqual(
             api.is_opening_code_fence(TILDE10 + CMARK_INFO_STRING_FOO),
@@ -2877,7 +3817,8 @@ class TestApi(pyfakefsTestCase):
             TILDE3,
         )
         self.assertEqual(
-            api.is_opening_code_fence(TILDE3 + S3 + CMARK_INFO_STRING_FOO, 'cmark'),
+            api.is_opening_code_fence(TILDE3 + S3 + CMARK_INFO_STRING_FOO,
+                                      'cmark'),
             TILDE3,
         )
         self.assertEqual(
@@ -2885,7 +3826,8 @@ class TestApi(pyfakefsTestCase):
             TILDE3,
         )
         self.assertEqual(
-            api.is_opening_code_fence(TILDE3 + T3 + CMARK_INFO_STRING_FOO, 'cmark'),
+            api.is_opening_code_fence(TILDE3 + T3 + CMARK_INFO_STRING_FOO,
+                                      'cmark'),
             TILDE3,
         )
 
@@ -2895,17 +3837,16 @@ class TestApi(pyfakefsTestCase):
         # Info string with garbage and foreign character.
         self.assertEqual(
             api.is_opening_code_fence(
-                BACKTICK4 + S4 + CMARK_INFO_STRING_FOO +
-                S1 + CMARK_INFO_STRING_GARBAGE,
-            ),
+                BACKTICK4 + S4 + CMARK_INFO_STRING_FOO + S1 +
+                CMARK_INFO_STRING_GARBAGE, ),
             BACKTICK4,
         )
 
         self.assertEqual(
             api.is_opening_code_fence(
-                TILDE4 + S4 + CMARK_INFO_STRING_FOO +
-                S1 + CMARK_INFO_STRING_GARBAGE,
-            ), TILDE4,
+                TILDE4 + S4 + CMARK_INFO_STRING_FOO + S1 +
+                CMARK_INFO_STRING_GARBAGE, ),
+            TILDE4,
         )
 
         # Example 113 [Commonmark 0.28].
@@ -2919,25 +3860,27 @@ class TestApi(pyfakefsTestCase):
         # Example 115 [Commonmark 0.29].
         # Example 145 [Commonmark 0.30].
         self.assertIsNone(
-            api.is_opening_code_fence(BACKTICK3 + S1 + 'aa' + S1 + BACKTICK3),
-        )
+            api.is_opening_code_fence(BACKTICK3 + S1 + 'aa' + S1 +
+                                      BACKTICK3), )
 
         self.assertEqual(
-            api.is_opening_code_fence(TILDE3 + S1 + 'aa' + S1 + TILDE3), TILDE3,
+            api.is_opening_code_fence(TILDE3 + S1 + 'aa' + S1 + TILDE3),
+            TILDE3,
         )
 
         # Example 116 [Commonmark 0.29].
         # Example 146 [Commonmark 0.30].
         self.assertEqual(
-            api.is_opening_code_fence(TILDE3 + S1 + 'aa' + S1 + BACKTICK3 + S1 + TILDE3),
+            api.is_opening_code_fence(TILDE3 + S1 + 'aa' + S1 + BACKTICK3 +
+                                      S1 + TILDE3),
             TILDE3,
         )
 
         # Extension of Example 146 [Commonmark 0.30].
         # Info strings for backtick code blocks CANNOT contain tildes and backtics.
         self.assertIsNone(
-            api.is_opening_code_fence(BACKTICK3 + S1 + 'aa' + S1 + TILDE3 + S1 + BACKTICK3),
-        )
+            api.is_opening_code_fence(BACKTICK3 + S1 + 'aa' + S1 + TILDE3 +
+                                      S1 + BACKTICK3), )
 
         # Example 115 [Commonmark 0.28].
         # Example 117 [Commonmark 0.29].
@@ -2981,16 +3924,16 @@ class TestApi(pyfakefsTestCase):
         self.assertTrue(
             api.is_closing_code_fence(
                 LINE_LINE_FEED + BACKTICK3 + LINE_LINE_FEED + 'aaa',
-                BACKTICK5, True,
-            ),
-        )
+                BACKTICK5,
+                True,
+            ), )
 
         self.assertTrue(
             api.is_closing_code_fence(
-                LINE_LINE_FEED + TILDE3 + LINE_LINE_FEED + 'aaa', TILDE5,
+                LINE_LINE_FEED + TILDE3 + LINE_LINE_FEED + 'aaa',
+                TILDE5,
                 True,
-            ),
-        )
+            ), )
 
         # Example 97 [Commonmark 0.28].
         # Example 98 [Commonmark 0.29].
@@ -3011,8 +3954,7 @@ class TestApi(pyfakefsTestCase):
         # Example 106 [Commonmark 0.29].
         # Example 136 [Commonmark 0.30].
         self.assertTrue(
-            api.is_closing_code_fence(S2 + BACKTICK3, S3 + BACKTICK3),
-        )
+            api.is_closing_code_fence(S2 + BACKTICK3, S3 + BACKTICK3), )
 
         self.assertTrue(api.is_closing_code_fence(S2 + TILDE3, S3 + TILDE3))
 
@@ -3030,12 +3972,10 @@ class TestApi(pyfakefsTestCase):
         # Example 109 [Commonmark 0.29].
         # Example 139 [Commonmark 0.30].
         self.assertFalse(
-            api.is_closing_code_fence(TILDE3 + S1 + TILDE2, TILDE6),
-        )
+            api.is_closing_code_fence(TILDE3 + S1 + TILDE2, TILDE6), )
 
         self.assertFalse(
-            api.is_closing_code_fence(BACKTICK3 + S1 + BACKTICK2, BACKTICK6),
-        )
+            api.is_closing_code_fence(BACKTICK3 + S1 + BACKTICK2, BACKTICK6), )
 
         # Example 140 -> 146 [Commonmark 0.30].
         # See test_is_opening_code_fence.
@@ -3044,39 +3984,28 @@ class TestApi(pyfakefsTestCase):
         # Example 117 [Commonmark 0.29].
         # Example 147 [Commonmark 0.30].
         self.assertFalse(
-            api.is_closing_code_fence(BACKTICK3 + S1 + 'aaa', BACKTICK3),
-        )
+            api.is_closing_code_fence(BACKTICK3 + S1 + 'aaa', BACKTICK3), )
 
         self.assertFalse(
-            api.is_closing_code_fence(TILDE3 + S1 + 'aaa', TILDE3),
-        )
+            api.is_closing_code_fence(TILDE3 + S1 + 'aaa', TILDE3), )
 
         # Extra examples for tabs [Commonmark 0.30].
         self.assertTrue(
-            api.is_closing_code_fence(BACKTICK3 + T1, BACKTICK3, 'cmark'),
-        )
-        self.assertFalse(
-            api.is_closing_code_fence(BACKTICK3 + T1, BACKTICK3),
-        )
+            api.is_closing_code_fence(BACKTICK3 + T1, BACKTICK3, 'cmark'), )
+        self.assertFalse(api.is_closing_code_fence(BACKTICK3 + T1,
+                                                   BACKTICK3), )
         self.assertTrue(
-            api.is_closing_code_fence(BACKTICK3 + T4 + S4, BACKTICK3, 'cmark'),
-        )
+            api.is_closing_code_fence(BACKTICK3 + T4 + S4, BACKTICK3,
+                                      'cmark'), )
         self.assertFalse(
-            api.is_closing_code_fence(BACKTICK3 + T4 + S4, BACKTICK3),
-        )
+            api.is_closing_code_fence(BACKTICK3 + T4 + S4, BACKTICK3), )
 
         self.assertTrue(
-            api.is_closing_code_fence(TILDE3 + T1, TILDE3, 'cmark'),
-        )
-        self.assertFalse(
-            api.is_closing_code_fence(TILDE3 + T4 + S4, TILDE3),
-        )
+            api.is_closing_code_fence(TILDE3 + T1, TILDE3, 'cmark'), )
+        self.assertFalse(api.is_closing_code_fence(TILDE3 + T4 + S4, TILDE3), )
         self.assertTrue(
-            api.is_closing_code_fence(TILDE3 + T1, TILDE3, 'cmark'),
-        )
-        self.assertFalse(
-            api.is_closing_code_fence(TILDE3 + T4 + S4, TILDE3),
-        )
+            api.is_closing_code_fence(TILDE3 + T1, TILDE3, 'cmark'), )
+        self.assertFalse(api.is_closing_code_fence(TILDE3 + T4 + S4, TILDE3), )
 
     @unittest.skip("empty test")
     def test_init_indentation_status_list(self):
@@ -3086,11 +4015,17 @@ class TestApi(pyfakefsTestCase):
         """
 
     def _test_helper_toc_renders_as_coherent_list(
-            self, header_type_curr, header_type_first, indentation_list,
-            expected_indentation_list, expected_result,
+        self,
+        header_type_curr,
+        header_type_first,
+        indentation_list,
+        expected_indentation_list,
+        expected_result,
     ):
         result = api.toc_renders_as_coherent_list(
-            header_type_curr, header_type_first, indentation_list,
+            header_type_curr,
+            header_type_first,
+            indentation_list,
         )
         self.assertEqual(result, expected_result)
         self.assertEqual(indentation_list, expected_indentation_list)
@@ -3105,7 +4040,8 @@ class TestApi(pyfakefsTestCase):
             BASE_CASE_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR,
             BASE_CASE_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST,
             api.init_indentation_status_list('github'),
-            expected_indentation_list, True,
+            expected_indentation_list,
+            True,
         )
 
         # 2. header_type_first = 1; header_type_curr = generic > 1.
@@ -3116,7 +4052,9 @@ class TestApi(pyfakefsTestCase):
         self._test_helper_toc_renders_as_coherent_list(
             GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR,
             BASE_CASE_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST,
-            indentation_list, expected_indentation_list, True,
+            indentation_list,
+            expected_indentation_list,
+            True,
         )
 
         # 3. header_type_first = generic > 1; header_type_curr = 1.
@@ -3124,47 +4062,49 @@ class TestApi(pyfakefsTestCase):
         expected_indentation_list = [True, False, False, False, False, False]
         self._test_helper_toc_renders_as_coherent_list(
             BASE_CASE_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR,
-            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST, indentation_list,
-            expected_indentation_list, False,
+            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST,
+            indentation_list,
+            expected_indentation_list,
+            False,
         )
 
         # 4. header_type_first = generic > 1; header_type_curr = generic > 1; header_type_curr > header_type_first.
         indentation_list = api.init_indentation_status_list('github')
-        indentation_list[
-            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST -
-            1
-        ] = True
+        indentation_list[GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST -
+                         1] = True
         expected_indentation_list = [False, False, False, True, True, False]
         self._test_helper_toc_renders_as_coherent_list(
             GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS,
-            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST, indentation_list,
-            expected_indentation_list, True,
+            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST,
+            indentation_list,
+            expected_indentation_list,
+            True,
         )
 
         # 4. header_type_first = generic > 1; header_type_curr = generic > 1; header_type_curr == header_type_first.
         indentation_list = api.init_indentation_status_list('github')
-        indentation_list[
-            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR -
-            1
-        ] = True
+        indentation_list[GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR -
+                         1] = True
         expected_indentation_list = [False, False, False, True, False, False]
         self._test_helper_toc_renders_as_coherent_list(
             GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR,
-            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR, indentation_list,
-            expected_indentation_list, True,
+            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR,
+            indentation_list,
+            expected_indentation_list,
+            True,
         )
 
         # 5. header_type_first = generic > 1; header_type_curr = generic > 1; header_type_curr < header_type_first.
         indentation_list = api.init_indentation_status_list('github')
-        indentation_list[
-            GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS -
-            1
-        ] = True
+        indentation_list[GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS -
+                         1] = True
         expected_indentation_list = [False, False, False, True, False, False]
         self._test_helper_toc_renders_as_coherent_list(
             GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST,
             GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_CURR_BIS,
-            indentation_list, expected_indentation_list, False,
+            indentation_list,
+            expected_indentation_list,
+            False,
         )
 
 

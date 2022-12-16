@@ -43,7 +43,8 @@ from .utf8_c import _cmark_cmark_utf8proc_case_fold
 # Return NULL if the reference name is actually empty (i.e. composed
 # solely from whitespace)
 # 0.30
-def _cmark_normalize_reference(mem: _cmarkCmarkMem, ref: _cmarkCmarkChunk) -> str:
+def _cmark_normalize_reference(mem: _cmarkCmarkMem,
+                               ref: _cmarkCmarkChunk) -> str:
     normalized: _cmarkCmarkStrbuf = _cmark_CMARK_BUF_INIT(mem)
     result: str
 
@@ -123,7 +124,8 @@ def _cmark_cmark_reference_lookup(
     norm: str
 
     #     MAX_LINK_LABEL_LENGTH
-    if label.length < 1 or label.length > md_parser['cmark']['link']['max chars label'] + 1:
+    if label.length < 1 or label.length > md_parser['cmark']['link'][
+            'max chars label'] + 1:
         return None
 
     if map is None or not map.size:

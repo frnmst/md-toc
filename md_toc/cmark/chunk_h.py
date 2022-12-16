@@ -30,7 +30,6 @@ from .cmark_ctype_c import _cmark_cmark_isspace
 # in that case the license header at the top of the file applies.
 # See docs/copyright_license.rst
 
-
 # Returns 1 if c is a "whitespace" character as defined by the spec.
 #   int cmark_isspace(char c) { return cmark_ctype_class[(uint8_t)c] == 1; }
 # The only defined whitespaces in the spec are Unicode whitespaces.
@@ -91,7 +90,8 @@ def _cmark_cmark_chunk_literal(data: str) -> _cmarkCmarkChunk:
 
 
 # 0.29, 0.30
-def _cmark_cmark_chunk_dup(ch: _cmarkCmarkChunk, pos: int, length: int) -> _cmarkCmarkChunk:
+def _cmark_cmark_chunk_dup(ch: _cmarkCmarkChunk, pos: int,
+                           length: int) -> _cmarkCmarkChunk:
     c = _cmarkCmarkChunk(copy.deepcopy(ch.data[pos:]), length)
     return c
 

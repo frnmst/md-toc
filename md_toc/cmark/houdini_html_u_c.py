@@ -40,9 +40,12 @@ from .utf8_c import _cmark_cmark_utf8proc_encode_char
 # 0.30.
 def _cmark_S_lookup(i: int, low: int, hi: int, s: str, length: int) -> str:
     j: int
-    cmp: int = _strncmp(s, md_parser['cmark']['re']['ENTITIES']['entities'][i]['entity'], length)
+    cmp: int = _strncmp(
+        s, md_parser['cmark']['re']['ENTITIES']['entities'][i]['entity'],
+        length)
     #  if (cmp == 0 && cmark_entities[i].entity[len] == 0) {
-    if cmp == 0 and length == len(md_parser['cmark']['re']['ENTITIES']['entities'][i]['entity']):
+    if cmp == 0 and length == len(
+            md_parser['cmark']['re']['ENTITIES']['entities'][i]['entity']):
         return md_parser['cmark']['re']['ENTITIES']['entities'][i]['bytes']
     elif cmp == -1 and i > low:
         j = i - int((i - low) / 2)
@@ -60,11 +63,15 @@ def _cmark_S_lookup(i: int, low: int, hi: int, s: str, length: int) -> str:
 
 # 0.30.
 def _cmark_S_lookup_entity(s: str, length: int):
-    return _cmark_S_lookup(int(md_parser['cmark']['re']['ENTITIES']['CMARK_NUM_ENTITIES'] / 2), 0, md_parser['cmark']['re']['ENTITIES']['CMARK_NUM_ENTITIES'] - 1, s, length)
+    return _cmark_S_lookup(
+        int(md_parser['cmark']['re']['ENTITIES']['CMARK_NUM_ENTITIES'] / 2), 0,
+        md_parser['cmark']['re']['ENTITIES']['CMARK_NUM_ENTITIES'] - 1, s,
+        length)
 
 
 # 0.30.
-def _cmark_houdini_unescape_ent(ob: _cmarkCmarkStrbuf, src: str, size: int) -> int:
+def _cmark_houdini_unescape_ent(ob: _cmarkCmarkStrbuf, src: str,
+                                size: int) -> int:
     i: int = 0
 
     if size >= 3 and src[0] == '#':
@@ -103,27 +110,24 @@ def _cmark_houdini_unescape_ent(ob: _cmarkCmarkStrbuf, src: str, size: int) -> i
             num_digits = i - 2
             max_digits = 6
 
-        if (
-            num_digits >= 1
-            and num_digits <= max_digits
-            and i < size
-            and src[i] == ';'
-        ):
-            if (
-                codepoint == 0
-                or (codepoint >= 0xD800 and codepoint < 0xE000)
-                or codepoint >= 0x110000
-            ):
+        if (num_digits >= 1 and num_digits <= max_digits and i < size
+                and src[i] == ';'):
+            if (codepoint == 0 or (codepoint >= 0xD800 and codepoint < 0xE000)
+                    or codepoint >= 0x110000):
                 codepoint = 0xFFFD
 
             _cmark_cmark_utf8proc_encode_char(codepoint, ob)
             return i + 1
 
     else:
-        if size > md_parser['cmark']['re']['ENTITIES']['CMARK_ENTITY_MAX_LENGTH']:
-            size = md_parser['cmark']['re']['ENTITIES']['CMARK_ENTITY_MAX_LENGTH']
+        if size > md_parser['cmark']['re']['ENTITIES'][
+                'CMARK_ENTITY_MAX_LENGTH']:
+            size = md_parser['cmark']['re']['ENTITIES'][
+                'CMARK_ENTITY_MAX_LENGTH']
 
-        for i in range(md_parser['cmark']['re']['ENTITIES']['CMARK_ENTITY_MIN_LENGTH'], size):
+        for i in range(
+                md_parser['cmark']['re']['ENTITIES']
+            ['CMARK_ENTITY_MIN_LENGTH'], size):
             if src[i] == ' ':
                 break
 
@@ -141,7 +145,8 @@ def _cmark_houdini_unescape_ent(ob: _cmarkCmarkStrbuf, src: str, size: int) -> i
 
 # 0.30.
 def _cmark_houdini_unescape_html(
-    ob: _cmarkCmarkStrbuf, src: str,
+    ob: _cmarkCmarkStrbuf,
+    src: str,
     size: int,
 ) -> int:
     i: int = 0
@@ -158,7 +163,8 @@ def _cmark_houdini_unescape_html(
                 if i >= size:
                     return 0
 
-                _cmark_cmark_strbuf_grow(ob, _cmark_HOUDINI_UNESCAPED_SIZE(size))
+                _cmark_cmark_strbuf_grow(ob,
+                                         _cmark_HOUDINI_UNESCAPED_SIZE(size))
 
             _cmark_cmark_strbuf_put(ob, src[org:], i - org)
 

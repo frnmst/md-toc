@@ -142,7 +142,8 @@ def _cmark_cmark_utf8proc_encode_char(uc: int, buf: _cmarkCmarkStrbuf):
 
 # 0.30
 def _cmark_cmark_utf8proc_case_fold(
-    dest: _cmarkCmarkStrbuf, string: str,
+    dest: _cmarkCmarkStrbuf,
+    string: str,
     length: int,
 ):
     c: int
@@ -152,7 +153,8 @@ def _cmark_cmark_utf8proc_case_fold(
 
         if char_len >= 0:
             # FIXME: unsure about this. See original C source code.
-            _cmark_cmark_utf8proc_encode_char(ord(unicodedata.normalize('NFC', chr(c)).casefold()), dest)
+            _cmark_cmark_utf8proc_encode_char(
+                ord(unicodedata.normalize('NFC', chr(c)).casefold()), dest)
         else:
             _cmark_encode_unknown(dest)
             char_len = -char_len
@@ -178,7 +180,8 @@ def _cmark_cmark_utf8proc_is_space(char: int) -> bool:
 def _cmark_cmark_utf8proc_is_punctuation(char: int) -> bool:
     r"""Match anything in the P[cdefios] classes."""
     value = False
-    if (char < 128 and _cmark_cmark_ispunct(char)) or chr(char) in md_parser['cmark']['pseudo-re']['UPC']:
+    if ((char < 128 and _cmark_cmark_ispunct(char))
+            or chr(char) in md_parser['cmark']['pseudo-re']['UPC']):
         value = True
 
     return value

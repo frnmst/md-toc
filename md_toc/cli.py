@@ -108,21 +108,27 @@ class CliInterface():
         megroup.add_argument(
             '-u',
             '--unordered-list-marker',
-            choices=md_parser[parser_name]['list']['unordered']['bullet markers'],
+            choices=md_parser[parser_name]['list']['unordered']
+            ['bullet markers'],
             nargs='?',
-            const=md_parser[parser_name]['list']['unordered']['default marker'],
-            default=md_parser[parser_name]['list']['unordered']['default marker'],
+            const=md_parser[parser_name]['list']['unordered']
+            ['default marker'],
+            default=md_parser[parser_name]['list']['unordered']
+            ['default marker'],
             help='set the marker and enables unordered list. Defaults to ' +
             md_parser[parser_name]['list']['unordered']['default marker'],
         )
         megroup.add_argument(
             '-o',
             '--ordered-list-marker',
-            choices=md_parser[parser_name]['list']['ordered']['closing markers'],
+            choices=md_parser[parser_name]['list']['ordered']
+            ['closing markers'],
             nargs='?',
-            const=md_parser[parser_name]['list']['ordered']['default closing marker'],
-            help='set the marker and enable ordered lists. Defaults to ' +
-            md_parser[parser_name]['list']['ordered']['default closing marker'],
+            const=md_parser[parser_name]['list']['ordered']
+            ['default closing marker'],
+            help=('set the marker and enable ordered lists. Defaults to ' +
+                  md_parser[parser_name]['list']['ordered']
+                  )['default closing marker'],
         )
 
     def _add_cmark_like_arguments(self, parser, parser_name: str):
@@ -130,19 +136,20 @@ class CliInterface():
             '-c',
             '--constant-ordered-list',
             action='store_true',
-            help='intead of progressive numbers use a single integer as list marker. This options enables ordered lists',
+            help='intead of progressive numbers use a single integer as \
+                  list marker. This options enables ordered lists',
         )
         parser.add_argument(
             '-l',
             '--header-levels',
             type=int,
-            choices=range(1, md_parser[parser_name]['header']['max levels'] + 1),
+            choices=range(1,
+                          md_parser[parser_name]['header']['max levels'] + 1),
             nargs='?',
             const=md_parser[parser_name]['header']['default keep levels'],
             help='set the maximum level of headers to be considered as part \
-                  of the TOC. Defaults to ' + str(
-                md_parser[parser_name]['header']['default keep levels'],
-            ),
+                  of the TOC. Defaults to ' +
+            str(md_parser[parser_name]['header']['default keep levels'], ),
         )
 
     def create_parser(self):
@@ -168,7 +175,8 @@ class CliInterface():
         github = subparsers.add_parser(
             'github',
             aliases=['commonmarker'],
-            description='Use GitHub Flavored Markdown rules to generate an output. If no \
+            description='Use GitHub Flavored Markdown rules to generate \
+                         an output. If no \
                          option is selected, the default output will be an \
                          unordered list with the respective default values \
                          as listed below',
@@ -177,16 +185,16 @@ class CliInterface():
         megroup = github.add_mutually_exclusive_group()
         self._add_cmark_like_megroup_arguments(megroup, 'github')
         self._add_cmark_like_arguments(github, 'github')
-        github.set_defaults(
-            header_levels=md_parser['github']['header']['default keep levels'],
-        )
+        github.set_defaults(header_levels=md_parser['github']['header']
+                            ['default keep levels'], )
 
         ##########
         # gitlab #
         ##########
         gitlab = subparsers.add_parser(
             'gitlab',
-            description='Use GitLab Flavored Markdown rules to generate an output. If no \
+            description='Use GitLab Flavored Markdown rules to generate an \
+                         output. If no \
                          option is selected, the default output will be an \
                          unordered list with the respective default values \
                          as listed below',
@@ -195,9 +203,8 @@ class CliInterface():
         megroup = gitlab.add_mutually_exclusive_group()
         self._add_cmark_like_megroup_arguments(megroup, 'gitlab')
         self._add_cmark_like_arguments(gitlab, 'gitlab')
-        gitlab.set_defaults(
-            header_levels=md_parser['gitlab']['header']['default keep levels'],
-        )
+        gitlab.set_defaults(header_levels=md_parser['gitlab']['header']
+                            ['default keep levels'], )
 
         ####################
         # cmark + Goldmark #
@@ -214,9 +221,8 @@ class CliInterface():
         megroup = cmark.add_mutually_exclusive_group()
         self._add_cmark_like_megroup_arguments(megroup, 'cmark')
         self._add_cmark_like_arguments(cmark, 'cmark')
-        cmark.set_defaults(
-            header_levels=md_parser['cmark']['header']['default keep levels'],
-        )
+        cmark.set_defaults(header_levels=md_parser['cmark']['header']
+                           ['default keep levels'], )
 
         #############
         # Redcarpet #
@@ -251,15 +257,18 @@ class CliInterface():
             choices=md_parser['redcarpet']['list']['ordered']
             ['closing markers'],
             nargs='?',
-            const=md_parser['redcarpet']['list']['ordered']['default closing marker'],
+            const=md_parser['redcarpet']['list']['ordered']
+            ['default closing marker'],
             help='set the marker and enables ordered lists. Defaults to ' +
-            md_parser['redcarpet']['list']['ordered']['default closing marker'],
+            md_parser['redcarpet']['list']['ordered']
+            ['default closing marker'],
         )
         redcarpet.add_argument(
             '-c',
             '--constant-ordered-list',
             action='store_true',
-            help='intead of progressive numbers use a single integer as list marker. This options enables ordered lists',
+            help='intead of progressive numbers use a single integer as list \
+                  marker. This options enables ordered lists',
         )
         redcarpet.add_argument(
             '-l',
@@ -272,14 +281,11 @@ class CliInterface():
             nargs='?',
             const=md_parser['redcarpet']['header']['default keep levels'],
             help='set the maximum level of headers to be considered as part \
-                  of the TOC. Defaults to ' + str(
-                md_parser['redcarpet']['header']['default keep levels'],
-            ),
+                  of the TOC. Defaults to ' +
+            str(md_parser['redcarpet']['header']['default keep levels'], ),
         )
-        redcarpet.set_defaults(
-            header_levels=md_parser['redcarpet']['header']
-            ['default keep levels'],
-        )
+        redcarpet.set_defaults(header_levels=md_parser['redcarpet']['header']
+                               ['default keep levels'], )
 
         ##########
         # Common #
@@ -313,8 +319,7 @@ class CliInterface():
             help=(
                 'set the string to be used as the marker for positioning the \
                   table of contents. Defaults to ' +
-                common_defaults['toc marker']
-            ),
+                common_defaults['toc marker']),
         )
         parser.add_argument(
             '-n',
@@ -323,14 +328,11 @@ class CliInterface():
             metavar='NEWLINE_STRING',
             type=str,
             default=common_defaults['newline string'],
-            help=(
-                'the string used to separate the lines of the TOC. \
+            help=('the string used to separate the lines of the TOC. \
                   Use quotes to delimit the string. \
                   If you output in place all the newlines of the \
                   input file will be replaced with this value. \
-                  Defaults to ' +
-                repr(common_defaults['newline string'])
-            ),
+                  Defaults to ' + repr(common_defaults['newline string'])),
         )
         parser.add_argument(
             '-p',

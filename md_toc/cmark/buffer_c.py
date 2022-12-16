@@ -55,7 +55,8 @@ def _cmark_strbuf_free(buf: _cmarkCmarkStrbuf):
 
 
 # 0.29, 0.30
-def _cmark_cmark_strbuf_init(mem: _cmarkCmarkMem, buf: _cmarkCmarkStrbuf, initial_size: int):
+def _cmark_cmark_strbuf_init(mem: _cmarkCmarkMem, buf: _cmarkCmarkStrbuf,
+                             initial_size: int):
     buf.mem = mem
     buf.asize = 0
     buf.size = 0
@@ -86,7 +87,8 @@ def _cmark_cmark_strbuf_grow(buf: _cmarkCmarkStrbuf, target_size: int):
     target_size &= INT32_MAX
 
     if target_size > int(INT32_MAX / 2):
-        print("[cmark] _cmark_cmark_strbuf_grow requests buffer with size > " + str(INT32_MAX / 2) + ", aborting")
+        print("[cmark] _cmark_cmark_strbuf_grow requests buffer with size > " +
+              str(INT32_MAX / 2) + ", aborting")
         sys.exit(1)
 
     # Oversize the buffer by 50% to guarantee amortized linear time
@@ -147,7 +149,8 @@ def _cmark_cmark_strbuf_putc(buf: _cmarkCmarkStrbuf, c: int):
 
 # 0.30
 def _cmark_cmark_strbuf_put(
-    buf: _cmarkCmarkStrbuf, data: str,
+    buf: _cmarkCmarkStrbuf,
+    data: str,
     length: int,
 ):
     if length <= 0:
@@ -161,7 +164,8 @@ def _cmark_cmark_strbuf_put(
         dt = _utf8_array_to_string(data)
     else:
         dt = data
-    buf.ptr = buf.ptr[:buf.size - 1] + copy.deepcopy(dt[:length - 0])  # + buf.ptr[buf.size + 1:]
+    buf.ptr = buf.ptr[:buf.size - 1] + copy.deepcopy(
+        dt[:length - 0])  # + buf.ptr[buf.size + 1:]
 
     buf.size += length
 
@@ -188,7 +192,8 @@ def _cmark_cmark_strbuf_detach(buf: _cmarkCmarkStrbuf) -> str:
 
 
 # 0.30
-def _cmark_cmark_strbuf_strchr(buf: _cmarkCmarkStrbuf, c: int, pos: int) -> int:
+def _cmark_cmark_strbuf_strchr(buf: _cmarkCmarkStrbuf, c: int,
+                               pos: int) -> int:
     if pos >= buf.size:
         return -1
     if pos < 0:

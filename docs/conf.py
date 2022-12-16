@@ -24,7 +24,6 @@ import sys
 
 sys.path.insert(0, os.path.abspath('..'))
 
-
 # -- General configuration ------------------------------------------------
 
 # General information about the project.
@@ -49,9 +48,7 @@ release = '8.1.6'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.coverage',
-    'sphinx.ext.graphviz',
+    'sphinx.ext.autodoc', 'sphinx.ext.coverage', 'sphinx.ext.graphviz',
     'sphinx_copybutton'
 ]
 
@@ -127,11 +124,13 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (
-        master_doc, 'md-toc.tex', 'md-toc Documentation',
-        'Franco Masotti', 'manual',
+        master_doc,
+        'md-toc.tex',
+        'md-toc Documentation',
+        'Franco Masotti',
+        'manual',
     ),
 ]
-
 
 # -- Options for manual page output ---------------------------------------
 
@@ -139,11 +138,13 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (
-        master_doc, 'md-toc', 'md-toc Documentation',
-        [author], 1,
+        master_doc,
+        'md-toc',
+        'md-toc Documentation',
+        [author],
+        1,
     ),
 ]
-
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -152,8 +153,12 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (
-        master_doc, 'md-toc', 'md-toc Documentation',
-        author, 'md-toc', 'One line description of project.',
+        master_doc,
+        'md-toc',
+        'md-toc Documentation',
+        author,
+        'md-toc',
+        'One line description of project.',
         'Miscellaneous',
     ),
 ]

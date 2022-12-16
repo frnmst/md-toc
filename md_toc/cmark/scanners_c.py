@@ -31,7 +31,6 @@ from .chunk_h import _cmarkCmarkChunk
 # in that case the license header at the top of the file applies.
 # See docs/copyright_license.rst
 
-
 # These functions have been re-written to avoid GOTO jumps,
 # also using the scanners.re source file.
 # The original C source states:
@@ -39,7 +38,8 @@ from .chunk_h import _cmarkCmarkChunk
 
 
 def _cmark__scan_at(
-    scanner_function_name: str, c: _cmarkCmarkChunk,
+    scanner_function_name: str,
+    c: _cmarkCmarkChunk,
     offset: int,
 ) -> int:
     res: int
@@ -96,16 +96,20 @@ def _common_scan(regex: str, ptr: str, p: int) -> int:
 # in parentheses), returning number of chars matched.  Allow one
 # level of internal nesting (quotes within quotes).
 def _cmark__scan_link_title(ptr: str, p: int) -> int:
-    r1 = '["](' + md_parser['cmark']['_scanners.re']['escaped_char'] + '|[^"\u0000])*["]'
-    r2 = "['](" + md_parser['cmark']['_scanners.re']['escaped_char'] + "|[^'\u0000])*[']"
-    r3 = r'[\(](' + md_parser['cmark']['_scanners.re']['escaped_char'] + r"|[^\(\)\u0000])*[']"
+    r1 = '["](' + md_parser['cmark']['_scanners.re'][
+        'escaped_char'] + '|[^"\u0000])*["]'
+    r2 = "['](" + md_parser['cmark']['_scanners.re'][
+        'escaped_char'] + "|[^'\u0000])*[']"
+    r3 = r'[\(](' + md_parser['cmark']['_scanners.re'][
+        'escaped_char'] + r"|[^\(\)\u0000])*[']"
     r = '(' + r1 + '|' + r2 + '|' + r3 + ')'
     return _common_scan(r, ptr, p)
 
 
 # Match SOME space characters, including newlines.
 def _cmark__scan_spacechars(ptr: str, p: int) -> int:
-    return _common_scan(md_parser['cmark']['_scanners.re']['spacechar'] + '+', ptr, p)
+    return _common_scan(md_parser['cmark']['_scanners.re']['spacechar'] + '+',
+                        ptr, p)
 
 
 # Try to match URI autolink after first <, returning number of chars matched.
@@ -115,11 +119,14 @@ def _cmark__scan_autolink_uri(ptr: str, p: int) -> int:
 
 # Try to match email autolink after first <, returning num of chars matched.
 def _cmark__scan_autolink_email(ptr: str, p: int) -> int:
-    return _common_scan('[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+[@][a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?([.][a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*[>]', ptr, p)
+    return _common_scan(
+        '[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+[@][a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?([.][a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*[>]',
+        ptr, p)
 
 
 def _cmark__scan_html_comment(ptr: str, p: int) -> int:
-    return _common_scan(md_parser['cmark']['_scanners.re']['htmlcomment'], ptr, p)
+    return _common_scan(md_parser['cmark']['_scanners.re']['htmlcomment'], ptr,
+                        p)
 
 
 def _cmark__scan_cdata(ptr: str, p: int) -> int:
@@ -132,8 +139,10 @@ def _cmark__scan_html_tag(ptr: str, p: int) -> int:
 
 
 def _cmark__scan_html_declaration(ptr: str, p: int) -> int:
-    return _common_scan(md_parser['cmark']['_scanners.re']['declaration'], ptr, p)
+    return _common_scan(md_parser['cmark']['_scanners.re']['declaration'], ptr,
+                        p)
 
 
 def _cmark__scan_html_pi(ptr: str, p: int) -> int:
-    return _common_scan(md_parser['cmark']['_scanners.re']['processinginstruction'], ptr, p)
+    return _common_scan(
+        md_parser['cmark']['_scanners.re']['processinginstruction'], ptr, p)
