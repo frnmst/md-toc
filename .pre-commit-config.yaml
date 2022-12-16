@@ -20,6 +20,7 @@ repos:
     hooks:
     -   id: yapf
         args: ['--style', '{based_on_style: pep8; indent_width: 4}']
+        additional_dependencies: [toml]
 
 -   repo: https://github.com/pycqa/flake8
     rev: '6.0.0'  # Use the sha / tag you want to point at
@@ -52,7 +53,7 @@ repos:
         args: ['--configuration-file', '.allowed_licenses.yml']
 
 -   repo: https://codeberg.org/frnmst/md-toc
-    rev: '8.1.5'  # or a specific git tag from md-toc
+    rev: '8.1.6'  # or a specific git tag from md-toc
     hooks:
     -    id: md-toc
          args: [-p, 'cmark', '-l6']  # CLI options
@@ -62,6 +63,7 @@ repos:
     hooks:
     -   id: check-manifest
         args: ['--verbose','--ignore','docs/*,docs/assets/*,docs/rules/*,docs/_static/*,docs/_static/css/*,docs/_build/*,Pipfile,Makefile,asciinema/*,*.yaml,*.yml,assets/*,md_toc/tests/*,packages/aur/*']
+
 
 -   repo: local
     hooks:

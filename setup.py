@@ -21,41 +21,8 @@
 #
 r"""setup.py."""
 
-from setuptools import find_packages, setup
+import pkg_resources
+import setuptools
 
-with open('README.md', 'r', encoding='utf-8') as f:
-    readme = f.read()
-
-setup(
-    name='md_toc',
-    version='8.1.6',
-    packages=find_packages(exclude=['*tests*']),
-    license='GPLv3+',
-    description='A utility that is able to generate a table of contents for a markdown file.',
-    long_description=readme,
-    long_description_content_type='text/markdown',
-    package_data={
-        '': ['*.txt', '*.rst'],
-    },
-    author='Franco Masotti',
-    author_email='franco.masotti@tutanota.com',
-    keywords='markdown toc',
-    url='https://blog.franco.net.eu.org/software/#md-toc',
-    python_requires='>=3.5, <4',
-    entry_points={
-        'console_scripts': [
-            'md_toc=md_toc.__main__:main',
-        ],
-    },
-    classifiers=[
-        'Development Status :: 4 - Beta',
-        'Topic :: Utilities',
-        'Intended Audience :: End Users/Desktop',
-        'Environment :: Console',
-        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
-        'Programming Language :: Python :: 3',
-    ],
-    install_requires=[
-        'fpyutils>=2.2,<3',
-    ],
-)
+pkg_resources.require('setuptools>=39.2.0')
+setuptools.setup()
