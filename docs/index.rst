@@ -6,6 +6,7 @@ md-toc documentation
 
    install
    api
+   features
    markdown_specification
    rules/index
    pre_commit_hook

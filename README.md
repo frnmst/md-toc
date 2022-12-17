@@ -72,6 +72,9 @@ after md-toc and similar tools were created:
 - [pre-commit](https://pre-commit.com/)
   [hook](https://docs.franco.net.eu.org/md-toc/pre_commit_hook.html)
 
+And more! See the
+[feature comparison table](https://docs.franco.net.eu.org/md-toc/features.html)
+
 ## Examples
 
 You can use md-toc in your blog, documentation based on markdown,
