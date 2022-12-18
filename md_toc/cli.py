@@ -128,7 +128,7 @@ class CliInterface():
             ['default closing marker'],
             help=('set the marker and enable ordered lists. Defaults to ' +
                   md_parser[parser_name]['list']['ordered']
-                  )['default closing marker'],
+                  ['default closing marker']),
         )
 
     def _add_cmark_like_arguments(self, parser, parser_name: str):
