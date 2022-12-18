@@ -191,7 +191,7 @@ class _cmarkSubject:
     def scroll(self):
         r"""Print the list."""
         print(self.start)
-        print("===")
+        print('===')
         x = self.start
         while x is not None:
             print(x)
@@ -212,9 +212,9 @@ def _cmark_make_literal(subj: _cmarkSubject, t: int, start_column: int,
     e.mem = copy.deepcopy(subj.mem)
     e.type = t
     e.start_line = e.end_line = subj.line
-    # columns are (NOT) 1 based. FIXME
-    e.start_column: int = start_column + subj.column_offset + subj.block_offset
-    e.end_column: int = end_column + subj.column_offset + subj.block_offset
+    # columns are 1 based.
+    e.start_column: int = start_column + 1 + subj.column_offset + subj.block_offset
+    e.end_column: int = end_column + 1 + subj.column_offset + subj.block_offset
     return e
 
 
@@ -406,14 +406,23 @@ def _cmark_advance(subj: _cmarkSubject):
     subj.pos += 1
 
 
+def _cmark_skip_spaces(subj: _cmarkSubject) -> bool:
+    skipped: bool = False
+    while chr(_cmark_peek_char(subj)) == ' ' or chr(
+            _cmark_peek_char(subj)) == '\t':
+        _cmark_advance(subj)
+        skipped = True
+    return skipped
+
+
 # 0.29, 0.30
 def _cmark_skip_line_end(subj: _cmarkSubject) -> bool:
     seen_line_end_char: bool = False
 
-    if _cmark_peek_char(subj) == '\r':
+    if chr(_cmark_peek_char(subj)) == '\r':
         _cmark_advance(subj)
         seen_line_end_char = True
-    if _cmark_peek_char(subj) == '\n':
+    if chr(_cmark_peek_char(subj)) == '\n':
         _cmark_advance(subj)
         seen_line_end_char = True
     return seen_line_end_char or _cmark_is_eof(subj)
@@ -782,6 +791,66 @@ def _cmark_handle_delim(subj: _cmarkSubject,
 
 
 # 0.30
+# Assumes we have a hyphen at the current position.
+def _cmark_handle_hyphen(subj: _cmarkSubject, smart: bool) -> _cmarkCmarkNode:
+    startpos: int = subj.pos
+
+    _cmark_advance(subj)
+
+    if not smart or chr(_cmark_peek_char(subj)) != '-':
+        return _cmark_make_str(subj, subj.pos - 1, subj.pos - 1,
+                               _cmark_cmark_chunk_literal('-'))
+
+    while smart and chr(_cmark_peek_char(subj)) == '-':
+        _cmark_advance(subj)
+
+    numhyphens: int = subj.pos - startpos
+    en_count: int = 0
+    em_count: int = 0
+    i: int
+    buf: _cmarkCmarkStrbuf = _cmark_CMARK_BUF_INIT(subj.mem)
+
+    if numhyphens % 3 == 0:  # if divisible by 3, use all em dashes
+        em_count = numhyphens / 3
+    elif numhyphens % 2 == 0:  # if divisible by 2, use all en dashes
+        en_count = numhyphens / 2
+    elif numhyphens % 3 == 2:  # use one en dash at end
+        en_count = 1
+        em_count = (numhyphens - 2) / 3
+    else:  # use two en dashes at the end
+        en_count = 2
+        em_count = (numhyphens - 4) / 3
+
+    for i in range(em_count, 0, step=-1):
+        _cmark_cmark_strbuf_puts(buf, md_parser['cmark']['generic']['EMDASH'])
+
+    for i in range(en_count, 0, step=-1):
+        _cmark_cmark_strbuf_puts(buf, md_parser['cmark']['generic']['ENDASH'])
+
+    return _cmark_make_str_from_buf(subj, startpos, subj.pos - 1, buf)
+
+
+# 0.30
+# Assumes we have a period at the current position.
+def _cmark_handle_period(subj: _cmarkSubject, smart: bool) -> _cmarkCmarkNode:
+    _cmark_advance(subj)
+    if smart and chr(_cmark_peek_char(subj)) == '.':
+        _cmark_advance(subj)
+        if chr(_cmark_peek_char(subj)) == '.':
+            _cmark_advance(subj)
+            return _cmark_make_str(
+                subj, subj.pos - 3, subj.pos - 1,
+                _cmark_cmark_chunk_literal(
+                    md_parser['cmark']['generic']['ELLIPSES']))
+        else:
+            return _cmark_make_str(subj, subj.pos - 2, subj.pos - 1,
+                                   _cmark_cmark_chunk_literal('..'))
+    else:
+        return _cmark_make_str(subj, subj.pos - 1, subj.pos - 1,
+                               _cmark_cmark_chunk_literal('.'))
+
+
+# 0.30
 def _cmark_process_emphasis(subj: _cmarkSubject, stack_bottom: _cmarkDelimiter,
                             ignore: list) -> list:
     closer: _cmarkDelimiter = subj.last_delim
@@ -884,7 +953,8 @@ def _cmark_process_emphasis(subj: _cmarkSubject, stack_bottom: _cmarkDelimiter,
 # 0.29, 0.30
 def _cmark_remove_emph(subj: _cmarkSubject, opener: _cmarkDelimiter,
                        closer: _cmarkDelimiter, ignore: list):
-    # This function refers to S_insert_emph()
+    # This function replaces to S_insert_emph(). Some code is common
+    # to that function.
     delim: _cmarkDelimiter
     tmp_delim: _cmarkDelimiter
     use_delims: int
@@ -945,10 +1015,10 @@ def _cmark_remove_emph(subj: _cmarkSubject, opener: _cmarkDelimiter,
     #############
 
     # Custom variables and computations.
-    opener_relative_start = opener_inl.end_column - use_delims + 1 - opener.offset
-    opener_relative_end = opener_inl.end_column + 1 - opener.offset
-    closer_relative_start = closer_inl.start_column + closer.offset
-    closer_relative_end = closer_inl.start_column + use_delims + closer.offset
+    opener_relative_start = opener_inl.end_column - use_delims - opener.offset
+    opener_relative_end = opener_inl.end_column - opener.offset
+    closer_relative_start = closer_inl.start_column + closer.offset - 1
+    closer_relative_end = closer_inl.start_column + use_delims + closer.offset - 1
 
     ignore.append(range(opener_relative_start, opener_relative_end))
     ignore.append(range(closer_relative_start, closer_relative_end))
@@ -1138,12 +1208,12 @@ def _cmark_link_label(subj: _cmarkSubject, raw_label: _cmarkCmarkChunk) -> int:
     no_match: bool = False
 
     # advance past [
-    if _cmark_peek_char(subj) == '[':
+    if chr(_cmark_peek_char(subj)) == '[':
         _cmark_advance(subj)
     else:
         return 0
 
-    c = _cmark_peek_char(subj)
+    c = chr(_cmark_peek_char(subj))
     while c and c != '[' and c != ']':
         if c == '\\':
             _cmark_advance(subj)
@@ -1161,7 +1231,7 @@ def _cmark_link_label(subj: _cmarkSubject, raw_label: _cmarkCmarkChunk) -> int:
         if length > md_parser['cmark']['link']['max chars label'] + 1:
             no_match = True
 
-        c = _cmark_peek_char(subj)
+        c = chr(_cmark_peek_char(subj))
 
     if no_match:
         subj.pos = startpos  # rewind
@@ -1294,7 +1364,7 @@ def _cmark_handle_close_bracket(subj: _cmarkSubject,
 
     in_inline_link: bool = False
     # First, look for an inline link.
-    if _cmark_peek_char(subj) == ord('('):
+    if chr(_cmark_peek_char(subj)) == '(':
         sps = _cmark_scan_spacechars(subj.input, subj.pos + 1)
         if sps > -1:
             n, url_chunk = _cmark_manual_scan_link_url(subj.input,
@@ -1316,7 +1386,7 @@ def _cmark_handle_close_bracket(subj: _cmarkSubject,
 
         endall = endtitle + _cmark_scan_spacechars(subj.input, endtitle)
 
-        if _cmark_peek_at(subj, endall) == ord(')'):
+        if chr(_cmark_peek_at(subj, endall)) == ')':
             subj.pos = endall + 1
 
             title_chunk = _cmark_cmark_chunk_dup(subj.input, starttitle,
@@ -1407,6 +1477,31 @@ def _cmark_handle_close_bracket(subj: _cmarkSubject,
         subj.pos = initial_pos
         return _cmark_make_str(subj, subj.pos - 1, subj.pos - 1,
                                _cmark_cmark_chunk_literal(']'))
+
+
+# 0.30
+# Parse a hard or soft linebreak, returning an inline.
+# Assumes the subject has a cr or newline at the current position.
+def _cmark_handle_newline(subj: _cmarkSubject) -> _cmarkCmarkNode:
+    nlpos: int = subj.pos
+    # skip over cr, crlf, or lf:
+    if chr(_cmark_peek_at(subj, subj.pos)) == '\r':
+        _cmark_advance(subj)
+    if chr(_cmark_peek_at(subj, subj.pos)) == '\n':
+        _cmark_advance(subj)
+
+    subj.line += 1
+
+    # FIXME TODO: The next instruction messes up some tests!
+    #       subj.column_offset = - subj.pos
+
+    # skip spaces at beginning of line
+    _cmark_skip_spaces(subj)
+    if (nlpos > 1 and chr(_cmark_peek_at(subj, nlpos - 1)) == ' '
+            and chr(_cmark_peek_at(subj, nlpos - 2)) == ' '):
+        return _cmark_make_linebreak(subj.mem)
+    else:
+        return _cmark_make_softbreak(subj.mem)
 
 
 # 0.29, 0.30
@@ -1972,12 +2067,14 @@ def _cmark_parse_inline(subj: _cmarkSubject,
     if c == 0:
         return 0
     elif chr(c) in ['\r', '\n']:
-        _cmark_advance(subj)
-        # TODO
+        new_inl = _cmark_handle_newline(subj)
     elif chr(c) in ['`']:
         new_inl = _cmark_handle_backticks(subj, options)
     elif chr(c) in ['\\']:
         new_inl = _cmark_handle_backslash(subj)
+    elif chr(c) in ['&']:
+        _cmark_advance(subj)
+        # TODO
     elif chr(c) in ['<']:
         new_inl = _cmark_handle_pointy_brace(subj, options)
     elif chr(c) in ['*', '_', '\'', '"']:
@@ -1985,11 +2082,13 @@ def _cmark_parse_inline(subj: _cmarkSubject,
             subj, chr(c),
             (options & md_parser['cmark']['generic']['CMARK_OPT_SMART']) != 0)
     elif chr(c) in ['-']:
-        _cmark_advance(subj)
-        # TODO
+        new_inl = _cmark_handle_hyphen(
+            subj,
+            (options & md_parser['cmark']['generic']['CMARK_OPT_SMART']) != 0)
     elif chr(c) in ['.']:
-        _cmark_advance(subj)
-        # TODO
+        new_inl = _cmark_handle_period(
+            subj,
+            (options & md_parser['cmark']['generic']['CMARK_OPT_SMART']) != 0)
     elif chr(c) in ['[']:
         _cmark_advance(subj)
         new_inl = _cmark_make_str(subj, subj.pos - 1, subj.pos - 1,
@@ -1999,7 +2098,14 @@ def _cmark_parse_inline(subj: _cmarkSubject,
         _cmark_handle_close_bracket(subj, ignore)
     elif chr(c) in ['!']:
         _cmark_advance(subj)
-        # TODO
+        if _cmark_peek_char(subj) == '[':
+            _cmark_advance(subj)
+            new_inl = _cmark_make_str(subj, subj.pos - 2, subj.pos - 1,
+                                      _cmark_cmark_chunk_literal('!['))
+            _cmark_push_bracket(subj, True, new_inl)
+        else:
+            new_inl = _cmark_make_str(subj, subj.pos - 1, subj.pos - 1,
+                                      _cmark_cmark_chunk_literal('!'))
     else:
         endpos = _cmark_subject_find_special_char(subj, options)
         contents = _cmark_cmark_chunk_dup(subj.input, subj.pos,

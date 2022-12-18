@@ -1940,7 +1940,8 @@ class TestApi(pyfakefsTestCase):
         #        self.assertEqual(api.remove_emphasis(r'[link *foo **bar** `#`*](/uri)'), r'[link foo bar `#`](/uri)')
 
         # Example 516 [Commonmark 0.30].
-        #        self.assertEqual(api.remove_emphasis(r'[![moon](moon.jpg)](/uri)'), r'[![moon](moon.jpg)](/uri)')
+        self.assertEqual(api.remove_emphasis(r'[![moon](moon.jpg)](/uri)'),
+                         r'[![moon](moon.jpg)](/uri)')
 
         # Example 517 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'*[foo* [bar](/uri)](/uri)'),
@@ -1950,7 +1951,8 @@ class TestApi(pyfakefsTestCase):
         #        self.assertEqual(api.remove_emphasis(r'[foo *[bar [baz](/uri)](/uri)*](/uri)'), r'[foo [bar [baz](/uri)](/uri)](/uri)')
 
         # Example 519 [Commonmark 0.30].
-        #        self.assertEqual(api.remove_emphasis(r'![[[foo](uri1)](uri2)](uri3)'), r'![[[foo](uri1)](uri2)](uri3)')
+        self.assertEqual(api.remove_emphasis(r'![[[foo](uri1)](uri2)](uri3)'),
+                         r'![[[foo](uri1)](uri2)](uri3)')
 
         # Example 520 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'*[foo*](/uri)'),
@@ -1965,13 +1967,17 @@ class TestApi(pyfakefsTestCase):
                          r'foo [bar baz]')
 
         # Example 523 [Commonmark 0.30].
-        #        self.assertEqual(api.remove_emphasis(r'[foo <bar attr="](baz)">'), r'[foo <bar attr="](baz)">')
+        self.assertEqual(api.remove_emphasis(r'[foo <bar attr="](baz)">'),
+                         r'[foo <bar attr="](baz)">')
 
         # Example 524 [Commonmark 0.30].
-        #        self.assertEqual(api.remove_emphasis(r'[foo`](/uri)`'), r'[foo`](/uri)`')
+        self.assertEqual(api.remove_emphasis(r'[foo`](/uri)`'),
+                         r'[foo`](/uri)`')
 
         # Example 525 [Commonmark 0.30].
-        #        self.assertEqual(api.remove_emphasis(r'[foo<http://example.com/?search=](uri)>'), r'[foo<http://example.com/?search=](uri)>')
+        self.assertEqual(
+            api.remove_emphasis(r'[foo<http://example.com/?search=](uri)>'),
+            r'[foo<http://example.com/?search=](uri)>')
 
         # Possibly all the way up to 592 [Commonmark 0.30]?
 
