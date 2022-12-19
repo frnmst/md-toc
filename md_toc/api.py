@@ -225,6 +225,9 @@ def build_toc(
     :returns: toc, the corresponding table of contents of the file.
     :rtype: str
     :raises: a built-in exception.
+
+    .. warning:: In case of ordered TOCs you must explicitly pass one of the
+        supported ordered list markers.
     """
     if not skip_lines >= 0:
         raise ValueError

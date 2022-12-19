@@ -208,6 +208,16 @@ P       feature planned
      - ?
      - ?
      - ?
+   * - Remove TOC marker after inserting TOC inplace
+     - ✘
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
    * - Provides CLI
      - ✓
      - ✓
