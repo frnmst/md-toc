@@ -3,6 +3,7 @@ Pipfile.lock
 *.MD
 !README.md
 !CONTRIBUTING.md
+benchmark.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

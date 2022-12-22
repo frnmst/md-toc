@@ -35,7 +35,7 @@ import md_toc
 
 # ~50M characters
 CHAR_SIZE = 1024 * 1024 * 50
-ITERATIONS = 1000
+ITERATIONS = 100
 
 # At what nTH character to put a header.
 # MIN_HEADER_STEP must be >= 10.
