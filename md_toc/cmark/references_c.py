@@ -24,9 +24,11 @@ r"""A cmark implementation file."""
 import functools
 
 from ..constants import parser as md_parser
-from .buffer_c import (_cmark_cmark_strbuf_detach,
-                       _cmark_cmark_strbuf_normalize_whitespace,
-                       _cmark_cmark_strbuf_trim)
+from .buffer_c import (
+    _cmark_cmark_strbuf_detach,
+    _cmark_cmark_strbuf_normalize_whitespace,
+    _cmark_cmark_strbuf_trim,
+)
 from .buffer_h import _cmark_CMARK_BUF_INIT, _cmarkCmarkStrbuf
 from .chunk_h import _cmarkCmarkChunk
 from .cmark_h import _cmarkCmarkMem
@@ -84,17 +86,17 @@ def _cmark_refcmp(p1: _cmarkCmarkReference, p2: _cmarkCmarkReference) -> int:
         return p1.age - p2.age
 
 
-def _cmark_sort_references(map: _cmarkCmarkReferenceMap):
+def _cmark_sort_references(maps: _cmarkCmarkReferenceMap):
     i: int
     last: int = 0
-    size: int = map.size
-    r: _cmarkCmarkReference = map.refs
+    size: int = maps.size
+    r: _cmarkCmarkReference = maps.refs
 
     #     **sorted = NULL;
     # A list of _cmarkCmarkReference
     srt: list = list()
 
-    #     sorted = (cmark_reference **)map->mem->calloc(size, sizeof(cmark_reference *));
+    #     sorted = (cmark_reference **)maps->mem->calloc(size, sizeof(cmark_reference *));
     while (r):
         srt.append(r)
         r = r.next
@@ -103,19 +105,19 @@ def _cmark_sort_references(map: _cmarkCmarkReferenceMap):
     srt = sorted(srt, key=functools.cmp_to_key(_cmark_refcmp))
 
     for i in range(1, size):
-        if _cmark_labelcmp(sorted[i].label, srt[last].label) != 0:
+        if _cmark_labelcmp(srt[i].label, srt[last].label) != 0:
             last += 1
             srt[last] = srt[i]
 
-    map.sorted = srt
-    map.size = last + 1
+    maps.sorted = srt
+    maps.size = last + 1
 
 
-# Returns reference if refmap contains a reference with matching
+# Returns reference if refmaps contains a reference with matching
 # label, otherwise NULL.
 # 0.30
 def _cmark_cmark_reference_lookup(
-    map: _cmarkCmarkReferenceMap,
+    maps: _cmarkCmarkReferenceMap,
     label: _cmarkCmarkChunk,
 ) -> _cmarkCmarkReference:
     # A list of _cmarkCmarkReference
@@ -128,29 +130,29 @@ def _cmark_cmark_reference_lookup(
             'max chars label'] + 1:
         return None
 
-    if map is None or not map.size:
+    if maps is None or not maps.size:
         return None
 
-    norm = _cmark_normalize_reference(map.mem, label)
+    norm = _cmark_normalize_reference(maps.mem, label)
     if norm is None:
         return None
 
-    if not map.sorted:
-        _cmark_sort_references(map)
+    if not maps.sorted:
+        _cmark_sort_references(maps)
 
     # TODO
-    #      ref = (cmark_reference **)bsearch(norm, map->sorted, map->size, sizeof(cmark_reference *),
+    #      ref = (cmark_reference **)bsearch(norm, maps->sorted, maps->size, sizeof(cmark_reference *),
     #                    refsearch);
     # FIXME
 
-    #     map->mem->free(norm);
+    #     maps->mem->free(norm);
     del norm
 
     if ref is not None:
         r = ref[0]
         # Check for expansion limit
-        if map.max_ref_size and r.size > map.max_ref_size - map.ref_size:
+        if maps.max_ref_size and r.size > maps.max_ref_size - maps.ref_size:
             return None
-        map.ref_size += r.size
+        maps.ref_size += r.size
 
     return r

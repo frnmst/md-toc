@@ -1,4 +1,3 @@
-#!/usr/bin/env make
 #
 # Makefile
 #
@@ -44,7 +43,15 @@ uninstall-dev:
 	pipenv --rm
 
 update: install-dev
-	pipenv run pre-commit autoupdate
+	pipenv run pre-commit autoupdate \
+		--repo https://github.com/pre-commit/pre-commit-hooks \
+		--repo https://github.com/PyCQA/bandit \
+		--repo https://github.com/pycqa/isort \
+		--repo https://codeberg.org/frnmst/licheck \
+		--repo https://codeberg.org/frnmst/md-toc \
+		--repo https://github.com/mgedmin/check-manifest \
+		--repo https://github.com/jorisroovers/gitlint
+		# --repo https://github.com/pre-commit/mirrors-mypy \
 
 demo:
 	pipenv run asciinema/md_toc_asciinema_$$(git describe --tags $$(git rev-list --tags --max-count=1) | tr '.' '_')_demo.sh

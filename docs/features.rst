@@ -158,7 +158,17 @@ P       feature planned
      - ✘
      - ✘
      - ✘
-   * - Skip headings before TOC marker
+   * - Skip headings based on a marker
+     - `✘ <https://github.com/frnmst/md-toc/issues/37>`_
+     - ✘
+     - ✘
+     - ✘
+     - ✘
+     - ✘
+     - ✘
+     - ✘
+     - ✘
+   * - Skip all headings before the TOC marker
      - ✘
      - ✓
      - ?

@@ -32,11 +32,14 @@ from . import generic
 from .cmark import inlines_c, node_h, references_h
 from .constants import common_defaults
 from .constants import parser as md_parser
-from .exceptions import (GithubEmptyLinkLabel, GithubOverflowCharsLinkLabel,
-                         GithubOverflowOrderedListMarker,
-                         StdinIsNotAFileToBeWritten,
-                         StringCannotContainNewlines,
-                         TocDoesNotRenderAsCoherentList)
+from .exceptions import (
+    GithubEmptyLinkLabel,
+    GithubOverflowCharsLinkLabel,
+    GithubOverflowOrderedListMarker,
+    StdinIsNotAFileToBeWritten,
+    StringCannotContainNewlines,
+    TocDoesNotRenderAsCoherentList,
+)
 
 
 def write_string_on_file_between_markers(
@@ -268,7 +271,7 @@ def build_toc(
             'default closing marker']
 
     if skip_lines > 0:
-        loop = True
+        loop: bool = True
         line_counter = 1
         while loop:
             if line_counter > skip_lines or f.readline() == str():
@@ -288,7 +291,7 @@ def build_toc(
         # This changes the state of is_within_code_fence if the
         # file has no closing fence markers. This serves no practial
         # purpose since the code would run correctly anyway. It is
-        # however more sematically correct.
+        # however more semantically correct.
         #
         # See the unit tests (examples 95 and 96 of the github parser)
         # and the is_closing_code_fence function.
@@ -375,6 +378,8 @@ def build_toc(
                     )
                     no_of_indentation_spaces_curr = indentation_log[
                         header_type_curr]['indentation spaces']
+
+                # endif
 
                 # Build a single TOC line.
                 toc_line_no_indent = build_toc_line_without_indentation(
@@ -472,24 +477,21 @@ def build_multiple_tocs(
 
     if len(filenames) == 0:
         filenames.append('-')
-    file_id = 0
-    toc_struct = list()
-    while file_id < len(filenames):
-        toc_struct.append(
-            build_toc(
-                filenames[file_id],
-                ordered,
-                no_links,
-                no_indentation,
-                no_list_coherence,
-                keep_header_levels,
-                parser,
-                list_marker,
-                skip_lines,
-                constant_ordered_list,
-                newline_string,
-            ), )
-        file_id += 1
+    toc_struct: list = [
+        build_toc(
+            filenames[file_id],
+            ordered,
+            no_links,
+            no_indentation,
+            no_list_coherence,
+            keep_header_levels,
+            parser,
+            list_marker,
+            skip_lines,
+            constant_ordered_list,
+            newline_string,
+        ) for file_id in range(0, len(filenames))
+    ]
 
     return toc_struct
 
@@ -530,8 +532,7 @@ def increase_index_ordered_list(
 
     header_type_count[header_type_curr] += 1
 
-    if (parser == 'github' or parser == 'cmark' or parser == 'gitlab'
-            or parser == 'commonmarker'):
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
         if header_type_count[header_type_curr] > md_parser['github']['list'][
                 'ordered']['max marker number']:
             raise GithubOverflowOrderedListMarker
@@ -897,22 +898,23 @@ def filter_indices_from_line(line: str, ranges: list) -> str:
     :raises: a built-in exception.
     """
     # Transform ranges into lists.
-    rng = list()
-    for r in ranges:
-        rng.append(list(r))
+    rng: list = [list(r) for r in ranges]
 
     # Flatten list.
     ll = [item for e in rng for item in e]
 
     s = sorted(ll)
-    final = list()
-    i = 0
-    while i < len(line):
-        if i not in s:
-            final.append(line[i])
-        i += 1
+    final: list = [line[i] for i in range(0, len(line)) if i not in s]
+    # The same as
+    #
+    #   i: int = 0
+    #   final: list = list()
+    #   while i < len(line):
+    #       if i not in s:
+    #           final.append(line[i])
+    #       i += 1
 
-    final_str = ''.join(final)
+    final_str: str = ''.join(final)
 
     return final_str
 
@@ -1377,25 +1379,23 @@ def get_md_header(
         no_links,
     )
 
-    headers: list = list()
-    for r in result:
-        if r['header type'] is None and r['header text trimmed'] is None:
-            headers.append(None)
-        else:
-            headers.append({
-                'type':
-                r['header type'],
-                'text_original':
+    headers: list = [
+        None if
+        (r['header type'] is None and r['header text trimmed'] is None) else {
+            'type':
+            r['header type'],
+            'text_original':
+            r['header text trimmed'],
+            'text_anchor_link':
+            build_anchor_link(
                 r['header text trimmed'],
-                'text_anchor_link':
-                build_anchor_link(
-                    r['header text trimmed'],
-                    header_duplicate_counter,
-                    parser,
-                ),
-                'visible':
-                r['visible'],
-            })
+                header_duplicate_counter,
+                parser,
+            ),
+            'visible':
+            r['visible'],
+        } for r in result
+    ]
 
     return headers
 
@@ -1441,6 +1441,9 @@ def is_opening_code_fence(line: str, parser: str = 'github'):
         markers = md_parser['github']['code fence']['marker']
         marker_min_length = md_parser['github']['code fence'][
             'min marker characters']
+
+        info_string: str
+        info_string_start: int
 
         if not is_valid_code_fence_indent(line):
             return None
@@ -1653,7 +1656,7 @@ def toc_renders_as_coherent_list(
         if not isinstance(e, bool):
             raise TypeError
 
-    renders_as_list = True
+    renders_as_list: bool = True
     if parser in [
             'github', 'cmark', 'gitlab', 'commonmarker', 'goldmark',
             'redcarpet'

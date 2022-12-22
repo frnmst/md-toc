@@ -21,6 +21,7 @@
 r"""A simple benchmark file to be used to check for hidden errors as well."""
 
 import csv
+import ctypes
 import platform
 import random
 import secrets
@@ -32,32 +33,55 @@ import traceback
 
 import md_toc
 
-# ~10M characters
-CHAR_SIZE = 1024 * 1024 * 10
-ITERATIONS = 100
+# ~50M characters
+CHAR_SIZE = 1024 * 1024 * 50
+ITERATIONS = 1000
+
+# At what nTH character to put a header.
+# MIN_HEADER_STEP must be >= 10.
+MIN_HEADER_STEP = 10
+MAX_HEADER_STEP = 50
 
 
-def _generate_random_characters(size: int, add_end: bool = False) -> str:
-    end: str = str()
-    if add_end:
-        end = '_'
+def _generate_random_characters(size: int,
+                                min_header_step: int = 10,
+                                max_header_step: int = 1000) -> str:
 
-    file_content = ''.join(
-        [secrets.choice(string.printable) for i in range(0, size)])
+    secret_gen: random.SystemRandom = secrets.SystemRandom()
+    alphanumerics: str = ''.join([string.ascii_letters, string.digits])
 
-    content: str = str()
-    i: int = 1
-    j: int = 0
-    for line in file_content.splitlines():
-        if j % 10000 == 0:
-            print('lines: ' + str(j))
-        if i % 6 == 1:
-            i = 1
-        content = ''.join([content, '\n', i * '#', ' ', line, end])
-        i += 1
+    # Do not use '#' as content to avoid triggering an empty link label exception.
+    printable_except_hash: str = string.printable.replace('#', '')
+
+    file_content: str = ''.join(
+        [secrets.choice(printable_except_hash) for i in range(0, size)])
+    string_buf = ctypes.create_string_buffer(bytes(file_content, 'UTF-8'),
+                                             size=size + 1)
+
+    if min_header_step < 10 or max_header_step < min_header_step:
+        # 10 - 1 = header (maximum 6) + '\n' + space + alphanum char
+        raise ValueError
+
+    print('adding headers to file...')
+
+    i = 0
+    j: int = 1
+    for i in range(0, size,
+                   secret_gen.randrange(min_header_step, max_header_step)):
+        # Reset header level.
+        if j % 6 == 1:
+            j = 1
+
+        if i + j + 3 < size:
+            # Replace next character so we are sure never to raise the empty
+            # link label exception.
+            string_buf[i:i + j + 3] = bytes(
+                ''.join(['\n', '#' * j, ' ',
+                         secrets.choice(alphanumerics)]), 'UTF-8')
+
         j += 1
 
-    return content
+    return string_buf.value.decode('UTF-8')
 
 
 if __name__ == '__main__':
@@ -72,13 +96,14 @@ if __name__ == '__main__':
     total: dict = dict()
 
     parsers = ['github', 'cmark', 'redcarpet', 'gitlab']
-    line_ending = True
     parsers.sort()
 
     total_iterations = len(parsers) * ITERATIONS
     for current_parser_counter, p in enumerate(parsers):
         print('parser: ' + p + ', ' + str(ITERATIONS) + ' iterations with ' +
               str(CHAR_SIZE) + ' characters each')
+        print('min step: ' + str(MIN_HEADER_STEP) + ' , max step: ' +
+              str(MAX_HEADER_STEP))
         i = 0
         avg = list()
         while ok and i < ITERATIONS:
@@ -91,20 +116,14 @@ if __name__ == '__main__':
                 print('generating random file...')
                 fp.write(
                     _generate_random_characters(
-                        CHAR_SIZE, add_end=line_ending).encode('UTF-8'))
+                        CHAR_SIZE,
+                        min_header_step=MIN_HEADER_STEP,
+                        max_header_step=MAX_HEADER_STEP).encode('UTF-8'))
                 print('building TOC...')
                 try:
-                    if line_ending:
-                        start = time.time()
-                        md_toc.build_toc(filename=fp.name, parser='cmark')
-                        end = time.time()
-                    else:
-                        start = time.time()
-                        md_toc.build_toc(filename=fp.name,
-                                         parser='cmark',
-                                         no_links=True,
-                                         no_list_coherence=True)
-                        end = time.time()
+                    start = time.time()
+                    md_toc.build_toc(filename=fp.name, parser=p)
+                    end = time.time()
                     avg.append(end - start)
                     print('total_time: ' + str(avg[-1]))
                 except Exception:
@@ -123,9 +142,13 @@ if __name__ == '__main__':
     #   1   parser name
     #   2   number of characters
     #   3   number of iterations
-    #   4   add deterministic line ending
-    #   5   total execution time in seconds
-    #   6   average execution time in seconds
+    #   4   min_header_step
+    #   5   max_header_step
+    #   6   total execution time in seconds
+    #   7   average execution time in seconds
+    #   8->n system information
+    # File header:
+    # md_toc_git_hash,markdown_parser,total_characters,iterations,min_header_step,max_header_step,total,avg,platform_python_version,platform_architecture,platform_machine,platform_python_implementation,platform_python_compiler,platform_libc_ver
     md_toc_version = subprocess.check_output(
         ['/usr/bin/git', 'rev-parse', 'HEAD']).decode('UTF-8').strip()
     with open('benchmark.csv', 'a') as csvfile:
@@ -135,8 +158,8 @@ if __name__ == '__main__':
                                 quoting=csv.QUOTE_MINIMAL)
         for p in parsers:
             spamwriter.writerow([
-                md_toc_version, p, CHAR_SIZE, ITERATIONS, line_ending,
-                total[p], average[p],
+                md_toc_version, p, CHAR_SIZE, ITERATIONS, MIN_HEADER_STEP,
+                MIN_HEADER_STEP, total[p], average[p],
                 platform.python_version(), ' '.join(platform.architecture()),
                 platform.machine(),
                 platform.python_implementation(),

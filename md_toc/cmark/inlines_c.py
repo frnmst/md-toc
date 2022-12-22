@@ -25,32 +25,55 @@ import copy
 
 from ..constants import parser as md_parser
 from ..generic import _replace_substring
-from .buffer_c import (_cmark_cmark_strbuf_detach, _cmark_cmark_strbuf_drop,
-                       _cmark_cmark_strbuf_puts, _cmark_cmark_strbuf_set,
-                       _cmark_cmark_strbuf_truncate,
-                       _cmark_cmark_strbuf_unescape)
+from .buffer_c import (
+    _cmark_cmark_strbuf_detach,
+    _cmark_cmark_strbuf_drop,
+    _cmark_cmark_strbuf_puts,
+    _cmark_cmark_strbuf_set,
+    _cmark_cmark_strbuf_truncate,
+    _cmark_cmark_strbuf_unescape,
+)
 from .buffer_h import _cmark_CMARK_BUF_INIT, _cmarkCmarkStrbuf
-from .chunk_h import (_cmark_cmark_chunk_dup, _cmark_cmark_chunk_free,
-                      _cmark_cmark_chunk_literal, _cmark_cmark_chunk_rtrim,
-                      _cmark_cmark_chunk_trim, _cmarkCmarkChunk)
+from .chunk_h import (
+    _cmark_cmark_chunk_dup,
+    _cmark_cmark_chunk_free,
+    _cmark_cmark_chunk_literal,
+    _cmark_cmark_chunk_rtrim,
+    _cmark_cmark_chunk_trim,
+    _cmarkCmarkChunk,
+)
 from .cmark_ctype_c import _cmark_cmark_ispunct, _cmark_cmark_isspace
 from .cmark_h import _cmarkCmarkMem
-from .houdini_html_u_c import (_cmark_houdini_unescape_html,
-                               _cmark_houdini_unescape_html_f)
-from .node_c import (_cmark_cmark_node_free, _cmark_cmark_node_insert_after,
-                     _cmark_cmark_node_insert_before,
-                     _cmark_cmark_node_set_literal, _cmark_cmark_node_unlink)
+from .houdini_html_u_c import (
+    _cmark_houdini_unescape_html,
+    _cmark_houdini_unescape_html_f,
+)
+from .node_c import (
+    _cmark_cmark_node_free,
+    _cmark_cmark_node_insert_after,
+    _cmark_cmark_node_insert_before,
+    _cmark_cmark_node_set_literal,
+    _cmark_cmark_node_unlink,
+)
 from .node_h import _cmarkCmarkNode
 from .references_c import _cmark_cmark_reference_lookup
 from .references_h import _cmarkCmarkReference, _cmarkCmarkReferenceMap
-from .scanners_h import (_cmark_scan_autolink_email, _cmark_scan_autolink_uri,
-                         _cmark_scan_html_cdata, _cmark_scan_html_comment,
-                         _cmark_scan_html_declaration, _cmark_scan_html_pi,
-                         _cmark_scan_html_tag, _cmark_scan_link_title,
-                         _cmark_scan_spacechars)
-from .utf8_c import (_cmark_cmark_utf8proc_is_punctuation,
-                     _cmark_cmark_utf8proc_is_space,
-                     _cmark_cmark_utf8proc_iterate)
+from .scanners_h import (
+    _cmark_scan_autolink_email,
+    _cmark_scan_autolink_uri,
+    _cmark_scan_html_cdata,
+    _cmark_scan_html_comment,
+    _cmark_scan_html_declaration,
+    _cmark_scan_html_pi,
+    _cmark_scan_html_tag,
+    _cmark_scan_link_title,
+    _cmark_scan_spacechars,
+)
+from .utf8_c import (
+    _cmark_cmark_utf8proc_is_punctuation,
+    _cmark_cmark_utf8proc_is_space,
+    _cmark_cmark_utf8proc_iterate,
+)
 
 # License C applies to this file except for non derivative code:
 # in that case the license header at the top of the file applies.
@@ -2067,7 +2090,9 @@ def _cmark_parse_inline(subj: _cmarkSubject,
     if c == 0:
         return 0
     elif chr(c) in ['\r', '\n']:
-        new_inl = _cmark_handle_newline(subj)
+        # FIXME
+        _cmark_advance(subj)
+        # new_inl = _cmark_handle_newline(subj)
     elif chr(c) in ['`']:
         new_inl = _cmark_handle_backticks(subj, options)
     elif chr(c) in ['\\']:

@@ -14,15 +14,23 @@ repos:
     -   id: check-case-conflict
     -   id: debug-statements
     -   id: fix-encoding-pragma
+    -   id: forbid-submodules
+    -   id: check-symlinks
+    -   id: check-shebang-scripts-are-executable
+    -   id: check-case-conflict
+    -   id: check-added-large-files
+        args: ['--maxkb=4096']
+    -   id: destroyed-symlinks
 
+# YAPF and flake8 need to remain pinned.
 -   repo: https://github.com/pre-commit/mirrors-yapf
-    rev: 'v0.32.0'  # Use the sha / tag you want to point at
+    rev: 'v0.32.0' # frozen: v0.32.0
     hooks:
     -   id: yapf
         additional_dependencies: [toml]
 
 -   repo: https://github.com/pycqa/flake8
-    rev: '6.0.0'  # Use the sha / tag you want to point at
+    rev: '6.0.0' # frozen: 6.0.0
     hooks:
     -   id: flake8
         additional_dependencies: [flake8-docstrings]
@@ -33,14 +41,14 @@ repos:
     -   id: bandit
         args: ['--skip', 'B404,B506,B410,B603', '--level', 'LOW']
 
-#-   repo: https://github.com/pre-commit/mirrors-mypy
-#    rev: 'v0.971'
-#    hooks:
-#    -   id: mypy
-#        args: ['--no-strict-optional', '--ignore-missing-imports', '--show-error-context', '--show-error-codes', '--follow-imports', 'silent']
+#   -   repo: https://github.com/pre-commit/mirrors-mypy
+#       rev: 'v0.991'
+#       hooks:
+#       -      id: mypy
+#              args: ['--no-strict-optional', '--ignore-missing-imports', '--show-error-context', '--show-error-codes', '--follow-imports', 'silent']
 
 -   repo: https://github.com/pycqa/isort
-    rev: '5.11.2'
+    rev: 'v5.11.3'
     hooks:
     -   id: isort
 

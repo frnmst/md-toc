@@ -25,8 +25,12 @@ import re
 
 from ..constants import parser as md_parser
 from ..generic import _strncmp
-from .buffer_c import (_cmark_cmark_strbuf_grow, _cmark_cmark_strbuf_put,
-                       _cmark_cmark_strbuf_putc, _cmark_cmark_strbuf_puts)
+from .buffer_c import (
+    _cmark_cmark_strbuf_grow,
+    _cmark_cmark_strbuf_put,
+    _cmark_cmark_strbuf_putc,
+    _cmark_cmark_strbuf_puts,
+)
 from .buffer_h import _cmarkCmarkStrbuf
 from .houdini_h import _cmark_HOUDINI_UNESCAPED_SIZE
 from .utf8_c import _cmark_cmark_utf8proc_encode_char
@@ -98,7 +102,7 @@ def _cmark_houdini_unescape_ent(ob: _cmarkCmarkStrbuf, src: str,
         elif src[1] == 'x' or src[1] == 'X':
             i = 2
             while i < size and re.match(r'[\dA-Fa-f]', src[i]):
-                codepoint = (codepoint * 16) + ((src[i] | 32) % 39 - 9)
+                codepoint = (codepoint * 16) + ((ord(src[i]) | 32) % 39 - 9)
 
                 if codepoint >= 0x110000:
                     # Keep counting digits but

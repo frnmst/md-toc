@@ -66,6 +66,14 @@ for (ent, bs) in _ents:
     _entities[-1]['bytes'] = [int(n) for n in _entities[-1]['bytes']]
 
 parser['cmark']['generic'] = {
+    #    'EMDASH': '—',
+    #    'ENDASH': '–',
+    #    'ELLIPSES': '…',
+    #    'LEFTDOUBLEQUOTE': '“',
+    #    'RIGHTDOUBLEQUOTE': '”',
+    #    'LEFTSINGLEQUOTE': '‘',
+    #     # b'\xE2\x80\x99'.decode('utf-8')
+    #    'RIGHTSINGLEQUOTE': '’',
     'EMDASH': '\xE2\x80\x94',
     'ENDASH': '\xE2\x80\x93',
     'ELLIPSES': '\xE2\x80\xA6',
