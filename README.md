@@ -1,5 +1,7 @@
 # Markdown Table Of Contents
 
+<img src="assets/md-toc_logo.png" alt="md-toc logo" width="160"/>
+
 [![PyPI md-toc version](https://img.shields.io/pypi/v/md-toc.svg)](https://pypi.org/project/md-toc/)
 [![Debian 12 package](https://repology.org/badge/version-for-repo/debian_12/md-toc.svg)](https://repology.org/project/md-toc/versions)
 [![nixpkgs unstable package](https://repology.org/badge/version-for-repo/nix_unstable/python:md-toc.svg)](https://repology.org/project/python:md-toc/versions)
