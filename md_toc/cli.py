@@ -318,8 +318,8 @@ class CliInterface():
             default=common_defaults['toc marker'],
             help=(
                 'set the string to be used as the marker for positioning the \
-                  table of contents. Defaults to ' +
-                common_defaults['toc marker']),
+                table of contents. Put this value between single quotes. \
+                Defaults to \'' + common_defaults['toc marker']) + '\'',
         )
         parser.add_argument(
             '-n',
@@ -329,7 +329,7 @@ class CliInterface():
             type=str,
             default=common_defaults['newline string'],
             help=('the string used to separate the lines of the TOC. \
-                  Use quotes to delimit the string. \
+                  Use single quotes to delimit the string. \
                   If you output in place all the newlines of the \
                   input file will be replaced with this value. \
                   Defaults to ' + repr(common_defaults['newline string'])),

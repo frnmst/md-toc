@@ -3,3 +3,11 @@ global-include README.md
 global-include CONTRIBUTING.md
 recursive-include md_toc/cmark *.py
 global-exclude *.csv *.txt
+prune assets
+prune md_toc/tests
+prune docs
+prune .venv
+prune packages
+prune asciinema
+exclude *.yml *.yaml
+exclude Makefile

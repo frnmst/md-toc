@@ -21,10 +21,16 @@
 
 export PACKAGE_NAME=md_toc
 
-default: doc
+# See
+# https://docs.python.org/3/library/venv.html#how-venvs-work
+export VENV_CMD=. .venv/bin/activate
 
-doc: clean
-	pipenv run $(MAKE) -C docs html
+default: install-dev
+
+doc:
+	$(VENV_CMD) \
+		&& $(MAKE) -C docs html \
+		&& deactivate
 
 install:
 	pip3 install . --user
@@ -33,55 +39,81 @@ uninstall:
 	pip3 uninstall --verbose --yes $(PACKAGE_NAME)
 
 install-dev:
-	pipenv install --dev
-	pipenv run pre-commit install
-	pipenv run pre-commit install --hook-type commit-msg
-	pipenv graph
+	python3 -m venv .venv
+	$(VENV_CMD) \
+		&& pip install --requirement requirements.txt --requirement requirements-dev.txt \
+		&& deactivate
+	$(VENV_CMD) \
+		&& pre-commit install \
+		&& deactivate
+	$(VENV_CMD) \
+		&& pre-commit install --hook-type commit-msg \
+		&& deactivate
 
 uninstall-dev:
-	rm -f Pipfile.lock
-	pipenv --rm
+	rm -rf .venv
 
 update: install-dev
-	pipenv run pre-commit autoupdate \
-		--repo https://github.com/pre-commit/pre-commit-hooks \
-		--repo https://github.com/PyCQA/bandit \
-		--repo https://github.com/pycqa/isort \
-		--repo https://codeberg.org/frnmst/licheck \
-		--repo https://codeberg.org/frnmst/md-toc \
-		--repo https://github.com/mgedmin/check-manifest \
-		--repo https://github.com/jorisroovers/gitlint
+	$(VENV_CMD) \
+		&& pre-commit autoupdate \
+			--repo https://github.com/pre-commit/pre-commit-hooks \
+			--repo https://github.com/PyCQA/bandit \
+			--repo https://github.com/pycqa/isort \
+			--repo https://codeberg.org/frnmst/licheck \
+			--repo https://codeberg.org/frnmst/md-toc \
+			--repo https://github.com/mgedmin/check-manifest \
+			--repo https://github.com/jorisroovers/gitlint \
+		&& deactivate
 		# --repo https://github.com/pre-commit/mirrors-mypy \
 
-demo:
-	pipenv run asciinema/md_toc_asciinema_$$(git describe --tags $$(git rev-list --tags --max-count=1) | tr '.' '_')_demo.sh
-
 test:
-	pipenv run python -m unittest $(PACKAGE_NAME).tests.tests --failfast --locals --verbose
+	$(VENV_CMD) \
+		&& python -m unittest $(PACKAGE_NAME).tests.tests --failfast --locals --verbose \
+		&& deactivate
+
+pre-commit:
+	$(VENV_CMD) \
+		&& pre-commit run --all \
+		&& deactivate
+
+demo:
+	$(VENV_CMD) \
+		&& asciinema/md_toc_asciinema_$$(git describe --tags $$(git rev-list --tags --max-count=1) | tr '.' '_')_demo.sh \
+		&& deactivate
 
 dist:
-	pipenv run python setup.py sdist
-	# Create a reproducible archve at least on the wheel.
+	# Create a reproducible archive at least on the wheel.
 	# See
 	# https://bugs.python.org/issue31526
 	# https://bugs.python.org/issue38727
 	# https://github.com/pypa/setuptools/issues/1468
 	# https://github.com/pypa/setuptools/issues/2133
 	# https://reproducible-builds.org/docs/source-date-epoch/
-	SOURCE_DATE_EPOCH=$$(git -c log.showSignature='false' log -1 --pretty=%ct) pipenv run python setup.py bdist_wheel
-	pipenv run twine check dist/*
+	$(VENV_CMD) \
+		&& SOURCE_DATE_EPOCH=$$(git -c log.showSignature='false' log -1 --pretty=%ct) \
+		python -m build \
+		&& deactivate
+	$(VENV_CMD) \
+		&& twine check --strict dist/* \
+		&& deactivate
 
 upload:
-	pipenv run twine upload dist/*
+	$(VENV_CMD) \
+		&& twine upload dist/* \
+		&& deactivate
 
 clean:
 	rm -rf build dist *.egg-info tests/benchmark-results
-	# Remove all markdown files except the readme.
+	# Remove all markdown files except the readmes.
 	find -regex ".*\.[mM][dD]" ! -name 'README.md' ! -name 'CONTRIBUTING.md' -type f -exec rm -f {} +
-	pipenv run $(MAKE) -C docs clean
+	$(VENV_CMD) \
+		&& $(MAKE) -C docs clean \
+		&& deactivate
 
-# This serves both as beanchmarch and as fuzzer.
+# This serves both as benchmark and as fuzzer.
 benchmark:
-	pipenv run python3 -m md_toc.tests.benchmark
+	$(VENV_CMD) \
+		&& python3 -m md_toc.tests.benchmark \
+		&& deactivate
 
-.PHONY: default doc install uninstall install-dev uninstall-dev update test clean demo benchmark
+.PHONY: default doc install uninstall install-dev uninstall-dev update test clean demo benchmark pre-commit

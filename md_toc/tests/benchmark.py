@@ -46,7 +46,6 @@ MAX_HEADER_STEP = 50
 def _generate_random_characters(size: int,
                                 min_header_step: int = 10,
                                 max_header_step: int = 1000) -> str:
-
     secret_gen: random.SystemRandom = secrets.SystemRandom()
     alphanumerics: str = ''.join([string.ascii_letters, string.digits])
 

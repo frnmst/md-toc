@@ -1182,6 +1182,29 @@ def _cmark_handle_backslash(subj: _cmarkSubject):
                                _cmark_cmark_chunk_literal('\\'))
 
 
+# Parse an entity or a regular "&" string.
+# Assumes the subject has an '&' character at the current position.
+def _cmark_handle_entity(subj: _cmarkSubject) -> _cmarkCmarkNode:
+    r"""TODO."""
+    """
+    ent: _cmarkCmarkStrbuf = _cmark_CMARK_BUF_INIT(subj.mem)
+    length: int
+
+    _cmark_advance(subj)
+
+    length = _cmark_houdini_unescape_ent(ent, subj.input.data + subj.pos,
+                                         subj.input.len - subj.pos)
+
+    if length <= 0:
+        return _cmark_make_str(subj, subj.pos - 1, subj.pos - 1,
+                               _cmark_cmark_chunk_literal('&'))
+
+    subj.pos += length
+    return _cmark_make_str_from_buf(subj, subj.pos - 1 - length, subj.pos - 1,
+                                    ent)
+    """
+
+
 # Clean a URL: remove surrounding whitespace, and remove \ that escape
 # punctuation.
 # 0.30
@@ -2090,9 +2113,7 @@ def _cmark_parse_inline(subj: _cmarkSubject,
     if c == 0:
         return 0
     elif chr(c) in ['\r', '\n']:
-        # FIXME
-        _cmark_advance(subj)
-        # new_inl = _cmark_handle_newline(subj)
+        new_inl = _cmark_handle_newline(subj)
     elif chr(c) in ['`']:
         new_inl = _cmark_handle_backticks(subj, options)
     elif chr(c) in ['\\']:

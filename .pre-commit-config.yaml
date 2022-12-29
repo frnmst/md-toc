@@ -52,11 +52,11 @@ repos:
     hooks:
     -   id: isort
 
--   repo: https://codeberg.org/frnmst/licheck
-    rev: '1.0.0'
-    hooks:
-    -   id: licheck
-        args: ['--configuration-file', '.allowed_licenses.yml']
+#    -   repo: https://codeberg.org/frnmst/licheck
+#        rev: '1.0.0'
+#        hooks:
+#        -   id: licheck
+#            args: ['--configuration-file', '.allowed_licenses.yml']
 
 -   repo: https://codeberg.org/frnmst/md-toc
     rev: '8.1.6'  # or a specific git tag from md-toc

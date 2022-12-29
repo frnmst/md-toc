@@ -1,7 +1,6 @@
+# requirements-dev.txt
 #
-# Pipfile
-#
-# Copyright (C) 2017-2022 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
+# Copyright (C) 2022 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
 #
 # This file is part of md-toc.
 #
@@ -19,21 +18,18 @@
 # along with md-toc.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-[[source]]
-name = "pypi"
-url = "https://pypi.org/simple"
-verify_ssl = true
-
-[dev-packages]
 # Documentation.
-sphinx-book-theme = '>=0.3.3,<0.4'
-sphinx-copybutton = '>=0.5,<0.6'
+sphinx-book-theme>=0.3.3,<0.4
+Sphinx==4.5.0
+sphinx-copybutton>=0.5,<0.6
+
+# Unit tests.
+pyfakefs>=4,<5
 
 # Tools.
-twine = '>=3,<4'
-pre-commit = '>=2,<3'
-pyfakefs = '>=4,<5'
-asciinema = '>=2,<3'
+twine>=3,<4
+build>=0.9,<0.10
+pre-commit>=2,<3
 
-[packages]
-fpyutils = '>=2.2,<3'
+# Demo.
+asciinema>=2,<3
