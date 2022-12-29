@@ -36,7 +36,7 @@ try:
     VERSION_NUMBER = str(get_distribution('md_toc').version)
 except DistributionNotFound:
     VERSION_NUMBER = 'vDevel'
-VERSION_COPYRIGHT = 'Copyright (C) 2017-2021 Franco Masotti, frnmst'
+VERSION_COPYRIGHT = 'Copyright (C) 2017-2022 Franco Masotti, frnmst'
 VERSION_LICENSE = 'License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.'
 RETURN_VALUES = 'Return values: 0 ok, 1 error, 2 invalid command'
 ADVICE = 'Please read the documentation to understand how each parser works'
