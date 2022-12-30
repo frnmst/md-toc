@@ -5,6 +5,7 @@
 [![PyPI md-toc version](https://img.shields.io/pypi/v/md-toc.svg)](https://pypi.org/project/md-toc/)
 [![Debian 12 package](https://repology.org/badge/version-for-repo/debian_12/md-toc.svg)](https://repology.org/project/md-toc/versions)
 [![nixpkgs unstable package](https://repology.org/badge/version-for-repo/nix_unstable/python:md-toc.svg)](https://repology.org/project/python:md-toc/versions)
+[![Anaconda.org](https://anaconda.org/conda-forge/md-toc/badges/version.svg)](https://anaconda.org/conda-forge/md-toc)
 [![Downloads](https://pepy.tech/badge/md-toc)](https://pepy.tech/project/md-toc)
 [![Dependent repos (via libraries.io)](https://img.shields.io/librariesio/dependent-repos/pypi/md-toc.svg)](https://libraries.io/pypi/md-toc/dependents)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
