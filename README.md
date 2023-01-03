@@ -11,8 +11,7 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Buy me a coffee](assets/buy_me_a_coffee.svg)](https://buymeacoff.ee/frnmst)
 
-Automatically generate a compliant table of contents for a markdown file
-to improve document readability.
+Automatically generate and add an accurate table of contents to markdown files.
 
 <!--TOC-->
 
