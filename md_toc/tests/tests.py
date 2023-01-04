@@ -165,6 +165,7 @@ class TestGeneric(unittest.TestCase):
         self.assertTrue(generic._detect_toc_list('- [list'))
         self.assertTrue(generic._detect_toc_list('+ [list'))
         self.assertTrue(generic._detect_toc_list('* [list'))
+        # Not a list.
         self.assertFalse(generic._detect_toc_list('-  list'))
         self.assertFalse(generic._detect_toc_list('+  list'))
         self.assertFalse(generic._detect_toc_list('*  list'))
@@ -175,15 +176,29 @@ class TestGeneric(unittest.TestCase):
         self.assertFalse(generic._detect_toc_list('+ \u0009[list'))
         self.assertFalse(generic._detect_toc_list('* \u0009[list'))
 
-        self.assertFalse(generic._detect_toc_list(' - list'))
-        self.assertFalse(generic._detect_toc_list(' + list'))
-        self.assertFalse(generic._detect_toc_list(' * list'))
-        self.assertFalse(generic._detect_toc_list(' - [list'))
-        self.assertFalse(generic._detect_toc_list(' + [list'))
-        self.assertFalse(generic._detect_toc_list(' * [list'))
-        self.assertFalse(generic._detect_toc_list(' -  list'))
-        self.assertFalse(generic._detect_toc_list(' +  list'))
-        self.assertFalse(generic._detect_toc_list(' *  list'))
+        self.assertTrue(generic._detect_toc_list(' - list'))
+        self.assertTrue(generic._detect_toc_list(' + list'))
+        self.assertTrue(generic._detect_toc_list(' * list'))
+        self.assertTrue(generic._detect_toc_list('  - list'))
+        self.assertTrue(generic._detect_toc_list('  + list'))
+        self.assertTrue(generic._detect_toc_list('  * list'))
+        self.assertTrue(generic._detect_toc_list('   - list'))
+        self.assertTrue(generic._detect_toc_list('   + list'))
+        self.assertTrue(generic._detect_toc_list('   * list'))
+        self.assertFalse(generic._detect_toc_list('    - list'))
+        self.assertFalse(generic._detect_toc_list('    + list'))
+        self.assertFalse(generic._detect_toc_list('    * list'))
+
+        self.assertTrue(generic._detect_toc_list(' - [list'))
+        self.assertTrue(generic._detect_toc_list(' + [list'))
+        self.assertTrue(generic._detect_toc_list(' * [list'))
+        self.assertTrue(generic._detect_toc_list('  - [list'))
+        self.assertTrue(generic._detect_toc_list('  + [list'))
+        self.assertTrue(generic._detect_toc_list('  * [list'))
+        self.assertTrue(generic._detect_toc_list('   - [list'))
+        self.assertTrue(generic._detect_toc_list('   + [list'))
+        self.assertTrue(generic._detect_toc_list('   * [list'))
+
         self.assertFalse(generic._detect_toc_list(' - \u0009list'))
         self.assertFalse(generic._detect_toc_list(' + \u0009list'))
         self.assertFalse(generic._detect_toc_list(' * \u0009list'))
@@ -205,18 +220,57 @@ class TestGeneric(unittest.TestCase):
         self.assertFalse(generic._detect_toc_list('1)  [list'))
         self.assertFalse(generic._detect_toc_list('9999)  [list'))
 
-        self.assertFalse(generic._detect_toc_list(' 1. list'))
-        self.assertFalse(generic._detect_toc_list(' 9999. list'))
-        self.assertFalse(generic._detect_toc_list(' 1) list'))
-        self.assertFalse(generic._detect_toc_list(' 9999) list'))
-        self.assertFalse(generic._detect_toc_list(' 1) [list'))
-        self.assertFalse(generic._detect_toc_list(' 9999) [list'))
+        self.assertTrue(generic._detect_toc_list(' 1. list'))
+        self.assertTrue(generic._detect_toc_list(' 9999. list'))
+        self.assertTrue(generic._detect_toc_list(' 1) list'))
+        self.assertTrue(generic._detect_toc_list(' 9999) list'))
+        self.assertTrue(generic._detect_toc_list(' 1) [list'))
+        self.assertTrue(generic._detect_toc_list(' 9999) [list'))
         self.assertFalse(generic._detect_toc_list(' 1.  list'))
         self.assertFalse(generic._detect_toc_list(' 9999.  list'))
         self.assertFalse(generic._detect_toc_list(' 1)  list'))
         self.assertFalse(generic._detect_toc_list(' 9999)  list'))
         self.assertFalse(generic._detect_toc_list(' 1)  [list'))
         self.assertFalse(generic._detect_toc_list(' 9999)  [list'))
+
+        self.assertTrue(generic._detect_toc_list('  1. list'))
+        self.assertTrue(generic._detect_toc_list('  9999. list'))
+        self.assertTrue(generic._detect_toc_list('  1) list'))
+        self.assertTrue(generic._detect_toc_list('  9999) list'))
+        self.assertTrue(generic._detect_toc_list('  1) [list'))
+        self.assertTrue(generic._detect_toc_list('  9999) [list'))
+        self.assertFalse(generic._detect_toc_list('  1.  list'))
+        self.assertFalse(generic._detect_toc_list('  9999.  list'))
+        self.assertFalse(generic._detect_toc_list('  1)  list'))
+        self.assertFalse(generic._detect_toc_list('  9999)  list'))
+        self.assertFalse(generic._detect_toc_list('  1)  [list'))
+        self.assertFalse(generic._detect_toc_list('  9999)  [list'))
+
+        self.assertTrue(generic._detect_toc_list('   1. list'))
+        self.assertTrue(generic._detect_toc_list('   9999. list'))
+        self.assertTrue(generic._detect_toc_list('   1) list'))
+        self.assertTrue(generic._detect_toc_list('   9999) list'))
+        self.assertTrue(generic._detect_toc_list('   1) [list'))
+        self.assertTrue(generic._detect_toc_list('   9999) [list'))
+        self.assertFalse(generic._detect_toc_list('   1.  list'))
+        self.assertFalse(generic._detect_toc_list('   9999.  list'))
+        self.assertFalse(generic._detect_toc_list('   1)  list'))
+        self.assertFalse(generic._detect_toc_list('   9999)  list'))
+        self.assertFalse(generic._detect_toc_list('   1)  [list'))
+        self.assertFalse(generic._detect_toc_list('   9999)  [list'))
+
+        self.assertFalse(generic._detect_toc_list('    1. list'))
+        self.assertFalse(generic._detect_toc_list('    9999. list'))
+        self.assertFalse(generic._detect_toc_list('    1) list'))
+        self.assertFalse(generic._detect_toc_list('    9999) list'))
+        self.assertFalse(generic._detect_toc_list('    1) [list'))
+        self.assertFalse(generic._detect_toc_list('    9999) [list'))
+        self.assertFalse(generic._detect_toc_list('    1.  list'))
+        self.assertFalse(generic._detect_toc_list('    9999.  list'))
+        self.assertFalse(generic._detect_toc_list('    1)  list'))
+        self.assertFalse(generic._detect_toc_list('    9999)  list'))
+        self.assertFalse(generic._detect_toc_list('    1)  [list'))
+        self.assertFalse(generic._detect_toc_list('    9999)  [list'))
 
     def test__read_line_interval(self):
         r"""Extract a line interval."""
@@ -335,9 +389,54 @@ class TestApi(pyfakefsTestCase):
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
             '\n' + MARKER + '\n' + '- [hi](#hi)' + '\n' + MARKER)
 
-        # 2 TOC markers, invalid list, not empty.
+        # 2 TOC markers, valid list, not empty, 1 leading space.
         with open('foo.md', 'w') as f:
-            f.write('hello' + '\n' + MARKER + '\n\n' + ' - [hi](#hi)' +
+            f.write('hello' + '\n' + MARKER + '\n\n' + S1 + '- [hi](#hi)' +
+                    '\n\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
+        with open('foo.md', 'r') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines,
+            'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
+
+        # 2 TOC markers, valid list, not empty, 2 leading space.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n\n' + S2 + '- [hi](#hi)' +
+                    '\n\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
+        with open('foo.md', 'r') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines,
+            'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
+
+        # 2 TOC markers, valid list, not empty, 3 leading space.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n\n' + S3 + '- [hi](#hi)' +
+                    '\n\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
+        with open('foo.md', 'r') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines,
+            'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
+
+        # 2 TOC markers, INvalid list, not empty, 4 leading space.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n\n' + S4 + '- [hi](#hi)' +
                     '\n\n' + MARKER)
         api.write_string_on_file_between_markers('foo.md',
                                                  LINE,
@@ -348,12 +447,12 @@ class TestApi(pyfakefsTestCase):
         lines = ''.join(lines)
         self.assertEqual(
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
-            '\n' + MARKER + '\n\n' + ' - [hi](#hi)' + '\n\n' + MARKER)
+            '\n' + MARKER + '\n\n' + S4 + '- [hi](#hi)' + '\n\n' + MARKER)
 
-        # 2 TOC markers, invalid list, not empty, less space.
+        # 2 TOC markers, valid list, not empty, 1 leading space, less space.
         with open('foo.md', 'w') as f:
-            f.write('hello' + '\n' + MARKER + '\n' + ' - [hi](#hi)' + '\n' +
-                    MARKER)
+            f.write('hello' + '\n' + MARKER + '\n' + S1 + '- [hi](#hi)' +
+                    '\n' + MARKER)
         api.write_string_on_file_between_markers('foo.md',
                                                  LINE,
                                                  MARKER,
@@ -363,7 +462,37 @@ class TestApi(pyfakefsTestCase):
         lines = ''.join(lines)
         self.assertEqual(
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
-            '\n' + MARKER + '\n' + ' - [hi](#hi)' + '\n' + MARKER)
+            '\n' + MARKER + '\n' + S1 + '- [hi](#hi)' + '\n' + MARKER)
+
+        # 2 TOC markers, valid list, not empty, 2 leading space, less space.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n' + S2 + '- [hi](#hi)' +
+                    '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
+        with open('foo.md', 'r') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
+            '\n' + MARKER + '\n' + S2 + '- [hi](#hi)' + '\n' + MARKER)
+
+        # 2 TOC markers, valid list, not empty, 3 leading space, less space.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n' + S3 + '- [hi](#hi)' +
+                    '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
+        with open('foo.md', 'r') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
+            '\n' + MARKER + '\n' + S3 + '- [hi](#hi)' + '\n' + MARKER)
 
         # 2 TOC markers, no list, empty.
         with open('foo.md', 'w') as f:
@@ -408,10 +537,100 @@ class TestApi(pyfakefsTestCase):
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
             '\n' + '- [hi](#hi)' + '\n' + MARKER)
 
+        # More than 2 TOC markers, valid list, 1 leading space.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n' + MARKER + '\n' + S1 +
+                    '- [hi](#hi)' + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
+        with open('foo.md', 'r') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
+            '\n' + S1 + '- [hi](#hi)' + '\n' + MARKER)
+
+        # More than 2 TOC markers, valid list, 2 leading space.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n' + MARKER + '\n' + S2 +
+                    '- [hi](#hi)' + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
+        with open('foo.md', 'r') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
+            '\n' + S2 + '- [hi](#hi)' + '\n' + MARKER)
+
+        # More than 2 TOC markers, valid list, 3 leading space.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n' + MARKER + '\n' + S3 +
+                    '- [hi](#hi)' + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
+        with open('foo.md', 'r') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
+            '\n' + S3 + '- [hi](#hi)' + '\n' + MARKER)
+
         # More than 2 TOC markers, valid list first.
         with open('foo.md', 'w') as f:
             f.write('hello' + '\n' + MARKER + '\n\n' + '- [hi](#hi)' + '\n\n' +
                     MARKER + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
+        with open('foo.md', 'r') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
+            '\n' + MARKER)
+
+        # More than 2 TOC markers, valid list first, 1 leading space.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n\n' + S1 + '- [hi](#hi)' +
+                    '\n\n' + MARKER + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
+        with open('foo.md', 'r') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
+            '\n' + MARKER)
+
+        # More than 2 TOC markers, valid list first, 2 leading space.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n\n' + S2 + '- [hi](#hi)' +
+                    '\n\n' + MARKER + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n')
+        with open('foo.md', 'r') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
+            '\n' + MARKER)
+
+        # More than 2 TOC markers, valid list first, 3 leading space.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n\n' + S3 + '- [hi](#hi)' +
+                    '\n\n' + MARKER + '\n' + MARKER)
         api.write_string_on_file_between_markers('foo.md',
                                                  LINE,
                                                  MARKER,

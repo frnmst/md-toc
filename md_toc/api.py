@@ -68,7 +68,10 @@ def write_string_on_file_between_markers(
     if filename == '-':
         raise StdinIsNotAFileToBeWritten
 
-    final_string = marker + '\n\n' + string.rstrip() + '\n\n' + marker + '\n'
+    final_string = ''.join([
+        marker, newline_string, newline_string,
+        string.rstrip(), newline_string, newline_string, marker, newline_string
+    ])
     marker_line_positions, lines = fpyutils.filelines.get_line_matches(
         filename,
         marker,
