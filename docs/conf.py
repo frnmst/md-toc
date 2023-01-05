@@ -27,7 +27,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # General information about the project.
 project = 'md-toc'
-copyright = '2017-2022, Franco Masotti'
+copyright = '2017-2023, Franco Masotti'
 author = 'Franco Masotti'
 
 # The version info for the project you're documenting, acts as replacement for

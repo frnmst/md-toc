@@ -2,7 +2,7 @@
 #
 # cli.py
 #
-# Copyright (C) 2017-2021 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
+# Copyright (C) 2017-2023 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
 #
 # This file is part of md-toc.
 #
@@ -22,9 +22,15 @@
 """Command line interface file."""
 
 import argparse
+import sys
 import textwrap
 
-from pkg_resources import DistributionNotFound, get_distribution
+# See
+# https://packaging.python.org/en/latest/guides/single-sourcing-package-version/
+if sys.version_info >= (3, 8):
+    from importlib import metadata
+else:
+    import importlib_metadata as metadata
 
 from .api import build_multiple_tocs, write_strings_on_files_between_markers
 from .constants import common_defaults
@@ -32,11 +38,14 @@ from .constants import parser as md_parser
 
 PROGRAM_DESCRIPTION = 'Markdown Table Of Contents: Automatically generate a compliant table\nof contents for a markdown file to improve document readability.'
 VERSION_NAME = 'md_toc'
+
 try:
-    VERSION_NUMBER = str(get_distribution('md_toc').version)
-except DistributionNotFound:
+    dist = metadata.distribution('md_toc')
+    VERSION_NUMBER = dist.version
+except metadata.PackageNotFoundError:
     VERSION_NUMBER = 'vDevel'
-VERSION_COPYRIGHT = 'Copyright (C) 2017-2022 Franco Masotti, frnmst'
+
+VERSION_COPYRIGHT = 'Copyright (C) 2017-2023 Franco Masotti, frnmst'
 VERSION_LICENSE = 'License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.'
 RETURN_VALUES = 'Return values: 0 ok, 1 error, 2 invalid command'
 ADVICE = 'Please read the documentation to understand how each parser works'

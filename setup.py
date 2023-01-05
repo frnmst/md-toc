@@ -2,7 +2,7 @@
 #
 # setup.py
 #
-# Copyright (C) 2017-2022 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
+# Copyright (C) 2017-2023 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
 #
 # This file is part of md-toc.
 #
@@ -21,8 +21,11 @@
 #
 r"""setup.py."""
 
-import pkg_resources
 import setuptools
 
-pkg_resources.require('setuptools>=39.2.0')
+# See
+# https://importlib-metadata.readthedocs.io/en/latest/migration.html#pkg-resources-require
+#    import pkg_resources
+#    pkg_resources.require('setuptools>=39.2.0')
+
 setuptools.setup()

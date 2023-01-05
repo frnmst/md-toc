@@ -41,13 +41,20 @@ uninstall:
 install-dev:
 	python3 -m venv .venv
 	$(VENV_CMD) \
-		&& pip install --requirement requirements.txt --requirement requirements-dev.txt \
+		&& pip install --requirement requirements-freeze.txt \
 		&& deactivate
 	$(VENV_CMD) \
 		&& pre-commit install \
 		&& deactivate
 	$(VENV_CMD) \
 		&& pre-commit install --hook-type commit-msg \
+		&& deactivate
+
+regenerate-freeze: uninstall-dev
+	python3 -m venv .venv
+	$(VENV_CMD) \
+		&& pip install --requirement requirements.txt --requirement requirements-dev.txt \
+		&& pip freeze --local > requirements-freeze.txt \
 		&& deactivate
 
 uninstall-dev:
