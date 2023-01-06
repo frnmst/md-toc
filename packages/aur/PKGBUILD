@@ -8,7 +8,7 @@ arch=('any')
 url="https://blog.franco.net.eu.org/software/#md-toc"
 license=('GPL3')
 depends=('python'
-         'python-fpyutils=3.0.0')
+         'python-fpyutils=3.0.1')
 makedepends=('python-build'
              'python-installer'
              'python-wheel'
