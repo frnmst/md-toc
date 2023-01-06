@@ -9,7 +9,8 @@ url="https://blog.franco.net.eu.org/software/#md-toc"
 license=('GPL3')
 depends=('python'
          'python-fpyutils=3.0.1')
-makedepends=('python-build'
+makedepends=('python-pyfakefs'
+             'python-build'
              'python-installer'
              'python-wheel'
              'python-setuptools')
