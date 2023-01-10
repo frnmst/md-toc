@@ -178,6 +178,64 @@ program. The easiest way to build one for a markdown file is:
 - [bye](#bye-1)
 ```
 
+You can also write the TOC in place:
+
+```python
+>>> import md_toc
+>>> f = open('foo.md')
+>>> print(f.read(), end='')
+# Table of contents
+
+<!--TOC-->
+
+# this
+## is
+## a
+### foo
+#### booo
+### foo
+## file
+
+Test
+
+## bye
+
+# bye
+>>> toc = md_toc.build_toc('foo.md')
+>>> md_toc.write_string_on_file_between_markers('foo.md', toc, '<!--TOC-->')
+>>> f = open('foo.md')
+>>> print(f.read(), end='')
+# Table of contents
+
+<!--TOC-->
+
+- [Table of contents](#table-of-contents)
+- [this](#this)
+  - [is](#is)
+  - [a](#a)
+    - [foo](#foo)
+    - [foo](#foo-1)
+  - [file](#file)
+  - [bye](#bye)
+- [bye](#bye-1)
+
+<!--TOC-->
+
+# this
+## is
+## a
+### foo
+#### booo
+### foo
+## file
+
+Test
+
+## bye
+
+# bye
+```
+
 ## Documentation
 
 <https://docs.franco.net.eu.org/md-toc/>

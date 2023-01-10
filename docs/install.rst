@@ -22,7 +22,4 @@ Packages exist for Arch Linux, Debian, Ubuntu and Nix. See
 Dependencies
 ------------
 
-- Python >= 3.5
-- fpyutils_
-
-.. _fpyutils: https://software.franco.net.eu.org/frnmst/fpyutils
+See the ``./setup.cfg`` file.
