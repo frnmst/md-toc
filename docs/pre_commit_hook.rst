@@ -19,7 +19,8 @@ These are the default plugin settings
 
     repos:
     -   repo: https://codeberg.org/frnmst/md-toc
-        rev: master  # or a specific git tag from md-toc
+        # Remember to keep md-toc up-to-date!
+        rev: master  # set a specific git tag
         hooks:
         -   id: md-toc
 
@@ -32,7 +33,8 @@ You can override the defaults via the ``args`` parameter, such as
 
     repos:
     -   repo: https://codeberg.org/frnmst/md-toc
-        rev: master  # or a specific git tag from md-toc
+        # Remember to keep md-toc up-to-date!
+        rev: master  # set a specific git tag
         hooks:
         -   id: md-toc
             args: [-p, --skip-lines, '1', redcarpet]  # CLI options
@@ -40,24 +42,40 @@ You can override the defaults via the ``args`` parameter, such as
 This is what I use in some repositories
 
 .. code-block:: yaml
-   :linenos:
 
    # See https://pre-commit.com for more information
    # See https://pre-commit.com/hooks.html for more hooks
    repos:
-   -   repo: https://codeberg.org/pre-commit/pre-commit-hooks
-       rev: v2.4.0
+   -   repo: https://github.com/pre-commit/pre-commit-hooks
+       rev: 'v4.4.0'
        hooks:
        -   id: trailing-whitespace
        -   id: end-of-file-fixer
        -   id: check-yaml
+       -   id: destroyed-symlinks
+       -   id: detect-private-key
+       -   id: check-ast
+       -   id: check-case-conflict
+       -   id: debug-statements
+       -   id: fix-encoding-pragma
+       -   id: forbid-submodules
+       -   id: check-symlinks
+       -   id: check-shebang-scripts-are-executable
+       -   id: check-case-conflict
        -   id: check-added-large-files
+           args: ['--maxkb=16384']
+       -   id: destroyed-symlinks
 
    -  repo: https://codeberg.org/frnmst/md-toc
-      rev: 'master'  # or a specific git tag from md-toc
+      # Remember to keep md-toc up-to-date!
+      rev: '8.1.8'  # set a specific git tag
       hooks:
       -    id: md-toc
-           args: [-p, 'github', '-l6']  # CLI options
+           args: [-p, 'cmark', '-l6']  # CLI options
 
+   -   repo: https://github.com/jorisroovers/gitlint
+       rev: 'v0.18.0'
+       hooks:
+       -   id: gitlint
 
 Finally, run ``pre-commit install`` to enable the hook.

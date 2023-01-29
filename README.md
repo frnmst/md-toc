@@ -79,14 +79,13 @@ And more! See the
 
 ## Examples
 
-You can use md-toc in your blog, documentation based on markdown,
+You can use md-toc in your blog, documentation based on markdown, GitHub pages,
 etc...
 
 I use it in [my Jekyll-based blog](https://blog.franco.net.eu.org/)
 along with its
 [pre-commit hook](https://software.franco.net.eu.org/frnmst/blog/src/branch/master/.pre-commit-config.yaml).
-I also use it in most repositories where markdown README files are
-present.
+I also use it in most repositories where `README.md` files are present.
 
 Most markdown renderers do not provide a way to automatically generate a
 TOC so md-toc is useful for this purpose.
