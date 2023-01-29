@@ -21,7 +21,7 @@
 #
 r"""A cmark implementation file."""
 
-from .cmark_h import _cmarkCmarkMem
+from .cmark_h import _cmarkCmarkMem, _cmarkCmarkNodeType
 
 # License C applies to this file except for non derivative code:
 # in that case the license header at the top of the file applies.

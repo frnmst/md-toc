@@ -43,7 +43,12 @@ from .chunk_h import (
     _cmarkCmarkChunk,
 )
 from .cmark_ctype_c import _cmark_cmark_ispunct, _cmark_cmark_isspace
-from .cmark_h import _cmarkCmarkMem
+from .cmark_h import (
+    CMARK_OPT_SMART,
+    CMARK_OPT_SOURCEPOS,
+    _cmarkCmarkMem,
+    _cmarkCmarkNodeType,
+)
 from .houdini_html_u_c import (
     _cmark_houdini_unescape_html,
     _cmark_houdini_unescape_html_f,
@@ -79,26 +84,44 @@ from .utf8_c import (
 # in that case the license header at the top of the file applies.
 # See docs/copyright_license.rst
 
+#    'EMDASH': '—',
+EMDASH = '\xE2\x80\x94'
+#    'ENDASH': '–',
+ENDASH = '\xE2\x80\x93'
+#    'ELLIPSES': '…',
+ELLIPSES = '\xE2\x80\xA6'
+#    'LEFTDOUBLEQUOTE': '“',
+LEFTDOUBLEQUOTE = '\xE2\x80\x9C'
+#    'RIGHTDOUBLEQUOTE': '”',
+RIGHTDOUBLEQUOTE = '\xE2\x80\x9D'
+#    'LEFTSINGLEQUOTE': '‘',
+#     # b'\xE2\x80\x99'.decode('utf-8')
+LEFTSINGLEQUOTE = '\xE2\x80\x98'
+#    'RIGHTSINGLEQUOTE': '’',
+RIGHTSINGLEQUOTE = '\xE2\x80\x99'
+MAXBACKTICKS = 1000
+FLAG_SKIP_HTML_CDATA = 1 << 0
+FLAG_SKIP_HTML_DECLARATION = 1 << 1
+FLAG_SKIP_HTML_PI = 1 << 2
+
 
 # 0.29, 0.30
 def _cmark_make_linebreak(mem: _cmarkCmarkMem):
-    return _cmark_make_simple(
-        mem, md_parser['cmark']['cmark_node_type']['CMARK_NODE_LINEBREAK'])
+    return _cmark_make_simple(mem,
+                              _cmarkCmarkNodeType.CMARK_NODE_LINEBREAK.value)
 
 
 def _cmark_make_softbreak(mem: _cmarkCmarkMem):
-    return _cmark_make_simple(
-        mem, md_parser['cmark']['cmark_node_type']['CMARK_NODE_SOFTBREAK'])
+    return _cmark_make_simple(mem,
+                              _cmarkCmarkNodeType.CMARK_NODE_SOFTBREAK.value)
 
 
 def _cmark_make_emph(mem: _cmarkCmarkMem):
-    return _cmark_make_simple(
-        mem, md_parser['cmark']['cmark_node_type']['CMARK_NODE_EMPH'])
+    return _cmark_make_simple(mem, _cmarkCmarkNodeType.CMARK_NODE_EMPH.value)
 
 
 def _cmark_make_strong(mem: _cmarkCmarkMem):
-    return _cmark_make_simple(
-        mem, md_parser['cmark']['cmark_node_type']['CMARK_NODE_STRONG'])
+    return _cmark_make_simple(mem, _cmarkCmarkNodeType.CMARK_NODE_STRONG.value)
 
 
 class _cmarkDelimiter:
@@ -206,8 +229,7 @@ class _cmarkSubject:
         self.last_bracket: _cmarkBracket = None
 
         # An integer list.
-        self.backticks: list = list(
-            range(0, md_parser['cmark']['generic']['MAXBACKTICKS'] + 1))
+        self.backticks: list = list(range(0, MAXBACKTICKS + 1))
 
         self.scanned_for_backticks: bool = False
 
@@ -255,8 +277,8 @@ def _cmark_make_str(subj: _cmarkSubject, sc: int, ec: int,
     # s = char
     # sc = start column
     # ec = end cloumn
-    e = _cmark_make_literal(
-        subj, md_parser['cmark']['cmark_node_type']['CMARK_NODE_TEXT'], sc, ec)
+    e = _cmark_make_literal(subj, _cmarkCmarkNodeType.CMARK_NODE_TEXT.value,
+                            sc, ec)
 
     # e->data = (unsigned char *)subj->mem->realloc(NULL, s.len + 1);
 
@@ -279,7 +301,7 @@ def _cmark_make_str_from_buf(
     buf: _cmarkCmarkStrbuf,
 ) -> _cmarkCmarkNode:
     e: _cmarkCmarkNode = _cmark_make_literal(
-        subj, md_parser['cmark']['cmark_node_type']['CMARK_NODE_TEXT'], sc, ec)
+        subj, _cmarkCmarkNodeType.CMARK_NODE_TEXT.value, sc, ec)
     e.length = buf.size
     e.data = _cmark_cmark_strbuf_detach(buf)
     return e
@@ -353,7 +375,7 @@ def _cmark_make_autolink(
     is_email: int,
 ) -> _cmarkCmarkNode:
     link: _cmarkCmarkNode = _cmark_make_simple(
-        subj.mem, md_parser['cmark']['cmark_node_type']['CMARK_NODE_LINK'])
+        subj.mem, _cmarkCmarkNodeType.CMARK_NODE_LINK.value)
     link.as_link.url = _cmark_cmark_clean_autolink(subj.mem, url, is_email)
     link.as_link.title = None
     link.start_line = link.end_line = subj.line
@@ -386,7 +408,7 @@ def _cmark_subject_from_buf(
     e.refmap = refmap
     e.last_delim = None
     e.last_bracket = None
-    for i in range(0, md_parser['cmark']['generic']['MAXBACKTICKS']):
+    for i in range(0, MAXBACKTICKS):
         e.backticks[i] = 0
     e.scanned_for_backticks = False
 
@@ -511,7 +533,7 @@ def _cmark_count_newlines(subj: _cmarkSubject, sfrom: int,
 def _cmark_adjust_subj_node_newlines(subj: _cmarkSubject,
                                      node: _cmarkCmarkNode, matchlen: int,
                                      extra: int, options: int):
-    if not (options & md_parser['cmark']['generic']['CMARK_OPT_SOURCEPOS']):
+    if not (options & CMARK_OPT_SOURCEPOS):
         return
 
     newlines: int
@@ -536,7 +558,7 @@ def _cmark_scan_to_closing_backticks(subj: _cmarkSubject,
                                      openticklength: int) -> int:
     found: bool = False
 
-    if openticklength > md_parser['cmark']['generic']['MAXBACKTICKS']:
+    if openticklength > MAXBACKTICKS:
         # we limit backtick string length because of the array subj->backticks:
         return 0
 
@@ -563,7 +585,7 @@ def _cmark_scan_to_closing_backticks(subj: _cmarkSubject,
 
         # store position of ender
         # Ender starting point.
-        if numticks <= md_parser['cmark']['generic']['MAXBACKTICKS']:
+        if numticks <= MAXBACKTICKS:
             subj.backticks[numticks] = subj.pos - numticks
 
         if numticks == openticklength:
@@ -627,8 +649,8 @@ def _cmark_handle_backticks(subj: _cmarkSubject,
         _cmark_S_normalize_code(buf)
 
         node: _cmarkCmarkNode = _cmark_make_literal(
-            subj, md_parser['cmark']['cmark_node_type']['CMARK_NODE_CODE'],
-            startpos, endpos - openticks.length - 1)
+            subj, _cmarkCmarkNodeType.CMARK_NODE_CODE.value, startpos,
+            endpos - openticks.length - 1)
         node.length = buf.size
         node.data = _cmark_cmark_strbuf_detach(buf)
         _cmark_adjust_subj_node_newlines(subj, node, endpos - startpos,
@@ -791,15 +813,12 @@ def _cmark_handle_delim(subj: _cmarkSubject,
     numdelims, can_open, can_close = _cmark_scan_delims(subj, c)
 
     if c == '\'' and smart:
-        contents = _cmark_cmark_chunk_literal(
-            md_parser['cmark']['generic']['RIGHTSINGLEQUOTE'])
+        contents = _cmark_cmark_chunk_literal(RIGHTSINGLEQUOTE)
     elif c == '"' and smart:
         if can_close:
-            contents = _cmark_cmark_chunk_literal(
-                md_parser['cmark']['generic']['RIGHTDOUBLEQUOTE'])
+            contents = _cmark_cmark_chunk_literal(RIGHTDOUBLEQUOTE)
         else:
-            contents = _cmark_cmark_chunk_literal(
-                md_parser['cmark']['generic']['LEFTDOUBLEQUOTE'])
+            contents = _cmark_cmark_chunk_literal(LEFTDOUBLEQUOTE)
     else:
         contents = _cmark_cmark_chunk_dup(subj.input, subj.pos - numdelims,
                                           numdelims)
@@ -845,10 +864,10 @@ def _cmark_handle_hyphen(subj: _cmarkSubject, smart: bool) -> _cmarkCmarkNode:
         em_count = (numhyphens - 4) / 3
 
     for i in range(em_count, 0, step=-1):
-        _cmark_cmark_strbuf_puts(buf, md_parser['cmark']['generic']['EMDASH'])
+        _cmark_cmark_strbuf_puts(buf, EMDASH)
 
     for i in range(en_count, 0, step=-1):
-        _cmark_cmark_strbuf_puts(buf, md_parser['cmark']['generic']['ENDASH'])
+        _cmark_cmark_strbuf_puts(buf, ENDASH)
 
     return _cmark_make_str_from_buf(subj, startpos, subj.pos - 1, buf)
 
@@ -861,10 +880,8 @@ def _cmark_handle_period(subj: _cmarkSubject, smart: bool) -> _cmarkCmarkNode:
         _cmark_advance(subj)
         if chr(_cmark_peek_char(subj)) == '.':
             _cmark_advance(subj)
-            return _cmark_make_str(
-                subj, subj.pos - 3, subj.pos - 1,
-                _cmark_cmark_chunk_literal(
-                    md_parser['cmark']['generic']['ELLIPSES']))
+            return _cmark_make_str(subj, subj.pos - 3, subj.pos - 1,
+                                   _cmark_cmark_chunk_literal(ELLIPSES))
         else:
             return _cmark_make_str(subj, subj.pos - 2, subj.pos - 1,
                                    _cmark_cmark_chunk_literal('..'))
@@ -939,22 +956,18 @@ def _cmark_process_emphasis(subj: _cmarkSubject, stack_bottom: _cmarkDelimiter,
                     closer = closer.next
 
             elif closer.delim_char == '\'':
-                _cmark_cmark_node_set_literal(
-                    closer.inl_text,
-                    md_parser['cmark']['generic']['RIGHTSINGLEQUOTE'])
+                _cmark_cmark_node_set_literal(closer.inl_text,
+                                              RIGHTSINGLEQUOTE)
                 if opener_found:
-                    _cmark_cmark_node_set_literal(
-                        opener.inl_text,
-                        md_parser['cmark']['generic']['LEFTSINGLEQUOTE'])
+                    _cmark_cmark_node_set_literal(opener.inl_text,
+                                                  LEFTSINGLEQUOTE)
                 closer = closer.next
             elif closer.delim_char == '"':
-                _cmark_cmark_node_set_literal(
-                    closer.inl_text,
-                    md_parser['cmark']['generic']['RIGHTDOUBLEQUOTE'])
+                _cmark_cmark_node_set_literal(closer.inl_text,
+                                              RIGHTDOUBLEQUOTE)
                 if opener_found:
-                    _cmark_cmark_node_set_literal(
-                        opener.inl_text,
-                        md_parser['cmark']['generic']['LEFTDOUBLEQUOTE'])
+                    _cmark_cmark_node_set_literal(opener.inl_text,
+                                                  LEFTDOUBLEQUOTE)
                 closer = closer.next
 
             if not opener_found:
@@ -1104,8 +1117,7 @@ def _cmark_handle_pointy_brace(subj: _cmarkSubject,
                 if matchlen > 0:
                     matchlen += 2  # prefix "<-"
             elif c == '[':
-                if subj.flags & md_parser['cmark']['generic'][
-                        'FLAG_SKIP_HTML_CDATA'] == 0:
+                if subj.flags & FLAG_SKIP_HTML_CDATA == 0:
                     matchlen = _cmark_scan_html_cdata(subj.input, subj.pos + 2)
                     if matchlen > 0:
                         # The regex doesn't require the final "]]>". But if we're not at
@@ -1113,28 +1125,23 @@ def _cmark_handle_pointy_brace(subj: _cmarkSubject,
                         # disable subsequent scans to avoid quadratic behavior.
                         matchlen += 5  # prefix "![", suffix "]]>"
                         if subj.pos + matchlen > subj.input.length:
-                            subj.flags |= md_parser['cmark']['generic'][
-                                'FLAG_SKIP_HTML_CDATA']
+                            subj.flags |= FLAG_SKIP_HTML_CDATA
                             matchlen = 0
-            elif subj.flags & md_parser['cmark']['generic'][
-                    'FLAG_SKIP_HTML_DECLARATION'] == 0:
+            elif subj.flags & FLAG_SKIP_HTML_DECLARATION == 0:
                 matchlen = _cmark_scan_html_declaration(
                     subj.input, subj.pos + 1)
                 if matchlen > 0:
                     matchlen += 2  # prefix "!", suffix ">"
                     if subj.pos + matchlen > subj.input.length:
-                        subj.flags |= md_parser['cmark']['generic'][
-                            'FLAG_SKIP_HTML_DECLARATION']
+                        subj.flags |= FLAG_SKIP_HTML_DECLARATION
                         matchlen = 0
         elif c == '?':
-            if subj.flags & md_parser['cmark']['generic'][
-                    'FLAG_SKIP_HTML_PI'] == 0:
+            if subj.flags & FLAG_SKIP_HTML_PI == 0:
                 # Note that we allow an empty match.
                 matchlen = _cmark_scan_html_pi(subj.input, subj.pos + 1)
                 matchlen += 3  # prefix "?", suffix "?>"
                 if subj.pos + matchlen > subj.input.length:
-                    subj.flags |= md_parser['cmark']['generic'][
-                        'FLAG_SKIP_HTML_PI']
+                    subj.flags |= FLAG_SKIP_HTML_PI
                     matchlen = 0
         else:
             matchlen = _cmark_scan_html_tag(subj.input, subj.pos)
@@ -1143,8 +1150,7 @@ def _cmark_handle_pointy_brace(subj: _cmarkSubject,
         length: int = matchlen + 1
         subj.pos += matchlen
         node: _cmarkCmarkNode = _cmark_make_literal(
-            subj,
-            md_parser['cmark']['cmark_node_type']['CMARK_NODE_HTML_INLINE'],
+            subj, _cmarkCmarkNodeType.CMARK_NODE_HTML_INLINE.value,
             subj.pos - matchlen - 1, subj.pos - 1)
 
         # node->data = (unsigned char *)subj->mem->realloc(NULL, len + 1);
@@ -1478,9 +1484,9 @@ def _cmark_handle_close_bracket(subj: _cmarkSubject,
 
     if match_0:
         if is_image:
-            param = md_parser['cmark']['cmark_node_type']['CMARK_NODE_IMAGE']
+            param = _cmarkCmarkNodeType.CMARK_NODE_IMAGE.value
         else:
-            param = md_parser['cmark']['cmark_node_type']['CMARK_NODE_LINK']
+            param = _cmarkCmarkNodeType.CMARK_NODE_LINK.value
         inl = _cmark_make_simple(subj.mem, param)
         inl.as_link.url = url
         inl.as_link.title = title
@@ -2086,9 +2092,8 @@ def _cmark_subject_find_special_char(subj: _cmarkSubject, options: int) -> int:
     while n < subj.input.length:
         if SPECIAL_CHARS[ord(subj.input.data[n])] == 1:
             return n
-        if options & md_parser['cmark']['generic'][
-                'CMARK_OPT_SMART'] and SMART_PUNCT_CHARS[ord(
-                    subj.input.data[n])]:
+        if options & CMARK_OPT_SMART and SMART_PUNCT_CHARS[ord(
+                subj.input.data[n])]:
             return n
         n += 1
 
@@ -2124,17 +2129,12 @@ def _cmark_parse_inline(subj: _cmarkSubject,
     elif chr(c) in ['<']:
         new_inl = _cmark_handle_pointy_brace(subj, options)
     elif chr(c) in ['*', '_', '\'', '"']:
-        new_inl = _cmark_handle_delim(
-            subj, chr(c),
-            (options & md_parser['cmark']['generic']['CMARK_OPT_SMART']) != 0)
+        new_inl = _cmark_handle_delim(subj, chr(c),
+                                      (options & CMARK_OPT_SMART) != 0)
     elif chr(c) in ['-']:
-        new_inl = _cmark_handle_hyphen(
-            subj,
-            (options & md_parser['cmark']['generic']['CMARK_OPT_SMART']) != 0)
+        new_inl = _cmark_handle_hyphen(subj, (options & CMARK_OPT_SMART) != 0)
     elif chr(c) in ['.']:
-        new_inl = _cmark_handle_period(
-            subj,
-            (options & md_parser['cmark']['generic']['CMARK_OPT_SMART']) != 0)
+        new_inl = _cmark_handle_period(subj, (options & CMARK_OPT_SMART) != 0)
     elif chr(c) in ['[']:
         _cmark_advance(subj)
         new_inl = _cmark_make_str(subj, subj.pos - 1, subj.pos - 1,

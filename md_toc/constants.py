@@ -65,72 +65,6 @@ for (ent, bs) in _ents:
     # Transform each entity into a list of integers from a list of strings.
     _entities[-1]['bytes'] = [int(n) for n in _entities[-1]['bytes']]
 
-parser['cmark']['generic'] = {
-    #    'EMDASH': '—',
-    #    'ENDASH': '–',
-    #    'ELLIPSES': '…',
-    #    'LEFTDOUBLEQUOTE': '“',
-    #    'RIGHTDOUBLEQUOTE': '”',
-    #    'LEFTSINGLEQUOTE': '‘',
-    #     # b'\xE2\x80\x99'.decode('utf-8')
-    #    'RIGHTSINGLEQUOTE': '’',
-    'EMDASH': '\xE2\x80\x94',
-    'ENDASH': '\xE2\x80\x93',
-    'ELLIPSES': '\xE2\x80\xA6',
-    'LEFTDOUBLEQUOTE': '\xE2\x80\x9C',
-    'RIGHTDOUBLEQUOTE': '\xE2\x80\x9D',
-    'LEFTSINGLEQUOTE': '\xE2\x80\x98',
-    'RIGHTSINGLEQUOTE': '\xE2\x80\x99',
-    'CMARK_OPT_SMART': 1 << 10,
-    'CMARK_OPT_SOURCEPOS': 1 << 1,
-    'MAXBACKTICKS': 1000,
-    'FLAG_SKIP_HTML_CDATA': 1 << 0,
-    'FLAG_SKIP_HTML_DECLARATION': 1 << 1,
-    'FLAG_SKIP_HTML_PI': 1 << 2,
-}
-
-parser['cmark']['cmark_node_type'] = {
-    # typedef enum { ... } cmark_node_type;
-    # Undefined value in the C source code get their value
-    # accoring to their position in the sequence, like an array.
-
-    # Error status
-    'CMARK_NODE_NONE': 0,
-
-    # Block
-    'CMARK_NODE_DOCUMENT': 1,
-    'CMARK_NODE_BLOCK_QUOTE': 2,
-    'CMARK_NODE_LIST': 3,
-    'CMARK_NODE_ITEM': 4,
-    'CMARK_NODE_CODE_BLOCK': 5,
-    'CMARK_NODE_HTML_BLOCK': 6,
-    'CMARK_NODE_CUSTOM_BLOCK': 7,
-    'CMARK_NODE_PARAGRAPH': 8,
-    'CMARK_NODE_HEADING': 9,
-    'CMARK_NODE_THEMATIC_BREAK': 10,
-
-    # Inline
-    'CMARK_NODE_TEXT': 11,
-    'CMARK_NODE_SOFTBREAK': 12,
-    'CMARK_NODE_LINEBREAK': 13,
-    'CMARK_NODE_CODE': 14,
-    'CMARK_NODE_HTML_INLINE': 15,
-    'CMARK_NODE_CUSTOM_INLINE': 16,
-    'CMARK_NODE_EMPH': 17,
-    'CMARK_NODE_STRONG': 18,
-    'CMARK_NODE_LINK': 19,
-    'CMARK_NODE_IMAGE': 20,
-}
-
-parser['cmark']['cmark_node_type']['CMARK_NODE_FIRST_BLOCK'] = parser['cmark'][
-    'cmark_node_type']['CMARK_NODE_DOCUMENT']
-parser['cmark']['cmark_node_type']['CMARK_NODE_LAST_BLOCK'] = parser['cmark'][
-    'cmark_node_type']['CMARK_NODE_THEMATIC_BREAK']
-parser['cmark']['cmark_node_type']['CMARK_NODE_FIRST_INLINE'] = parser[
-    'cmark']['cmark_node_type']['CMARK_NODE_TEXT']
-parser['cmark']['cmark_node_type']['CMARK_NODE_LAST_INLINE'] = parser['cmark'][
-    'cmark_node_type']['CMARK_NODE_IMAGE']
-
 parser['cmark']['link'] = {
     'max chars label': 999,
 }
@@ -205,7 +139,7 @@ parser['cmark']['pseudo-re'] = {
         '\u002C',
         '\u002D',
         '\u002E',
-        '\u002F3',
+        '\u002F',
         '\u003A',
         '\u003B',
         '\u003C',
