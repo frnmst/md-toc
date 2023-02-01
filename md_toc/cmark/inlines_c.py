@@ -50,6 +50,7 @@ from .cmark_h import (
     _cmarkCmarkNodeType,
 )
 from .houdini_html_u_c import (
+    _cmark_houdini_unescape_ent,
     _cmark_houdini_unescape_html,
     _cmark_houdini_unescape_html_f,
 )
@@ -1012,11 +1013,11 @@ def _cmark_remove_emph(subj: _cmarkSubject, opener: _cmarkDelimiter,
     opener_num_chars -= use_delims
     closer_num_chars -= use_delims
     opener_inl.length = opener_num_chars
+    opener_inl.data = opener_inl.data[:opener_num_chars]
     #   opener_inl->data[opener_num_chars] = 0;
-    # No need to add string terminators.
     closer_inl.length = closer_num_chars
+    closer_inl.data = opener_inl.data[:closer_num_chars]
     #   closer_inl->data[closer_num_chars] = 0;
-    # No need to add string terminators.
 
     # free delimiters between opener and closer
     delim = closer.previous
@@ -1029,25 +1030,24 @@ def _cmark_remove_emph(subj: _cmarkSubject, opener: _cmarkDelimiter,
     # Not useful for emphasis detection but we keep it as reference.
     #
     # create new emph or strong, and splice it in to our inlines
-    # between the opener and closer                                 #
-    if use_delims == 1:  #
-        emph = _cmark_make_emph(subj.mem)  #
-    else:  #
-        emph = _cmark_make_strong(subj.mem)  #
+    # between the opener and closer
+    if use_delims == 1:
+        emph = _cmark_make_emph(subj.mem)
+    else:
+        emph = _cmark_make_strong(subj.mem)
 
-    tmp = opener_inl.next  #
-    while tmp and tmp != closer_inl:  #
-        tmpnext = tmp.next  #
-        _cmark_cmark_node_unlink(tmp)  #
-        _cmark_append_child(emph, tmp)  #
-        tmp = tmpnext  #
+    tmp = opener_inl.next
+    while tmp and tmp != closer_inl:
+        tmpnext = tmp.next
+        _cmark_cmark_node_unlink(tmp)
+        _cmark_append_child(emph, tmp)
+        tmp = tmpnext
+    _cmark_cmark_node_insert_after(opener_inl, emph)
 
-    _cmark_cmark_node_insert_after(opener_inl, emph)  #
-
-    emph.start_line = opener_inl.start_line  #
-    emph.end_line = closer_inl.end_line  #
-    emph.start_column = opener_inl.start_column  #
-    emph.end_column = closer_inl.end_column  #
+    emph.start_line = opener_inl.start_line
+    emph.end_line = closer_inl.end_line
+    emph.start_column = opener_inl.start_column
+    emph.end_column = closer_inl.end_column
     #############
 
     # Custom variables and computations.
@@ -1191,15 +1191,13 @@ def _cmark_handle_backslash(subj: _cmarkSubject):
 # Parse an entity or a regular "&" string.
 # Assumes the subject has an '&' character at the current position.
 def _cmark_handle_entity(subj: _cmarkSubject) -> _cmarkCmarkNode:
-    r"""TODO."""
-    """
     ent: _cmarkCmarkStrbuf = _cmark_CMARK_BUF_INIT(subj.mem)
     length: int
 
     _cmark_advance(subj)
 
-    length = _cmark_houdini_unescape_ent(ent, subj.input.data + subj.pos,
-                                         subj.input.len - subj.pos)
+    length = _cmark_houdini_unescape_ent(ent, subj.input.data[subj.pos:],
+                                         subj.input.length - subj.pos)
 
     if length <= 0:
         return _cmark_make_str(subj, subj.pos - 1, subj.pos - 1,
@@ -1208,7 +1206,6 @@ def _cmark_handle_entity(subj: _cmarkSubject) -> _cmarkCmarkNode:
     subj.pos += length
     return _cmark_make_str_from_buf(subj, subj.pos - 1 - length, subj.pos - 1,
                                     ent)
-    """
 
 
 # Clean a URL: remove surrounding whitespace, and remove \ that escape
@@ -1541,12 +1538,9 @@ def _cmark_handle_newline(subj: _cmarkSubject) -> _cmarkCmarkNode:
         _cmark_advance(subj)
     if chr(_cmark_peek_at(subj, subj.pos)) == '\n':
         _cmark_advance(subj)
-
     subj.line += 1
-
     # FIXME TODO: The next instruction messes up some tests!
-    #       subj.column_offset = - subj.pos
-
+    #    subj.column_offset = -subj.pos
     # skip spaces at beginning of line
     _cmark_skip_spaces(subj)
     if (nlpos > 1 and chr(_cmark_peek_at(subj, nlpos - 1)) == ' '
@@ -2124,8 +2118,7 @@ def _cmark_parse_inline(subj: _cmarkSubject,
     elif chr(c) in ['\\']:
         new_inl = _cmark_handle_backslash(subj)
     elif chr(c) in ['&']:
-        _cmark_advance(subj)
-        # TODO
+        new_inl = _cmark_handle_entity(subj)
     elif chr(c) in ['<']:
         new_inl = _cmark_handle_pointy_brace(subj, options)
     elif chr(c) in ['*', '_', '\'', '"']:
@@ -2188,8 +2181,9 @@ def _cmark_cmark_parse_inlines(
     _cmark_cmark_chunk_rtrim(subj.input)
 
     ignore = list()
-    while not _cmark_is_eof(subj):
-        _cmark_parse_inline(subj, parent, options, ignore)
+    while not _cmark_is_eof(subj) and _cmark_parse_inline(
+            subj, parent, options, ignore):
+        pass
 
     # When we hit the end of the input, we call the process emphasis procedure with stack_bottom = NULL.
     _cmark_process_emphasis(subj, None, ignore)

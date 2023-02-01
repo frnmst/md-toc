@@ -294,16 +294,32 @@ def _cmark_cmark_strbuf_unescape(buf: _cmarkCmarkStrbuf):
     r: int = 0
     w: int = 0
 
-    while r < buf.size:
+    # In Python 3 all characters have length 1.
+    # In C they might be from 1 to 4.
+    # See the UTF-8 page on Wikipedia
+    # For example:
+    #
+    #     len(bytes('㤀', 'utf-8')) == 3
+    #     bptr = ['foo%20', '㤀', '']
+    #     len(bptr) == 7
+    #     buf.size == 10
+    #
+    # So instead of
+    #
+    #     while r < buf.size
+    #
+    # we have to put
+    #
+    #     while r < min(buf.size, len(buf.ptr))
+    while r < min(buf.size, len(buf.ptr)):
         if buf.ptr[r] == '\\' and _cmark_cmark_ispunct(ord(buf.ptr[r + 1])):
             r += 1
 
         #     buf->ptr[w] = buf->ptr[r];
-        bptr = [buf.ptr[0:w - 1], buf.ptr[r], buf.ptr[w + 1:]]
+        bptr = [buf.ptr[:w], buf.ptr[r], buf.ptr[w + 1:]]
         buf.ptr = ''.join(bptr)
 
         w += 1
-
         r += 1
 
     _cmark_cmark_strbuf_truncate(buf, w)
