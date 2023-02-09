@@ -80,7 +80,7 @@ And more! See the
 ## Examples
 
 You can use md-toc in your blog, documentation based on markdown, GitHub pages,
-etc...
+markdown files in Nextcloud, etc...
 
 I use it in [my Jekyll-based blog](https://blog.franco.net.eu.org/)
 along with its

@@ -35,9 +35,9 @@ author = 'Franco Masotti'
 # built documents.
 #
 # The short X.Y version.
-version = '8.1.8'
+version = '8.1.9'
 # The full version, including alpha/beta/rc tags.
-release = '8.1.8'
+release = '8.1.9'
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #

@@ -171,7 +171,7 @@ Text
 ::
 
     Copyright (c) 2014, John MacFarlane
-    Copyright (c) 2021-2022, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
+    Copyright (c) 2021-2023, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
 
     All rights reserved.
 
@@ -274,7 +274,7 @@ Text
     buffer.h, buffer.c, chunk.h
 
     are derived from code (C) 2012 Github, Inc.
-    Copyright (C) 2021-2022, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
+    Copyright (C) 2021-2023, Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com) (for md-toc only)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
     this software and associated documentation files (the "Software"), to deal in
