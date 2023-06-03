@@ -32,6 +32,7 @@ if sys.version_info >= (3, 8):
 else:
     import importlib_metadata as metadata
 
+from . import generic
 from .api import build_multiple_tocs, write_strings_on_files_between_markers
 from .constants import common_defaults
 from .constants import parser as md_parser
@@ -47,9 +48,13 @@ except metadata.PackageNotFoundError:
 
 VERSION_COPYRIGHT = 'Copyright (C) 2017-2023 Franco Masotti, frnmst'
 VERSION_LICENSE = 'License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.'
-RETURN_VALUES = 'Return values: 0 ok, 1 error, 2 invalid command'
+RETURN_VALUES = 'Return values: 0 ok, 1 error, 2 invalid command, 128 TOC differs from the one in the file (see --diff option)'
 ADVICE = 'Please read the documentation to understand how each parser works'
 PROGRAM_EPILOG = ADVICE + '\n\n' + RETURN_VALUES + '\n\n' + VERSION_COPYRIGHT + '\n' + VERSION_LICENSE
+
+
+class TocDiffers(Exception):
+    r"""TOC differs."""
 
 
 class CliToApi():
@@ -92,8 +97,17 @@ class CliToApi():
                 newline_string=newline_string,
             )
         else:
-            for toc in toc_struct:
+            for i, toc in enumerate(toc_struct):
                 print(toc, end='')
+                if args.diff:
+                    toc_differs: bool = False
+                    r: tuple = generic._get_existing_toc(
+                        args.filename[i], args.toc_marker)
+                    old_toc: str = r[0]
+                    if toc.strip() != old_toc:
+                        toc_differs = True
+                    if toc_differs:
+                        raise TocDiffers
 
 
 class CliInterface():
@@ -314,6 +328,14 @@ class CliInterface():
             help='avoids adding indentations to the TOC',
         )
 
+        parser.add_argument(
+            '-d',
+            '--diff',
+            action='store_true',
+            help=('when printing the TOC to stdout (not in-place), returns \
+                  128 if the generated TOC differs from the one already \
+                  exiting in the file'),
+        )
         parser.add_argument(
             '-l',
             '--no-links',

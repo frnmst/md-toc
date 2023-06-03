@@ -24,7 +24,7 @@
 import sys
 import traceback
 
-from .cli import CliInterface
+from .cli import CliInterface, TocDiffers
 
 
 def main(args=None):
@@ -37,6 +37,8 @@ def main(args=None):
         if result is not None:
             print(result)
         retcode = 0
+    except TocDiffers:
+        retcode = 128
     except Exception:
         retcode = 1
         traceback.print_exc()

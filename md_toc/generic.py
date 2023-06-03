@@ -23,6 +23,8 @@
 
 import re
 
+import fpyutils
+
 
 # _ctoi and _isascii taken from cpython source Lib/curses/ascii.py
 # See:
@@ -45,6 +47,98 @@ def _ctoi(c: str):
 
 def _isascii(c):
     return 0 <= _ctoi(c) <= 127
+
+
+def _extract_lines(input_file: str, start: int, end: int) -> str:
+    r"""Extract lines from file between start and end line numbers, with line numbers starting from 1."""
+    lines: list = list()
+    line_counter: int = 1
+
+    with open(input_file, 'r') as f:
+        line = f.readline()
+        while line:
+            if line_counter >= start and line_counter <= end:
+                lines.append(line)
+            line = f.readline()
+            line_counter += 1
+
+    return ''.join(lines)
+
+
+def _remove_line_intervals(filename: str, line_intervals: list):
+    # A nested list of integers is expected.
+    # Example: [[1, 4], [8, 9]]
+    for i in line_intervals:
+        if i[0] < 1 or i[1] < 1 or i[0] > i[1]:
+            raise ValueError
+        fpyutils.filelines.remove_line_interval(
+            filename,
+            i[0],
+            i[1],
+            filename,
+        )
+
+
+def _get_existing_toc(filename: str, marker: str) -> tuple:
+    # TOC marker positions.
+    marker_line_positions, lines = fpyutils.filelines.get_line_matches(
+        filename,
+        marker,
+        0,
+        loose_matching=True,
+        keep_all_lines=True,
+    )
+    marker_line_positions_length: int = len(marker_line_positions)
+
+    old_toc: str = str()
+    first_marker: int = 1
+    second_marker: int = 2
+    two_or_more_markers: bool = False
+    done: bool = False
+    first_marker_line_number: int = 0
+    lines_to_delete: list = list()
+
+    if marker_line_positions_length > 0:
+        first_marker_line_number = marker_line_positions[first_marker]
+
+    # Possible pre-existing TOC.
+    while not done and marker_line_positions_length >= 2:
+
+        interval: str = _read_line_interval(
+            lines, marker_line_positions[first_marker] + 1,
+            marker_line_positions[second_marker] - 1)
+
+        # Line intervals excluding the newline after the first <!--TOC-->
+        # and before the last <!--TOC-->.
+        interval_with_newline: str = _read_line_interval(
+            lines, marker_line_positions[first_marker] + 2,
+            marker_line_positions[second_marker] - 2)
+
+        # TODO: add code fence detection.
+        if _detect_toc_list(interval_with_newline) or _string_empty(interval):
+
+            # Real TOC detected.
+            old_toc = _extract_lines(
+                filename, marker_line_positions[first_marker] + 1,
+                marker_line_positions[second_marker] - 1).strip()
+            lines_to_delete.append([
+                marker_line_positions[first_marker],
+                marker_line_positions[second_marker]
+            ])
+
+            first_marker_line_number = marker_line_positions[first_marker]
+            done = True
+
+        first_marker += 1
+        second_marker += 1
+        marker_line_positions_length -= 1
+        two_or_more_markers = True
+
+    # Only 1 pre-existing marker.
+    if not two_or_more_markers and marker_line_positions_length == 1:
+        old_toc = marker
+
+    return old_toc, lines_to_delete, two_or_more_markers, marker_line_positions_length, marker_line_positions, first_marker_line_number
 
 
 def _replace_substring(source: str, replacement: str, start: int,

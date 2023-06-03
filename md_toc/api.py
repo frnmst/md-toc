@@ -56,7 +56,7 @@ def write_string_on_file_between_markers(
          and the end of the string.
     :parameter newline_string: the new line separator.
          Defaults to ``os.linesep``.
-    :type filenames: str
+    :type filename: str
     :type string: str
     :type marker: str
     :type newline_string: str
@@ -68,66 +68,34 @@ def write_string_on_file_between_markers(
     if filename == '-':
         raise StdinIsNotAFileToBeWritten
 
-    final_string = ''.join([
+    # TOC that is written to the file.
+    final_toc_string: str = ''.join([
         marker, newline_string, newline_string,
         string.rstrip(), newline_string, newline_string, marker, newline_string
     ])
-    marker_line_positions, lines = fpyutils.filelines.get_line_matches(
-        filename,
-        marker,
-        0,
-        loose_matching=True,
-        keep_all_lines=True,
-    )
-    marker_line_positions_length: int = len(marker_line_positions)
 
-    first_marker: int = 1
-    second_marker: int = 2
-    in_loop: bool = False
-    done: bool = False
-    first_marker_position: int = 0
+    (
+        old_toc,
+        lines_to_delete,
+        two_or_more_markers,
+        marker_line_positions_length,
+        marker_line_positions,
+        first_marker_line_number,
+    ) = generic._get_existing_toc(filename, marker)
 
-    if marker_line_positions_length > 0:
-        first_marker_position = marker_line_positions[first_marker]
+    generic._remove_line_intervals(filename, lines_to_delete)
 
-    # Find appropriate TOC markers.
-    while not done and marker_line_positions_length >= 2:
-        interval: str = generic._read_line_interval(
-            lines, marker_line_positions[first_marker] + 1,
-            marker_line_positions[second_marker] - 1)
-        interval_with_offset: str = generic._read_line_interval(
-            lines, marker_line_positions[first_marker] + 2,
-            marker_line_positions[second_marker] - 2)
-        # TODO: add code fence detection.
-        if generic._detect_toc_list(
-                interval_with_offset) or generic._string_empty(interval):
-            fpyutils.filelines.remove_line_interval(
-                filename,
-                marker_line_positions[first_marker],
-                marker_line_positions[second_marker],
-                filename,
-            )
-            first_marker_position = marker_line_positions[first_marker]
-            done = True
+    # Only 1 pre-existing marker.
+    if not two_or_more_markers and marker_line_positions_length == 1:
+        generic._remove_line_intervals(
+            filename, [[marker_line_positions[1], marker_line_positions[1]]])
 
-        first_marker += 1
-        second_marker += 1
-        marker_line_positions_length -= 1
-        in_loop = True
-
-    if not in_loop and marker_line_positions_length == 1:
-        fpyutils.filelines.remove_line_interval(
-            filename,
-            marker_line_positions[1],
-            marker_line_positions[1],
-            filename,
-        )
-
+    # 2 or more pre-existing markers.
     if marker_line_positions_length >= 1:
         fpyutils.filelines.insert_string_at_line(
             filename,
-            final_string,
-            first_marker_position,
+            final_toc_string,
+            first_marker_line_number,
             filename,
             append=False,
             newline_character=newline_string,
