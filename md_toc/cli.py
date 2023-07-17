@@ -33,7 +33,11 @@ else:
     import importlib_metadata as metadata
 
 from . import generic
-from .api import build_multiple_tocs, write_strings_on_files_between_markers
+from .api import (
+    build_multiple_tocs,
+    tocs_equal,
+    write_strings_on_files_between_markers,
+)
 from .constants import common_defaults
 from .constants import parser as md_parser
 
@@ -53,14 +57,10 @@ ADVICE = 'Please read the documentation to understand how each parser works'
 PROGRAM_EPILOG = ADVICE + '\n\n' + RETURN_VALUES + '\n\n' + VERSION_COPYRIGHT + '\n' + VERSION_LICENSE
 
 
-class TocDiffers(Exception):
-    r"""TOC differs."""
-
-
 class CliToApi():
     """An interface between the CLI and API functions."""
 
-    def write_toc(self, args):
+    def write_toc(self, args) -> bool:
         """Write the table of contents."""
         ordered = False
         if args.ordered_list_marker is not None:
@@ -89,8 +89,11 @@ class CliToApi():
             constant_ordered_list=args.constant_ordered_list,
             newline_string=newline_string,
         )
+
+        equal: bool = True
+
         if args.in_place:
-            write_strings_on_files_between_markers(
+            equal = write_strings_on_files_between_markers(
                 filenames=args.filename,
                 strings=toc_struct,
                 marker=args.toc_marker,
@@ -100,14 +103,15 @@ class CliToApi():
             for i, toc in enumerate(toc_struct):
                 print(toc, end='')
                 if args.diff:
-                    toc_differs: bool = False
-                    r: tuple = generic._get_existing_toc(
-                        args.filename[i], args.toc_marker)
-                    old_toc: str = r[0]
-                    if toc.strip() != old_toc:
-                        toc_differs = True
-                    if toc_differs:
-                        raise TocDiffers
+                    equal &= tocs_equal(toc, args.filename[i], args.toc_marker)
+
+        diff: bool = False
+        if equal is False:
+            diff = True
+
+        # Return that the TOC(s) is differing only if the `--diff` argument
+        # was selected, i.e.: `args.diff`.
+        return diff & args.diff
 
 
 class CliInterface():
@@ -332,9 +336,9 @@ class CliInterface():
             '-d',
             '--diff',
             action='store_true',
-            help=('when printing the TOC to stdout (not in-place), returns \
-                  128 if the generated TOC differs from the one already \
-                  exiting in the file'),
+            help=(
+                'returns 128 if the newly generated TOC differs from the one \
+                  already existing in the file'),
         )
         parser.add_argument(
             '-l',

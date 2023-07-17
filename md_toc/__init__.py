@@ -41,6 +41,7 @@ from .api import (
     remove_html_tags,
     replace_and_split_newlines,
     toc_renders_as_coherent_list,
+    tocs_equal,
     write_string_on_file_between_markers,
     write_strings_on_files_between_markers,
 )

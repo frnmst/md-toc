@@ -2,7 +2,7 @@
 #
 # tests.py
 #
-# Copyright (C) 2017-2022 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
+# Copyright (C) 2017-2023 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
 #
 # This file is part of md-toc.
 #
@@ -131,6 +131,74 @@ REDCARPET_LINE_FOO = 'foo'
 
 class TestGeneric(unittest.TestCase):
     r"""Test the generic functions."""
+
+    def test__replace_substring(self):
+        r"""Test that the string is replaced with another one between the two specified indices."""
+        self.assertEqual(generic._replace_substring(str(), str(), 0, 0), str())
+        self.assertEqual(generic._replace_substring(str(), str(), 1024, 1024),
+                         str())
+
+        self.assertEqual(
+            generic._replace_substring(str(), CMARK_LINE_FOO, 0, 0), str())
+        self.assertEqual(
+            generic._replace_substring(CMARK_LINE_FOO, str(), 0, 0), 'oo')
+        self.assertEqual(
+            generic._replace_substring(str(), CMARK_LINE_FOO, 0, 0), str())
+        # Replace first 'f' of 'foo' with 'foo' -> 'foo|oo'
+        self.assertEqual(
+            generic._replace_substring(CMARK_LINE_FOO, CMARK_LINE_FOO, 0, 0),
+            'foooo')
+        # Replace first 'o' of 'foo' with 'foo' -> 'f|foo|o'
+        self.assertEqual(
+            generic._replace_substring(CMARK_LINE_FOO, CMARK_LINE_FOO, 1, 1),
+            'ffooo')
+        # Replace last 'o' of 'foo' with 'foo' -> 'fo|foo'
+        self.assertEqual(
+            generic._replace_substring(CMARK_LINE_FOO, CMARK_LINE_FOO, 2, 2),
+            'fofoo')
+        # Replace last 'oo' of 'foo' with 'foo' -> 'f|foo'
+        self.assertEqual(
+            generic._replace_substring(CMARK_LINE_FOO, CMARK_LINE_FOO, 1, 2),
+            'ffoo')
+        # Replace 'foo' with 'foo' -> 'foo'
+        self.assertEqual(
+            generic._replace_substring(CMARK_LINE_FOO, CMARK_LINE_FOO, 0, 2),
+            CMARK_LINE_FOO)
+
+        # Check the single replacement policy.
+        # Replace the first 'o' of the second 'foo' of 'foofoofoofoo' with 'a' -> 'foof|a|foo'
+        self.assertEqual(
+            generic._replace_substring(
+                CMARK_LINE_FOO + CMARK_LINE_FOO + CMARK_LINE_FOO +
+                CMARK_LINE_FOO, 'a', 4, 8), 'foofafoo')
+
+        self.assertEqual(generic._replace_substring('b', 'a', 0, 0), 'a')
+        self.assertEqual(generic._replace_substring('b', 'a', 0, 1), 'a')
+        self.assertEqual(generic._replace_substring('b', 'a', 1, 1), 'b')
+
+        self.assertEqual(generic._replace_substring('bcdef', 'a', 4, 4),
+                         'bcdea')
+        self.assertEqual(generic._replace_substring('bcdef', 'a', 0, 0),
+                         'acdef')
+
+        self.assertEqual(generic._replace_substring('bcdef', 'a', 1, 4), 'ba')
+        self.assertEqual(
+            generic._replace_substring('bcdef', 'a', 1, 999999999999), 'ba')
+        self.assertEqual(generic._replace_substring('bcdef', 'a', 0, 2), 'aef')
+        self.assertEqual(
+            generic._replace_substring('bcdef', 'a', 0, 999999999999), 'a')
+
+        with self.assertRaises(TypeError):
+            generic._replace_substring(['ba'], 'a', 0, 0)
+        with self.assertRaises(TypeError):
+            generic._replace_substring('ba', ['a'], 0, 0)
+        with self.assertRaises(TypeError):
+            generic._replace_substring(['ba'], ['a'], 0, 0)
+
+        with self.assertRaises(ValueError):
+            generic._replace_substring('ba', 'a', 1, 0)
+        with self.assertRaises(ValueError):
+            generic._replace_substring('ba', 'a', 4, 2)
 
     def test__string_empty(self):
         r"""A string is empty if it contains whitespace characters, excluding consecutive sequences of \n\r."""
@@ -308,6 +376,10 @@ class TestApi(pyfakefsTestCase):
     def setUp(self):
         r"""Fake filesystem."""
         self.setUpPyfakefs()
+
+    @unittest.skip("empty test")
+    def test_tocs_equal(self):
+        r"""Test if two TOCs are equal."""
 
     def test_write_string_on_file_between_markers(self):
         r"""Test that the TOC is written correctly on the file.

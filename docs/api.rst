@@ -31,6 +31,7 @@ output types.
 .. autofunction:: is_opening_code_fence
 .. autofunction:: is_closing_code_fence
 .. autofunction:: init_indentation_status_list
+.. autofunction:: tocs_equal
 .. autofunction:: toc_renders_as_coherent_list
 .. autofunction:: remove_html_tags
 .. autofunction:: remove_emphasis

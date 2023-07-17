@@ -48,7 +48,7 @@ repos:
 #              args: ['--no-strict-optional', '--ignore-missing-imports', '--show-error-context', '--show-error-codes', '--follow-imports', 'silent']
 
 -   repo: https://github.com/pycqa/isort
-    rev: '5.11.4'
+    rev: '5.12.0'
     hooks:
     -   id: isort
 

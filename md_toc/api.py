@@ -42,12 +42,33 @@ from .exceptions import (
 )
 
 
+def tocs_equal(current_toc: str, filename: str, marker: str) -> bool:
+    r"""Check if the TOC already present in a file is the samw of the one passed to this function.
+
+    :parameter current_toc: the new or current TOC. Do not include the ``<!--TOC-->\n\n`` and ``\n\n<!--TOC-->``.
+    :parameter filename: the filename with the TOC for the comparison already present in the file.
+    :parameter marker: the TOC marker.
+    :type current_toc: str
+    :type filename: str
+    :type marker: str
+    :returns: ``True`` if the two TOCs are the same, ``False`` otherwise
+    :rtype: bool
+    :raises: a built-in exception.
+    """
+    tocs_equal: bool = False
+    r: tuple = generic._get_existing_toc(filename, marker)
+    old_toc: str = r[0]
+    if current_toc.strip() == old_toc:
+        tocs_equal = True
+    return tocs_equal
+
+
 def write_string_on_file_between_markers(
     filename: str,
     string: str,
     marker: str,
     newline_string: str = common_defaults['newline string'],
-):
+) -> bool:
     r"""Write the table of contents on a single file.
 
     :parameter filename: the file that needs to be read or modified.
@@ -60,8 +81,8 @@ def write_string_on_file_between_markers(
     :type string: str
     :type marker: str
     :type newline_string: str
-    :returns: None
-    :rtype: None
+    :returns: ``True`` if new TOC is the same as the exising one, ``False`` otherwise.
+    :rtype: bool
     :raises: StdinIsNotAFileToBeWritten or an fpyutils exception
          or a built-in exception.
     """
@@ -83,6 +104,10 @@ def write_string_on_file_between_markers(
         first_marker_line_number,
     ) = generic._get_existing_toc(filename, marker)
 
+    equal: bool = False
+    if string.strip() == old_toc:
+        equal = True
+
     generic._remove_line_intervals(filename, lines_to_delete)
 
     # Only 1 pre-existing marker.
@@ -101,13 +126,15 @@ def write_string_on_file_between_markers(
             newline_character=newline_string,
         )
 
+    return equal
+
 
 def write_strings_on_files_between_markers(
     filenames: list,
     strings: list,
     marker: str,
     newline_string: str = common_defaults['newline string'],
-):
+) -> bool:
     r"""Write the table of contents on multiple files.
 
     :parameter filenames: the files that needs to be read or modified.
@@ -121,8 +148,9 @@ def write_strings_on_files_between_markers(
     :type strings: list
     :type marker: str
     :type newline_string: str
-    :returns: None
-    :rtype: None
+    :returns: ``True`` if all TOCs are the same as the existing ones, ``False``
+         otherwise.
+    :rtype: bool
     :raises: an fpyutils exception or a built-in exception.
     """
     if not len(filenames) == len(strings):
@@ -137,10 +165,13 @@ def write_strings_on_files_between_markers(
                 raise TypeError
 
     file_id = 0
+    equal: bool = True
     for f in filenames:
-        write_string_on_file_between_markers(f, strings[file_id], marker,
-                                             newline_string)
+        equal &= write_string_on_file_between_markers(f, strings[file_id],
+                                                      marker, newline_string)
         file_id += 1
+
+    return equal
 
 
 def build_toc(

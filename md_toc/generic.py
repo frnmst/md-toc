@@ -143,7 +143,17 @@ def _get_existing_toc(filename: str, marker: str) -> tuple:
 
 def _replace_substring(source: str, replacement: str, start: int,
                        end: int) -> str:
-    r"""Given a string called source, replace it with a string called replacement between the start ~ end interval."""
+    r"""Given a string called source, replace it with a string called replacement between the start and end indices interval."""
+    # Avoid possibility to pass lists to this function which the program would
+    # happily process.
+    if not isinstance(source, str):
+        raise TypeError
+    if not isinstance(replacement, str):
+        raise TypeError
+
+    if start > end:
+        raise ValueError
+
     replaced: list = list()
     replaced_str: str
     was_replaced: bool = False
@@ -153,6 +163,7 @@ def _replace_substring(source: str, replacement: str, start: int,
         if i < start or i > end:
             replaced.append(source[i])
         elif not was_replaced:
+            # Only one replacement is possible.
             replaced.append(replacement)
             was_replaced = True
         i += 1
@@ -161,8 +172,8 @@ def _replace_substring(source: str, replacement: str, start: int,
     return replaced_str
 
 
-# A weaker version of C's strncmp: this one does not count the characters
-# it just notify if there are differences.
+# A weaker version of C's strncmp: this one does not count the characters,
+# it just notifies if there are differences.
 def _strncmp(s1: str, s2: str, length: int) -> int:
     i: int = 0
     retval: int = 0
