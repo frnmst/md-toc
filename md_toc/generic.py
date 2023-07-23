@@ -51,6 +51,9 @@ def _isascii(c):
 
 def _extract_lines(input_file: str, start: int, end: int) -> str:
     r"""Extract lines from file between start and end line numbers, with line numbers starting from 1."""
+    if start > end or start < 1 or end < 1:
+        raise ValueError
+
     lines: list = list()
     line_counter: int = 1
 
@@ -66,20 +69,23 @@ def _extract_lines(input_file: str, start: int, end: int) -> str:
 
 
 def _remove_line_intervals(filename: str, line_intervals: list):
-    # A nested list of integers is expected.
+    # A nested list of integers divided in couples is expected.
     # Example: [[1, 4], [8, 9]]
-    for i in line_intervals:
-        if i[0] < 1 or i[1] < 1 or i[0] > i[1]:
+    for interval in line_intervals:
+        if len(interval) != 2 or interval[0] < 1 or interval[
+                1] < 1 or interval[0] > interval[1]:
             raise ValueError
+
         fpyutils.filelines.remove_line_interval(
             filename,
-            i[0],
-            i[1],
+            interval[0],
+            interval[1],
             filename,
         )
 
 
 def _get_existing_toc(filename: str, marker: str) -> tuple:
+    r"""Get the existing TOC in a file and return other important data about the TOC and its markers."""
     # TOC marker positions.
     marker_line_positions, lines = fpyutils.filelines.get_line_matches(
         filename,
@@ -117,10 +123,17 @@ def _get_existing_toc(filename: str, marker: str) -> tuple:
         # TODO: add code fence detection.
         if _detect_toc_list(interval_with_newline) or _string_empty(interval):
 
-            # Real TOC detected.
-            old_toc = _extract_lines(
-                filename, marker_line_positions[first_marker] + 1,
-                marker_line_positions[second_marker] - 1).strip()
+            # Skip the opening and closing TOC markers.
+            start_line: int = marker_line_positions[first_marker] + 1
+            end_line: int = marker_line_positions[second_marker] - 1
+
+            if start_line <= end_line:
+                # Real TOC detected.
+                old_toc = _extract_lines(filename, start_line,
+                                         end_line).strip()
+            else:
+                old_toc = str()
+
             lines_to_delete.append([
                 marker_line_positions[first_marker],
                 marker_line_positions[second_marker]
@@ -134,7 +147,7 @@ def _get_existing_toc(filename: str, marker: str) -> tuple:
         marker_line_positions_length -= 1
         two_or_more_markers = True
 
-    # Only 1 pre-existing marker.
+    # Only 1 pre-existing marker. TOC is just the marker.
     if not two_or_more_markers and marker_line_positions_length == 1:
         old_toc = marker
 

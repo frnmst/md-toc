@@ -129,8 +129,119 @@ GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST = 4
 REDCARPET_LINE_FOO = 'foo'
 
 
-class TestGeneric(unittest.TestCase):
+class TestGeneric(pyfakefsTestCase):
     r"""Test the generic functions."""
+
+    def setUp(self):
+        r"""Fake filesystem."""
+        self.setUpPyfakefs()
+
+    def test__extract_lines(self):
+        r"""Test extracting lines between line intervals."""
+        with open('foo.md', 'w') as f:
+            f.write(CMARK_LINE_FOO)
+        self.assertEqual(generic._extract_lines('foo.md', 2, 2), str())
+        self.assertEqual(generic._extract_lines('foo.md', 1024, 2048), str())
+        self.assertEqual(generic._extract_lines('foo.md', 1, 1),
+                         CMARK_LINE_FOO)
+
+        with open('foo.md', 'w') as f:
+            f.write(CMARK_LINE_FOO + LINE_LINE_FEED + CMARK_LINE_BAR)
+        self.assertEqual(generic._extract_lines('foo.md', 2, 2),
+                         CMARK_LINE_BAR)
+        self.assertEqual(generic._extract_lines('foo.md', 1, 2),
+                         CMARK_LINE_FOO + LINE_LINE_FEED + CMARK_LINE_BAR)
+
+        with open('foo.md', 'w') as f:
+            f.write(CMARK_LINE_FOO + LINE_LINE_FEED + CMARK_LINE_BAR +
+                    LINE_LINE_FEED)
+        self.assertEqual(
+            generic._extract_lines('foo.md', 1, 1024),
+            CMARK_LINE_FOO + LINE_LINE_FEED + CMARK_LINE_BAR + LINE_LINE_FEED)
+        self.assertEqual(generic._extract_lines('foo.md', 2, 2),
+                         CMARK_LINE_BAR + LINE_LINE_FEED)
+        self.assertEqual(generic._extract_lines('foo.md', 2, 3),
+                         CMARK_LINE_BAR + LINE_LINE_FEED)
+
+        with self.assertRaises(ValueError):
+            generic._extract_lines('foo.md', 0, 0)
+        with self.assertRaises(ValueError):
+            generic._extract_lines('foo.md', 0, 1)
+        with self.assertRaises(ValueError):
+            generic._extract_lines('foo.md', 1, 0)
+
+    def test__remove_line_intervals(self):
+        r"""Test removing multiple line intervals from a file."""
+        with open('foo.md', 'w') as f:
+            f.write(CMARK_LINE_FOO + LINE_LINE_FEED + CMARK_LINE_FOO +
+                    LINE_LINE_FEED)
+        with self.assertRaises(ValueError):
+            generic._remove_line_intervals('foo.md', [[1, 2], [4, 5, 6]])
+        with self.assertRaises(ValueError):
+            generic._remove_line_intervals('foo.md', [[1, 2, 3], [4, 5]])
+        with self.assertRaises(ValueError):
+            generic._remove_line_intervals('foo.md', [[2, 1]])
+        with self.assertRaises(ValueError):
+            generic._remove_line_intervals('foo.md', [[0, 1]])
+        with self.assertRaises(ValueError):
+            generic._remove_line_intervals('foo.md', [[1, 0]])
+
+        # The rest of the function involves fpyutils.
+
+    def test__get_existing_toc(self):
+        r"""Test retrieving the existing TOC. See the TestApi.test_write_string_on_file_between_markers method for more tests."""
+        # The function returns:
+        # old_toc, lines_to_delete, two_or_more_markers, marker_line_positions_length, marker_line_positions, first_marker_line_number
+
+        # No existing TOC == str().
+        with open('foo.md', 'w') as f:
+            f.write(H1 + S1 + CMARK_LINE_FOO)
+        self.assertEqual(generic._get_existing_toc('foo.md', '<!--TOC-->'),
+                         (str(), list(), False, 0, dict(), 0))
+
+        # 1 TOC marker: TOC == marker.
+        with open('foo.md', 'w') as f:
+            f.write(MARKER + LINE_LINE_FEED + H1 + S1 + CMARK_LINE_FOO)
+        self.assertEqual(generic._get_existing_toc('foo.md', MARKER),
+                         (MARKER, list(), False, 1, {
+                             1: 1
+                         }, 1))
+
+        # Normal existing TOC (2 TOC markers)
+        with open('foo.md', 'w') as f:
+            f.write(MARKER + LINE_LINE_FEED + LINE_LINE_FEED + '- [t](#t)' +
+                    LINE_LINE_FEED + LINE_LINE_FEED + MARKER + LINE_LINE_FEED +
+                    LINE_LINE_FEED + H1 + S1 + CMARK_LINE_FOO)
+        self.assertEqual(generic._get_existing_toc('foo.md', MARKER),
+                         ('- [t](#t)', [[1, 5]], True, 1, {
+                             1: 1,
+                             2: 5
+                         }, 1))
+
+        # More than 2 TOC markers
+        with open('foo.md', 'w') as f:
+            f.write(MARKER + LINE_LINE_FEED + LINE_LINE_FEED + '- [t](#t)' +
+                    LINE_LINE_FEED + LINE_LINE_FEED + MARKER + LINE_LINE_FEED +
+                    MARKER + LINE_LINE_FEED + LINE_LINE_FEED + H1 + S1 +
+                    CMARK_LINE_FOO)
+        self.assertEqual(generic._get_existing_toc('foo.md', MARKER),
+                         ('- [t](#t)', [[1, 5]], True, 2, {
+                             1: 1,
+                             2: 5,
+                             3: 6
+                         }, 1))
+
+        # 2 markers, wrong TOC content (not a TOC)
+        with open('foo.md', 'w') as f:
+            f.write(MARKER + LINE_LINE_FEED + LINE_LINE_FEED +
+                    '     - [t](#t)' + LINE_LINE_FEED + LINE_LINE_FEED +
+                    MARKER + LINE_LINE_FEED + LINE_LINE_FEED + H1 + S1 +
+                    CMARK_LINE_FOO)
+        self.assertEqual(generic._get_existing_toc('foo.md', MARKER),
+                         (str(), list(), True, 1, {
+                             1: 1,
+                             2: 5
+                         }, 1))
 
     def test__replace_substring(self):
         r"""Test that the string is replaced with another one between the two specified indices."""
