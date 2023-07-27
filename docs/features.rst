@@ -37,7 +37,7 @@ Inputs and outputs
      - `markdown-toc-cli <https://github.com/noahp/markdown-toc-cli>`_
      - `toc2md <https://pypi.org/project/toc2md/>`_
    * - Indented & non-indented list
-     - ✓
+     - `✓ <https://github.com/frnmst/md-toc/tree/3.0.0>`__
      - ✘
      - ✘
      - ?
@@ -79,7 +79,7 @@ Inputs and outputs
      - ?
      - ?
    * - Reads from stdin
-     - ✓
+     - `✓ <https://github.com/frnmst/md-toc/commit/ef68c4d9e4105c2715ab74d469be0e056a8f6ee0#diff-1c6dd8036ee0b1a4a2b976f322be3ca690e3d367b2c58184d86028d941227016>`__
      - ✓
      - ✓
      - ?
@@ -107,7 +107,7 @@ Inputs and outputs
      - ?
      - ?
    * - Non-markdown output
-     - ✘ [P]
+     - `P <https://blog.franco.net.eu.org/software/CHANGELOG-md-toc.html#plan-for-1000>`__
      - ✘
      - ✓
      - ?
@@ -178,6 +178,20 @@ Inputs and outputs
      - ?
    * - Remove TOC marker after inserting TOC inplace
      - ✘
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
+   * - Detect differences between existing TOC in file and newly generated one
+     - `✓ <https://github.com/frnmst/md-toc/issues/40>`__
      - ?
      - ?
      - ?
@@ -283,7 +297,7 @@ Filtering
      - ?
      - ?
    * - Skip headings based on a marker
-     - `✘ <https://github.com/frnmst/md-toc/issues/37>`_
+     - `P <https://github.com/frnmst/md-toc/issues/37>`__
      - ✘
      - ✘
      - ✘
@@ -425,7 +439,7 @@ Other
      - ?
      - ?
    * - pre-commit hook
-     - ✓
+     - `✓ <https://github.com/frnmst/md-toc/commit/32f61e749abf65ae1f77602efd116fedf6960369#diff-63a9c44a44acf85fea213a857769990937107cf072831e1a26808cfde9d096b9>`__
      - ?
      - ?
      - ?

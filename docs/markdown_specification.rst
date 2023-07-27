@@ -418,6 +418,13 @@ Version 8
      - latest version
      - ``cmark``
      - v3.5.0
+   * - 8.2.0
+     - 0.30.0
+     - ``github``
+     - 0.29.gfm.0 [#f2]_
+     - latest version
+     - ``cmark``
+     - v3.5.0
 
 
 .. |r1| replace:: https://github.com/vmg/redcarpet/tree/26c80f05e774b31cd01255b0fa62e883ac185bf3
