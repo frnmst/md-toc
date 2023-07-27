@@ -1,6 +1,9 @@
 Features
 ========
 
+Feature tables and comparisons with other similar projects. Listed features
+correspond to the latest versions of these programs.
+
 ===     ===============
 Key     Meaning
 ===     ===============
@@ -36,6 +39,11 @@ Inputs and outputs
      - `mdtoc <https://github.com/scottfrazer/mdtoc>`_
      - `markdown-toc-cli <https://github.com/noahp/markdown-toc-cli>`_
      - `toc2md <https://pypi.org/project/toc2md/>`_
+     - `github-markdown-toc.go <https://github.com/ekalinin/github-markdown-toc.go>`_
+     - `markdown-toc-generator <https://github.com/SixArm/markdown-toc-generator>`_
+     - `make-toc.sh <https://github.com/bkrem/make-toc.sh>`_
+     - `markdown-toc-bash <https://github.com/Lirt/markdown-toc-bash>`_
+     - `md_toc <https://github.com/smallgram/md_toc>`_
    * - Indented & non-indented list
      - `✓ <https://github.com/frnmst/md-toc/tree/3.0.0>`__
      - ✘
@@ -46,6 +54,11 @@ Inputs and outputs
      - ✓
      - ?
      - ✘
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
      - ?
      - ?
      - ?
@@ -64,6 +77,11 @@ Inputs and outputs
      - ?
      - ?
      - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
    * - Anchor links & plain text list
      - ✓
      - ✘
@@ -74,6 +92,11 @@ Inputs and outputs
      - ✓
      - ✓
      - ✘
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
      - ?
      - ?
      - ?
@@ -92,6 +115,11 @@ Inputs and outputs
      - ?
      - ?
      - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
    * - Inplace & stdout
      - ✓
      - ✓
@@ -102,6 +130,11 @@ Inputs and outputs
      - ✓
      - ✘
      - ✘
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
      - ?
      - ?
      - ?
@@ -120,6 +153,11 @@ Inputs and outputs
      - ?
      - ?
      - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
    * - List marker selection
      - ✓
      - ✘
@@ -130,6 +168,11 @@ Inputs and outputs
      - ?
      - ?
      - ✘
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
      - ?
      - ?
      - ?
@@ -148,6 +191,11 @@ Inputs and outputs
      - ?
      - ?
      - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
    * - Universal anchor links
      - ✘
      - ?
@@ -162,9 +210,19 @@ Inputs and outputs
      - ?
      - ?
      - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
    * - Last TOC update string
      - ✘
      - ✓
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
      - ?
      - ?
      - ?
@@ -190,8 +248,18 @@ Inputs and outputs
      - ?
      - ?
      - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
    * - Detect differences between existing TOC in file and newly generated one
      - `✓ <https://github.com/frnmst/md-toc/issues/40>`__
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
      - ?
      - ?
      - ?
@@ -226,6 +294,11 @@ Filtering
      - `mdtoc <https://github.com/scottfrazer/mdtoc>`_
      - `markdown-toc-cli <https://github.com/noahp/markdown-toc-cli>`_
      - `toc2md <https://pypi.org/project/toc2md/>`_
+     - `github-markdown-toc.go <https://github.com/ekalinin/github-markdown-toc.go>`_
+     - `markdown-toc-generator <https://github.com/SixArm/markdown-toc-generator>`_
+     - `make-toc.sh <https://github.com/bkrem/make-toc.sh>`_
+     - `markdown-toc-bash <https://github.com/Lirt/markdown-toc-bash>`_
+     - `md_toc <https://github.com/smallgram/md_toc>`_
    * - Max header level in TOC
      - ✓
      - ✘
@@ -236,6 +309,11 @@ Filtering
      - ✘
      - ✓
      - ✘
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
      - ?
      - ?
      - ?
@@ -254,6 +332,11 @@ Filtering
      - ?
      - ?
      - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
    * - Skip first n lines
      - ✓
      - ✘
@@ -264,6 +347,11 @@ Filtering
      - ✘
      - ✘
      - ✘
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
      - ?
      - ?
      - ?
@@ -282,6 +370,11 @@ Filtering
      - ?
      - ?
      - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
    * - Skip headings regex pattern
      - ✘
      - ✘
@@ -292,6 +385,11 @@ Filtering
      - ✘
      - ✘
      - ✘
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
      - ?
      - ?
      - ?
@@ -310,9 +408,19 @@ Filtering
      - ?
      - ?
      - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
    * - Skip all headings before the TOC marker
      - ✘
      - ✓
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
      - ?
      - ?
      - ?
@@ -346,6 +454,11 @@ Remote usage
      - `mdtoc <https://github.com/scottfrazer/mdtoc>`_
      - `markdown-toc-cli <https://github.com/noahp/markdown-toc-cli>`_
      - `toc2md <https://pypi.org/project/toc2md/>`_
+     - `github-markdown-toc.go <https://github.com/ekalinin/github-markdown-toc.go>`_
+     - `markdown-toc-generator <https://github.com/SixArm/markdown-toc-generator>`_
+     - `make-toc.sh <https://github.com/bkrem/make-toc.sh>`_
+     - `markdown-toc-bash <https://github.com/Lirt/markdown-toc-bash>`_
+     - `md_toc <https://github.com/smallgram/md_toc>`_
    * - Works offline
      - ✓
      - ✘
@@ -360,6 +473,11 @@ Remote usage
      - ✓
      - ✓
      - ?
+     - ✘
+     - ?
+     - ?
+     - ?
+     - ?
    * - Remote markdown files
      - ✘
      - ✓
@@ -373,6 +491,11 @@ Remote usage
      - ✘
      - ✘
      - ✘
+     - ?
+     - ✓
+     - ?
+     - ?
+     - ?
      - ?
 
 Other
@@ -396,6 +519,11 @@ Other
      - `mdtoc <https://github.com/scottfrazer/mdtoc>`_
      - `markdown-toc-cli <https://github.com/noahp/markdown-toc-cli>`_
      - `toc2md <https://pypi.org/project/toc2md/>`_
+     - `github-markdown-toc.go <https://github.com/ekalinin/github-markdown-toc.go>`_
+     - `markdown-toc-generator <https://github.com/SixArm/markdown-toc-generator>`_
+     - `make-toc.sh <https://github.com/bkrem/make-toc.sh>`_
+     - `markdown-toc-bash <https://github.com/Lirt/markdown-toc-bash>`_
+     - `md_toc <https://github.com/smallgram/md_toc>`_
    * - Provides CLI
      - ✓
      - ✓
@@ -405,6 +533,11 @@ Other
      - ✓
      - ✓
      - ✘
+     - ✓
+     - ?
+     - ?
+     - ?
+     - ?
      - ✓
      - ?
      - ?
@@ -424,6 +557,11 @@ Other
      - ?
      - ?
      - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
    * - Tries to follow markdown specs literally
      - ✓
      - ?
@@ -438,8 +576,18 @@ Other
      - ?
      - ?
      - ?
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
    * - pre-commit hook
      - `✓ <https://github.com/frnmst/md-toc/commit/32f61e749abf65ae1f77602efd116fedf6960369#diff-63a9c44a44acf85fea213a857769990937107cf072831e1a26808cfde9d096b9>`__
+     - ?
+     - ?
+     - ?
+     - ?
+     - ?
      - ?
      - ?
      - ?
@@ -461,6 +609,11 @@ Other
      - ✘
      - ✘
      - ✓
+     - ✓
+     - ?
+     - ?
+     - ?
+     - ?
      - ✓
      - ?
      - ?
