@@ -33,7 +33,10 @@ doc:
 		&& deactivate
 
 install:
-	pip3 install . --user
+	# pip 23 introduced the '--break-system-packages' option.
+	python3 -c 'import pip; import sys; sys.exit(0) if int(pip.__version__.split(".")[0]) >= 23 else sys.exit(1)' \
+		&& pip3 install --break-system-packages . --user \
+		|| pip3 install . --user
 
 uninstall:
 	pip3 uninstall --verbose --yes $(PACKAGE_NAME)
