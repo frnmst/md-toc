@@ -58,7 +58,7 @@ after md-toc and similar tools were created:
 - works offline
 - edits file in place using a TOC marker (default `<!--TOC-->`) or
   output to standard output
-- selection of indentation level
+- maximum heading level selection (1 to 6)
 - list indentation based on heading, which can optionally be disabled
 - outputs an ordered or unordered TOC list
 - creates anchor links to markdown headings by default or a plain list
@@ -71,7 +71,7 @@ after md-toc and similar tools were created:
 - selection of newline string
 - selection of list marker
 - supports GitHub, GitLab, Commonmark, Redcarpet and others
-- [pre-commit](https://pre-commit.com/)
+- [pre-commit](https://pre-commit.com/) md-toc
   [hook](https://docs.franco.net.eu.org/md-toc/pre_commit_hook.html)
 
 And more! See the
