@@ -31,7 +31,7 @@ Automatically generate and add an accurate table of contents to markdown files.
 
 ## Video
 
-[![image](https://asciinema.org/a/452384.png)](https://asciinema.org/a/452384)
+[![image](./assets/md-toc_youtube_video_thumbnail.png)](https://www.youtube.com/watch?v=guyVdPNmC0A&t=49s)
 
 ## Description
 
@@ -60,7 +60,7 @@ after md-toc and similar tools were created:
   output to standard output
 - maximum heading level selection (1 to 6)
 - list indentation based on heading, which can optionally be disabled
-- outputs an ordered or unordered TOC list
+- outputs an ordered or unordered TOC list with list marker selection
 - creates anchor links to markdown headings by default or a plain list
   as alternative
 - checks if heading level is coherent: this avoid creating an
@@ -69,7 +69,8 @@ after md-toc and similar tools were created:
 - can read content from standard input
 - handles multiple files at once
 - selection of newline string
-- selection of list marker
+- check if there is difference between existing TOC in file and newly generated
+  one
 - supports GitHub, GitLab, Commonmark, Redcarpet and others
 - [pre-commit](https://pre-commit.com/) md-toc
   [hook](https://docs.franco.net.eu.org/md-toc/pre_commit_hook.html)

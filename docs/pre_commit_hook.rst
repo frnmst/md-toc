@@ -7,14 +7,12 @@ This repo provides the following :download:`plugin <../.pre-commit-hooks.yaml>` 
    :language: yaml
    :caption: The .pre-commit-hooks.yaml file
    :name: .pre-commit-hooks.yaml
-   :linenos:
 
 Add a ``.pre-commit-config.yaml`` file in the root of your git repo.
 These are the default plugin settings
 
 .. code-block:: yaml
    :caption: A simple example of a .pre-commit-config.yaml file
-   :linenos:
    :name: .pre-commit-config.yaml simple
 
     repos:
@@ -28,7 +26,6 @@ You can override the defaults via the ``args`` parameter, such as
 
 .. code-block:: yaml
    :caption: Example of arguments passed as a pre-commit
-   :linenos:
    :name: .pre-commit-config.yaml args
 
     repos:
@@ -68,7 +65,7 @@ This is what I use in some repositories
 
    -  repo: https://codeberg.org/frnmst/md-toc
       # Remember to keep md-toc up-to-date!
-      rev: '8.1.8'  # set a specific git tag
+      rev: '8.2.0'  # set a specific git tag
       hooks:
       -    id: md-toc
            args: [-p, 'cmark', '-l6']  # CLI options
