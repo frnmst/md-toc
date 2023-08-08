@@ -37,7 +37,7 @@ author = 'Franco Masotti'
 # The short X.Y version.
 version = '8.2.0'
 # The full version, including alpha/beta/rc tags.
-release = '8.1.9'
+release = '8.2.0'
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
