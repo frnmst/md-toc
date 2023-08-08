@@ -39,7 +39,10 @@ install:
 		|| pip3 install . --user
 
 uninstall:
-	pip3 uninstall --verbose --yes $(PACKAGE_NAME)
+	# pip 23 introduced the '--break-system-packages' option.
+	python3 -c 'import pip; import sys; sys.exit(0) if int(pip.__version__.split(".")[0]) >= 23 else sys.exit(1)' \
+		&& pip3 uninstall --break-system-packages --verbose --yes $(PACKAGE_NAME) \
+		|| pip3 uninstall --verbose --yes $(PACKAGE_NAME)
 
 install-dev:
 	python3 -m venv .venv
