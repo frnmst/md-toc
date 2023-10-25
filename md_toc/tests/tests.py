@@ -2764,8 +2764,10 @@ class TestApi(pyfakefsTestCase):
         header_duplicate_counter = dict()
         api.build_anchor_link(LINE, header_duplicate_counter, parser='github')
         api.build_anchor_link(LINE, header_duplicate_counter, parser='github')
-        for k in header_duplicate_counter:
+        [
             self.assertEqual(header_duplicate_counter[k], 2)
+            for k in header_duplicate_counter
+        ]
 
         # Check if the exception is raised for newlines.
         header_duplicate_counter = dict()

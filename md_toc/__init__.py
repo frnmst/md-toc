@@ -55,3 +55,10 @@ from .exceptions import (
     StringCannotContainNewlines,
     TocDoesNotRenderAsCoherentList,
 )
+from .types import (
+    AtxHeadingStructElement,
+    Header,
+    HeaderDuplicateCounter,
+    HeaderTypeCounter,
+    IndentationLogElement,
+)

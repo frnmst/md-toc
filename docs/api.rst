@@ -48,3 +48,14 @@ Exceptions
 .. autoexception:: TocDoesNotRenderAsCoherentList
 .. autoexception:: StringCannotContainNewlines
 .. autoexception:: CannotTreatUnicodeString
+
+Types
+-----
+
+These are complex ``dict`` types.
+
+.. autoclass:: IndentationLogElement
+.. autoclass:: Header
+.. autoclass:: HeaderTypeCounter
+.. autoclass:: HeaderDuplicateCounter
+.. autoclass:: AtxHeadingStructElement

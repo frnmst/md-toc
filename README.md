@@ -23,6 +23,8 @@ Automatically generate and add an accurate table of contents to markdown files.
   - [API examples](#api-examples)
   - [Documentation](#documentation)
   - [CLI Helps](#cli-helps)
+  - [Extras](#extras)
+    - [HTML output](#html-output)
   - [License](#license)
   - [Changelog and trusted source](#changelog-and-trusted-source)
   - [Crypto donations](#crypto-donations)
@@ -240,7 +242,7 @@ Test
 
 <https://docs.franco.net.eu.org/md-toc/>
 
-Please read carefully the
+Please read the
 [Markdown specification](https://docs.franco.net.eu.org/md-toc/markdown_specification.html)
 section of the documentation to learn how this program parsers markdown
 files and builds a correct output.
@@ -255,6 +257,18 @@ $ md_toc github --help
 $ md_toc gitlab --help
 $ md_toc goldmark --help
 $ md_toc redcarpet --help
+```
+
+## Extras
+
+### HTML output
+
+If you use [Pandoc](https://docs.python.org/3.11/library/typing.html) you can
+generate an HTML output starting from a markdown file. You can do something
+like:
+
+```shell
+pandoc --from=commonmark --to=html -o a.html README.md
 ```
 
 ## License

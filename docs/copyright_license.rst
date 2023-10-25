@@ -24,6 +24,7 @@ Files
 - ``./md_toc/__init__.py``
 - ``./md_toc/tests/tests.py``
 - ``./md_toc/tests/__init__.py``
+- ``./md_toc/types.py``
 
 Text
 ````
