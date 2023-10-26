@@ -221,7 +221,7 @@ def _strncmp(s1: str, s2: str, length: int) -> int:
     return retval
 
 
-def _utf8_array_to_string(array: list) -> str:
+def _utf8_array_to_string(array: list[int]) -> str:
     r"""Given an array of integers corresponding to the representation of a UTF-8 string like this.
 
     >>> list(chr(0x10348).encode('UTF-8'))

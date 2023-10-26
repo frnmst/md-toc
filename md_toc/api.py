@@ -22,6 +22,7 @@
 """The main file."""
 
 import copy
+import hashlib
 import os
 import re
 import sys
@@ -902,19 +903,28 @@ def build_anchor_link(
             # Two or more hyphens in a row are converted to one.
             header_text_trimmed = re.sub('-+', '-', header_text_trimmed)
 
+        # Use a checksum to reduce memory usage on the dict:
+        #
+        # import sys
+        # size = getsizeof(header_duplicate_counter)
+        # size += sum(map(getsizeof, header_duplicate_counter.values())) + sum(map(getsizeof, header_duplicate_counter.keys()))
+        #
+        # See also
+        # https://stackoverflow.com/a/6579816
+        ht_checksum = hashlib.sha1(
+            header_text_trimmed.encode('UTF-8')).hexdigest()
         # Check for duplicates.
-        ht = header_text_trimmed
         # Set the initial value if we are examining the first occurrency.
         # The state of header_duplicate_counter is available to the caller
         # functions.
-        if header_text_trimmed not in header_duplicate_counter:
-            header_duplicate_counter[header_text_trimmed] = 0
-        if header_duplicate_counter[header_text_trimmed] > 0:
+        if ht_checksum not in header_duplicate_counter:
+            header_duplicate_counter[ht_checksum] = 0
+        if header_duplicate_counter[ht_checksum] > 0:
             header_text_trimmed = ''.join([
                 header_text_trimmed, '-',
-                str(header_duplicate_counter[header_text_trimmed])
+                str(header_duplicate_counter[ht_checksum])
             ])
-        header_duplicate_counter[ht] += 1
+        header_duplicate_counter[ht_checksum] += 1
         return header_text_trimmed
     elif parser in ['redcarpet']:
         # To ensure full compatibility what follows is a direct translation
