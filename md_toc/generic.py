@@ -22,6 +22,7 @@
 """Generic functions."""
 
 import re
+import typing
 
 import fpyutils
 
@@ -34,7 +35,7 @@ import fpyutils
 # These two functions are released under the
 # PYTHON SOFTWARE FOUNDATION LICENSE VERSION 2
 # See https://directory.fsf.org/wiki/License:Python-2.0.1
-def _ctoi(c: str):
+def _ctoi(c: str) -> int:
     if not len(c) == 1:
         raise ValueError
 
@@ -45,7 +46,7 @@ def _ctoi(c: str):
     return retval
 
 
-def _isascii(c):
+def _isascii(c) -> int:
     return 0 <= _ctoi(c) <= 127
 
 
@@ -54,11 +55,11 @@ def _extract_lines(input_file: str, start: int, end: int) -> str:
     if start > end or start < 1 or end < 1:
         raise ValueError
 
-    lines: list = list()
+    lines: list[str] = list()
     line_counter: int = 1
 
     with open(input_file, 'r') as f:
-        line = f.readline()
+        line: str = f.readline()
         while line:
             if line_counter >= start and line_counter <= end:
                 lines.append(line)
@@ -68,7 +69,8 @@ def _extract_lines(input_file: str, start: int, end: int) -> str:
     return ''.join(lines)
 
 
-def _remove_line_intervals(filename: str, line_intervals: list):
+def _remove_line_intervals(filename: str,
+                           line_intervals: list[list[typing.Sequence]]):
     # A nested list of integers divided in couples is expected.
     # Example: [[1, 4], [8, 9]]
     for interval in line_intervals:
@@ -168,7 +170,6 @@ def _replace_substring(source: str, replacement: str, start: int,
         raise ValueError
 
     replaced: list = list()
-    replaced_str: str
     was_replaced: bool = False
     i: int = 0
 
@@ -181,8 +182,7 @@ def _replace_substring(source: str, replacement: str, start: int,
             was_replaced = True
         i += 1
 
-    replaced_str = ''.join(replaced)
-    return replaced_str
+    return ''.join(replaced)
 
 
 # A weaker version of C's strncmp: this one does not count the characters,
@@ -247,22 +247,20 @@ def _utf8_array_to_string(array: list[int]) -> str:
     a = _utf8_array_to_string(vv)
     assert a == chr(36)
     """
-    array_length: int = len(array)
-    result: str
     ll: list
     binary: list
     raw_binary_8_bit: list
 
     # Not a UTF-8 array.
-    if array_length < 1 or array_length > 4:
+    if len(array) < 1 or len(array) > 4:
         raise ValueError
 
-    if array_length == 1:
+    if len(array) == 1:
         ll = [array[0] - (array[0] & 0x0)]
         binary = [bin(f).replace('0b', '') for f in ll]
         raw_binary_8_bit = [binary[0].zfill(7)]
 
-    if array_length == 2:
+    if len(array) == 2:
         ll = [
             array[0] - (array[0] & 0xC0),
             array[1] - (array[1] & 0x80),
@@ -273,7 +271,7 @@ def _utf8_array_to_string(array: list[int]) -> str:
             binary[1].zfill(6),
         ]
 
-    if array_length == 3:
+    if len(array) == 3:
         ll = [
             array[0] - (array[0] & 0xE0),
             array[1] - (array[1] & 0x80),
@@ -286,7 +284,7 @@ def _utf8_array_to_string(array: list[int]) -> str:
             binary[2].zfill(6),
         ]
 
-    if array_length == 4:
+    if len(array) == 4:
         ll = [
             array[0] - (array[0] & 0xF0),
             array[1] - (array[1] & 0x80),
@@ -301,9 +299,7 @@ def _utf8_array_to_string(array: list[int]) -> str:
             binary[3].zfill(6),
         ]
 
-    result = chr(int(''.join(raw_binary_8_bit), 2))
-
-    return result
+    return chr(int(''.join(raw_binary_8_bit), 2))
 
 
 def _string_empty(lines: str) -> bool:
@@ -326,7 +322,7 @@ def _detect_toc_list(line: str) -> bool:
     # https://spec.commonmark.org/0.30/#example-288
     # and
     # https://spec.commonmark.org/0.30/#example-289
-    match = True
+    match: bool = True
     if re.fullmatch(
             r' {0,3}([-+*]|' + r'\d' + '+[.' + r'\)' +
             '])\u0020((?![\u0020\u0009\u000b]+).*)', line) is None:
@@ -346,7 +342,6 @@ def _read_line_interval(lines: str, start: int, end: int) -> str:
     line_counter: int = 1
     lines_length: int = len(lines)
     final_line: list = list()
-    final_line_str: str
 
     # Shortcut.
     if start > end or start < 1:
@@ -385,8 +380,7 @@ def _read_line_interval(lines: str, start: int, end: int) -> str:
 
         i += 1
 
-    final_line_str = ''.join(final_line)
-    return final_line_str
+    return ''.join(final_line)
 
 
 if __name__ == '__main__':

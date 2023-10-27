@@ -158,7 +158,7 @@ def write_strings_on_files_between_markers(
     if not len(filenames) == len(strings):
         raise ValueError
 
-    file_id = 0
+    file_id: int = 0
     equal: bool = True
     for f in filenames:
         equal &= write_string_on_file_between_markers(f, strings[file_id],
