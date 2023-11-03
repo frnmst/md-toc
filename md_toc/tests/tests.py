@@ -1256,6 +1256,7 @@ class TestApi(pyfakefsTestCase):
             'type': GENERIC_HEADER_TYPE_CURR,
             'text_original': LINE,
             'text_anchor_link': LINE,
+            'visible': True,
         }
 
         # Unordered.

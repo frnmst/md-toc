@@ -47,17 +47,22 @@ class IndentationLogElement(TypedDict, total=False):
 class Header(TypedDict):
     r"""A ``header`` object.
 
-    :parameter type:
-    :parameter text_original:
-    :parameter text_anchor_link:
+    :parameter type: h1 to h6 (``1`` -> ``6``).
+    :parameter text_original: Raw text.
+    :parameter text_anchor_link: Transformed text so it works as an anchor
+       link.
+    :parameter visible: if ``True`` the header needs to be visible, if
+       ``False`` it will not.
     :type type: int
     :type text_original: str
     :type text_anchor_link: str
+    :type visible: bool
     """
 
     type: int
     text_original: str
     text_anchor_link: str
+    visible: bool
 
 
 class HeaderTypeCounter(TypedDict, total=False):
