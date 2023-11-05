@@ -13,6 +13,10 @@ output types.
 .. important:: If you are a developer and you need a quick way to generate
                a TOC, the function you may want to use is `build_toc <#md_toc.build_toc>`_
 
+               Starting from version 9 all the functions will only be
+               accessible via the full module path. For example
+               ``md_toc.build_toc`` will become ``md_toc.api.build_toc``.
+
 .. _type hints: https://docs.python.org/3/library/typing.html
 
 .. autofunction:: get_atx_heading

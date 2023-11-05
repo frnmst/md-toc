@@ -163,10 +163,18 @@ texinfo_documents = [
 ]
 
 html_theme_options = {
-    'repository_url': 'https://software.franco.net.eu.org/frnmst/md-toc',
-    'use_repository_button': True,
-    'use_download_button': True,
-    'use_issues_button': True,
+    'repository_url':
+    'https://software.franco.net.eu.org/frnmst/md-toc',
+    'use_repository_button':
+    True,
+    'use_download_button':
+    True,
+    'use_issues_button':
+    True,
+    'announcement':
+    ('⚠️starting from version 9 all the functions will only be accessible via '
+     'the full module path. For example: md_toc.build_toc(...) will become '
+     'md_toc.api.build_toc(...)⚠️'),
 }
 
 html_baseurl = 'https://docs.franco.net.eu.org/md-toc/'
