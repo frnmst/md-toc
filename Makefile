@@ -30,6 +30,7 @@ default: install-dev
 doc:
 	$(VENV_CMD) \
 		&& $(MAKE) -C docs html \
+		&& $(MAKE) -C docs latexpdf \
 		&& deactivate
 
 install:

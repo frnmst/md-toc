@@ -97,14 +97,16 @@ html_css_files = ['css/custom.css']
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'md-tocdoc'
+htmlhelp_basename = 'md-toc-doc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
+latex_engine = 'xelatex'
 latex_elements = {
+
     # The paper size ('letterpaper' or 'a4paper').
     #
-    # 'papersize': 'letterpaper',
+    'papersize': 'a4paper',
 
     # The font size ('10pt', '11pt' or '12pt').
     #
@@ -158,7 +160,7 @@ texinfo_documents = [
         'md-toc Documentation',
         author,
         'md-toc',
-        'One line description of project.',
+        'Generate table of contents for markdown files.',
         'Miscellaneous',
     ),
 ]
