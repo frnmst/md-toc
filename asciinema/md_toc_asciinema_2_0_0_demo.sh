@@ -3,7 +3,7 @@
 #
 # md_toc_asciinema_2_0_0_demo.sh
 #
-# Copyright (C) 2017-2018 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
+# Copyright (C) 2017-2018 Franco Masotti (see /README.md)
 #
 # This file is part of md-toc.
 #

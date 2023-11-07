@@ -27,7 +27,7 @@ Automatically generate and add an accurate table of contents to markdown files.
     - [HTML output](#html-output)
   - [License](#license)
   - [Changelog and trusted source](#changelog-and-trusted-source)
-  - [Crypto donations](#crypto-donations)
+  - [Support this project](#support-this-project)
 
 <!--TOC-->
 
@@ -273,7 +273,7 @@ pandoc --from=commonmark --to=html -o a.html README.md
 
 ## License
 
-Copyright (C) 2017-2023 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
+Copyright (C) 2017-2023 Franco Masotti [Franco Masotti](https://blog.franco.net.eu.org/about/#contacts)
 
 md-toc is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -295,8 +295,9 @@ You can check the authenticity of new releases using my public key.
 Changelogs, instructions, sources and keys can be found at
 [blog.franco.net.eu.org/software/#md-toc](https://blog.franco.net.eu.org/software/#md-toc).
 
-## Crypto donations
+## Support this project
 
+- [Buy Me a Coffee](https://www.buymeacoffee.com/frnmst)
 - Bitcoin: `bc1qnkflazapw3hjupawj0lm39dh9xt88s7zal5mwu`
 - Monero: `84KHWDTd9hbPyGwikk33Qp5GW7o7zRwPb8kJ6u93zs4sNMpDSnM5ZTWVnUp2cudRYNT6rNqctnMQ9NbUewbj7MzCBUcrQEY`
 - Dogecoin: `DMB5h2GhHiTNW7EcmDnqkYpKs6Da2wK3zP`

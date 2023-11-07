@@ -1,14 +1,14 @@
-# Maintainer: Franco Masotti <franco dot masotti at tutanota dot com>
-# Contributor: Franco Masotti <franco dot masotti at tutanota dot com>
+# Maintainer: Franco Masotti (See /README.md in project source)
+# Contributor: Franco Masotti (See /README.md in project source)
 pkgname=python-md_toc
-pkgver=8.2.0
+pkgver=8.2.1
 pkgrel=1
 pkgdesc="Automatically generate and add an accurate table of contents to markdown files"
 arch=('any')
 url="https://blog.franco.net.eu.org/software/#md-toc"
 license=('GPL3')
 depends=('python'
-         'python-fpyutils=3.0.1')
+         'python-fpyutils=4.0.0')
 makedepends=('python-pyfakefs'
              'python-build'
              'python-installer'

@@ -3,7 +3,7 @@
 #
 # python -m md_toc_asciinema_8_1_0_demo.sh
 #
-# Copyright (C) 2021 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
+# Copyright (C) 2021 Franco Masotti (see /README.md)
 #
 # This file is part of md-toc.
 #

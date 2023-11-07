@@ -2,7 +2,7 @@
 #
 # tests.py
 #
-# Copyright (C) 2017-2023 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
+# Copyright (C) 2017-2023 Franco Masotti (see /README.md)
 #
 # This file is part of md-toc.
 #

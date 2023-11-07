@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2022 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
+# Copyright (C) 2022 Franco Masotti (see /README.md)
 #
 # This file is part of md-toc.
 #
