@@ -1,49 +1,8 @@
-@media (min-width:540px) {
- .container,
- .container-sm {
-  max-width:100%;
- }
-}
-@media (min-width:720px) {
- .container,
- .container-md,
- .container-sm {
-  max-width:100%;
- }
-}
-@media (min-width:960px) {
- .container,
- .container-lg,
- .container-md,
- .container-sm {
- max-width:100%;
- }
-}
-@media (min-width:1200px) {
- .container,
- .container-lg,
- .container-md,
- .container-sm,
- .container-xl {
-  max-width:100%;
- }
-}
-
-/* set the background color to black when client requests dark mode and invert the colors
- * from post by user lewisl9029: https://news.ycombinator.com/item?id=26472246
- * See also https://github.com/pages-themes/primer/issues/64
+/* See
+ * https://github.com/executablebooks/sphinx-book-theme/issues/732
  */
-@media (prefers-color-scheme: dark) {
-    body {
-        background-color: black;
-        filter:  brightness(.9) contrast(1.2) hue-rotate(180deg) invert(80%);
-    }
-  img {
-    filter: brightness(.6) contrast(1.2) invert(-80%) grayscale(50%);
-  }
-}
-@media (prefers-color-scheme: light) {
- img {
-  filter:grayscale(50%)
- }
+.bd-sidebar-primary div#rtd-footer-container {
+    bottom:-1rem;
+    margin:-1rem;
+    position:fixed;
 }

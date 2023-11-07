@@ -1,6 +1,6 @@
 # requirements-dev.txt
 #
-# Copyright (C) 2022 Franco Masotti (franco \D\o\T masotti {-A-T-} tutanota \D\o\T com)
+# Copyright (C) 2022-2023 Franco Masotti (see /README.md)
 #
 # This file is part of md-toc.
 #
@@ -19,17 +19,16 @@
 #
 
 # Documentation.
-sphinx-book-theme>=0.3.3,<0.4
-Sphinx==4.5.0
+sphinx-book-theme>=1.0,<1.1
 sphinx-copybutton>=0.5,<0.6
 
 # Unit tests.
 pyfakefs>=4,<5
 
 # Tools.
-twine>=3,<4
-build>=0.9,<0.10
-pre-commit>=2,<3
+twine>=4,<5
+build>=1.0,<1.1
+pre-commit>=3,<4
 
 # Demo.
 asciinema>=2,<3
