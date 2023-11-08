@@ -87,6 +87,6 @@ repos:
         pass_filenames: false
 
 -   repo: https://github.com/jorisroovers/gitlint
-    rev: 'v0.19.1'
+    rev: 'v0.18.0'
     hooks:
     -   id: gitlint

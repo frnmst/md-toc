@@ -82,7 +82,7 @@ update: install-dev
 
 test:
 	$(VENV_CMD) \
-		&& python -m unittest $(PACKAGE_NAME).tests.tests --failfast --locals --verbose \
+		&& tox run-parallel \
 		&& deactivate
 
 pre-commit:

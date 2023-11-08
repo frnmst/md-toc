@@ -1,1 +1,1 @@
-fpyutils>=3.0.1,<4
+fpyutils>=4.0.1,<5

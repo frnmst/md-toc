@@ -22,10 +22,10 @@
 sphinx-book-theme>=1.0,<1.1
 sphinx-copybutton>=0.5,<0.6
 
-# Unit tests.
-pyfakefs>=4,<5
+# Unit tests, see tox section in setup.cfg.
 
 # Tools.
+tox>=4,<5
 twine>=4,<5
 build>=1.0,<1.1
 pre-commit>=3,<4

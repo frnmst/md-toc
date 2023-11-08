@@ -92,6 +92,9 @@ html_theme = 'sphinx_book_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# These paths are either relative to html_static_path
+# or fully qualified paths (eg. https://...)
 html_css_files = ['css/custom.css']
 
 # -- Options for HTMLHelp output ------------------------------------------
@@ -183,12 +186,6 @@ html_theme_options = {
 }
 
 html_baseurl = 'https://docs.franco.net.eu.org/md-toc/'
-
-# These paths are either relative to html_static_path
-# or fully qualified paths (eg. https://...)
-html_css_files = [
-    'css/custom.css',
-]
 
 pygments_style = 'default'
 html_last_updated_fmt = '%Y-%m-%d %H:%M:%S %z'
