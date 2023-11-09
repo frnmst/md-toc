@@ -22,7 +22,7 @@
 sphinx-book-theme>=1.0,<1.1
 sphinx-copybutton>=0.5,<0.6
 
-# Unit tests, see tox section in setup.cfg.
+# Unit tests, see `[tox:tox]` section in setup.cfg.
 
 # Tools.
 tox>=4,<5
