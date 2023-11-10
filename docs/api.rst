@@ -1,65 +1,50 @@
 Developer Interface
 ===================
 
-.. module:: md_toc
-
-Main Interface
---------------
-
-Examples for the most relevant api functions can be viewed in the test
-file. md_toc's API uses `type hints`_ instead of assertions to check input and
-output types.
+Functions
+---------
 
 .. important:: If you are a developer and you need a quick way to generate
-               a TOC, the function you may want to use is `build_toc <#md_toc.build_toc>`_
+               a TOC, the function you may want to use is `build_toc <#md_toc.api.build_toc>`_
 
-               Starting from version 9 all the functions will only be
-               accessible via the full module path. For example
-               ``md_toc.build_toc`` will become ``md_toc.api.build_toc``.
+.. autosummary::
+   :nosignatures:
+   :recursive:
 
-.. _type hints: https://docs.python.org/3/library/typing.html
+   md_toc.api.get_atx_heading
+   md_toc.api.get_md_header
+   md_toc.api.build_toc_line
+   md_toc.api.increase_index_ordered_list
+   md_toc.api.build_anchor_link
+   md_toc.api.build_toc
+   md_toc.api.build_multiple_tocs
+   md_toc.api.write_string_on_file_between_markers
+   md_toc.api.write_strings_on_files_between_markers
+   md_toc.api.init_indentation_log
+   md_toc.api.compute_toc_line_indentation_spaces
+   md_toc.api.build_toc_line_without_indentation
+   md_toc.api.is_valid_code_fence_indent
+   md_toc.api.is_opening_code_fence
+   md_toc.api.is_closing_code_fence
+   md_toc.api.init_indentation_status_list
+   md_toc.api.tocs_equal
+   md_toc.api.toc_renders_as_coherent_list
+   md_toc.api.remove_html_tags
+   md_toc.api.remove_emphasis
+   md_toc.api.replace_and_split_newlines
+   md_toc.api.filter_indices_from_line
 
-.. autofunction:: get_atx_heading
-.. autofunction:: get_md_header
-.. autofunction:: build_toc_line
-.. autofunction:: increase_index_ordered_list
-.. autofunction:: build_anchor_link
-.. autofunction:: build_toc
-.. autofunction:: build_multiple_tocs
-.. autofunction:: write_string_on_file_between_markers
-.. autofunction:: write_strings_on_files_between_markers
-.. autofunction:: init_indentation_log
-.. autofunction:: compute_toc_line_indentation_spaces
-.. autofunction:: build_toc_line_without_indentation
-.. autofunction:: is_valid_code_fence_indent
-.. autofunction:: is_opening_code_fence
-.. autofunction:: is_closing_code_fence
-.. autofunction:: init_indentation_status_list
-.. autofunction:: tocs_equal
-.. autofunction:: toc_renders_as_coherent_list
-.. autofunction:: remove_html_tags
-.. autofunction:: remove_emphasis
-.. autofunction:: replace_and_split_newlines
-.. autofunction:: filter_indices_from_line
+.. automodule:: md_toc.api
+   :members:
 
 Exceptions
 ----------
 
-.. autoexception:: GithubOverflowCharsLinkLabel
-.. autoexception:: GithubEmptyLinkLabel
-.. autoexception:: GithubOverflowOrderedListMarker
-.. autoexception:: StdinIsNotAFileToBeWritten
-.. autoexception:: TocDoesNotRenderAsCoherentList
-.. autoexception:: StringCannotContainNewlines
-.. autoexception:: CannotTreatUnicodeString
+.. automodule:: md_toc.exceptions
+   :members:
 
 Types
 -----
 
-These are complex ``dict`` types.
-
-.. autoclass:: IndentationLogElement
-.. autoclass:: Header
-.. autoclass:: HeaderTypeCounter
-.. autoclass:: HeaderDuplicateCounter
-.. autoclass:: AtxHeadingStructElement
+.. automodule:: md_toc.types
+   :members:

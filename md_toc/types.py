@@ -19,7 +19,7 @@
 # You should have received a copy of the GNU General Public License
 # along with md-toc.  If not, see <http://www.gnu.org/licenses/>.
 #
-r"""Complex dict type definitions."""
+r"""Complex ``dict`` type definitions."""
 from typing import TypedDict
 
 

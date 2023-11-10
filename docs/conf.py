@@ -47,8 +47,8 @@ release = '8.2.2'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc', 'sphinx.ext.coverage', 'sphinx.ext.graphviz',
-    'sphinx_copybutton'
+    'sphinx.ext.autodoc', 'sphinx.ext.autosummary', 'sphinx.ext.coverage',
+    'sphinx.ext.graphviz', 'sphinx_copybutton'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -169,20 +169,12 @@ texinfo_documents = [
 ]
 
 html_theme_options = {
-    'repository_provider':
-    'github',
-    'repository_url':
-    'https://software.franco.net.eu.org/frnmst/md-toc',
-    'use_repository_button':
-    True,
-    'use_download_button':
-    True,
-    'use_issues_button':
-    True,
-    'announcement':
-    ('⚠️starting from version 9 all the functions will only be accessible via '
-     'the full module path. For example: md_toc.build_toc(...) will become '
-     'md_toc.api.build_toc(...)⚠️'),
+    'repository_provider': 'github',
+    'repository_url': 'https://software.franco.net.eu.org/frnmst/md-toc',
+    'use_repository_button': True,
+    'use_download_button': True,
+    'use_issues_button': True,
+    'announcement': '⚠️ Thank you for using md-toc ⚠️'
 }
 
 html_baseurl = 'https://docs.franco.net.eu.org/md-toc/'

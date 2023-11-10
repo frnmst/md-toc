@@ -10,10 +10,7 @@ md-toc documentation
    markdown_specification
    rules/index
    pre_commit_hook
-   contributing
-   workflow
-   source_code
-   copyright_license
+   meta
 
 Indices and tables
 ==================
