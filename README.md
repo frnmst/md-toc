@@ -263,7 +263,7 @@ $ md_toc redcarpet --help
 
 ### HTML output
 
-If you use [Pandoc](https://docs.python.org/3.11/library/typing.html) you can
+If you use [Pandoc](https://pandoc.org/) you can
 generate an HTML output starting from a markdown file. You can do something
 like:
 
