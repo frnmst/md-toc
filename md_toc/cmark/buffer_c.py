@@ -25,7 +25,6 @@ import copy
 import sys
 
 from ..constants import parser as md_parser
-from ..generic import _utf8_array_to_string
 from .buffer_h import _cmark_CMARK_BUF_INIT, _cmarkCmarkStrbuf
 from .cmark_ctype_c import _cmark_cmark_ispunct, _cmark_cmark_isspace
 from .cmark_h import _cmarkCmarkMem
@@ -153,6 +152,8 @@ def _cmark_cmark_strbuf_put(
     data: str,
     length: int,
 ):
+    dt: str
+
     if length <= 0:
         return
 
@@ -161,14 +162,23 @@ def _cmark_cmark_strbuf_put(
     # Alternative to
     #     memmove(buf.ptr + buf.size, data, len)
     if isinstance(data, list):
-        dt = _utf8_array_to_string(data)
+        # See
+        # https://stackoverflow.com/a/5661889
+        dt = bytearray(data).decode('UTF-8')
     else:
         dt = data
-    buf.ptr = buf.ptr[:buf.size - 1] + copy.deepcopy(
-        dt[:length - 0])  # + buf.ptr[buf.size + 1:]
 
+    # buf.ptr =
+    #   buf.ptr[0] -> buf.ptr[buf.size - 1]
+    #   +
+    #   dt[0] -> dt[length - 1]
+    #   +
+    #   buf.ptr[buf.size + 1 + length] ->  buf.ptr[-1]
+    buf.ptr = ''.join([
+        buf.ptr[:buf.size],
+        copy.deepcopy(dt[:length]), buf.ptr[buf.size + 1 + length:]
+    ])
     buf.size += length
-
     # No need for line terminator.
     #     buf.ptr[buf.size] = '\0';
 
