@@ -44,10 +44,3 @@ class TocDoesNotRenderAsCoherentList(Exception):
 
 class StringCannotContainNewlines(Exception):
     """The specified string cannot contain newlines."""
-
-
-class CannotTreatUnicodeString(Exception):
-    """Cannot treat unicode string.
-
-    .. note:: This exception is deprecated and will be removed in the next major release.
-    """
