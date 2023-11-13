@@ -45,17 +45,18 @@ MAX_HEADER_STEP = 50
 
 def _generate_random_characters(size: int,
                                 min_header_step: int = 10,
-                                max_header_step: int = 1000) -> str:
+                                max_header_step: int = 1000) -> bytes:
     secret_gen: random.SystemRandom = secrets.SystemRandom()
     alphanumerics: str = ''.join([string.ascii_letters, string.digits])
 
     # Do not use '#' as content to avoid triggering an empty link label exception.
-    printable_except_hash: str = string.printable.replace('#', '')
+    alphabet: str = string.printable.replace('#', '')
 
-    file_content: str = ''.join(
-        [secrets.choice(printable_except_hash) for i in range(0, size)])
-    string_buf = ctypes.create_string_buffer(bytes(file_content, 'UTF-8'),
-                                             size=size + 1)
+    string_buf = ctypes.create_string_buffer(
+        bytes(''.join(secrets.choice(alphabet) for i in range(0, size)),
+              'UTF-8'),
+        size=size + 1,
+    )
 
     if min_header_step < 10 or max_header_step < min_header_step:
         # 10 - 1 = header (maximum 6) + '\n' + space + alphanum char
@@ -80,7 +81,7 @@ def _generate_random_characters(size: int,
 
         j += 1
 
-    return string_buf.value.decode('UTF-8')
+    return string_buf.value
 
 
 if __name__ == '__main__':
@@ -117,11 +118,11 @@ if __name__ == '__main__':
                     _generate_random_characters(
                         CHAR_SIZE,
                         min_header_step=MIN_HEADER_STEP,
-                        max_header_step=MAX_HEADER_STEP).encode('UTF-8'))
+                        max_header_step=MAX_HEADER_STEP))
                 print('building TOC...')
                 try:
                     start = time.time()
-                    md_toc.build_toc(filename=fp.name, parser=p)
+                    md_toc.api.build_toc(filename=fp.name, parser=p)
                     end = time.time()
                     avg.append(end - start)
                     print('total_time: ' + str(avg[-1]))

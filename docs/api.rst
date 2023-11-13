@@ -26,9 +26,7 @@ Functions
    md_toc.api.is_valid_code_fence_indent
    md_toc.api.is_opening_code_fence
    md_toc.api.is_closing_code_fence
-   md_toc.api.init_indentation_status_list
    md_toc.api.tocs_equal
-   md_toc.api.toc_renders_as_coherent_list
    md_toc.api.remove_html_tags
    md_toc.api.remove_emphasis
    md_toc.api.replace_and_split_newlines

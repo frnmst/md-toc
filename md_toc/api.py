@@ -278,8 +278,6 @@ def build_toc(
 
     line = f.readline()
     indentation_log = init_indentation_log(parser, list_marker)
-    if not no_indentation and not no_list_coherence:
-        indentation_list: list[bool] = init_indentation_status_list(parser)
     is_within_code_fence = False
     code_fence = None
     is_document_end = False
@@ -355,14 +353,14 @@ def build_toc(
                     # without indentation.
                 else:
                     if not no_list_coherence:
+                        # In-place list coherence checks can be made using only
+                        # the first, current and previous header types.
                         if header_type_first == 0:
                             header_type_first = header_type_curr
-                        if not toc_renders_as_coherent_list(
-                                header_type_curr,
-                                header_type_first,
-                                indentation_list,
-                                parser,
-                        ):
+                        if header_type_prev == 0:
+                            header_type_prev = header_type_curr
+                        if (header_type_curr < header_type_first
+                                or header_type_curr > header_type_prev + 1):
                             raise TocDoesNotRenderAsCoherentList
 
                     compute_toc_line_indentation_spaces(
@@ -1524,94 +1522,6 @@ def is_closing_code_fence(
         return False
 
     return False
-
-
-def init_indentation_status_list(parser: str = 'github') -> list[bool]:
-    r"""Create a data structure that holds the state of indentations.
-
-    :parameter parser: decides the length of the list.
-         Defaults to ``github``.
-    :type parser: str
-    :returns: indentation_list, a list that contains the state of
-         indentations given a header type.
-    :rtype: list
-    :raises: a built-in exception.
-    """
-    indentation_list: list[bool] = list()
-
-    if parser in [
-            'github', 'cmark', 'gitlab', 'commonmarker', 'goldmark',
-            'redcarpet'
-    ]:
-        indentation_list = [
-            False for i in range(0, md_parser[parser]['header']['max levels'])
-        ]
-
-    return indentation_list
-
-
-def toc_renders_as_coherent_list(
-    header_type_curr: int = 1,
-    header_type_first: int = 1,
-    indentation_list: list[bool] = init_indentation_status_list('github'),
-    parser: str = 'github',
-) -> bool:
-    r"""Check if the TOC will render as a working list.
-
-    :parameter header_type_curr: the current type of header (h[1,...,Inf]).
-    :parameter header_type_first: the type of header first encountered (h[1,...,Inf]).
-         This must correspond to the one with the least indentation.
-    :parameter indentation_list: a list that holds the state of indentations.
-    :parameter parser: decides rules on how to generate ordered list markers.
-    :type header_type_curr: int
-    :type header_type_first: int
-    :type indentation_list: list
-    :type parser: str
-    :returns: renders_as_list
-    :rtype: bool
-    :raises: a built-in exception.
-
-    .. note: this function modifies the input list.
-    """
-    if not header_type_curr >= 1:
-        raise ValueError
-    if not header_type_first >= 1:
-        raise ValueError
-    if parser in [
-            'github', 'cmark', 'gitlab', 'commonmarker', 'goldmark',
-            'redcarpet'
-    ]:
-        if not len(
-                indentation_list) == md_parser[parser]['header']['max levels']:
-            raise ValueError
-
-    renders_as_list: bool = True
-    if parser in [
-            'github', 'cmark', 'gitlab', 'commonmarker', 'goldmark',
-            'redcarpet'
-    ]:
-        # Update with current information.
-        indentation_list[header_type_curr - 1] = True
-
-        # Reset next cells to False, as a detection mechanism.
-        for i in range(
-                header_type_curr,
-                md_parser['github']['header']['max levels'],
-        ):
-            indentation_list[i] = False
-
-        # Check for previous False cells. If there is a "hole" in the list
-        # it means that the TOC will have "wrong" indentation spaces, thus
-        # either not rendering as an HTML list or not as the user intended.
-        i = header_type_curr - 1
-        while i >= header_type_first - 1 and indentation_list[i]:
-            i -= 1
-        if i >= header_type_first - 1:
-            renders_as_list = False
-        if header_type_curr < header_type_first:
-            renders_as_list = False
-
-    return renders_as_list
 
 
 if __name__ == '__main__':
