@@ -46,6 +46,8 @@ MAX_HEADER_STEP = 50
 def _generate_random_characters(size: int,
                                 min_header_step: int = 10,
                                 max_header_step: int = 1000) -> bytes:
+    print('generating random file...')
+
     secret_gen: random.SystemRandom = secrets.SystemRandom()
     alphanumerics: str = ''.join([string.ascii_letters, string.digits])
 
@@ -68,10 +70,6 @@ def _generate_random_characters(size: int,
     j: int = 1
     for i in range(0, size,
                    secret_gen.randrange(min_header_step, max_header_step)):
-        # Reset header level.
-        if j % 6 == 1:
-            j = 1
-
         if i + j + 3 < size:
             # Replace next character so we are sure never to raise the empty
             # link label exception.
@@ -79,7 +77,8 @@ def _generate_random_characters(size: int,
                 ''.join(['\n', '#' * j, ' ',
                          secrets.choice(alphanumerics)]), 'UTF-8')
 
-        j += 1
+            # Reset header level.
+            j = (j % 6) + 1
 
     return string_buf.value
 
@@ -113,7 +112,6 @@ if __name__ == '__main__':
             percent_progress = (j / total_iterations) * 100
             print('total progress percent = ' + str(percent_progress))
             with tempfile.NamedTemporaryFile() as fp:
-                print('generating random file...')
                 fp.write(
                     _generate_random_characters(
                         CHAR_SIZE,
@@ -122,7 +120,9 @@ if __name__ == '__main__':
                 print('building TOC...')
                 try:
                     start = time.time()
-                    md_toc.api.build_toc(filename=fp.name, parser=p)
+                    md_toc.api.build_toc(filename=fp.name,
+                                         parser=p,
+                                         keep_header_levels=3)
                     end = time.time()
                     avg.append(end - start)
                     print('total_time: ' + str(avg[-1]))

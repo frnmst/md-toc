@@ -426,6 +426,9 @@ def _cmark_isbacktick(c: int) -> bool:
 # 0.29, 0.30
 def _cmark_peek_char(subj: _cmarkSubject) -> int:
     # Instead of using assert just raise a ValueError
+    #
+    # NULL bytes should have been stripped out by now.  If they're
+    # present, it's a programming error:
     if subj.pos < subj.input.length and ord(subj.input.data[subj.pos]) == 0:
         raise ValueError
 
@@ -2074,16 +2077,14 @@ def _cmark_subject_find_special_char(subj: _cmarkSubject, options: int) -> int:
 
     n: int = subj.pos + 1
 
-    # Patch to avoid overflow problems.
-    # FIXME: this should not be needed!
-    if n > subj.input.length - 1:
-        return subj.input.length
-    if ord(subj.input.data[n]) > len(SPECIAL_CHARS) - 1 or ord(
-            subj.input.data[n]) > len(SMART_PUNCT_CHARS) - 1:
-        return n
-    # End patch.
-
     while n < subj.input.length:
+        # Patch to avoid overflow problems.
+        # FIXME: this should not be needed!
+        # These two are not present in the original C source code.
+        if (ord(subj.input.data[n]) > len(SPECIAL_CHARS)
+                or ord(subj.input.data[n]) > len(SMART_PUNCT_CHARS)):
+            return n
+
         if SPECIAL_CHARS[ord(subj.input.data[n])] == 1:
             return n
         if options & CMARK_OPT_SMART and SMART_PUNCT_CHARS[ord(

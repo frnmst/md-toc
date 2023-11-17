@@ -1,3 +1,6 @@
+# atheris crash logs
+crash-*
+
 *.md
 *.MD
 !README.md

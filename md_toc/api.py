@@ -276,7 +276,12 @@ def build_toc(
                 loop = False
             line_counter += 1
 
-    line = f.readline()
+    try:
+        line = f.readline()
+    except UnicodeDecodeError:
+        return ''.join(
+            ['<!--stop reading ', filename, ': probably a binary file-->'])
+
     indentation_log = init_indentation_log(parser, list_marker)
     is_within_code_fence = False
     code_fence = None
@@ -294,8 +299,14 @@ def build_toc(
         if filename != '-':
             # stdin is not seekable.
             file_pointer_pos = f.tell()
-            if f.readline() == str():
-                is_document_end = True
+            try:
+                if f.readline() == str():
+                    is_document_end = True
+            except UnicodeDecodeError:
+                return ''.join([
+                    '<!--stop reading ', filename,
+                    ': probably a binary file-->'
+                ])
             f.seek(file_pointer_pos)
 
         # Code fence detection.
@@ -401,7 +412,11 @@ def build_toc(
 
         # endif
 
-        line = f.readline()
+        try:
+            line = f.readline()
+        except UnicodeDecodeError:
+            return ''.join(
+                ['<!--stop reading ', filename, ': probably a binary file-->'])
 
     # endwhile
 
@@ -814,6 +829,10 @@ def remove_emphasis(line: str, parser: str = 'github') -> str:
         refmap = references_h._cmarkCmarkReferenceMap()
 
         parent = node_h._cmarkCmarkNode()
+
+        # Remove NULL bytes.
+        line = line.replace('\x00', '')
+
         parent.data = line
         parent.length = len(line)
         parent.start_line = 0
