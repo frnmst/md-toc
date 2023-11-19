@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # inlines_c.py
 #
@@ -144,7 +143,7 @@ class _cmarkDelimiter:
         self.next: _cmarkDelimiter = None
         self.inl_text: _cmarkCmarkNode = None
         self.length: int = 0
-        self.delim_char = str()
+        self.delim_char = ''
         self.can_open: bool = False
         self.can_close: bool = False
 

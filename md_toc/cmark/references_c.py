@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # reference_c.py
 #
@@ -65,7 +64,7 @@ def _cmark_normalize_reference(mem: _cmarkCmarkMem,
         raise ValueError
 
     #     if result[0] == '\0':
-    if result == str():
+    if result == '':
         #     mem.free(result)
         del result
         return None

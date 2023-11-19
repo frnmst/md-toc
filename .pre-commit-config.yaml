@@ -1,45 +1,49 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: 'v4.5.0'
-    hooks:
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
-    -   id: check-yaml
-    -   id: check-added-large-files
-    -   id: destroyed-symlinks
-    -   id: detect-private-key
-    -   id: check-ast
-    -   id: check-case-conflict
-    -   id: debug-statements
-    -   id: fix-encoding-pragma
-    -   id: forbid-submodules
-    -   id: check-symlinks
-    -   id: check-shebang-scripts-are-executable
-    -   id: check-case-conflict
-    -   id: check-added-large-files
-        args: ['--maxkb=4096']
-    -   id: destroyed-symlinks
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: 'v4.5.0'
+  hooks:
+    - id: trailing-whitespace
+    - id: end-of-file-fixer
+    - id: check-yaml
+    - id: check-added-large-files
+    - id: destroyed-symlinks
+    - id: detect-private-key
+    - id: check-ast
+    - id: check-case-conflict
+    - id: debug-statements
+    # Add <# -*- coding: utf-8 -*-> to the top of python files.
+    - id: fix-encoding-pragma
+        # https://github.com/asottile/pyupgrade/issues/748
+        # https://github.com/asottile/pyupgrade/issues/89
+      args: ['--remove']
+    - id: forbid-submodules
+    - id: check-symlinks
+    - id: check-shebang-scripts-are-executable
+    - id: check-case-conflict
+    - id: check-added-large-files
+      args: ['--maxkb=4096']
+    - id: destroyed-symlinks
 
 # YAPF and flake8 need to remain pinned.
--   repo: https://github.com/pre-commit/mirrors-yapf
-    rev: 'v0.32.0' # frozen: v0.32.0
-    hooks:
-    -   id: yapf
-        additional_dependencies: [toml]
+- repo: https://github.com/pre-commit/mirrors-yapf
+  rev: 'v0.32.0' # frozen: v0.32.0
+  hooks:
+    - id: yapf
+      additional_dependencies: [toml]
 
--   repo: https://github.com/pycqa/flake8
-    rev: '6.0.0' # frozen: 6.0.0
-    hooks:
-    -   id: flake8
-        additional_dependencies: [flake8-docstrings]
+- repo: https://github.com/pycqa/flake8
+  rev: '6.0.0' # frozen: 6.0.0
+  hooks:
+    - id: flake8
+      additional_dependencies: [flake8-docstrings]
 
--   repo: https://github.com/PyCQA/bandit
-    rev: '1.7.5'  # Use the sha / tag you want to point at
-    hooks:
-    -   id: bandit
-        args: ['--skip', 'B404,B506,B410,B603,B324', '--level', 'LOW']
+- repo: https://github.com/PyCQA/bandit
+  rev: '1.7.5'  # Use the sha / tag you want to point at
+  hooks:
+    - id: bandit
+      args: ['--skip', 'B404,B506,B410,B603,B324', '--level', 'LOW']
 
 #   -   repo: https://github.com/pre-commit/mirrors-mypy
 #       rev: 'v0.991'
@@ -47,10 +51,15 @@ repos:
 #       -      id: mypy
 #              args: ['--no-strict-optional', '--ignore-missing-imports', '--show-error-context', '--show-error-codes', '--follow-imports', 'silent']
 
--   repo: https://github.com/pycqa/isort
-    rev: '5.12.0'
-    hooks:
-    -   id: isort
+- repo: https://github.com/pycqa/isort
+  rev: '5.12.0'
+  hooks:
+    - id: isort
+
+- repo: https://github.com/asottile/pyupgrade
+  rev: 'v3.15.0'
+  hooks:
+    - id: pyupgrade
 
 #    -   repo: https://codeberg.org/frnmst/licheck
 #        rev: '1.0.0'
@@ -58,35 +67,41 @@ repos:
 #        -   id: licheck
 #            args: ['--configuration-file', '.allowed_licenses.yml']
 
--   repo: https://codeberg.org/frnmst/md-toc
-    rev: '8.2.0'  # or a specific git tag from md-toc
-    hooks:
-    -    id: md-toc
-         args: [-p, 'cmark', '-l6']  # CLI options
+- repo: https://codeberg.org/frnmst/md-toc
+  rev: '8.2.0'  # or a specific git tag from md-toc
+  hooks:
+    - id: md-toc
+      args: [-p, 'cmark', '-l6']  # CLI options
 
--   repo: https://github.com/mgedmin/check-manifest
-    rev: '0.49'
-    hooks:
-    -   id: check-manifest
+- repo: https://github.com/mgedmin/check-manifest
+  rev: '0.49'
+  hooks:
+    - id: check-manifest
 
--   repo: local
-    hooks:
-    -   id: unit-tests
-        name: unit tests
-        language: system
-        entry: make test
-        verbose: true
-        always_run: true
-        pass_filenames: false
-    -   id: build-docs
-        name: build docs
-        language: system
-        entry: make doc
-        verbose: true
-        always_run: true
-        pass_filenames: false
+      #- repo: https://github.com/rstcheck/rstcheck
+      #  rev: 'v6.2.0'
+      #  hooks:
+      #    - id: rstcheck
+      #      additional_dependencies: ["tomli"]
 
--   repo: https://github.com/jorisroovers/gitlint
-    rev: 'v0.18.0'
-    hooks:
-    -   id: gitlint
+- repo: local
+  hooks:
+    - id: unit-tests
+      name: unit tests
+      language: system
+      entry: make test
+      verbose: true
+      always_run: true
+      pass_filenames: false
+    - id: build-docs
+      name: build docs
+      language: system
+      entry: make doc
+      verbose: true
+      always_run: true
+      pass_filenames: false
+
+- repo: https://github.com/jorisroovers/gitlint
+  rev: 'v0.18.0'
+  hooks:
+    - id: gitlint

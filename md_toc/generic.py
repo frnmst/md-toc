@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # generic.py
 #
@@ -60,7 +59,7 @@ def _extract_lines(input_file: str, start: int, end: int) -> str:
     lines: list[str] = list()
     line_counter: int = 1
 
-    with open(input_file, 'r') as f:
+    with open(input_file) as f:
         line: str = f.readline()
         while line:
             if line_counter >= start and line_counter <= end:
@@ -100,7 +99,7 @@ def _get_existing_toc(filename: str, marker: str) -> tuple:
     )
     marker_line_positions_length: int = len(marker_line_positions)
 
-    old_toc: str = str()
+    old_toc: str = ''
     first_marker: int = 1
     second_marker: int = 2
     two_or_more_markers: bool = False
@@ -136,7 +135,7 @@ def _get_existing_toc(filename: str, marker: str) -> tuple:
                 old_toc = _extract_lines(filename, start_line,
                                          end_line).strip()
             else:
-                old_toc = str()
+                old_toc = ''
 
             lines_to_delete.append([
                 marker_line_positions[first_marker],

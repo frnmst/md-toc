@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # md-toc documentation build configuration file, created by
 # sphinx-quickstart on Wed Dec 27 17:32:50 2017.

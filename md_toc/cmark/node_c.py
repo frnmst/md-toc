@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # node_c.py
 #
@@ -104,8 +103,8 @@ def _cmark_S_free_nodes(e: _cmarkCmarkNode):
         if e.type in [_cmarkCmarkNodeType.CMARK_NODE_CODE_BLOCK.value]:
             del e.data
             del e.as_code.info
-            e.data = str()
-            e.as_code.info = str()
+            e.data = ''
+            e.as_code.info = ''
         elif e.type in [
                 _cmarkCmarkNodeType.CMARK_NODE_TEXT.value,
                 _cmarkCmarkNodeType.CMARK_NODE_HTML_INLINE.value,
@@ -113,23 +112,23 @@ def _cmark_S_free_nodes(e: _cmarkCmarkNode):
                 _cmarkCmarkNodeType.CMARK_NODE_HTML_BLOCK.value,
         ]:
             del e.data
-            e.data = str()
+            e.data = ''
         elif e.type in [
                 _cmarkCmarkNodeType.CMARK_NODE_LINK.value,
                 _cmarkCmarkNodeType.CMARK_NODE_IMAGE.value,
         ]:
             del e.as_link.url
             del e.as_link.title
-            e.as_link.url = str()
-            e.as_link.title = str()
+            e.as_link.url = ''
+            e.as_link.title = ''
         elif e.type in [
                 _cmarkCmarkNodeType.CMARK_NODE_CUSTOM_BLOCK.value,
                 _cmarkCmarkNodeType.CMARK_NODE_CUSTOM_INLINE.value,
         ]:
             del e.as_custom.on_enter
             del e.as_custom.on_exit
-            e.as_custom.on_enter = str()
-            e.as_custom.on_exit = str()
+            e.as_custom.on_enter = ''
+            e.as_custom.on_exit = ''
 
         if e.last_child:
             # Splice children into list
@@ -163,14 +162,14 @@ def _cmark_cmark_set_cstr(mem: _cmarkCmarkMem, dst: str, src: str) -> tuple:
         dst = copy.deepcopy(src[:length + 1])
     else:
         length = 0
-        dst = str()
+        dst = ''
 
     if old:
         # Alternative to:
         #     mem->free(old);
         del old
         del dst
-        dst = str()
+        dst = ''
 
     return length, dst
 

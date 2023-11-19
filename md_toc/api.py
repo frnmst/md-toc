@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # api.py
 #
@@ -249,7 +248,7 @@ def build_toc(
         # and these are translated into '\n' before being returned to the caller.
         # See
         # https://docs.python.org/3/library/functions.html#open-newline-parameter
-        f = open(filename, 'r', newline=None)
+        f = open(filename, newline=None)
 
     # Help the developers: override the list_marker in case
     # this function is called with the default unordered list marker,
@@ -272,7 +271,7 @@ def build_toc(
         loop: bool = True
         line_counter = 1
         while loop:
-            if line_counter > skip_lines or f.readline() == str():
+            if line_counter > skip_lines or f.readline() == '':
                 loop = False
             line_counter += 1
 
@@ -300,7 +299,7 @@ def build_toc(
             # stdin is not seekable.
             file_pointer_pos = f.tell()
             try:
-                if f.readline() == str():
+                if f.readline() == '':
                     is_document_end = True
             except UnicodeDecodeError:
                 return ''.join([
@@ -802,7 +801,7 @@ def remove_html_tags(line: str, parser: str = 'github') -> str:
         ]
 
         for r in regexes:
-            line = re.sub(r, str(), line, flags=re.DOTALL)
+            line = re.sub(r, '', line, flags=re.DOTALL)
 
     return line
 
@@ -992,7 +991,7 @@ def build_anchor_link(
             # This is equivalent to %x in C. In Python we don't have
             # the length problem so %x is equal to %lx in this case.
             # Apparently there is no %l in Python...
-            header_text_trimmed_middle_stage_str = 'part-' + '{0:x}'.format(
+            header_text_trimmed_middle_stage_str = 'part-' + '{:x}'.format(
                 hash)
 
         return header_text_trimmed_middle_stage_str
@@ -1215,7 +1214,7 @@ def get_atx_heading(
                                 or consecutive_escape_characters == 0):
                             tmp = '\u005c'
                         else:
-                            tmp = str()
+                            tmp = ''
                         final_line = ''.join(
                             [final_line[0:i], tmp, final_line[i:]])
                         i += 1 + len(tmp)
@@ -1370,8 +1369,7 @@ def is_valid_code_fence_indent(line: str, parser: str = 'github') -> bool:
     return False
 
 
-def is_opening_code_fence(line: str,
-                          parser: str = 'github') -> typing.Optional[str]:
+def is_opening_code_fence(line: str, parser: str = 'github') -> str | None:
     r"""Determine if the given line is possibly the opening of a fenced code block.
 
     :parameter line: a single markdown line to evaluate.
@@ -1404,7 +1402,7 @@ def is_opening_code_fence(line: str,
         # The info string is the whole line except the first opening code
         # fence markers.
         if line == len(line) * line[0]:
-            info_string = str()
+            info_string = ''
             info_string_start = len(line)
         else:
             # Get the index where the info string starts.
