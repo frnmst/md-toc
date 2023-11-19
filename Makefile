@@ -113,13 +113,17 @@ dist:
 
 upload:
 	$(VENV_CMD) \
-		&& twine upload dist/* \
+		&& twine upload --repository md-toc dist/* \
 		&& deactivate
 
 clean:
 	rm -rf build dist *.egg-info tests/benchmark-results
 	# Remove all markdown files except the readmes.
-	find -regex ".*\.[mM][dD]" ! -name 'README.md' ! -name 'CONTRIBUTING.md' -type f -exec rm -f {} +
+	find -regex ".*\.[mM][dD]" \
+		! -name 'README.md' \
+		! -name 'CONTRIBUTING.md' \
+		| -name 'SECURITY.md' \
+		-type f -exec rm -f {} +
 	$(VENV_CMD) \
 		&& $(MAKE) -C docs clean \
 		&& deactivate

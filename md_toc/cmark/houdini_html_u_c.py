@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # houdini_html_u_c.py
 #

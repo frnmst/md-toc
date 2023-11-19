@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # scanners_c.py
 #

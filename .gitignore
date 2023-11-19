@@ -2,6 +2,7 @@
 *.MD
 !README.md
 !CONTRIBUTING.md
+!SECURITY.md
 benchmark.csv
 
 # Byte-compiled / optimized / DLL files

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # utf8_c.py
 #

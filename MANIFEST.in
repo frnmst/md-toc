@@ -1,6 +1,7 @@
 global-include LICENSE.txt
 global-include README.md
 global-include CONTRIBUTING.md
+global-include SECURITY.md
 recursive-include md_toc/cmark *.py
 global-exclude *.csv *.txt
 prune assets

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # buffer_c.py
 #
@@ -33,7 +32,7 @@ from .cmark_h import _cmarkCmarkMem
 # in that case the license header at the top of the file applies.
 # See docs/copyright_license.rst
 
-cmark_strbuf__initbuf: str = str()
+cmark_strbuf__initbuf: str = ''
 
 
 # 0.30
@@ -59,7 +58,7 @@ def _cmark_cmark_strbuf_init(mem: _cmarkCmarkMem, buf: _cmarkCmarkStrbuf,
     buf.mem = mem
     buf.asize = 0
     buf.size = 0
-    buf.ptr = str()
+    buf.ptr = ''
 
     if initial_size > 0:
         _cmark_cmark_strbuf_grow(buf, initial_size)
@@ -114,7 +113,7 @@ def _cmark_cmark_strbuf_clear(buf: _cmarkCmarkStrbuf):
 
     if buf.asize > 0:
         del buf.ptr
-        buf.ptr = str()
+        buf.ptr = ''
 
 
 # 0.29, 0.30
@@ -195,7 +194,7 @@ def _cmark_cmark_strbuf_detach(buf: _cmarkCmarkStrbuf) -> str:
     if buf.asize == 0:
         # return an empty string
         #     return (unsigned char *)buf->mem->calloc(1, 1);
-        return str()
+        return ''
 
     _cmark_cmark_strbuf_init(buf.mem, buf, 0)
     return data

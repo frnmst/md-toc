@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # buffer_h.py
 #
@@ -39,7 +38,7 @@ class _cmarkCmarkStrbuf:
 
     def __init__(self):
         self.mem: _cmarkCmarkMem = None
-        self.ptr: str = str()
+        self.ptr: str = ''
         self.asize: int = 0
         self.size: int = 0
 
