@@ -85,6 +85,11 @@ test:
 		&& tox run-parallel \
 		&& deactivate
 
+fuzzer:
+	$(VENV_CMD) \
+		&& tox run -e fuzzer \
+		&& deactivate
+
 pre-commit:
 	$(VENV_CMD) \
 		&& pre-commit run --all \
@@ -119,11 +124,12 @@ upload:
 clean:
 	rm -rf build dist *.egg-info tests/benchmark-results
 	# Remove all markdown files except the readmes.
-	find -regex ".*\.[mM][dD]" \
+	find -regex "\(.*/crash-[a-f0-9]+\|.*\.[mM][dD]\)$$" \
 		! -name 'README.md' \
 		! -name 'CONTRIBUTING.md' \
 		! -name 'SECURITY.md' \
-		-type f -exec rm -f {} +
+		! -path './.venv/*' \
+		! -path './.git/*' -type f -exec rm -f {} +
 	$(VENV_CMD) \
 		&& $(MAKE) -C docs clean \
 		&& deactivate
