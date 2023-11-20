@@ -924,7 +924,7 @@ __cmark_closetag = '[/]' + __cmark_tagname + __cmark_spacechar + '*[>]'
 __cmark_declaration = '[A-Z]+' + __cmark_spacechar + '+' + '[^>\x00]*'
 # Excludes tag opening.
 __cmark_cdata = r'CDATA\[([^\]\x00]+|\][^\]\x00]|\]\][^>\x00])*'
-__cmark_htmlcomment = "(--->|(-([-]?[^\x00>-])([-]?[^\x00-])*-->))"
+__cmark_htmlcomment = '(--->|(-([-]?[^\x00>-])([-]?[^\x00-])*-->))'
 __cmark_processinginstruction = '([^?>\x00]+|[?][^>\x00]|[>])+'
 
 parser['cmark']['re'] = {

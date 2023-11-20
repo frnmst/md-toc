@@ -161,7 +161,7 @@ class _cmarkDelimiter:
             else:
                 next = hex(id(self.next))
 
-            el = '== element ' + hex(id(self)) + " =="
+            el = '== element ' + hex(id(self)) + ' =='
             it = 'inl_text = ' + str(self.inl_text)
             de = 'delim_char = ' + self.delim_char
             le = 'length = ' + str(self.length)
@@ -360,7 +360,7 @@ def _cmark_cmark_clean_autolink(mem: _cmarkCmarkMem, url: _cmarkCmarkChunk,
     _cmark_cmark_chunk_trim(url)
 
     if is_email:
-        _cmark_cmark_strbuf_puts(buf, "mailto:")
+        _cmark_cmark_strbuf_puts(buf, 'mailto:')
 
     _cmark_houdini_unescape_html_f(buf, url.data, url.length)
     return _cmark_cmark_strbuf_detach(buf)
@@ -1168,7 +1168,7 @@ def _cmark_handle_pointy_brace(subj: _cmarkSubject,
 
     # if nothing matches, just return the opening <:
     return _cmark_make_str(subj, subj.pos - 1, subj.pos - 1,
-                           _cmark_cmark_chunk_literal("<"))
+                           _cmark_cmark_chunk_literal('<'))
 
 
 # Parse backslash-escape or just a backslash, returning an inline.
@@ -1456,7 +1456,7 @@ def _cmark_handle_close_bracket(subj: _cmarkSubject,
     if not match_0:
         # Next, look for a following [link label] that matches in refmap.
         # skip spaces
-        raw_label = _cmark_cmark_chunk_literal("")
+        raw_label = _cmark_cmark_chunk_literal('')
         found_label = _cmark_link_label(subj, raw_label)
         if not found_label:
             # If we have a shortcut reference link, back up

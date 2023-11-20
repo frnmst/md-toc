@@ -23,13 +23,7 @@
 import argparse
 import sys
 import textwrap
-
-# See
-# https://packaging.python.org/en/latest/guides/single-sourcing-package-version/
-if sys.version_info >= (3, 8):
-    from importlib import metadata
-else:
-    import importlib_metadata as metadata
+from importlib import metadata
 
 from . import generic
 from .api import (
@@ -42,18 +36,16 @@ from .constants import parser as md_parser
 
 PROGRAM_DESCRIPTION = 'Markdown Table Of Contents: Automatically generate a compliant table\nof contents for a markdown file to improve document readability.'
 VERSION_NAME = 'md_toc'
-
-try:
-    dist = metadata.distribution('md_toc')
-    VERSION_NUMBER = dist.version
-except metadata.PackageNotFoundError:
-    VERSION_NUMBER = 'vDevel'
-
 VERSION_COPYRIGHT = 'Copyright (C) 2017-2023 Franco Masotti, frnmst'
 VERSION_LICENSE = 'License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.'
 RETURN_VALUES = 'Return values: 0 ok, 1 error, 2 invalid command, 128 TOC differs from the one in the file (see --diff option)'
-ADVICE = 'Please read the documentation to understand how each parser works'
-PROGRAM_EPILOG = ADVICE + '\n\n' + RETURN_VALUES + '\n\n' + VERSION_COPYRIGHT + '\n' + VERSION_LICENSE
+
+try:
+    VERSION_NUMBER = metadata.distribution('md_toc').version
+except metadata.PackageNotFoundError:
+    VERSION_NUMBER = 'development version (venv)'
+
+PROGRAM_EPILOG = RETURN_VALUES + '\n\n' + VERSION_COPYRIGHT + '\n' + VERSION_LICENSE
 
 
 class CliToApi():

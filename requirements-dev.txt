@@ -18,6 +18,11 @@
 # along with md-toc.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
+# Demo.
+asciinema>=2,<3
+build>=1.0,<1.1
+pre-commit>=3,<4
 # Documentation.
 sphinx-book-theme>=1.0,<1.1
 sphinx-copybutton>=0.5,<0.6
@@ -27,8 +32,3 @@ sphinx-copybutton>=0.5,<0.6
 # Tools.
 tox>=4,<5
 twine>=4,<5
-build>=1.0,<1.1
-pre-commit>=3,<4
-
-# Demo.
-asciinema>=2,<3

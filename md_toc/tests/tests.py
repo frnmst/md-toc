@@ -486,7 +486,7 @@ class TestApi(pyfakefsTestCase):
         r"""Fake filesystem."""
         self.setUpPyfakefs()
 
-    @unittest.skip("empty test")
+    @unittest.skip('empty test')
     def test_tocs_equal(self):
         r"""Test if two TOCs are equal."""
 
@@ -823,11 +823,11 @@ class TestApi(pyfakefsTestCase):
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
             '\n' + MARKER)
 
-    @unittest.skip("empty test")
+    @unittest.skip('empty test')
     def test_write_strings_on_files_between_markers(self):
         r"""Test that the TOC is written correctly on the files."""
 
-    @unittest.skip("empty test")
+    @unittest.skip('empty test')
     def test_build_toc(self):
         r"""Test that the TOC is built correctly.
 
@@ -835,7 +835,7 @@ class TestApi(pyfakefsTestCase):
         this function is growing.
         """
 
-    @unittest.skip("empty test")
+    @unittest.skip('empty test')
     def test_build_multiple_tocs(self):
         r"""Test that the TOC is built correctly for multiple files."""
 
@@ -866,7 +866,7 @@ class TestApi(pyfakefsTestCase):
         with self.assertRaises(exceptions.GithubOverflowOrderedListMarker):
             api.increase_index_ordered_list(ht, 1, 1)
 
-    @unittest.skip("empty test")
+    @unittest.skip('empty test')
     def test_build_list_marker_log(self):
         r"""Test that the list_marker_log data structure is built correctly.
 
@@ -1302,7 +1302,7 @@ class TestApi(pyfakefsTestCase):
             ')',
         )
 
-    @unittest.skip("empty test")
+    @unittest.skip('empty test')
     def test_build_toc_line(self):
         r"""Test that the TOC line is built correctly.
 
