@@ -22,9 +22,4 @@ r"""setup.py."""
 
 import setuptools
 
-# See
-# https://importlib-metadata.readthedocs.io/en/latest/migration.html#pkg-resources-require
-#    import pkg_resources
-#    pkg_resources.require('setuptools>=39.2.0')
-
 setuptools.setup()

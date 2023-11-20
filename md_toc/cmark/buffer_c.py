@@ -20,7 +20,6 @@
 #
 r"""A cmark implementation file."""
 
-import copy
 import sys
 
 from ..constants import parser as md_parser
@@ -85,8 +84,8 @@ def _cmark_cmark_strbuf_grow(buf: _cmarkCmarkStrbuf, target_size: int):
     target_size &= INT32_MAX
 
     if target_size > int(INT32_MAX / 2):
-        print("[cmark] _cmark_cmark_strbuf_grow requests buffer with size > " +
-              str(INT32_MAX / 2) + ", aborting")
+        print('[cmark] _cmark_cmark_strbuf_grow requests buffer with size > ' +
+              str(INT32_MAX / 2) + ', aborting')
         sys.exit(1)
 
     # Oversize the buffer by 50% to guarantee amortized linear time
@@ -127,7 +126,7 @@ def _cmark_cmark_strbuf_set(buf: _cmarkCmarkStrbuf, data: str, length: int):
 
             # alternative to
             #     memmove(buf->ptr, data, len)
-            buf.ptr = copy.deepcopy(data[0:length - 0])
+            buf.ptr = ''.join([data[:length], buf.ptr[length:]])
         buf.size = length
 
         # No need to set termination character
@@ -138,7 +137,9 @@ def _cmark_cmark_strbuf_set(buf: _cmarkCmarkStrbuf, data: str, length: int):
 # Add a single character to a buffer.
 def _cmark_cmark_strbuf_putc(buf: _cmarkCmarkStrbuf, c: int):
     _cmark_S_strbuf_grow_by(buf, 1)
-    buf.ptr = buf.ptr[:buf.size - 1] + chr(c & 0xFF) + buf.ptr[:buf.size + 1:]
+
+    # buf->ptr[buf->size++] = (unsigned char)(c & 0xFF);
+    buf.ptr = ''.join([buf.ptr, chr(c & 0xFF)])
     buf.size += 1
 
     # No need for the terminator character.
@@ -159,24 +160,21 @@ def _cmark_cmark_strbuf_put(
     _cmark_S_strbuf_grow_by(buf, length)
 
     # Alternative to
-    #     memmove(buf.ptr + buf.size, data, len)
+    #     memmove(buf->ptr + buf->size, data, len)
     if isinstance(data, list):
         # See
         # https://stackoverflow.com/a/5661889
         dt = bytearray(data).decode('UTF-8')
     else:
         dt = data
-
     # buf.ptr =
     #   buf.ptr[0] -> buf.ptr[buf.size - 1]
     #   +
     #   dt[0] -> dt[length - 1]
     #   +
     #   buf.ptr[buf.size + 1 + length] ->  buf.ptr[-1]
-    buf.ptr = ''.join([
-        buf.ptr[:buf.size],
-        copy.deepcopy(dt[:length]), buf.ptr[buf.size + 1 + length:]
-    ])
+    buf.ptr = ''.join(
+        [buf.ptr[:buf.size], dt[:length], buf.ptr[buf.size + 1 + length:]])
     buf.size += length
     # No need for line terminator.
     #     buf.ptr[buf.size] = '\0';
@@ -208,16 +206,21 @@ def _cmark_cmark_strbuf_strchr(buf: _cmarkCmarkStrbuf, c: int,
     if pos < 0:
         pos = 0
 
+    # `p` is the memory address (so absolute) where the character `c` lies.
+    # Here we use relative indices.
     # const unsigned char *p =
     #  (unsigned char *)memchr(buf.ptr + pos, c, buf.size - pos);
-    p = buf.ptr[pos:buf.size - pos + 1].find(chr(c))
+    p: int = buf.ptr[pos:buf.size - pos + 1].find(chr(c))
 
+    # `find` returns -1 if nothing is found
     if p == -1:
         return -1
 
+    # Pointer arithmetics: return the index of the buf->ptr string where
+    # the character `c` lies.
+    # Add the offset (`pos`) to start counting from the start of the string.
     # return (bufsize_t)(p - (const unsigned char *)buf->ptr);
-    # return int(ss[p:] - buf.ptr)
-    return 0
+    return p + pos
 
 
 # 0.29, 0.30
@@ -241,7 +244,8 @@ def _cmark_cmark_strbuf_drop(buf: _cmarkCmarkStrbuf, n: int):
         if buf.size:
             # Alternative to
             #     memmove(buf->ptr, buf->ptr + n, buf->size);
-            buf.ptr = copy.deepcopy(buf.ptr[n:buf.size - n])
+            buf.ptr = ''.join(
+                [buf.ptr[:n], buf.ptr[n:buf.size + n], buf.ptr[n + buf.size:]])
 
     # No need for the terminator character.
     # buf->ptr[buf->size] = '\0';
@@ -310,7 +314,7 @@ def _cmark_cmark_strbuf_unescape(buf: _cmarkCmarkStrbuf):
     #
     #     len(bytes('㤀', 'utf-8')) == 3
     #     bptr = ['foo%20', '㤀', '']
-    #     len(bptr) == 7
+    #     sum([len(bptr[i]) for i in range(0, len(bptr))])
     #     buf.size == 10
     #
     # So instead of
@@ -320,15 +324,20 @@ def _cmark_cmark_strbuf_unescape(buf: _cmarkCmarkStrbuf):
     # we have to put
     #
     #     while r < min(buf.size, len(buf.ptr))
-    while r < min(buf.size, len(buf.ptr)):
+    #
+    # or simply
+    #
+    #     while r < len(buf.ptr)
+    #
+    while r < len(buf.ptr):
         if buf.ptr[r] == '\\' and _cmark_cmark_ispunct(ord(buf.ptr[r + 1])):
             r += 1
 
-        #     buf->ptr[w] = buf->ptr[r];
-        bptr = [buf.ptr[:w], buf.ptr[r], buf.ptr[w + 1:]]
-        buf.ptr = ''.join(bptr)
-
+        #     buf->ptr[w+] = buf->ptr[r];
+        buf.ptr = ''.join([buf.ptr[:w], buf.ptr[r], buf.ptr[w + 1:]])
         w += 1
+
+        # ++r
         r += 1
 
     _cmark_cmark_strbuf_truncate(buf, w)

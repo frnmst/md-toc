@@ -122,7 +122,7 @@ clean:
 	find -regex ".*\.[mM][dD]" \
 		! -name 'README.md' \
 		! -name 'CONTRIBUTING.md' \
-		| -name 'SECURITY.md' \
+		! -name 'SECURITY.md' \
 		-type f -exec rm -f {} +
 	$(VENV_CMD) \
 		&& $(MAKE) -C docs clean \

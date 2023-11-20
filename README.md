@@ -298,6 +298,7 @@ Changelogs, instructions, sources and keys can be found at
 ## Support this project
 
 - [Buy Me a Coffee](https://www.buymeacoffee.com/frnmst)
+- [Liberapay](https://liberapay.com/frnmst)
 - Bitcoin: `bc1qnkflazapw3hjupawj0lm39dh9xt88s7zal5mwu`
 - Monero: `84KHWDTd9hbPyGwikk33Qp5GW7o7zRwPb8kJ6u93zs4sNMpDSnM5ZTWVnUp2cudRYNT6rNqctnMQ9NbUewbj7MzCBUcrQEY`
 - Dogecoin: `DMB5h2GhHiTNW7EcmDnqkYpKs6Da2wK3zP`
