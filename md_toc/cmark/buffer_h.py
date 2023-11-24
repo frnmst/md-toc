@@ -20,6 +20,8 @@
 #
 r"""A cmark implementation file."""
 
+from dataclasses import dataclass
+
 from .cmark_h import _cmarkCmarkMem
 
 # License E applies to this file except for non derivative code:
@@ -28,19 +30,12 @@ from .cmark_h import _cmarkCmarkMem
 
 
 # 0.29, 0.30
+@dataclass
 class _cmarkCmarkStrbuf:
-    __slots__ = [
-        'mem',
-        'ptr',
-        'asize',
-        'size',
-    ]
-
-    def __init__(self):
-        self.mem: _cmarkCmarkMem = None
-        self.ptr: str = ''
-        self.asize: int = 0
-        self.size: int = 0
+    mem: _cmarkCmarkMem = None
+    ptr: str = ''
+    asize: int = 0
+    size: int = 0
 
 
 # Should be equivalent to

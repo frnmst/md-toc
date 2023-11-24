@@ -21,6 +21,7 @@
 r"""The cmark implementation file."""
 
 import copy
+from dataclasses import dataclass
 
 from ..constants import parser as md_parser
 from .cmark_ctype_c import _cmark_cmark_isspace
@@ -35,15 +36,10 @@ from .cmark_ctype_c import _cmark_cmark_isspace
 
 
 # 0.30
+@dataclass
 class _cmarkCmarkChunk:
-    __slots__ = [
-        'data',
-        'length',
-    ]
-
-    def __init__(self, data: str = None, length: int = 0):
-        self.data: str = data
-        self.length: int = length
+    data: str = None
+    length: int = 0
 
 
 # 0.30

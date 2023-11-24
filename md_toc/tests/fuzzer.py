@@ -48,9 +48,16 @@ def TestBuildToc(data):
                 api.build_toc(filename=fp.name,
                               parser=parser,
                               keep_header_levels=6)
-        except exceptions.GithubEmptyLinkLabel:
-            # The input string cannot be guaranteed to have a non-empty label.
-            pass
+        except (exceptions.GithubEmptyLinkLabel,
+                exceptions.TocDoesNotRenderAsCoherentList,
+                exceptions.GithubOverflowCharsLinkLabel) as e:
+            # The input string cannot be guaranteed to have a non-empty label
+            # (GithubEmptyLinkLabel)
+            # or a newline with '#' sequences can be inserted
+            # (TocDoesNotRenderAsCoherentList)
+            # or header a line too long
+            # (GithubOverflowCharsLinkLabel)
+            print(e)
 
 
 atheris.Setup(sys.argv, TestBuildToc)

@@ -1,7 +1,7 @@
 #
 # inlines_c.py
 #
-# Copyright (C) 2017-2022 Franco Masotti (see /README.md)
+# Copyright (C) 2017-2023 Franco Masotti (see /README.md)
 #
 # This file is part of md-toc.
 #
@@ -150,32 +150,6 @@ class _cmarkDelimiter:
         # Extra attribute.
         self.offset: int = 0
 
-    def __str__(self):
-        if self.delim_char is not None:
-            if self.previous is None:
-                previous = 'None'
-            else:
-                previous = hex(id(self.previous))
-            if self.next is None:
-                next = 'None'
-            else:
-                next = hex(id(self.next))
-
-            el = '== element ' + hex(id(self)) + ' =='
-            it = 'inl_text = ' + str(self.inl_text)
-            de = 'delim_char = ' + self.delim_char
-            le = 'length = ' + str(self.length)
-            of = 'offset = ' + str(self.offset)
-            ac = 'active = ' + str(self.active)
-            pr = 'previous = ' + previous
-            ne = 'next = ' + next
-            co = 'can_open = ' + str(self.can_open)
-            cc = 'can_close = ' + str(self.can_close)
-
-            return (el + '\n' + it + '\n' + '\n' + de + '\n' + le + '\n' + of +
-                    '\n' + ac + '\n' + pr + '\n' + ne + '\n' + co + '\n' + cc +
-                    '\n')
-
 
 class _cmarkBracket:
     __slots__ = [
@@ -232,15 +206,6 @@ class _cmarkSubject:
         self.backticks: list = list(range(0, MAXBACKTICKS + 1))
 
         self.scanned_for_backticks: bool = False
-
-    def scroll(self):
-        r"""Print the list."""
-        print(self.start)
-        print('===')
-        x = self.start
-        while x is not None:
-            print(x)
-            x = x.next
 
 
 # 0.30

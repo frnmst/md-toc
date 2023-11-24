@@ -1,7 +1,7 @@
 #
 # node_h.py
 #
-# Copyright (C) 2017-2022 Franco Masotti (see /README.md)
+# Copyright (C) 2017-2023 Franco Masotti (see /README.md)
 #
 # This file is part of md-toc.
 #
@@ -20,6 +20,8 @@
 #
 r"""A cmark implementation file."""
 
+from dataclasses import dataclass
+
 from .cmark_h import _cmarkCmarkMem, _cmarkCmarkNodeType
 
 # License C applies to this file except for non derivative code:
@@ -27,76 +29,44 @@ from .cmark_h import _cmarkCmarkMem, _cmarkCmarkNodeType
 # See docs/copyright_license.rst
 
 
+# Slots have less overhead but have been introduced in Python 3.10.
+# @dataclass(slots=True)
+@dataclass
 class _cmarkCmarkList:
-    __slots__ = [
-        'marker_offset',
-        'padding',
-        'start',
-        'list_type',
-        'delimiter',
-        'bullet_char',
-        'tight',
-    ]
-
-    def __init__(self):
-        self.marker_offset: int
-        self.padding: int
-        self.start: int
-        self.list_type: int
-        self.delimiter: int
-        self.bullet_char: int
-        self.tight: bool
+    marker_offset: int = None
+    padding: int = None
+    start: int = None
+    list_type: int = None
+    delimiter: int = None
+    bullet_char: int = None
+    tight: bool = None
 
 
+@dataclass
 class _cmarkCmarkCode:
-    __slots__ = [
-        'info',
-        'fence_length',
-        'fence_offset',
-        'fence_offset',
-        'fence_char',
-        'fenced',
-    ]
-
-    def __init__(self):
-        self.info: str
-        self.fence_length: int
-        self.fence_offset: int
-        self.fence_char: int
-        self.fenced: int
+    info: str = None
+    fence_length: int = None
+    fence_offset: int = None
+    fence_char: int = None
+    fenced: int = None
 
 
+@dataclass
 class _cmarkCmarkHeading:
-    __slots__ = [
-        'level',
-        'setext',
-    ]
-
-    def __init__(self):
-        self.level: int
-        self.setext: bool
+    level: int = None
+    setext: bool = None
 
 
+@dataclass
 class _cmarkCmarkLink:
-    __slots__ = [
-        'url',
-        'title',
-    ]
-
-    def __init__(self):
-        self.url: str
-        self.title: str
+    url: str = None
+    title: str = None
 
 
+@dataclass
 class _cmarkCmarkCustom:
-    __slots__ = [
-        'on_enter',
-        'on_exit',
-    ]
-
-    def __init__(self):
-        self.on_enter: str
-        self.on_exit: str
+    on_enter: str = None
+    on_exit: str = None
 
 
 class _cmarkCmarkNode:

@@ -1,7 +1,7 @@
 #
 # generic.py
 #
-# Copyright (C) 2017-2022 Franco Masotti (see /README.md)
+# Copyright (C) 2017-2023 Franco Masotti (see /README.md)
 #
 # This file is part of md-toc.
 #
