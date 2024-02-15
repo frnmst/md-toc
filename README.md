@@ -35,6 +35,10 @@ Automatically generate and add an accurate table of contents to markdown files.
 
 Header test
 
+## tab char test	here
+
+test
+
 ## Video
 
 [![image](./assets/md-toc_youtube_video_thumbnail.png)](https://www.youtube.com/watch?v=guyVdPNmC0A&t=49s)
