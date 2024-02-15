@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # General information about the project.
 project = 'md-toc'
-copyright = '2017-2023, Franco Masotti'
+copyright = '2017-2024, Franco Masotti'
 author = 'Franco Masotti'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -34,9 +34,9 @@ author = 'Franco Masotti'
 # built documents.
 #
 # The short X.Y version.
-version = '8.2.2'
+version = '8.2.3'
 # The full version, including alpha/beta/rc tags.
-release = '8.2.2'
+release = '8.2.3'
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #

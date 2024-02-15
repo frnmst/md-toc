@@ -273,7 +273,7 @@ pandoc --from=commonmark --to=html -o a.html README.md
 
 ## License
 
-Copyright (C) 2017-2023 [Franco Masotti](https://blog.franco.net.eu.org/about/#contacts)
+Copyright (C) 2017-2024 [Franco Masotti](https://blog.franco.net.eu.org/about/#contacts)
 
 md-toc is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
