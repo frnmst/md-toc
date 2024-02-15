@@ -869,6 +869,40 @@ def filter_indices_from_line(line: str, ranges: list[range]) -> str:
     return ''.join([line[i] for i in range(0, len(line)) if i not in rng_flat])
 
 
+def anchor_link_punctuation_filter(
+    input_string: str,
+    parser: str = 'github',
+) -> str:
+    r"""Remove punctuation and other unwanted characters from the anchor link string.
+
+    :parameter input_string: the unfiltered anchor link
+    :parameter parser: decides rules on how to generate anchor links.
+        Defaults to ``github``.
+    :type input_string: str
+    :type parser: str
+    :returns: a string
+    :rtype: str
+    :raises: a built-in exception.
+
+    .. note: license B applies for the github part.
+        See docs/copyright_license.rst
+    """
+    # https://github.com/gjtorikian/html-pipeline/blob/7c7fad1f82f81ebf15dd81d59eed28d979b8e441/lib/html/pipeline/toc_filter.rb#L30
+    output_string: str
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
+        # Remove punctuation: Keep spaces, hypens and "word characters" only.
+        # In other words, given the set:
+        # \w                alphanumeric
+        # \-                hyphen
+        #                   space
+        # remove its complementary set from the input_string. This is achieved
+        # using `^`.
+        pattern: str = r'[^\w\- ]'
+        replacement: str = ''
+        output_string = re.sub(pattern, replacement, input_string)
+    return output_string
+
+
 def build_anchor_link(
     header_text_trimmed: str,
     header_duplicate_counter: types.HeaderDuplicateCounter,
@@ -891,9 +925,6 @@ def build_anchor_link(
     :rtype: str
     :raises: a built-in exception.
 
-    .. note: license B applies for the github part.
-        See docs/copyright_license.rst
-
     .. note: license A applies for the redcarpet part.
         See docs/copyright_license.rst
     """
@@ -910,8 +941,9 @@ def build_anchor_link(
         # Filter "emphasis and strong emphasis".
         header_text_trimmed = remove_emphasis(header_text_trimmed, parser)
 
-        # Remove punctuation: Keep spaces, hypens and "word characters" only.
-        header_text_trimmed = re.sub(r'[^\w\s\- ]', '', header_text_trimmed)
+        # Remove punctuation characters.
+        header_text_trimmed = anchor_link_punctuation_filter(
+            header_text_trimmed, parser)
 
         # Replace spaces with dash.
         header_text_trimmed = header_text_trimmed.replace(' ', '-')

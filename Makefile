@@ -85,6 +85,11 @@ test:
 		&& tox run-parallel \
 		&& deactivate
 
+test-sequential:
+	$(VENV_CMD) \
+		&& tox run \
+		&& deactivate
+
 fuzzer:
 	$(VENV_CMD) \
 		&& tox run -e fuzzer \

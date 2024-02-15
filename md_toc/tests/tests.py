@@ -38,7 +38,11 @@ LINE_LINE_FEED = '\n'
 LINE_CARRIAGE_RETURN = '\r'
 LINE_SQUARE_BRACKET_OPEN = '['
 LINE_SQUARE_BRACKET_CLOSE = ']'
-LINE_DASH = '-'
+LINE_DASH = '\u002D'
+LINE_EN_DASH = '\u2013'
+LINE_HYPHEN = '\u2010'
+LINE_MINUS = '\u2212'
+LINE_EM_DASH = '\u2014'
 
 # Marker.
 MARKER = '<!--TOC-->'
@@ -62,6 +66,9 @@ T5 = 5 * '\u0009'
 T10 = 10 * '\u0009'
 T18 = 18 * '\u0009'
 T21 = 21 * '\u0009'
+
+# Vertical Tabs.
+V1 = 1 * '\u000B'
 
 # ATX headers.
 H1 = 1 * '#'
@@ -2752,6 +2759,40 @@ class TestApi(pyfakefsTestCase):
                          '<script>')
         self.assertEqual(api.remove_html_tags('<plaintext>', 'github'),
                          '<plaintext>')
+
+    def test_anchor_link_punctuation_filter(self):
+        r"""Test the filtering of special characters from a string.
+
+        See also
+        https://github.com/frnmst/md-toc/issues/42
+        """
+        # Negative matches.
+        for char in [
+                LINE_EN_DASH, LINE_HYPHEN, LINE_MINUS, LINE_EM_DASH, T1, V1
+        ]:
+            self.assertEqual(
+                api.anchor_link_punctuation_filter('September' + char +
+                                                   'October'),
+                'SeptemberOctober')
+            self.assertEqual(
+                api.anchor_link_punctuation_filter('2:00' + char + '3:00'),
+                '200300')
+            self.assertEqual(
+                api.anchor_link_punctuation_filter('Pages 113' + char + '117'),
+                'Pages 113117')
+
+        # Positive matches.
+        for char in [CMARK_LINE_FOO, LINE_DASH, S1]:
+            self.assertEqual(
+                api.anchor_link_punctuation_filter('September' + char +
+                                                   'October'),
+                'September' + char + 'October')
+            self.assertEqual(
+                api.anchor_link_punctuation_filter('2:00' + char + '3:00'),
+                '200' + char + '300')
+            self.assertEqual(
+                api.anchor_link_punctuation_filter('Pages 113' + char + '117'),
+                'Pages 113' + char + '117')
 
     def test_build_anchor_link(self):
         r"""Test anchor link generation.
