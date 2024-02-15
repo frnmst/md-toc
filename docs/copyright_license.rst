@@ -31,7 +31,7 @@ Text
 
 ::
 
-    Copyright (C) 2017-2023 Franco Masotti (see /README.md)
+    Copyright (C) 2017-2024 Franco Masotti (see /README.md)
 
     md-toc is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -172,7 +172,7 @@ Text
 ::
 
     Copyright (c) 2014, John MacFarlane
-    Copyright (c) 2021-2023, Franco Masotti (see /README.md) (for md-toc only)
+    Copyright (c) 2021-2024, Franco Masotti (see /README.md) (for md-toc only)
 
     All rights reserved.
 
@@ -275,7 +275,7 @@ Text
     buffer.h, buffer.c, chunk.h
 
     are derived from code (C) 2012 Github, Inc.
-    Copyright (C) 2021-2023, Franco Masotti (see /README.md) (for md-toc only)
+    Copyright (C) 2021-2024, Franco Masotti (see /README.md) (for md-toc only)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
     this software and associated documentation files (the "Software"), to deal in
