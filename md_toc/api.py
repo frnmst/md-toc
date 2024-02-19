@@ -880,7 +880,7 @@ def anchor_link_punctuation_filter(
         Defaults to ``github``.
     :type input_string: str
     :type parser: str
-    :returns: a string
+    :returns: a string without the unwanted characters.
     :rtype: str
     :raises: a built-in exception.
 

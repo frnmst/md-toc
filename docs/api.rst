@@ -15,6 +15,7 @@ Functions
    md_toc.api.get_md_header
    md_toc.api.build_toc_line
    md_toc.api.increase_index_ordered_list
+   md_toc.api.anchor_link_punctuation_filter
    md_toc.api.build_anchor_link
    md_toc.api.build_toc
    md_toc.api.build_multiple_tocs
