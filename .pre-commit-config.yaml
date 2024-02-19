@@ -44,14 +44,14 @@ repos:
       additional_dependencies: ['flake8-docstrings']
 
 - repo: https://github.com/PyCQA/bandit
-  rev: '1.7.5'
+  rev: '1.7.7'
   hooks:
     - id: bandit
       args: ['-c', 'pyproject.toml', '--level', 'LOW']
       additional_dependencies: ['bandit[toml]']
 
 - repo: https://github.com/pycqa/isort
-  rev: '5.12.0'
+  rev: '5.13.2'
   hooks:
     - id: isort
 
@@ -61,7 +61,7 @@ repos:
     - id: pyupgrade
 
 - repo: https://codeberg.org/frnmst/md-toc
-  rev: '8.2.2'
+  rev: '8.2.3'
   hooks:
     - id: md-toc
       args: ['-p', 'cmark', '-l6']
@@ -89,6 +89,6 @@ repos:
       pass_filenames: false
 
 - repo: https://github.com/jorisroovers/gitlint
-  rev: 'v0.18.0'
+  rev: 'v0.19.1'
   hooks:
     - id: gitlint
