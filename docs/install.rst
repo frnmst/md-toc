@@ -1,12 +1,11 @@
 Installation
 ============
 
-Install md_toc via pip:
+#. install md_toc via pip
 
-::
+.. code-block:: shell-session
 
-    $ pip3 install md_toc --user
-
+   pip3 install md_toc --user
 
 All the necessary dependencies are installed automatically along with the
 program.
