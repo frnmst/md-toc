@@ -36,7 +36,7 @@ doc:
 install:
 	# pip 23 introduced the '--break-system-packages' option.
 	python3 -c 'import pip; import sys; sys.exit(0) if int(pip.__version__.split(".")[0]) >= 23 else sys.exit(1)' \
-		&& pip3 install --break-system-packages . --user \
+		&& pip3 install --break-system-packages --require-hashes . --user \
 		|| pip3 install . --user
 
 uninstall:
@@ -48,7 +48,7 @@ uninstall:
 install-dev:
 	python3 -m venv .venv
 	$(VENV_CMD) \
-		&& pip install --requirement requirements-freeze.txt \
+		&& pip install --disable-pip-version-check --requirement requirements-freeze.txt --require-hashes \
 		&& deactivate
 	$(VENV_CMD) \
 		&& pre-commit install \
@@ -57,15 +57,36 @@ install-dev:
 		&& pre-commit install --hook-type commit-msg \
 		&& deactivate
 
-regenerate-freeze: uninstall-dev
+# Add hashes to the freeze file be re-downloading the packages locally and
+# generating their hashes locally.
+# Assume that each package has one corresponding file only.
+regenerate-freeze: regenerate-freeze-no-hashes
 	python3 -m venv .venv
 	$(VENV_CMD) \
-		&& pip install --requirement requirements.txt --requirement requirements-dev.txt \
-		&& pip freeze --local > requirements-freeze.txt \
+		&& mkdir .pip-hashes \
+		&& cd .pip-hashes \
+		&& pip download --disable-pip-version-check --requirement ../requirements-freeze.txt \
+		&& find . \
+		-type f \
+		-regex "\(.*\.whl\|.*\.tar\.gz\)" \
+		-not -name "setuptools*" \
+		-exec pip hash --algorithm sha512 --no-color {} \; \
+		| sed -n 'n;p' > tmp.hashes \
+		&& paste -d '|' ../requirements-freeze.txt tmp.hashes | sed 's/|/ \\\n    /g' > req.freeze \
+		&& cd .. \
+		&& mv .pip-hashes/req.freeze requirements-freeze.txt \
+		&& rm -rf .pip-hashes \
+		&& deactivate
+
+regenerate-freeze-no-hashes: uninstall-dev
+	python3 -m venv .venv
+	$(VENV_CMD) \
+		&& pip install --disable-pip-version-check --requirement requirements.txt --requirement requirements-dev.txt \
+		&& pip freeze --disable-pip-version-check --local > requirements-freeze.txt \
 		&& deactivate
 
 uninstall-dev:
-	rm -rf .venv
+	rm -rf .venv .pip-hashes
 
 update: install-dev
 	$(VENV_CMD) \
@@ -145,4 +166,4 @@ benchmark:
 		&& python3 -m md_toc.tests.benchmark \
 		&& deactivate
 
-.PHONY: default doc install uninstall install-dev uninstall-dev update test clean demo benchmark pre-commit
+.PHONY: default doc install uninstall install-dev uninstall-dev update test clean demo benchmark pre-commit regenerate-freeze regenerate-freeze-no-hashes
