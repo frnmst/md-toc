@@ -1,0 +1,23 @@
+# Generated with flatpak-pip-generator --runtime=org.freedesktop.Sdk//23.08 --yaml md-toc
+id: org.eu.net.franco.md-toc
+name: md_toc
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+command: md_toc
+# Give full filesystem access.
+finish-args:
+  - --filesystem=home
+
+modules:
+  - name: md_toc
+    buildsystem: simple
+    build-commands:
+      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}" --prefix=${FLATPAK_DEST} "md-toc" --no-build-isolation
+    sources:
+      - type: file
+        url: https://fles.pythonhosted.org/packages/5f/ba/4a0aa00af38dde32e9b575052217b1e8d34e31106a079a74d83caafc26af/fpyutils-4.0.1-py3-none-any.whl
+        sha256: 006cfbdbd87915d8a1c5b7062b6c8d2f4f9fd12c3e707d89c27e6abd6c67c6b2
+      - type: file
+        url: https://files.pythonhosted.org/packages/b3/37/f552914aa49bb978764bb283f12bbb51b2bb7c8fa4cf71d4a84a7a6cda23/md_toc-8.2.3-py3-none-any.whl
+        sha256: e47128fae6bd09d58c620ab8f15d5664edab729232405dac3d594f22a1fc52f6

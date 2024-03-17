@@ -1,7 +1,7 @@
 #
 # Makefile
 #
-# Copyright (C) 2017-2022 Franco Masotti (see /README.md)
+# Copyright (C) 2017-2024 Franco Masotti (see /README.md)
 #
 # This file is part of md-toc.
 #
@@ -36,19 +36,21 @@ doc:
 install:
 	# pip 23 introduced the '--break-system-packages' option.
 	python3 -c 'import pip; import sys; sys.exit(0) if int(pip.__version__.split(".")[0]) >= 23 else sys.exit(1)' \
-		&& pip3 install --break-system-packages --require-hashes . --user \
-		|| pip3 install . --user
+		&& pip3 install --break-system-packages --disable-pip-version-check  . --user \
+		|| pip3 install --disable-pip-version-check  . --user
 
 uninstall:
 	# pip 23 introduced the '--break-system-packages' option.
 	python3 -c 'import pip; import sys; sys.exit(0) if int(pip.__version__.split(".")[0]) >= 23 else sys.exit(1)' \
-		&& pip3 uninstall --break-system-packages --verbose --yes $(PACKAGE_NAME) \
-		|| pip3 uninstall --verbose --yes $(PACKAGE_NAME)
+		&& pip3 uninstall --break-system-packages --disable-pip-version-check --verbose --yes $(PACKAGE_NAME) \
+		|| pip3 uninstall --disable-pip-version-check --verbose --yes $(PACKAGE_NAME)
 
 install-dev:
 	python3 -m venv .venv
 	$(VENV_CMD) \
-		&& pip install --disable-pip-version-check --requirement requirements-freeze.txt --require-hashes \
+		&& { python3 -c 'import pip; import sys; sys.exit(0) if int(pip.__version__.split(".")[0]) >= 23 else sys.exit(1)' \
+		&& pip install --disable-pip-version-check --require-virtualenv --requirement requirements-freeze.txt --require-hashes  \
+		|| pip install --require-virtualenv --requirement requirements-freeze.txt --require-hashes ; } \
 		&& deactivate
 	$(VENV_CMD) \
 		&& pre-commit install \
@@ -65,7 +67,7 @@ regenerate-freeze: regenerate-freeze-no-hashes
 	$(VENV_CMD) \
 		&& mkdir .pip-hashes \
 		&& cd .pip-hashes \
-		&& pip download --disable-pip-version-check --requirement ../requirements-freeze.txt \
+		&& pip download --require-virtualenv --disable-pip-version-check --requirement ../requirements-freeze.txt \
 		&& find . \
 		-type f \
 		-regex "\(.*\.whl\|.*\.tar\.gz\)" \
@@ -81,8 +83,8 @@ regenerate-freeze: regenerate-freeze-no-hashes
 regenerate-freeze-no-hashes: uninstall-dev
 	python3 -m venv .venv
 	$(VENV_CMD) \
-		&& pip install --disable-pip-version-check --requirement requirements.txt --requirement requirements-dev.txt \
-		&& pip freeze --disable-pip-version-check --local > requirements-freeze.txt \
+		&& pip install --require-virtualenv --disable-pip-version-check --requirement requirements.txt --requirement requirements-dev.txt \
+		&& pip freeze --require-virtualenv --disable-pip-version-check --local > requirements-freeze.txt \
 		&& deactivate
 
 uninstall-dev:
