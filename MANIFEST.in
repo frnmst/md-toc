@@ -11,4 +11,4 @@ prune .venv
 prune packages
 prune asciinema
 exclude *.yml *.yaml
-exclude Makefile
+exclude Makefile .project.mk
