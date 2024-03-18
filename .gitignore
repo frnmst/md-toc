@@ -4,6 +4,7 @@
 !CONTRIBUTING.md
 !SECURITY.md
 benchmark.csv
+Makefile
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
