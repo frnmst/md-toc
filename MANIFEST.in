@@ -10,5 +10,6 @@ prune docs
 prune .venv
 prune packages
 prune asciinema
+prune .tox
 exclude *.yml *.yaml
 exclude Makefile .project.mk
