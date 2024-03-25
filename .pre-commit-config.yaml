@@ -70,7 +70,7 @@ repos:
   rev: 'v2.7.2'
   hooks:
     - id: pip-audit
-      args: ['--requirement', 'requirements-freeze.txt', '--local', '--require-hashes', '--desc', '--aliases', '--no-deps', '--disable-pip', '--strict']
+      args: ['--requirement', '.requirements-freeze-hashes.txt', '--local', '--require-hashes', '--desc', '--aliases', '--no-deps', '--disable-pip', '--strict']
 
 - repo: https://github.com/mgedmin/check-manifest
   rev: '0.49'

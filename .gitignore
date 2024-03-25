@@ -5,6 +5,7 @@
 !SECURITY.md
 benchmark.csv
 Makefile
+.requirements-freeze-hashes.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
