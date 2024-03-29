@@ -20,6 +20,7 @@
 #
 r"""The tests module."""
 
+import doctest
 import unittest
 from unittest.mock import patch
 
@@ -133,6 +134,13 @@ GENERIC_CMARK_RENDERS_AS_LIST_HEADER_TYPE_FIRST = 4
 
 # redcarpet test lines.
 REDCARPET_LINE_FOO = 'foo'
+
+
+def load_tests(loader, tests, ignore):
+    r"""Run tests against docstrings examples."""
+    tests.addTests(doctest.DocTestSuite(api))
+    tests.addTests(doctest.DocTestSuite(generic))
+    return tests
 
 
 class TestGeneric(pyfakefsTestCase):
