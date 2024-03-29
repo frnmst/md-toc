@@ -33,40 +33,40 @@ from .cmark_h import _cmarkCmarkMem, _cmarkCmarkNodeType
 # @dataclass(slots=True)
 @dataclass
 class _cmarkCmarkList:
-    marker_offset: int = None
-    padding: int = None
-    start: int = None
-    list_type: int = None
-    delimiter: int = None
-    bullet_char: int = None
-    tight: bool = None
+    marker_offset: int = -1
+    padding: int = -1
+    start: int = -1
+    list_type: int = -1
+    delimiter: int = -1
+    bullet_char: int = -1
+    tight: bool = False
 
 
 @dataclass
 class _cmarkCmarkCode:
-    info: str = None
-    fence_length: int = None
-    fence_offset: int = None
-    fence_char: int = None
-    fenced: int = None
+    info: str = -1
+    fence_length: int = -1
+    fence_offset: int = -1
+    fence_char: int = -1
+    fenced: int = -1
 
 
 @dataclass
 class _cmarkCmarkHeading:
-    level: int = None
-    setext: bool = None
+    level: int = -1
+    setext: bool = False
 
 
 @dataclass
 class _cmarkCmarkLink:
-    url: str = None
-    title: str = None
+    url: str = ''
+    title: str = ''
 
 
 @dataclass
 class _cmarkCmarkCustom:
-    on_enter: str = None
-    on_exit: str = None
+    on_enter: str = ''
+    on_exit: str = ''
 
 
 class _cmarkCmarkNode:

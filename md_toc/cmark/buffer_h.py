@@ -21,6 +21,7 @@
 r"""A cmark implementation file."""
 
 from dataclasses import dataclass
+from typing import Optional
 
 from .cmark_h import _cmarkCmarkMem
 
@@ -32,7 +33,7 @@ from .cmark_h import _cmarkCmarkMem
 # 0.29, 0.30
 @dataclass
 class _cmarkCmarkStrbuf:
-    mem: _cmarkCmarkMem = None
+    mem: Optional[_cmarkCmarkMem] = None
     ptr: str = ''
     asize: int = 0
     size: int = 0

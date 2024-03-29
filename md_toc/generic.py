@@ -23,7 +23,6 @@
 from __future__ import annotations
 
 import re
-import typing
 
 import fpyutils
 
@@ -40,9 +39,9 @@ def _ctoi(c: str) -> int:
     if not len(c) == 1:
         raise ValueError
 
-    retval: str = c
+    retval: str | int = c
     if isinstance(c, str):
-        retval: int = ord(c)
+        retval = ord(c)
 
     return retval
 
@@ -70,8 +69,7 @@ def _extract_lines(input_file: str, start: int, end: int) -> str:
     return ''.join(lines)
 
 
-def _remove_line_intervals(filename: str,
-                           line_intervals: list[list[typing.Sequence]]):
+def _remove_line_intervals(filename: str, line_intervals: list[list[int]]):
     # A nested list of integers divided in couples is expected.
     # Example: [[1, 4], [8, 9]]
     for interval in line_intervals:

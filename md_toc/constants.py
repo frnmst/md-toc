@@ -23,25 +23,27 @@
 import copy
 import html
 import os
+import typing
 
 # License C applies to the cmark entities part.
 # See docs/copyright_license.rst
 
-common_defaults = dict()
-
-common_defaults = {
+common_defaults: dict = {
     'toc marker': '<!--TOC-->',
     'newline string': os.linesep,
 }
 
-parser = dict()
-parser['cmark'] = dict()
-parser['cmark']['list'] = dict()
-parser['cmark']['link'] = dict()
-parser['cmark']['header'] = dict()
-parser['cmark']['code fence'] = dict()
-parser['redcarpet'] = dict()
-parser['redcarpet']['list'] = dict()
+parser: dict = {
+    'cmark': {
+        'list': {},
+        'link': {},
+        'header': {},
+        'code fence': {},
+    },
+    'redcarpet': {
+        'list': {},
+    },
+}
 
 #########
 # cmark #
