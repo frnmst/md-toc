@@ -228,6 +228,17 @@ def build_toc(
 
     .. warning:: In case of ordered TOCs you must explicitly pass one of the
         supported ordered list markers.
+
+    :Example:
+
+    >>> import md_toc # doctest: +SKIP
+    >>> with open('foo.md', 'w') as f: # doctest: +SKIP
+    ...     f.write('# This\n# Is an\n## Example\n') # doctest: +SKIP
+    26
+    >>> md_toc.api.build_toc('foo.md') # doctest: +SKIP
+    - [This](#this)
+    - [Is an](#is-an)
+      - [Example](#example)
     """
     if not skip_lines >= 0:
         raise ValueError
@@ -758,6 +769,18 @@ def build_toc_line(
     :returns: toc_line, a single line of the table of contents.
     :rtype: str
     :raises: a built-in exception.
+
+    :Example:
+
+    >>> import md_toc
+    >>> md_toc.api.build_toc_line('', 0)
+    ''
+
+    :Example:
+
+    >>> import md_toc
+    >>> md_toc.api.build_toc_line('my string', 10)
+    '          my string'
     """
     if not no_of_indentation_spaces >= 0:
         raise ValueError
@@ -806,6 +829,12 @@ def remove_emphasis(line: str, parser: str = 'github') -> str:
     :raises: a built-in exception.
 
     .. note:: Backslashes are preserved.
+
+    :Example:
+
+    >>> import md_toc
+    >>> md_toc.api.remove_emphasis('__my string__ *is this* one')
+    'my string is this one'
     """
     if parser in [
             'github', 'cmark', 'gitlab', 'commonmarker', 'goldmark',
@@ -879,6 +908,12 @@ def build_anchor_link(
 
     .. note: license A applies for the redcarpet part.
         See docs/copyright_license.rst
+
+    :Example:
+
+    >>> import md_toc
+    >>> md_toc.api.build_anchor_link('This is an example test       header', {}, 'gitlab')
+    'this-is-an-example-test-header'
     """
     # Check for newlines.
     if len(replace_and_split_newlines(header_text_trimmed)) > 1:
@@ -1452,6 +1487,18 @@ def is_closing_code_fence(
     :returns: True if the line ends the current code block. False otherwise.
     :rtype: bool
     :raises: a built-in exception.
+
+    :Example:
+
+    >>> import md_toc
+    >>> md_toc.api.is_closing_code_fence('```', '```')
+    True
+
+    :Example:
+
+    >>> import md_toc
+    >>> md_toc.api.is_closing_code_fence('```', '~~~')
+    False
     """
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
         markers = md_parser['github']['code fence']['marker']
