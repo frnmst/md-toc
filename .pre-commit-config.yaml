@@ -60,6 +60,12 @@ repos:
   hooks:
     - id: pyupgrade
 
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: 'v1.8.0'
+  hooks:
+    - id: mypy
+      args: ['--check-untyped-defs']
+
 - repo: https://codeberg.org/frnmst/md-toc
   rev: '8.2.3'
   hooks:
