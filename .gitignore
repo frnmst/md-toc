@@ -5,6 +5,7 @@
 !SECURITY.md
 benchmark.csv
 Makefile
+.dockerfile_build_python_dist
 .requirements-freeze-hashes.txt
 
 # Byte-compiled / optimized / DLL files
