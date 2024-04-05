@@ -168,8 +168,8 @@ def _cmark_cmark_utf8proc_case_fold(
 # 0.29, 0.30
 def _cmark_cmark_utf8proc_is_space(char: int) -> bool:
     r"""Match anything in the Zs class, plus LF, CR, TAB, FF."""
-    value = False
-    if chr(char) in md_parser['cmark']['pseudo-re']['UWC']:
+    value: bool = False
+    if chr(char) in md_parser['cmark']['pseudo_re']['UWC']:
         value = True
 
     return value
@@ -178,9 +178,9 @@ def _cmark_cmark_utf8proc_is_space(char: int) -> bool:
 # 0.29, 0.30
 def _cmark_cmark_utf8proc_is_punctuation(char: int) -> bool:
     r"""Match anything in the P[cdefios] classes."""
-    value = False
+    value: bool = False
     if ((char < 128 and _cmark_cmark_ispunct(char))
-            or chr(char) in md_parser['cmark']['pseudo-re']['UPC']):
+            or chr(char) in md_parser['cmark']['pseudo_re']['UPC']):
         value = True
 
     return value

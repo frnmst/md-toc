@@ -27,27 +27,6 @@ import typing
 
 # License C applies to the cmark entities part.
 # See docs/copyright_license.rst
-
-common_defaults: dict = {
-    'toc marker': '<!--TOC-->',
-    'newline string': os.linesep,
-}
-
-parser: dict = {
-    'cmark': {
-        'list': {},
-        'link': {},
-        'header': {},
-        'code fence': {},
-    },
-    'redcarpet': {
-        'list': {},
-    },
-}
-
-#########
-# cmark #
-#########
 _entities5 = html.entities.html5
 # remove keys without semicolons.  For some reason the list
 # has duplicates of a few things, like auml, one with and one
@@ -66,38 +45,75 @@ for (ent, bs) in _ents:
     # Transform each entity into a list of integers from a list of strings.
     _entities[-1]['bytes'] = [int(n) for n in _entities[-1]['bytes']]
 
-parser['cmark']['link'] = {
-    'max chars label': 999,
+common_defaults: dict = {
+    'toc_marker': '<!--TOC-->',
+    'newline_string': os.linesep,
 }
 
-parser['cmark']['list']['ordered'] = {
-    'closing markers': ['.', ')'],
-    'default marker number': 1,
-    'min marker number': 0,
-    'max marker number': 999999999,
-    'default closing marker': '.',
-}
-parser['cmark']['list']['unordered'] = {
-    'bullet markers': ['-', '+', '*'],
-    'default marker': '-',
-}
-
-parser['cmark']['header'] = {
-    'max space indentation': 3,
-    'max levels': 6,
-    'default keep levels': 3,
-}
-
-parser['cmark']['code fence'] = {
-    'marker': {
-        'backtick': '`',
-        'tilde': '~',
+parser: dict = {
+    'cmark': {
+        'list': {
+            'ordered': {
+                'closing_markers': ['.', ')'],
+                'default_marker_number': 1,
+                'min_marker_number': 0,
+                'max_marker_number': 999999999,
+                'default_closing_markers': '.',
+            },
+            'unordered': {
+                'bullet_markers': ['-', '+', '*'],
+                'default_marker': '-',
+            },
+        },
+        'link': {
+            'max_chars_label': 999,
+        },
+        'header': {
+            'max_space_indentation': 3,
+            'max_levels': 6,
+            'default_keep_levels': 3,
+        },
+        'code_fence': {
+            'marker': {
+                'backtick': '`',
+                'tilde': '~',
+            },
+            'min_marker_characters': 3,
+        },
+        # Regular expressions related to entities functions.
+        # See make_entities_inc.py and entities.inc files.
+        're': {
+            'ENTITIES': {
+                'CMARK_ENTITY_MIN_LENGTH': 2,
+                'CMARK_ENTITY_MAX_LENGTH': 32,
+                'CMARK_NUM_ENTITIES': len(_entities),
+                'entities': _entities,
+            },
+        },
     },
-    'min marker characters': 3,
+    'redcarpet': {
+        'list': {
+            'ordered': {
+                # FIXME
+                'min_marker_number': 0,
+                'closing_markers': ['.'],
+                'default_closing_markers': '.',
+            },
+            'unordered': {
+                'bullet_markers': ['-', '+', '*'],
+                'default_marker': '-',
+            },
+        },
+        'header': {
+            'max_space_indentation': 0,
+            'max_levels': 6,
+            'default_keep_levels': 3,
+        },
+    },
 }
 
 # A structure containing some generic pseudo-regex expressions used in some algorithms.
-parser['cmark']['pseudo-re'] = {
+parser['cmark']['pseudo_re'] = {
     # See https://www.fileformat.info/info/unicode/category/Zs/list.htm
     # for the Zs characters.
     # Unicode Whitespace Character.
@@ -898,14 +914,14 @@ parser['cmark']['pseudo-re'] = {
 }
 
 # Unicode punctuation character.
-# Removed parser['cmark']['pseudo-re']['APC'] because check is done
+# Removed parser['cmark']['pseudo_re']['APC'] because check is done
 # manually in the md_toc.cmark._cmark_cmark_utf8proc_is_punctuation function.
-parser['cmark']['pseudo-re']['UPC'] = (parser['cmark']['pseudo-re']['PGUCPC'] +
-                                       parser['cmark']['pseudo-re']['PGUCPD'] +
-                                       parser['cmark']['pseudo-re']['PGUCPF'] +
-                                       parser['cmark']['pseudo-re']['PGUCPI'] +
-                                       parser['cmark']['pseudo-re']['PGUCPO'] +
-                                       parser['cmark']['pseudo-re']['PGUCPS'])
+parser['cmark']['pseudo_re']['UPC'] = (parser['cmark']['pseudo_re']['PGUCPC'] +
+                                       parser['cmark']['pseudo_re']['PGUCPD'] +
+                                       parser['cmark']['pseudo_re']['PGUCPF'] +
+                                       parser['cmark']['pseudo_re']['PGUCPI'] +
+                                       parser['cmark']['pseudo_re']['PGUCPO'] +
+                                       parser['cmark']['pseudo_re']['PGUCPS'])
 
 # Regular expressions related to scanners functions.
 # See scanners.re and scanners.c files.
@@ -929,7 +945,7 @@ __cmark_cdata = r'CDATA\[([^\]\x00]+|\][^\]\x00]|\]\][^>\x00])*'
 __cmark_htmlcomment = '(--->|(-([-]?[^\x00>-])([-]?[^\x00-])*-->))'
 __cmark_processinginstruction = '([^?>\x00]+|[?][^>\x00]|[>])+'
 
-parser['cmark']['re'] = {
+parser['cmark']['re'].update({
     # [0.30] only.
     'SPACETAB': '[\u0009\u0020]',
     # Line ending.
@@ -968,18 +984,8 @@ parser['cmark']['re'] = {
     'CDB': r'(?:(?!\]\]>).)+',
     # End.
     'CDE': r'\]\]>',
-}
+})
 
-# Regular expressions related to entities functions.
-# See make_entities_inc.py and entities.inc files.
-parser['cmark']['re']['ENTITIES'] = {
-    'CMARK_ENTITY_MIN_LENGTH': 2,
-    'CMARK_ENTITY_MAX_LENGTH': 32,
-    'CMARK_NUM_ENTITIES': len(_entities),
-    'entities': _entities,
-}
-
-#
 parser['cmark']['_scanners.re'] = {
     'spacechar': __cmark_spacechar,
     'escaped_char': __cmark_escaped_char,
@@ -1094,28 +1100,7 @@ parser['github']['re']['DE'] = (parser['github']['re']['DES'] +
 # Do not move these.
 parser['gitlab'] = copy.deepcopy(parser['cmark'])
 parser['goldmark'] = copy.deepcopy(parser['cmark'])
-
 parser['commonmarker'] = copy.deepcopy(parser['github'])
-
-#############
-# redcarpet #
-#############
-parser['redcarpet']['list']['ordered'] = {
-    # FIXME
-    'min marker number': 0,
-    'closing markers': ['.'],
-    'default closing marker': '.',
-}
-parser['redcarpet']['list']['unordered'] = {
-    'bullet markers': ['-', '+', '*'],
-    'default marker': '-',
-}
-
-parser['redcarpet']['header'] = {
-    'max space indentation': 0,
-    'max levels': 6,
-    'default keep levels': 3,
-}
 
 if __name__ == '__main__':
     pass

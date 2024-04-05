@@ -899,12 +899,12 @@ class TestApi(pyfakefsTestCase):
         expected_list_marker,
     ):
         self.assertEqual(
-            log[header_type_curr]['indentation spaces'],
+            log[header_type_curr]['indentation_spaces'],
             expected_indentation_spaces,
         )
         self.assertEqual(log[header_type_curr]['index'], expected_index)
         self.assertEqual(
-            log[header_type_curr]['list marker'],
+            log[header_type_curr]['list_marker'],
             expected_list_marker,
         )
         if parser == 'github':
@@ -914,9 +914,9 @@ class TestApi(pyfakefsTestCase):
                         md_parser['github']['header']['max levels'] + 1,
                 ):
                     self.assertEqual(log[i]['index'], 0)
-                    self.assertEqual(log[i]['indentation spaces'], 0)
+                    self.assertEqual(log[i]['indentation_spaces'], 0)
                     self.assertEqual(
-                        log[i]['list marker'],
+                        log[i]['list_marker'],
                         expected_list_marker,
                     )
 
@@ -950,7 +950,7 @@ class TestApi(pyfakefsTestCase):
         # 2. First TOC line with the incorrect number of indentation spaces.
         log = api.init_indentation_log('github', '-')
         log[GENERIC_HEADER_TYPE_CURR][
-            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation_spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             BASE_CASE_HEADER_TYPE_PREV,
@@ -971,7 +971,7 @@ class TestApi(pyfakefsTestCase):
 
         # 3. A generic TOC line with number of previous indentation spaces = 0.
         log = api.init_indentation_log('github', '-')
-        log[GENERIC_HEADER_TYPE_CURR]['indentation spaces'] = 0
+        log[GENERIC_HEADER_TYPE_CURR]['indentation_spaces'] = 0
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             GENERIC_HEADER_TYPE_PREV,
@@ -993,7 +993,7 @@ class TestApi(pyfakefsTestCase):
         # 4. Base case same indentation.
         log = api.init_indentation_log('github', '-')
         log[GENERIC_HEADER_TYPE_CURR][
-            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation_spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             GENERIC_HEADER_TYPE_CURR,
@@ -1015,7 +1015,7 @@ class TestApi(pyfakefsTestCase):
         # 5. Generic case more indentation.
         log = api.init_indentation_log('github', '-')
         log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation_spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             GENERIC_HEADER_TYPE_PREV,
@@ -1041,7 +1041,7 @@ class TestApi(pyfakefsTestCase):
         #       function input, in respect to the usual positions.
         log = api.init_indentation_log('github', '-')
         log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation_spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_PREV,
             GENERIC_HEADER_TYPE_CURR,
@@ -1064,7 +1064,7 @@ class TestApi(pyfakefsTestCase):
 
         # 7. First TOC line.
         log = api.init_indentation_log('github', '.')
-        log[GENERIC_HEADER_TYPE_CURR]['indentation spaces'] = 0
+        log[GENERIC_HEADER_TYPE_CURR]['indentation_spaces'] = 0
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             BASE_CASE_HEADER_TYPE_PREV,
@@ -1087,7 +1087,7 @@ class TestApi(pyfakefsTestCase):
         # 8. First TOC line with the incorrect number of indentation spaces.
         log = api.init_indentation_log('github', '.')
         log[GENERIC_HEADER_TYPE_CURR][
-            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation_spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             BASE_CASE_HEADER_TYPE_PREV,
@@ -1113,7 +1113,7 @@ class TestApi(pyfakefsTestCase):
         log[2]['index'] = 999
         log[3]['index'] = 1001
         expected_indentation_spaces = log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'] + len(
+            'indentation_spaces'] + len(
                 str(log[GENERIC_HEADER_TYPE_PREV]['index'])) + len('.') + len(
                     S1)
         api.compute_toc_line_indentation_spaces(
@@ -1141,7 +1141,7 @@ class TestApi(pyfakefsTestCase):
         log[2]['index'] = 999
         log[3]['index'] = 1001
         log[GENERIC_HEADER_TYPE_CURR][
-            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation_spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             GENERIC_HEADER_TYPE_CURR,
@@ -1167,9 +1167,9 @@ class TestApi(pyfakefsTestCase):
         log[2]['index'] = 999
         log[3]['index'] = 1001
         log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation_spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         expected_indentation_spaces = log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'] + len(
+            'indentation_spaces'] + len(
                 str(log[GENERIC_HEADER_TYPE_PREV]['index'])) + len('.') + len(
                     S1)
         api.compute_toc_line_indentation_spaces(
@@ -1197,9 +1197,9 @@ class TestApi(pyfakefsTestCase):
         log[2]['index'] = 999
         log[3]['index'] = 1001
         log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation_spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         expected_indentation_spaces = log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces']
+            'indentation_spaces']
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_PREV,
             GENERIC_HEADER_TYPE_CURR,

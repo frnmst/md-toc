@@ -31,7 +31,7 @@ from ..constants import parser as md_parser
 # 0.30
 def _cmark_cmark_isspace(char: int) -> bool:
     value = False
-    if chr(char) in md_parser['cmark']['pseudo-re']['UWC']:
+    if chr(char) in md_parser['cmark']['pseudo_re']['UWC']:
         value = True
 
     return value
@@ -41,7 +41,7 @@ def _cmark_cmark_isspace(char: int) -> bool:
 # 0.29, 0.30
 def _cmark_cmark_ispunct(char: int) -> bool:
     value = False
-    if chr(char) in md_parser['cmark']['pseudo-re']['APC']:
+    if chr(char) in md_parser['cmark']['pseudo_re']['APC']:
         value = True
 
     return value
