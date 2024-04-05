@@ -30,6 +30,11 @@ repos:
       args: ['--fix=lf']
     - id: requirements-txt-fixer
 
+- repo: https://github.com/asottile/pyupgrade
+  rev: 'v3.15.0'
+  hooks:
+    - id: pyupgrade
+
 # YAPF and flake8 need to remain pinned.
 - repo: https://github.com/pre-commit/mirrors-yapf
   rev: 'v0.32.0' # frozen: v0.32.0
@@ -54,11 +59,6 @@ repos:
   rev: '5.13.2'
   hooks:
     - id: isort
-
-- repo: https://github.com/asottile/pyupgrade
-  rev: 'v3.15.0'
-  hooks:
-    - id: pyupgrade
 
 - repo: https://codeberg.org/frnmst/md-toc
   rev: '8.2.3'

@@ -2164,23 +2164,24 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(api.remove_emphasis(r'*[link*](<foo\>)'),
                          r'[link](<foo\>)')
         #        self.assertEqual(api.remove_emphasis('[link](*<foo\>)*'), '[link](<foo\>)')
-        #        self.assertEqual(api.remove_emphasis('_[link_](<foo\>)'), '[link](<foo\>)')
+        self.assertEqual(api.remove_emphasis(r'_[link_](<foo\>)'),
+                         r'[link](<foo\>)')
         #        self.assertEqual(api.remove_emphasis('[link](_<foo\>)_'), '[link](<foo\>)')
 
         # Example 493 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*[a*](<b)c'), '[a](<b)c')
         #        self.assertEqual(api.remove_emphasis('[a](*<b)c*'), '[a](<b)c')
-        #        self.assertEqual(api.remove_emphasis('_[a_](<b)c'), '[a](<b)c')
+        self.assertEqual(api.remove_emphasis('_[a_](<b)c'), '[a](<b)c')
         #        self.assertEqual(api.remove_emphasis('[a](_<b)c_'), '[a](<b)c')
 
         self.assertEqual(api.remove_emphasis('*[a*](<b)c>'), '[a](<b)c>')
         #        self.assertEqual(api.remove_emphasis('[a](*<b)c>*'), '[a](<b)c>')
-        #        self.assertEqual(api.remove_emphasis('_[a_](<b)c>'), '[a](<b)c>')
+        self.assertEqual(api.remove_emphasis('_[a_](<b)c>'), '[a](<b)c>')
         #        self.assertEqual(api.remove_emphasis('[a](_<b)c>_'), '[a](<b)c>')
 
         self.assertEqual(api.remove_emphasis('*[a*](<b>c)'), '[a](<b>c)')
         #        self.assertEqual(api.remove_emphasis('[a](*<b>c)*'), '[a](<b>c)')
-        #        self.assertEqual(api.remove_emphasis('_[a_](<b>c)'), '[a](<b>c)')
+        self.assertEqual(api.remove_emphasis('_[a_](<b>c)'), '[a](<b>c)')
         #        self.assertEqual(api.remove_emphasis('[a](_<b>c)_'), '[a](<b>c)')
 
         # Example 494 [Commonmark 0.30].
@@ -2362,7 +2363,9 @@ class TestApi(pyfakefsTestCase):
                          r'*[link* \[bar](/uri)')
 
         # Example 515 [Commonmark 0.30].
-        #      self.assertEqual(api.remove_emphasis(r'[link *foo **bar** `#`*](/uri)'), r'[link foo bar `#`](/uri)')
+        self.assertEqual(
+            api.remove_emphasis(r'[link *foo **bar** `#`*](/uri)'),
+            r'[link foo bar `#`](/uri)')
 
         # Example 516 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'[![moon](moon.jpg)](/uri)'),
@@ -2373,7 +2376,9 @@ class TestApi(pyfakefsTestCase):
                          r'[foo [bar](/uri)](/uri)')
 
         # Example 518 [Commonmark 0.30].
-        #      self.assertEqual(api.remove_emphasis(r'[foo *[bar [baz](/uri)](/uri)*](/uri)'), r'[foo [bar [baz](/uri)](/uri)](/uri)')
+        self.assertEqual(
+            api.remove_emphasis(r'[foo *[bar [baz](/uri)](/uri)*](/uri)'),
+            r'[foo [bar [baz](/uri)](/uri)](/uri)')
 
         # Example 519 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'![[[foo](uri1)](uri2)](uri3)'),
