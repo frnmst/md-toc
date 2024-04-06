@@ -1,7 +1,7 @@
 #
 # cli.py
 #
-# Copyright (C) 2017-2023 Franco Masotti (see /README.md)
+# Copyright (C) 2017-2024 Franco Masotti (see /README.md)
 #
 # This file is part of md-toc.
 #
@@ -127,26 +127,26 @@ class CliInterface():
             '-u',
             '--unordered-list-marker',
             choices=md_parser[parser_name]['list']['unordered']
-            ['bullet markers'],
+            ['bullet_markers'],
             nargs='?',
             const=md_parser[parser_name]['list']['unordered']
-            ['default marker'],
+            ['default_marker'],
             default=md_parser[parser_name]['list']['unordered']
-            ['default marker'],
+            ['default_marker'],
             help='set the marker and enables unordered list. Defaults to ' +
-            md_parser[parser_name]['list']['unordered']['default marker'],
+            md_parser[parser_name]['list']['unordered']['default_marker'],
         )
         megroup.add_argument(
             '-o',
             '--ordered-list-marker',
             choices=md_parser[parser_name]['list']['ordered']
-            ['closing markers'],
+            ['closing_markers'],
             nargs='?',
             const=md_parser[parser_name]['list']['ordered']
-            ['default closing marker'],
+            ['default_closing_marker'],
             help=('set the marker and enable ordered lists. Defaults to ' +
                   md_parser[parser_name]['list']['ordered']
-                  ['default closing marker']),
+                  ['default_closing_marker']),
         )
 
     def _add_cmark_like_arguments(self, parser, parser_name: str):
@@ -162,12 +162,12 @@ class CliInterface():
             '--header-levels',
             type=int,
             choices=range(1,
-                          md_parser[parser_name]['header']['max levels'] + 1),
+                          md_parser[parser_name]['header']['max_levels'] + 1),
             nargs='?',
-            const=md_parser[parser_name]['header']['default keep levels'],
+            const=md_parser[parser_name]['header']['default_keep_levels'],
             help='set the maximum level of headers to be considered as part \
                   of the TOC. Defaults to ' +
-            str(md_parser[parser_name]['header']['default keep levels'], ),
+            str(md_parser[parser_name]['header']['default_keep_levels'], ),
         )
 
     def create_parser(self):
@@ -204,7 +204,7 @@ class CliInterface():
         self._add_cmark_like_megroup_arguments(megroup, 'github')
         self._add_cmark_like_arguments(github, 'github')
         github.set_defaults(header_levels=md_parser['github']['header']
-                            ['default keep levels'], )
+                            ['default_keep_levels'], )
 
         ##########
         # gitlab #
@@ -222,7 +222,7 @@ class CliInterface():
         self._add_cmark_like_megroup_arguments(megroup, 'gitlab')
         self._add_cmark_like_arguments(gitlab, 'gitlab')
         gitlab.set_defaults(header_levels=md_parser['gitlab']['header']
-                            ['default keep levels'], )
+                            ['default_keep_levels'], )
 
         ####################
         # cmark + Goldmark #
@@ -240,7 +240,7 @@ class CliInterface():
         self._add_cmark_like_megroup_arguments(megroup, 'cmark')
         self._add_cmark_like_arguments(cmark, 'cmark')
         cmark.set_defaults(header_levels=md_parser['cmark']['header']
-                           ['default keep levels'], )
+                           ['default_keep_levels'], )
 
         #############
         # Redcarpet #
@@ -260,26 +260,26 @@ class CliInterface():
             '-u',
             '--unordered-list-marker',
             choices=md_parser['redcarpet']['list']['unordered']
-            ['bullet markers'],
+            ['bullet_markers'],
             nargs='?',
             const=md_parser['redcarpet']['list']['unordered']
-            ['default marker'],
+            ['default_marker'],
             default=md_parser['redcarpet']['list']['unordered']
-            ['default marker'],
+            ['default_marker'],
             help='set the marker and enables unordered list. Defaults to ' +
-            md_parser['redcarpet']['list']['unordered']['default marker'],
+            md_parser['redcarpet']['list']['unordered']['default_marker'],
         )
         megroup.add_argument(
             '-o',
             '--ordered-list-marker',
             choices=md_parser['redcarpet']['list']['ordered']
-            ['closing markers'],
+            ['closing_markers'],
             nargs='?',
             const=md_parser['redcarpet']['list']['ordered']
-            ['default closing marker'],
+            ['default_closing_marker'],
             help='set the marker and enables ordered lists. Defaults to ' +
             md_parser['redcarpet']['list']['ordered']
-            ['default closing marker'],
+            ['default_closing_marker'],
         )
         redcarpet.add_argument(
             '-c',
@@ -294,16 +294,16 @@ class CliInterface():
             type=int,
             choices=range(
                 1,
-                md_parser['redcarpet']['header']['max levels'] + 1,
+                md_parser['redcarpet']['header']['max_levels'] + 1,
             ),
             nargs='?',
-            const=md_parser['redcarpet']['header']['default keep levels'],
+            const=md_parser['redcarpet']['header']['default_keep_levels'],
             help='set the maximum level of headers to be considered as part \
                   of the TOC. Defaults to ' +
-            str(md_parser['redcarpet']['header']['default keep levels'], ),
+            str(md_parser['redcarpet']['header']['default_keep_levels'], ),
         )
         redcarpet.set_defaults(header_levels=md_parser['redcarpet']['header']
-                               ['default keep levels'], )
+                               ['default_keep_levels'], )
 
         ##########
         # Common #
@@ -341,11 +341,11 @@ class CliInterface():
             '-m',
             '--toc-marker',
             metavar='TOC_MARKER',
-            default=common_defaults['toc marker'],
+            default=common_defaults['toc_marker'],
             help=(
                 'set the string to be used as the marker for positioning the \
                 table of contents. Put this value between single quotes. \
-                Defaults to \'' + common_defaults['toc marker']) + '\'',
+                Defaults to \'' + common_defaults['toc_marker']) + '\'',
         )
         parser.add_argument(
             '-n',
@@ -353,12 +353,12 @@ class CliInterface():
             choices=[r'\n', r'\r', r'\r\n'],
             metavar='NEWLINE_STRING',
             type=str,
-            default=common_defaults['newline string'],
+            default=common_defaults['newline_string'],
             help=('the string used to separate the lines of the TOC. \
                   Use single quotes to delimit the string. \
                   If you output in place all the newlines of the \
                   input file will be replaced with this value. \
-                  Defaults to ' + repr(common_defaults['newline string'])),
+                  Defaults to ' + repr(common_defaults['newline_string'])),
         )
         parser.add_argument(
             '-p',

@@ -33,32 +33,28 @@ class IndentationLogElement(TypedDict, total=False):
     :type indentation spaces: int
     """
 
-    # index: 1 -> md_parser['github']['header']['max levels'] + 1
+    # index: 1 -> md_parser['github']['header']['max_levels'] + 1
     index: int
-    # FIXME
-    # Spaces are not allowed.
-
-
-#    list marker: str
-#    indentation spaces: int
+    list_marker: str
+    indentation_spaces: int
 
 
 class Header(TypedDict):
     r"""A ``header`` object.
 
-    :parameter type: h1 to h6 (``1`` -> ``6``).
+    :parameter header_type: h1 to h6 (``1`` -> ``6``).
     :parameter text_original: Raw text.
     :parameter text_anchor_link: Transformed text so it works as an anchor
        link.
     :parameter visible: if ``True`` the header needs to be visible, if
        ``False`` it will not.
-    :type type: int
+    :type header_type: int
     :type text_original: str
     :type text_anchor_link: str
     :type visible: bool
     """
 
-    type: int
+    header_type: int
     text_original: str
     text_anchor_link: str
     visible: bool
@@ -67,14 +63,12 @@ class Header(TypedDict):
 class HeaderTypeCounter(TypedDict, total=False):
     r"""The number of headers for each type, from ``h1`` to ``h6``."""
 
-    # Should be something like:
-    # '1': int
-    # '2': int
-    # '3': int
-    # '4': int
-    # '5': int
-    # '6': int
-    pass
+    h1: int
+    h2: int
+    h3: int
+    h4: int
+    h5: int
+    h6: int
 
 
 class HeaderDuplicateCounter(TypedDict, total=False):
@@ -93,21 +87,21 @@ class HeaderDuplicateCounter(TypedDict, total=False):
 class AtxHeadingStructElement(TypedDict, total=False):
     """A single element of the list returned by the ``get_atx_heading`` function.
 
-    :parameter header type: h1 to h6 (``1`` -> ``6``).
-    :parameter header text trimmed: the link label.
+    :parameter header_type: h1 to h6 (``1`` -> ``6``).
+    :parameter header_text trimmed: the link label.
     :parameter visible: if the line has a smaller header that
        ``keep_header_levels``, then ``visible`` is set to ``False``.
-    :type header type: int
-    :type header text trimmed: str
+    :type header_type: int
+    :type header_text_trimmed: str
     :type visible: bool
 
-    .. note:: ``header type`` and ``header text trimmed`` are
+    .. note:: ``header_type`` and ``header_text_trimmed`` are
        set to ``None`` if the line does not contain header elements according
        to the rules of the selected markdown parser.
        ``visible`` is set to ``True`` if the line needs to be saved, ``False``
        if it just needed for duplicate counting.
     """
 
-    # header type: int
-    # header text trimmed: str
+    header_type: int
+    header_text_trimmed: str
     visible: bool

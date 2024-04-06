@@ -861,22 +861,22 @@ class TestApi(pyfakefsTestCase):
         increases or resets.
         """
         # Check that the index increases if we are on the same sublist.
-        ht = dict()
+        ht = {}
         api.increase_index_ordered_list(ht, 0, 1)
-        self.assertEqual(ht[1], 1)
+        self.assertEqual(ht['h' + str(1)], 1)
         api.increase_index_ordered_list(ht, 1, 1)
-        self.assertEqual(ht[1], 2)
+        self.assertEqual(ht['h' + str(1)], 2)
 
         # Check that the index resets if we are starting a new sublist.
-        ht = dict()
-        ht[1] = 1
-        ht[2] = 3
-        ht[3] = 1
+        ht = {}
+        ht['h' + str(1)] = 1
+        ht['h' + str(2)] = 3
+        ht['h' + str(3)] = 1
         api.increase_index_ordered_list(ht, 2, 3)
-        self.assertEqual(ht[3], 1)
+        self.assertEqual(ht['h' + str(3)], 1)
 
         # Check overflow rule for github.
-        ht[1] = md_parser['github']['list']['ordered'][
+        ht['h' + str(1)] = md_parser['github']['list']['ordered'][
             'max marker number'] = 999999999
         with self.assertRaises(exceptions.GithubOverflowOrderedListMarker):
             api.increase_index_ordered_list(ht, 1, 1)
@@ -899,12 +899,12 @@ class TestApi(pyfakefsTestCase):
         expected_list_marker,
     ):
         self.assertEqual(
-            log[header_type_curr]['indentation spaces'],
+            log[header_type_curr]['indentation_spaces'],
             expected_indentation_spaces,
         )
         self.assertEqual(log[header_type_curr]['index'], expected_index)
         self.assertEqual(
-            log[header_type_curr]['list marker'],
+            log[header_type_curr]['list_marker'],
             expected_list_marker,
         )
         if parser == 'github':
@@ -914,9 +914,9 @@ class TestApi(pyfakefsTestCase):
                         md_parser['github']['header']['max levels'] + 1,
                 ):
                     self.assertEqual(log[i]['index'], 0)
-                    self.assertEqual(log[i]['indentation spaces'], 0)
+                    self.assertEqual(log[i]['indentation_spaces'], 0)
                     self.assertEqual(
-                        log[i]['list marker'],
+                        log[i]['list_marker'],
                         expected_list_marker,
                     )
 
@@ -950,7 +950,7 @@ class TestApi(pyfakefsTestCase):
         # 2. First TOC line with the incorrect number of indentation spaces.
         log = api.init_indentation_log('github', '-')
         log[GENERIC_HEADER_TYPE_CURR][
-            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation_spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             BASE_CASE_HEADER_TYPE_PREV,
@@ -971,7 +971,7 @@ class TestApi(pyfakefsTestCase):
 
         # 3. A generic TOC line with number of previous indentation spaces = 0.
         log = api.init_indentation_log('github', '-')
-        log[GENERIC_HEADER_TYPE_CURR]['indentation spaces'] = 0
+        log[GENERIC_HEADER_TYPE_CURR]['indentation_spaces'] = 0
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             GENERIC_HEADER_TYPE_PREV,
@@ -993,7 +993,7 @@ class TestApi(pyfakefsTestCase):
         # 4. Base case same indentation.
         log = api.init_indentation_log('github', '-')
         log[GENERIC_HEADER_TYPE_CURR][
-            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation_spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             GENERIC_HEADER_TYPE_CURR,
@@ -1015,7 +1015,7 @@ class TestApi(pyfakefsTestCase):
         # 5. Generic case more indentation.
         log = api.init_indentation_log('github', '-')
         log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation_spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             GENERIC_HEADER_TYPE_PREV,
@@ -1041,7 +1041,7 @@ class TestApi(pyfakefsTestCase):
         #       function input, in respect to the usual positions.
         log = api.init_indentation_log('github', '-')
         log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation_spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_PREV,
             GENERIC_HEADER_TYPE_CURR,
@@ -1064,7 +1064,7 @@ class TestApi(pyfakefsTestCase):
 
         # 7. First TOC line.
         log = api.init_indentation_log('github', '.')
-        log[GENERIC_HEADER_TYPE_CURR]['indentation spaces'] = 0
+        log[GENERIC_HEADER_TYPE_CURR]['indentation_spaces'] = 0
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             BASE_CASE_HEADER_TYPE_PREV,
@@ -1087,7 +1087,7 @@ class TestApi(pyfakefsTestCase):
         # 8. First TOC line with the incorrect number of indentation spaces.
         log = api.init_indentation_log('github', '.')
         log[GENERIC_HEADER_TYPE_CURR][
-            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation_spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             BASE_CASE_HEADER_TYPE_PREV,
@@ -1113,7 +1113,7 @@ class TestApi(pyfakefsTestCase):
         log[2]['index'] = 999
         log[3]['index'] = 1001
         expected_indentation_spaces = log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'] + len(
+            'indentation_spaces'] + len(
                 str(log[GENERIC_HEADER_TYPE_PREV]['index'])) + len('.') + len(
                     S1)
         api.compute_toc_line_indentation_spaces(
@@ -1141,7 +1141,7 @@ class TestApi(pyfakefsTestCase):
         log[2]['index'] = 999
         log[3]['index'] = 1001
         log[GENERIC_HEADER_TYPE_CURR][
-            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation_spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_CURR,
             GENERIC_HEADER_TYPE_CURR,
@@ -1167,9 +1167,9 @@ class TestApi(pyfakefsTestCase):
         log[2]['index'] = 999
         log[3]['index'] = 1001
         log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation_spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         expected_indentation_spaces = log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'] + len(
+            'indentation_spaces'] + len(
                 str(log[GENERIC_HEADER_TYPE_PREV]['index'])) + len('.') + len(
                     S1)
         api.compute_toc_line_indentation_spaces(
@@ -1197,9 +1197,9 @@ class TestApi(pyfakefsTestCase):
         log[2]['index'] = 999
         log[3]['index'] = 1001
         log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
+            'indentation_spaces'] = GENERIC_NUMBER_OF_INDENTATION_SPACES
         expected_indentation_spaces = log[GENERIC_HEADER_TYPE_PREV][
-            'indentation spaces']
+            'indentation_spaces']
         api.compute_toc_line_indentation_spaces(
             GENERIC_HEADER_TYPE_PREV,
             GENERIC_HEADER_TYPE_CURR,
@@ -1266,7 +1266,7 @@ class TestApi(pyfakefsTestCase):
         r"""Test TOC line building for different types of inputs."""
         # github and redcarpet.
         header = {
-            'type': GENERIC_HEADER_TYPE_CURR,
+            'header_type': GENERIC_HEADER_TYPE_CURR,
             'text_original': LINE,
             'text_anchor_link': LINE,
             'visible': True,
@@ -2164,23 +2164,24 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(api.remove_emphasis(r'*[link*](<foo\>)'),
                          r'[link](<foo\>)')
         #        self.assertEqual(api.remove_emphasis('[link](*<foo\>)*'), '[link](<foo\>)')
-        #        self.assertEqual(api.remove_emphasis('_[link_](<foo\>)'), '[link](<foo\>)')
+        self.assertEqual(api.remove_emphasis(r'_[link_](<foo\>)'),
+                         r'[link](<foo\>)')
         #        self.assertEqual(api.remove_emphasis('[link](_<foo\>)_'), '[link](<foo\>)')
 
         # Example 493 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*[a*](<b)c'), '[a](<b)c')
         #        self.assertEqual(api.remove_emphasis('[a](*<b)c*'), '[a](<b)c')
-        #        self.assertEqual(api.remove_emphasis('_[a_](<b)c'), '[a](<b)c')
+        self.assertEqual(api.remove_emphasis('_[a_](<b)c'), '[a](<b)c')
         #        self.assertEqual(api.remove_emphasis('[a](_<b)c_'), '[a](<b)c')
 
         self.assertEqual(api.remove_emphasis('*[a*](<b)c>'), '[a](<b)c>')
         #        self.assertEqual(api.remove_emphasis('[a](*<b)c>*'), '[a](<b)c>')
-        #        self.assertEqual(api.remove_emphasis('_[a_](<b)c>'), '[a](<b)c>')
+        self.assertEqual(api.remove_emphasis('_[a_](<b)c>'), '[a](<b)c>')
         #        self.assertEqual(api.remove_emphasis('[a](_<b)c>_'), '[a](<b)c>')
 
         self.assertEqual(api.remove_emphasis('*[a*](<b>c)'), '[a](<b>c)')
         #        self.assertEqual(api.remove_emphasis('[a](*<b>c)*'), '[a](<b>c)')
-        #        self.assertEqual(api.remove_emphasis('_[a_](<b>c)'), '[a](<b>c)')
+        self.assertEqual(api.remove_emphasis('_[a_](<b>c)'), '[a](<b>c)')
         #        self.assertEqual(api.remove_emphasis('[a](_<b>c)_'), '[a](<b>c)')
 
         # Example 494 [Commonmark 0.30].
@@ -2362,7 +2363,9 @@ class TestApi(pyfakefsTestCase):
                          r'*[link* \[bar](/uri)')
 
         # Example 515 [Commonmark 0.30].
-        #      self.assertEqual(api.remove_emphasis(r'[link *foo **bar** `#`*](/uri)'), r'[link foo bar `#`](/uri)')
+        self.assertEqual(
+            api.remove_emphasis(r'[link *foo **bar** `#`*](/uri)'),
+            r'[link foo bar `#`](/uri)')
 
         # Example 516 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'[![moon](moon.jpg)](/uri)'),
@@ -2373,7 +2376,9 @@ class TestApi(pyfakefsTestCase):
                          r'[foo [bar](/uri)](/uri)')
 
         # Example 518 [Commonmark 0.30].
-        #      self.assertEqual(api.remove_emphasis(r'[foo *[bar [baz](/uri)](/uri)*](/uri)'), r'[foo [bar [baz](/uri)](/uri)](/uri)')
+        self.assertEqual(
+            api.remove_emphasis(r'[foo *[bar [baz](/uri)](/uri)*](/uri)'),
+            r'[foo [bar [baz](/uri)](/uri)](/uri)')
 
         # Example 519 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'![[[foo](uri1)](uri2)](uri3)'),
@@ -2898,24 +2903,24 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO, m_github, 'github'),
             [{
-                'header type': 1,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 1,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
         self.assertEqual(
             api.get_atx_heading(H1 + T1 + CMARK_LINE_FOO, m_github, 'github'),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
         self.assertEqual(
             api.get_atx_heading(H1 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
             [{
-                'header type': 1,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 1,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -2923,24 +2928,24 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(H2 + S1 + CMARK_LINE_FOO, m_github, 'github'),
             [{
-                'header type': 2,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 2,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
         self.assertEqual(
             api.get_atx_heading(H2 + T1 + CMARK_LINE_FOO, m_github, 'github'),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
         self.assertEqual(
             api.get_atx_heading(H2 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
             [{
-                'header type': 2,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 2,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -2948,24 +2953,24 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(H3 + S1 + CMARK_LINE_FOO, m_github, 'github'),
             [{
-                'header type': 3,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 3,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
         self.assertEqual(
             api.get_atx_heading(H3 + T1 + CMARK_LINE_FOO, m_github, 'github'),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
         self.assertEqual(
             api.get_atx_heading(H3 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
             [{
-                'header type': 3,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 3,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -2973,24 +2978,24 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(H4 + S1 + CMARK_LINE_FOO, m_github, 'github'),
             [{
-                'header type': 4,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 4,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
         self.assertEqual(
             api.get_atx_heading(H4 + T1 + CMARK_LINE_FOO, m_github, 'github'),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
         self.assertEqual(
             api.get_atx_heading(H4 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
             [{
-                'header type': 4,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 4,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -2998,24 +3003,24 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(H5 + S1 + CMARK_LINE_FOO, m_github, 'github'),
             [{
-                'header type': 5,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 5,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
         self.assertEqual(
             api.get_atx_heading(H5 + T1 + CMARK_LINE_FOO, m_github, 'github'),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
         self.assertEqual(
             api.get_atx_heading(H5 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
             [{
-                'header type': 5,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 5,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3023,24 +3028,24 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(H6 + S1 + CMARK_LINE_FOO, m_github, 'github'),
             [{
-                'header type': 6,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 6,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
         self.assertEqual(
             api.get_atx_heading(H6 + T1 + CMARK_LINE_FOO, m_github, 'github'),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
         self.assertEqual(
             api.get_atx_heading(H6 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
             [{
-                'header type': 6,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 6,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3051,8 +3056,8 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(H7 + S1 + CMARK_LINE_FOO, 7, 'github'),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3065,16 +3070,16 @@ class TestApi(pyfakefsTestCase):
                 H1 + CMARK_LINE_5_BOLT + LINE_LINE_FEED + LINE_LINE_FEED + H1 +
                 CMARK_LINE_HASHTAG, m_github, 'github'),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }, {
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }, {
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3088,8 +3093,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3102,8 +3107,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3118,9 +3123,9 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type':
+                'header_type':
                 1,
-                'header text trimmed':
+                'header_text_trimmed':
                 CMARK_LINE_FOO + S1 + '*' + CMARK_LINE_BAR + '*' + S1 +
                 LINE_ESCAPE + '*' + CMARK_LINE_BAZ + LINE_ESCAPE + '*',
                 'visible':
@@ -3137,8 +3142,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 1,
-                'header text trimmed':
+                'header_type': 1,
+                'header_text_trimmed':
                 CMARK_LINE_FOO + S1 + CMARK_LINE_BAR_BAZ,
                 'visible': True
             }],
@@ -3154,8 +3159,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 1,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3166,8 +3171,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3178,8 +3183,8 @@ class TestApi(pyfakefsTestCase):
                 'cmark',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 1,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3194,8 +3199,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 3,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 3,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3206,8 +3211,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 2,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 2,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3218,8 +3223,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 1,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3234,8 +3239,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3251,12 +3256,12 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }, {
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3271,8 +3276,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 2,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 2,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3283,8 +3288,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 3,
-                'header text trimmed': CMARK_LINE_BAR,
+                'header_type': 3,
+                'header_text_trimmed': CMARK_LINE_BAR,
                 'visible': True
             }],
         )
@@ -3299,8 +3304,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 1,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3312,8 +3317,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 5,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 5,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3322,8 +3327,8 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(H5 * 7, m_github, 'github'),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3338,8 +3343,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 3,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 3,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3350,8 +3355,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 3,
-                'header text trimmed': CMARK_LINE_FOO + S1 + H3 + T5,
+                'header_type': 3,
+                'header_text_trimmed': CMARK_LINE_FOO + S1 + H3 + T5,
                 'visible': True
             }],
         )
@@ -3362,8 +3367,8 @@ class TestApi(pyfakefsTestCase):
                 'cmark',
             ),
             [{
-                'header type': 3,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 3,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3378,8 +3383,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 3,
-                'header text trimmed':
+                'header_type': 3,
+                'header_text_trimmed':
                 CMARK_LINE_FOO + S1 + H3 + S1 + CMARK_LINE_B,
                 'visible': True
             }],
@@ -3395,8 +3400,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': CMARK_LINE_FOO + H1,
+                'header_type': 1,
+                'header_text_trimmed': CMARK_LINE_FOO + H1,
                 'visible': True
             }],
         )
@@ -3407,8 +3412,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 1,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3419,8 +3424,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': CMARK_LINE_FOO + T1 + H1,
+                'header_type': 1,
+                'header_text_trimmed': CMARK_LINE_FOO + T1 + H1,
                 'visible': True
             }],
         )
@@ -3431,8 +3436,8 @@ class TestApi(pyfakefsTestCase):
                 'cmark',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 1,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3455,8 +3460,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 3,
-                'header text trimmed': CMARK_LINE_FOO + S1 + LINE_ESCAPE + H3,
+                'header_type': 3,
+                'header_text_trimmed': CMARK_LINE_FOO + S1 + LINE_ESCAPE + H3,
                 'visible': True
             }],
         )
@@ -3467,8 +3472,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 2,
-                'header text trimmed':
+                'header_type': 2,
+                'header_text_trimmed':
                 CMARK_LINE_FOO + S1 + H1 + LINE_ESCAPE + H2,
                 'visible': True
             }],
@@ -3480,8 +3485,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': CMARK_LINE_FOO + S1 + LINE_ESCAPE + H1,
+                'header_type': 1,
+                'header_text_trimmed': CMARK_LINE_FOO + S1 + LINE_ESCAPE + H1,
                 'visible': True
             }],
         )
@@ -3497,16 +3502,16 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }, {
-                'header type': 2,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 2,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }, {
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3522,16 +3527,16 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }, {
-                'header type': 1,
-                'header text trimmed': CMARK_LINE_BAZ,
+                'header_type': 1,
+                'header_text_trimmed': CMARK_LINE_BAZ,
                 'visible': True
             }, {
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3542,24 +3547,24 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(H2 + S1, m_github, 'github', True),
             [{
-                'header type': 2,
-                'header text trimmed': LINE_EMPTY,
+                'header_type': 2,
+                'header_text_trimmed': LINE_EMPTY,
                 'visible': True
             }],
         )
         self.assertEqual(
             api.get_atx_heading(H1, m_github, 'github', True),
             [{
-                'header type': 1,
-                'header text trimmed': LINE_EMPTY,
+                'header_type': 1,
+                'header_text_trimmed': LINE_EMPTY,
                 'visible': True
             }],
         )
         self.assertEqual(
             api.get_atx_heading(H3 + S1 + H3, m_github, 'github', True),
             [{
-                'header type': 3,
-                'header text trimmed': LINE_EMPTY,
+                'header_type': 3,
+                'header_text_trimmed': LINE_EMPTY,
                 'visible': True
             }],
         )
@@ -3586,9 +3591,9 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type':
+                'header_type':
                 1,
-                'header text trimmed':
+                'header_text_trimmed':
                 LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO +
                 S1 + LINE_ESCAPE + LINE_SQUARE_BRACKET_OPEN + CMARK_LINE_BAR +
                 LINE_ESCAPE + LINE_SQUARE_BRACKET_CLOSE + LINE_ESCAPE +
@@ -3605,9 +3610,9 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type':
+                'header_type':
                 1,
-                'header text trimmed':
+                'header_text_trimmed':
                 LINE_ESCAPE + LINE_ESCAPE + LINE_ESCAPE +
                 LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO,
                 'visible':
@@ -3623,8 +3628,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 2,
-                'header text trimmed': CMARK_LINE_FOO + LINE_ESCAPE + S1,
+                'header_type': 2,
+                'header_text_trimmed': CMARK_LINE_FOO + LINE_ESCAPE + S1,
                 'visible': True
             }],
         )
@@ -3641,8 +3646,8 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(LINE_EMPTY, m_github, 'github'),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3657,18 +3662,18 @@ class TestApi(pyfakefsTestCase):
             ),
             [
                 {
-                    'header type': 1,
-                    'header text trimmed': CMARK_LINE_FOO,
+                    'header_type': 1,
+                    'header_text_trimmed': CMARK_LINE_FOO,
                     'visible': True
                 },
                 {
-                    'header type': None,
-                    'header text trimmed': None,
+                    'header_type': None,
+                    'header_text_trimmed': None,
                     'visible': False
                 },
                 {
-                    'header type': 1,
-                    'header text trimmed': CMARK_LINE_FOO,
+                    'header_type': 1,
+                    'header_text_trimmed': CMARK_LINE_FOO,
                     'visible': True
                 },
             ],
@@ -3678,8 +3683,8 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(H1 + LINE_LINE_FEED, m_github, 'github', True),
             [{
-                'header type': 1,
-                'header text trimmed': LINE_EMPTY,
+                'header_type': 1,
+                'header_text_trimmed': LINE_EMPTY,
                 'visible': True
             }],
         )
@@ -3691,8 +3696,8 @@ class TestApi(pyfakefsTestCase):
                 True,
             ),
             [{
-                'header type': 1,
-                'header text trimmed': LINE_EMPTY,
+                'header_type': 1,
+                'header_text_trimmed': LINE_EMPTY,
                 'visible': True
             }],
         )
@@ -3705,12 +3710,12 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 1,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }, {
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3723,12 +3728,12 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 1,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': True
             }, {
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3754,8 +3759,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 2,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 2,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': False
             }],
         )
@@ -3766,8 +3771,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 3,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 3,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': False
             }],
         )
@@ -3778,8 +3783,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 5,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 5,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': False
             }],
         )
@@ -3790,8 +3795,8 @@ class TestApi(pyfakefsTestCase):
                 'github',
             ),
             [{
-                'header type': 6,
-                'header text trimmed': CMARK_LINE_FOO,
+                'header_type': 6,
+                'header_text_trimmed': CMARK_LINE_FOO,
                 'visible': False
             }],
         )
@@ -3809,8 +3814,8 @@ class TestApi(pyfakefsTestCase):
                 'redcarpet',
             ),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3822,8 +3827,8 @@ class TestApi(pyfakefsTestCase):
                 'redcarpet',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': REDCARPET_LINE_FOO,
+                'header_type': 1,
+                'header_text_trimmed': REDCARPET_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3835,8 +3840,8 @@ class TestApi(pyfakefsTestCase):
                 'redcarpet',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': REDCARPET_LINE_FOO,
+                'header_type': 1,
+                'header_text_trimmed': REDCARPET_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3848,8 +3853,8 @@ class TestApi(pyfakefsTestCase):
                 'redcarpet',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': REDCARPET_LINE_FOO,
+                'header_type': 1,
+                'header_text_trimmed': REDCARPET_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3861,8 +3866,8 @@ class TestApi(pyfakefsTestCase):
                 'redcarpet',
             ),
             [{
-                'header type': 3,
-                'header text trimmed': REDCARPET_LINE_FOO,
+                'header_type': 3,
+                'header_text_trimmed': REDCARPET_LINE_FOO,
                 'visible': True
             }],
         )
@@ -3874,8 +3879,8 @@ class TestApi(pyfakefsTestCase):
                 'redcarpet',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': REDCARPET_LINE_FOO + S1 + H3,
+                'header_type': 1,
+                'header_text_trimmed': REDCARPET_LINE_FOO + S1 + H3,
                 'visible': True
             }],
         )
@@ -3888,9 +3893,9 @@ class TestApi(pyfakefsTestCase):
                 'redcarpet',
             ),
             [{
-                'header type':
+                'header_type':
                 1,
-                'header text trimmed':
+                'header_text_trimmed':
                 REDCARPET_LINE_FOO + S1 + H1 + LINE_ESCAPE + LINE_ESCAPE,
                 'visible':
                 True
@@ -3904,8 +3909,8 @@ class TestApi(pyfakefsTestCase):
                 'redcarpet',
             ),
             [{
-                'header type': 1,
-                'header text trimmed':
+                'header_type': 1,
+                'header_text_trimmed':
                 REDCARPET_LINE_FOO + H1 + LINE_ESCAPE + H1,
                 'visible': True
             }],
@@ -3919,8 +3924,8 @@ class TestApi(pyfakefsTestCase):
                 'redcarpet',
             ),
             [{
-                'header type': 1,
-                'header text trimmed':
+                'header_type': 1,
+                'header_text_trimmed':
                 REDCARPET_LINE_FOO + S1 + LINE_ESCAPE + S1,
                 'visible': True
             }],
@@ -3930,8 +3935,8 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(LINE_EMPTY, m_redcarpet, 'redcarpet'),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3940,8 +3945,8 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(H1 + LINE_LINE_FEED, m_redcarpet, 'redcarpet'),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3954,12 +3959,12 @@ class TestApi(pyfakefsTestCase):
                 'redcarpet',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': REDCARPET_LINE_FOO,
+                'header_type': 1,
+                'header_text_trimmed': REDCARPET_LINE_FOO,
                 'visible': True
             }, {
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3970,8 +3975,8 @@ class TestApi(pyfakefsTestCase):
                 'redcarpet',
             ),
             [{
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -3983,12 +3988,12 @@ class TestApi(pyfakefsTestCase):
                 'redcarpet',
             ),
             [{
-                'header type': 1,
-                'header text trimmed': REDCARPET_LINE_FOO,
+                'header_type': 1,
+                'header_text_trimmed': REDCARPET_LINE_FOO,
                 'visible': True
             }, {
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             }],
         )
@@ -4000,8 +4005,8 @@ class TestApi(pyfakefsTestCase):
         # First if.
         with patch('md_toc.api.get_atx_heading',
                    return_value=[{
-                       'header type': None,
-                       'header text trimmed': None,
+                       'header_type': None,
+                       'header_text_trimmed': None,
                        'visible': False
                    }]):
             with patch('md_toc.api.build_anchor_link', return_value=''):
@@ -4013,8 +4018,8 @@ class TestApi(pyfakefsTestCase):
         # First if.
         with patch('md_toc.api.get_atx_heading',
                    return_value=[{
-                       'header type': None,
-                       'header text trimmed': None,
+                       'header_type': None,
+                       'header_text_trimmed': None,
                        'visible': True
                    }]):
             with patch('md_toc.api.build_anchor_link', return_value=''):
@@ -4025,8 +4030,8 @@ class TestApi(pyfakefsTestCase):
         # Second if.
         with patch('md_toc.api.get_atx_heading',
                    return_value=[{
-                       'header type': 2,
-                       'header text trimmed': CMARK_LINE_FOO,
+                       'header_type': 2,
+                       'header_text_trimmed': CMARK_LINE_FOO,
                        'visible': False
                    }]):
             with patch('md_toc.api.build_anchor_link',
@@ -4034,7 +4039,7 @@ class TestApi(pyfakefsTestCase):
                 self.assertEqual(
                     api.get_md_header(H2 + S1 + CMARK_LINE_FOO, dict(), 1),
                     [{
-                        'type': 2,
+                        'header_type': 2,
                         'text_original': CMARK_LINE_FOO,
                         'text_anchor_link': CMARK_LINE_FOO,
                         'visible': False
@@ -4044,8 +4049,8 @@ class TestApi(pyfakefsTestCase):
         # Second if.
         with patch('md_toc.api.get_atx_heading',
                    return_value=[{
-                       'header type': 1,
-                       'header text trimmed': CMARK_LINE_FOO,
+                       'header_type': 1,
+                       'header_text_trimmed': CMARK_LINE_FOO,
                        'visible': True
                    }]):
             with patch('md_toc.api.build_anchor_link',
@@ -4053,7 +4058,7 @@ class TestApi(pyfakefsTestCase):
                 self.assertEqual(
                     api.get_md_header(H1 + S1 + CMARK_LINE_FOO, dict(), 1),
                     [{
-                        'type': 1,
+                        'header_type': 1,
                         'text_original': CMARK_LINE_FOO,
                         'text_anchor_link': CMARK_LINE_FOO,
                         'visible': True

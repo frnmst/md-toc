@@ -126,7 +126,7 @@ def _cmark_cmark_reference_lookup(
 
     #     MAX_LINK_LABEL_LENGTH
     if label.length < 1 or label.length > md_parser['cmark']['link'][
-            'max chars label'] + 1:
+            'max_chars_label'] + 1:
         return None
 
     if maps is None or not maps.size:
