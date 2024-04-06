@@ -243,12 +243,12 @@ def build_toc(
     if not skip_lines >= 0:
         raise ValueError
 
-    toc: list[str] = list()
-    header_type_counter: types.HeaderTypeCounter = dict()
+    toc: list[str] = []
+    header_type_counter: types.HeaderTypeCounter = {}
     header_type_curr: int = 0
     header_type_prev: int = 0
     header_type_first: int = 0
-    header_duplicate_counter: types.HeaderDuplicateCounter = dict()
+    header_duplicate_counter: types.HeaderDuplicateCounter = {}
 
     if filename == '-':
         f = sys.stdin
@@ -292,7 +292,8 @@ def build_toc(
         return ''.join(
             ['<!--stop reading ', filename, ': probably a binary file-->'])
 
-    indentation_log = init_indentation_log(parser, list_marker)
+    indentation_log: dict[types.IndentationLogElement] = init_indentation_log(
+        parser, list_marker)
     is_within_code_fence = False
     code_fence = None
     is_document_end = False
@@ -350,7 +351,7 @@ def build_toc(
 
             # Ignore invalid or to-be-invisible headers.
             if header is not None and header['visible']:
-                header_type_curr = header['type']
+                header_type_curr = header['header_type']
 
                 # Take care of the ordered TOC.
                 if ordered and not constant_ordered_list:
@@ -360,7 +361,7 @@ def build_toc(
                         header_type_curr,
                         parser,
                     )
-                    index = header_type_counter[header_type_curr]
+                    index = header_type_counter['h' + str(header_type_curr)]
                 elif constant_ordered_list:
                     # This value should work on most parsers.
                     index = 1
@@ -539,15 +540,15 @@ def increase_index_ordered_list(
     # Base cases for a new table of contents or a new index type.
     if header_type_prev == 0:
         header_type_prev = header_type_curr
-    if (header_type_curr not in header_type_count
+    if ('h' + str(header_type_curr) not in header_type_count
             or header_type_prev < header_type_curr):
-        header_type_count[header_type_curr] = 0
+        header_type_count['h' + str(header_type_curr)] = 0
 
-    header_type_count[header_type_curr] += 1
+    header_type_count['h' + str(header_type_curr)] += 1
 
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker']:
-        if header_type_count[header_type_curr] > md_parser['github']['list'][
-                'ordered']['max_marker_number']:
+        if header_type_count['h' + str(header_type_curr)] > md_parser[
+                'github']['list']['ordered']['max_marker_number']:
             raise GithubOverflowOrderedListMarker
 
 
@@ -728,7 +729,7 @@ def build_toc_line_without_indentation(
     .. warning:: In case of ordered TOCs you must explicitly pass one of the
         supported ordered list markers.
     """
-    if not header['type'] >= 1:
+    if not header['header_type'] >= 1:
         raise ValueError
     if not index >= 1:
         raise ValueError
@@ -1126,8 +1127,8 @@ def get_atx_heading(
 
     if len(line) == 0:
         return [{
-            'header type': None,
-            'header text trimmed': None,
+            'header_type': None,
+            'header_text_trimmed': None,
             'visible': False
         }]
 
@@ -1138,8 +1139,8 @@ def get_atx_heading(
         if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
 
             struct.append({
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             })
 
@@ -1257,7 +1258,7 @@ def get_atx_heading(
             # Add escaping.
             if not no_links:
                 if len(final_line) > 0 and final_line[-1] == '\u005c':
-                    final_line += ' '
+                    final_line = ''.join([final_line, ' '])
                 if len(
                         final_line.strip('\u0020').strip('\u0009').strip(
                             '\u000a').strip('\u000b').strip('\u000c').strip(
@@ -1290,15 +1291,15 @@ def get_atx_heading(
 
             # Overwrite the element with None as values.
             struct[-1] = {
-                'header type': current_headers,
-                'header text trimmed': final_line,
+                'header_type': current_headers,
+                'header_text_trimmed': final_line,
                 'visible': line_visible
             }
 
         elif parser in ['redcarpet']:
             struct.append({
-                'header type': None,
-                'header text trimmed': None,
+                'header_type': None,
+                'header_text_trimmed': None,
                 'visible': False
             })
 
@@ -1341,8 +1342,8 @@ def get_atx_heading(
                 line_visible = False
 
             struct[-1] = {
-                'header type': current_headers,
-                'header text trimmed': final_line,
+                'header_type': current_headers,
+                'header_text_trimmed': final_line,
                 'visible': line_visible
             }
 
@@ -1391,14 +1392,14 @@ def get_md_header(
     """
     return [
         None if
-        (r['header type'] is None and r['header text trimmed'] is None) else {
+        (r['header_type'] is None and r['header_text_trimmed'] is None) else {
             'type':
-            r['header type'],
+            r['header_type'],
             'text_original':
-            r['header text trimmed'],
+            r['header_text_trimmed'],
             'text_anchor_link':
             build_anchor_link(
-                r['header text trimmed'],
+                r['header_text_trimmed'],
                 header_duplicate_counter,
                 parser,
             ),
