@@ -1393,7 +1393,7 @@ def get_md_header(
     return [
         None if
         (r['header_type'] is None and r['header_text_trimmed'] is None) else {
-            'type':
+            'header_type':
             r['header_type'],
             'text_original':
             r['header_text_trimmed'],

@@ -4039,7 +4039,7 @@ class TestApi(pyfakefsTestCase):
                 self.assertEqual(
                     api.get_md_header(H2 + S1 + CMARK_LINE_FOO, dict(), 1),
                     [{
-                        'type': 2,
+                        'header_type': 2,
                         'text_original': CMARK_LINE_FOO,
                         'text_anchor_link': CMARK_LINE_FOO,
                         'visible': False
@@ -4058,7 +4058,7 @@ class TestApi(pyfakefsTestCase):
                 self.assertEqual(
                     api.get_md_header(H1 + S1 + CMARK_LINE_FOO, dict(), 1),
                     [{
-                        'type': 1,
+                        'header_type': 1,
                         'text_original': CMARK_LINE_FOO,
                         'text_anchor_link': CMARK_LINE_FOO,
                         'visible': True

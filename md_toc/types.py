@@ -87,15 +87,15 @@ class HeaderDuplicateCounter(TypedDict, total=False):
 class AtxHeadingStructElement(TypedDict, total=False):
     """A single element of the list returned by the ``get_atx_heading`` function.
 
-    :parameter header type: h1 to h6 (``1`` -> ``6``).
-    :parameter header text trimmed: the link label.
+    :parameter header_type: h1 to h6 (``1`` -> ``6``).
+    :parameter header_text trimmed: the link label.
     :parameter visible: if the line has a smaller header that
        ``keep_header_levels``, then ``visible`` is set to ``False``.
-    :type header type: int
-    :type header text trimmed: str
+    :type header_type: int
+    :type header_text_trimmed: str
     :type visible: bool
 
-    .. note:: ``header type`` and ``header text trimmed`` are
+    .. note:: ``header_type`` and ``header_text_trimmed`` are
        set to ``None`` if the line does not contain header elements according
        to the rules of the selected markdown parser.
        ``visible`` is set to ``True`` if the line needs to be saved, ``False``

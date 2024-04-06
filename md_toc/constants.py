@@ -72,7 +72,7 @@ parser: dict = {
                 'default_marker_number': 1,
                 'min_marker_number': 0,
                 'max_marker_number': 999999999,
-                'default_closing_markers': '.',
+                'default_closing_marker': '.',
             },
             'unordered': {
                 'bullet_markers': ['-', '+', '*'],
@@ -85,7 +85,7 @@ parser: dict = {
         'header': {
             'max_space_indentation': 3,
             'max_levels': 6,
-            'default_keep_levels': 3,
+            'default_keep_levels': 6,
         },
         'code_fence': {
             'marker': {
@@ -166,7 +166,7 @@ parser: dict = {
                 # FIXME
                 'min_marker_number': 0,
                 'closing_markers': ['.'],
-                'default_closing_markers': '.',
+                'default_closing_marker': '.',
             },
             'unordered': {
                 'bullet_markers': ['-', '+', '*'],
@@ -176,7 +176,7 @@ parser: dict = {
         'header': {
             'max_space_indentation': 0,
             'max_levels': 6,
-            'default_keep_levels': 3,
+            'default_keep_levels': 6,
         },
     },
 }
