@@ -1,7 +1,7 @@
 #
 # constants.py
 #
-# Copyright (C) 2017-2022 Franco Masotti (see /README.md)
+# Copyright (C) 2017-2024 Franco Masotti (see /README.md)
 #
 # This file is part of md-toc.
 #
@@ -44,6 +44,20 @@ for (ent, bs) in _ents:
     })
     # Transform each entity into a list of integers from a list of strings.
     _entities[-1]['bytes'] = [int(n) for n in _entities[-1]['bytes']]
+
+# Regular expressions related to scanners functions.
+# See scanners.re and scanners.c files.
+__cmark_spacechar = '([ \t\v\f\r\n])'
+__cmark_tagname = '([A-Za-z][A-Za-z0-9-]*)'
+__cmark_attributename = '([a-zA-Z_:][a-zA-Z0-9:._-]*)'
+__cmark_unquotedvalue = "([^ \t\r\n\v\f\"'=<>`\x00]+)"
+__cmark_singlequotedvalue = "(['][^'\x00]*['])"
+__cmark_doublequotedvalue = '(["][^"\x00]*["])'
+__cmark_attributevalue = '(' + __cmark_unquotedvalue + '|' + __cmark_singlequotedvalue + '|' + __cmark_doublequotedvalue + ')'
+__cmark_attributevaluespec = __cmark_spacechar + '*[=]' + __cmark_spacechar + '*' + __cmark_attributevalue
+__cmark_attribute = '(' + __cmark_spacechar + '+' + __cmark_attributename + __cmark_attributevaluespec + '?)'
+__cmark_opentag = __cmark_tagname + __cmark_attribute + '*' + __cmark_spacechar + '*[/]?[>]'
+__cmark_closetag = '[/]' + __cmark_tagname + __cmark_spacechar + '*[>]'
 
 common_defaults: dict = {
     'toc_marker': '<!--TOC-->',
@@ -89,6 +103,61 @@ parser: dict = {
                 'CMARK_NUM_ENTITIES': len(_entities),
                 'entities': _entities,
             },
+            # [0.30] only.
+            'SPACETAB': '[\u0009\u0020]',
+            # Line ending.
+            'LE': '(\u000a|\u000d|\u000d\u000a)',
+
+            # See https://spec.commonmark.org/0.28/#raw-html
+            # 1. Open tag and 2. close tag.
+            'DQAV': __cmark_doublequotedvalue,
+            'SQAV': __cmark_singlequotedvalue,
+            'UAV': __cmark_unquotedvalue,
+
+            # 2.
+            'AN': __cmark_attributename,
+            'TN': __cmark_tagname,
+
+            # 3. HTML comment.
+            'COS': '<!--',
+            'COT': '((?!>|->)(?:(?!--).))+(?!-).?',
+            'COE': '-->',
+
+            # 4. Processing instructions.
+            'PIS': r'<\?',
+            'PIB': r'(?:(?!\?>).)*',
+            'PIE': r'\?>',
+
+            # 5. Declarations.
+            'DES': '<!',
+            'DEN': '[A-Z]+',
+            'DEB': '(?:(?!>).)+',
+            'DEE': '>',
+
+            # 6. CDATA
+            # Section.
+            'CDS': r'<!\[CDATA\[',
+            # Body.
+            'CDB': r'(?:(?!\]\]>).)+',
+            # End.
+            'CDE': r'\]\]>',
+
+            # Attribute value.
+            'AV': __cmark_attributevalue,
+
+            # Attribute value specification.
+            'AVS': __cmark_attributevaluespec,
+        },
+        '_scanners.re': {
+            # FIXME
+            # Some of these expressions are a duplicate of parser['cmark']['re'] dicts.
+            'spacechar': __cmark_spacechar,
+            'escaped_char': '([\\][!"#$%&\'()*+,./:;<=>?@[\\\\]^_`{|}~-])',
+            'cdata': r'CDATA\[([^\]\x00]+|\][^\]\x00]|\]\][^>\x00])*',
+            'htmltag': '(' + __cmark_opentag + '|' + __cmark_closetag + ')',
+            'htmlcomment': '(--->|(-([-]?[^\x00>-])([-]?[^\x00-])*-->))',
+            'declaration': '[A-Z]+' + __cmark_spacechar + '+' + '[^>\x00]*',
+            'processinginstruction': '([^?>\x00]+|[?][^>\x00]|[>])+',
         },
     },
     'redcarpet': {
@@ -112,126 +181,50 @@ parser: dict = {
     },
 }
 
-# Regular expressions related to scanners functions.
-# See scanners.re and scanners.c files.
-# FIXME
-# Some of these expressions are a duplicate of parser['cmark']['re'] dicts.
-__cmark_spacechar = '([ \t\v\f\r\n])'
-__cmark_escaped_char = '([\\][!"#$%&\'()*+,./:;<=>?@[\\\\]^_`{|}~-])'
-__cmark_tagname = '([A-Za-z][A-Za-z0-9-]*)'
-__cmark_attributename = '([a-zA-Z_:][a-zA-Z0-9:._-]*)'
-__cmark_unquotedvalue = "([^ \t\r\n\v\f\"'=<>`\x00]+)"
-__cmark_singlequotedvalue = "(['][^'\x00]*['])"
-__cmark_doublequotedvalue = '(["][^"\x00]*["])'
-__cmark_attributevalue = '(' + __cmark_unquotedvalue + '|' + __cmark_singlequotedvalue + '|' + __cmark_doublequotedvalue + ')'
-__cmark_attributevaluespec = __cmark_spacechar + '*[=]' + __cmark_spacechar + '*' + __cmark_attributevalue
-__cmark_attribute = '(' + __cmark_spacechar + '+' + __cmark_attributename + __cmark_attributevaluespec + '?)'
-__cmark_opentag = __cmark_tagname + __cmark_attribute + '*' + __cmark_spacechar + '*[/]?[>]'
-__cmark_closetag = '[/]' + __cmark_tagname + __cmark_spacechar + '*[>]'
-__cmark_declaration = '[A-Z]+' + __cmark_spacechar + '+' + '[^>\x00]*'
-# Excludes tag opening.
-__cmark_cdata = r'CDATA\[([^\]\x00]+|\][^\]\x00]|\]\][^>\x00])*'
-__cmark_htmlcomment = '(--->|(-([-]?[^\x00>-])([-]?[^\x00-])*-->))'
-__cmark_processinginstruction = '([^?>\x00]+|[?][^>\x00]|[>])+'
-
 parser['cmark']['re'].update({
-    # [0.30] only.
-    'SPACETAB': '[\u0009\u0020]',
-    # Line ending.
-    'LE': '(\u000a|\u000d|\u000d\u000a)',
-
-    # See https://spec.commonmark.org/0.28/#raw-html
-    # 1. Open tag and 2. close tag.
-    'DQAV': __cmark_doublequotedvalue,
-    'SQAV': __cmark_singlequotedvalue,
-    'UAV': __cmark_unquotedvalue,
-
-    # 2.
-    'AN': __cmark_attributename,
-    'TN': __cmark_tagname,
-
-    # 3. HTML comment.
-    'COS': '<!--',
-    'COT': '((?!>|->)(?:(?!--).))+(?!-).?',
-    'COE': '-->',
-
-    # 4. Processing instructions.
-    'PIS': r'<\?',
-    'PIB': r'(?:(?!\?>).)*',
-    'PIE': r'\?>',
-
-    # 5. Declarations.
-    'DES': '<!',
-    'DEN': '[A-Z]+',
-    'DEB': '(?:(?!>).)+',
-    'DEE': '>',
-
-    # 6. CDATA
-    # Section.
-    'CDS': r'<!\[CDATA\[',
-    # Body.
-    'CDB': r'(?:(?!\]\]>).)+',
-    # End.
-    'CDE': r'\]\]>',
+    # Attribute.
+    # [0.30]
+    #   An attribute consists of spaces, tabs, and up to one line ending,
+    #   an attribute name, and an optional attribute value specification.
+    # A newline is needed if spaces are not present in the first part.
+    'AT':
+    ('(' + parser['cmark']['re']['SPACETAB'] + '+' + '|' +
+     parser['cmark']['re']['LE'] + '{1,1}' + ')' +
+     parser['cmark']['re']['AN'] + '(' + parser['cmark']['re']['AVS'] + ')?'),
 })
 
-parser['cmark']['_scanners.re'] = {
-    'spacechar': __cmark_spacechar,
-    'escaped_char': __cmark_escaped_char,
-    'cdata': __cmark_cdata,
-    'htmltag': '(' + __cmark_opentag + '|' + __cmark_closetag + ')',
-    'htmlcomment': __cmark_htmlcomment,
-    'declaration': __cmark_declaration,
-    'processinginstruction': __cmark_processinginstruction,
-}
+parser['cmark']['re'].update({
+    # 1. Open tag.
+    'OT':
+    ('<' + parser['cmark']['re']['TN'] + '(' + parser['cmark']['re']['AT'] +
+     ')*' + '(' + parser['cmark']['re']['SPACETAB'] + '*' + '|' +
+     parser['cmark']['re']['LE'] + '?' + ')' + '(/)?' + '>'),
+    # 2. Close tag.
+    'CT': ('</' + parser['cmark']['re']['TN'] + '(' +
+           parser['cmark']['re']['SPACETAB'] + '*' + '|' +
+           parser['cmark']['re']['LE'] + '?' + ')' + '>'),
 
-# Attribute value.
-parser['cmark']['re']['AV'] = __cmark_attributevalue
+    # 3. HTML comment.
+    'CO':
+    parser['cmark']['re']['COS'] + parser['cmark']['re']['COT'] +
+    parser['cmark']['re']['COE'],
 
-# Attribute value specification.
-parser['cmark']['re']['AVS'] = __cmark_attributevaluespec
+    # 4. Processing instructions.
+    'PI':
+    parser['cmark']['re']['PIS'] + parser['cmark']['re']['PIB'] +
+    parser['cmark']['re']['PIE'],
 
-# Attribute.
-# [0.30]
-#   An attribute consists of spaces, tabs, and up to one line ending,
-#   an attribute name, and an optional attribute value specification.
-# A newline is needed if spaces are not present in the first part.
-parser['cmark']['re']['AT'] = ('(' + parser['cmark']['re']['SPACETAB'] + '+' +
-                               '|' + parser['cmark']['re']['LE'] + '{1,1}' +
-                               ')' + parser['cmark']['re']['AN'] + '(' +
-                               parser['cmark']['re']['AVS'] + ')?')
+    # 5. Declarations.
+    'DE':
+    parser['cmark']['re']['DES'] + parser['cmark']['re']['DEN'] +
+    parser['cmark']['re']['DEB'] + parser['cmark']['re']['DEE'],
 
-# 1. Open tag.
-parser['cmark']['re']['OT'] = ('<' + parser['cmark']['re']['TN'] + '(' +
-                               parser['cmark']['re']['AT'] + ')*' + '(' +
-                               parser['cmark']['re']['SPACETAB'] + '*' + '|' +
-                               parser['cmark']['re']['LE'] + '?' + ')' +
-                               '(/)?' + '>')
+    # 6. CDATA.
+    'CD':
+    parser['cmark']['re']['CDS'] + parser['cmark']['re']['CDB'] +
+    parser['cmark']['re']['CDE'],
+})
 
-# 2. Close tag.
-parser['cmark']['re']['CT'] = ('</' + parser['cmark']['re']['TN'] + '(' +
-                               parser['cmark']['re']['SPACETAB'] + '*' + '|' +
-                               parser['cmark']['re']['LE'] + '?' + ')' + '>')
-
-# 3. HTML comment.
-parser['cmark']['re']['CO'] = parser['cmark']['re']['COS'] + parser['cmark'][
-    're']['COT'] + parser['cmark']['re']['COE']
-
-# 4. Processing instructions.
-parser['cmark']['re']['PI'] = parser['cmark']['re']['PIS'] + parser['cmark'][
-    're']['PIB'] + parser['cmark']['re']['PIE']
-
-# 5. Declarations.
-parser['cmark']['re']['DE'] = parser['cmark']['re']['DES'] + parser['cmark'][
-    're']['DEN'] + parser['cmark']['re']['DEB'] + parser['cmark']['re']['DEE']
-
-# 6. CDATA.
-parser['cmark']['re']['CD'] = parser['cmark']['re']['CDS'] + parser['cmark'][
-    're']['CDB'] + parser['cmark']['re']['CDE']
-
-##########
-# github #
-##########
 parser['github'] = copy.deepcopy(parser['cmark'])
 
 # FIXME
@@ -239,50 +232,56 @@ parser['github'] = copy.deepcopy(parser['cmark'])
 # FIXME
 # Regular expressions.
 # These refer to inline HTML.
-parser['github']['re']['UAV'] = "[^\u0020\"'=<>`]+"
-parser['github']['re']['WS'] = '(\u0020|\u0009|\u000a|\u000b|\u000c|\u000d)'
+parser['github']['re'].update({
+    'UAV':
+    "[^\u0020\"'=<>`]+",
+    'WS':
+    '(\u0020|\u0009|\u000a|\u000b|\u000c|\u000d)',
+})
+
+parser['github']['re'].update({
+    'AV': ('(' + parser['github']['re']['UAV'] + '|' +
+           parser['github']['re']['SQAV'] + '|' +
+           parser['github']['re']['DQAV'] + ')'),
+    'AVS': (parser['github']['re']['WS'] + '*' + '=' +
+            parser['github']['re']['WS'] + '*' + parser['github']['re']['AV']),
+
+    # Attribute.
+    'AT': (parser['github']['re']['WS'] + '+' + parser['github']['re']['AN'] +
+           '(' + parser['github']['re']['AVS'] + ')?'),
+
+    # Remember: https://developmentality.wordpress.com/2011/09/22/python-gotcha-word-boundaries-in-regular-expressions/
+    # Github Flavored Markdown Disallowed Raw HTML (specific to GFM and not to cmark')
+    # See
+    # https://github.github.com/gfm/#disallowed-raw-html-extension-
+    # This RE are specific to GFM.
+    'GDRH':
+    r'''(\b[tT][iI][tT][lL][eE]\b|\b[tT][eE][xX][tT][aA][rR][eE][aA]\b|\b[sS][tT][yY][lL][eE]\b|\b[xX][mM][pP]\b|\b[iI][fF][rR][aA][mM][eE]\b|\b[nN][oO][eE][mM][bB][eE][dD]\b|\b[nN][oO][fF][rR][aA][mM][eE][sS]\b|\b[sS][cC][rR][iI][pP][tT]\b|\b[pP][lL][aA][iI][nN][tT][eE][xX][tT]\b)''',
+    'DEW':
+    parser['github']['re']['WS'] + '+',
+})
+
+parser['github']['re'].update({
+    'TN': ('(?!' + parser['github']['re']['GDRH'] + ')' +
+           parser['github']['re']['TN']),
+})
+
+parser['github']['re'].update({
+    # 1. Open tag.
+    'OT':
+    ('<' + parser['github']['re']['TN'] + '(' + parser['github']['re']['AT'] +
+     ')*' + '(' + parser['github']['re']['WS'] + ')*' + '(/)?' + '>'),
+    # 2. Close tag.
+    'CT': ('</' + parser['github']['re']['TN'] + parser['github']['re']['WS'] +
+           '?' + '>'),
+    # 5. Declarations.
+    'DE': (parser['github']['re']['DES'] + parser['github']['re']['DEN'] +
+           parser['github']['re']['DEW'] + parser['github']['re']['DEB'] +
+           parser['github']['re']['DEE']),
+})
+
 del parser['github']['re']['SPACETAB']
 del parser['github']['re']['LE']
-
-parser['github']['re']['AV'] = ('(' + parser['github']['re']['UAV'] + '|' +
-                                parser['github']['re']['SQAV'] + '|' +
-                                parser['github']['re']['DQAV'] + ')')
-
-parser['github']['re']['AVS'] = (parser['github']['re']['WS'] + '*' + '=' +
-                                 parser['github']['re']['WS'] + '*' +
-                                 parser['github']['re']['AV'])
-
-# Attribute.
-parser['github']['re']['AT'] = (parser['github']['re']['WS'] + '+' +
-                                parser['github']['re']['AN'] + '(' +
-                                parser['github']['re']['AVS'] + ')?')
-
-# Remember: https://developmentality.wordpress.com/2011/09/22/python-gotcha-word-boundaries-in-regular-expressions/
-# Github Flavored Markdown Disallowed Raw HTML (specific to GFM and not to cmark')
-# See
-# https://github.github.com/gfm/#disallowed-raw-html-extension-
-# This RE are specific to GFM.
-parser['github']['re']['WS'] = '(\u0020|\u0009|\u000a|\u000b|\u000c|\u000d)'
-parser['github']['re'][
-    'GDRH'] = r'''(\b[tT][iI][tT][lL][eE]\b|\b[tT][eE][xX][tT][aA][rR][eE][aA]\b|\b[sS][tT][yY][lL][eE]\b|\b[xX][mM][pP]\b|\b[iI][fF][rR][aA][mM][eE]\b|\b[nN][oO][eE][mM][bB][eE][dD]\b|\b[nN][oO][fF][rR][aA][mM][eE][sS]\b|\b[sS][cC][rR][iI][pP][tT]\b|\b[pP][lL][aA][iI][nN][tT][eE][xX][tT]\b)'''
-parser['github']['re']['DEW'] = parser['github']['re']['WS'] + '+'
-parser['github']['re']['TN'] = ('(?!' + parser['github']['re']['GDRH'] + ')' +
-                                parser['github']['re']['TN'])
-
-# 1. Open tag.
-parser['github']['re']['OT'] = ('<' + parser['github']['re']['TN'] + '(' +
-                                parser['github']['re']['AT'] + ')*' + '(' +
-                                parser['github']['re']['WS'] + ')*' + '(/)?' +
-                                '>')
-# 2. Close tag.
-parser['github']['re']['CT'] = ('</' + parser['github']['re']['TN'] +
-                                parser['github']['re']['WS'] + '?' + '>')
-# 5. Declarations.
-parser['github']['re']['DE'] = (parser['github']['re']['DES'] +
-                                parser['github']['re']['DEN'] +
-                                parser['github']['re']['DEW'] +
-                                parser['github']['re']['DEB'] +
-                                parser['github']['re']['DEE'])
 
 ##########################################
 
