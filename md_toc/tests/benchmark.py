@@ -21,6 +21,7 @@ r"""A simple benchmark file to be used to check for hidden errors as well."""
 
 import csv
 import ctypes
+import multiprocessing
 import platform
 import random
 import secrets
@@ -41,43 +42,62 @@ ITERATIONS = 100
 MIN_HEADER_STEP = 10
 MAX_HEADER_STEP = 50
 
+# Do not use '#' as content to avoid triggering an empty link label exception.
+alphabet: str = string.printable.replace('#', '')
+
+
+def _generate_batch(size: int) -> bytes:
+    return bytes(
+        [secrets.choice(alphabet).encode('UTF-8')[0] for _ in range(size)])
+
 
 def _generate_random_characters(size: int,
                                 min_header_step: int = 10,
                                 max_header_step: int = 1000) -> bytes:
+    if min_header_step < 10 or max_header_step < min_header_step:
+        # 10 - 1 = header (maximum 6) + '\n' + space + alphanum char
+        raise ValueError
+
     print('generating random file...')
 
     secret_gen: random.SystemRandom = secrets.SystemRandom()
     alphanumerics: str = ''.join([string.ascii_letters, string.digits])
 
-    # Do not use '#' as content to avoid triggering an empty link label exception.
-    alphabet: str = string.printable.replace('#', '')
+    # Batch size at 1% of total size.
+    batch_size: int = int(CHAR_SIZE * 0.01)
+    # Chunk size at 1 per 10**4 of the batch size.
+    chunk_size: int = int(batch_size * 0.00001)
+
+    with multiprocessing.Pool() as pool:
+        results = pool.map(_generate_batch,
+                           [batch_size] * (size // batch_size), chunk_size)
 
     string_buf = ctypes.create_string_buffer(
-        bytes(''.join(secrets.choice(alphabet) for i in range(0, size)),
-              'UTF-8'),
+        b''.join(results),
         size=size + 1,
     )
 
-    if min_header_step < 10 or max_header_step < min_header_step:
-        # 10 - 1 = header (maximum 6) + '\n' + space + alphanum char
-        raise ValueError
-
     print('adding headers to file...')
 
-    i = 0
+    i: int = 0
     j: int = 1
-    for i in range(0, size,
-                   secret_gen.randrange(min_header_step, max_header_step)):
-        if i + j + 3 < size:
-            # Replace next character so we are sure never to raise the empty
-            # link label exception.
-            string_buf[i:i + j + 3] = bytes(
-                ''.join(['\n', '#' * j, ' ',
-                         secrets.choice(alphanumerics)]), 'UTF-8')
+    while i + j + 3 < size:
+        newline = b'\n'
+        heading = b'#' * j
+        space = b' '
+        random_char = secrets.choice(alphanumerics).encode('utf-8')
 
-            # Reset header level.
-            j = (j % 6) + 1
+        ctypes.memmove(ctypes.byref(string_buf, i), newline, 1)
+        ctypes.memmove(ctypes.byref(string_buf, i + 1), heading, len(heading))
+        ctypes.memmove(ctypes.byref(string_buf, i + 1 + j), space, 1)
+
+        # Replace next character so we are sure never to raise the empty
+        # link label exception.
+        ctypes.memmove(ctypes.byref(string_buf, i + 2 + j), random_char, 1)
+
+        # Reset header level.
+        j = (j % 6) + 1
+        i += secret_gen.randrange(min_header_step, max_header_step)
 
     return string_buf.value
 
