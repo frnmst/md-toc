@@ -1,7 +1,7 @@
 #
 # fuzzer.py
 #
-# Copyright (C) 2023 Franco Masotti (see /README.md)
+# Copyright (C) 20244 Franco Masotti (see /README.md)
 #
 # This file is part of md-toc.
 #
@@ -22,7 +22,7 @@ r"""A basic fuzzer for the build_toc function."""
 import atheris
 
 with atheris.instrument_imports():
-    import string
+    import secrets
     import sys
     import tempfile
 
@@ -34,9 +34,9 @@ def TestBuildToc(data):
     with tempfile.NamedTemporaryFile() as fp:
 
         bytez: bytes = b''.join([
-            b'# ',
-            bytes(string.ascii_letters, 'UTF-8'), data,
-            bytes(string.ascii_letters, 'UTF-8')
+            bytes('#' * (secrets.randbelow(6) + 1), 'UTF-8'),
+            b' ',
+            data,
         ])
         fp.write(bytez)
 
@@ -55,9 +55,9 @@ def TestBuildToc(data):
             # (GithubEmptyLinkLabel)
             # or a newline with '#' sequences can be inserted
             # (TocDoesNotRenderAsCoherentList)
-            # or header a line too long
+            # or header generates a link label which is too long
             # (GithubOverflowCharsLinkLabel)
-            print(e)
+            print(e, end='')
 
 
 atheris.Setup(sys.argv, TestBuildToc)
