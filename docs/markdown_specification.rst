@@ -447,6 +447,28 @@ Version 8
      - ``cmark``
      - v3.5.0
 
+Version 9
+.........
+
+.. list-table::
+   :header-rows: 1
+   :stub-columns: 1
+
+   * - md-toc
+     - ``cmark``
+     - ``commonmarker``
+     - ``github``
+     - ``gitlab``
+     - ``goldmark``
+     - ``redcarpet``
+   * - 9.0.0
+     - 0.30.0
+     - ``github``
+     - 0.29.gfm.0 [#f2]_
+     - latest version
+     - ``cmark``
+     - v3.5.0
+
 
 .. |r1| replace:: https://github.com/vmg/redcarpet/tree/26c80f05e774b31cd01255b0fa62e883ac185bf3
 .. |r2| replace:: https://github.com/vmg/redcarpet/tree/e3a1d0b00a77fa4e2d3c37322bea66b82085486f

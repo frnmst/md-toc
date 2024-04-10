@@ -1,7 +1,7 @@
 # Maintainer: Franco Masotti (See /README.md in project source)
 # Contributor: Franco Masotti (See /README.md in project source)
 pkgname=python-md_toc
-pkgver=8.2.3
+pkgver=9.0.0
 pkgrel=1
 pkgdesc="Automatically generate and add an accurate table of contents to markdown files"
 arch=('any')

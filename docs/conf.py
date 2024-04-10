@@ -34,9 +34,9 @@ author = 'Franco Masotti'
 # built documents.
 #
 # The short X.Y version.
-version = '8.2.3'
+version = '9.0.0'
 # The full version, including alpha/beta/rc tags.
-release = '8.2.3'
+release = '9.0.0'
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
@@ -168,12 +168,18 @@ texinfo_documents = [
 ]
 
 html_theme_options = {
-    'repository_provider': 'github',
-    'repository_url': 'https://software.franco.net.eu.org/frnmst/md-toc',
-    'use_repository_button': True,
-    'use_download_button': True,
-    'use_issues_button': True,
-    'announcement': '⚠️ Thank you for using md-toc ⚠️'
+    'repository_provider':
+    'github',
+    'repository_url':
+    'https://software.franco.net.eu.org/frnmst/md-toc',
+    'use_repository_button':
+    True,
+    'use_download_button':
+    True,
+    'use_issues_button':
+    True,
+    'announcement':
+    '⚠️ starting from version 9 all the functions are only accessible via the full module path. For example: md_toc.build_toc(...) is now md_toc.api.build_toc(...) ⚠️'
 }
 
 html_baseurl = 'https://docs.franco.net.eu.org/md-toc/'

@@ -1,7 +1,7 @@
 #
 # api.py
 #
-# Copyright (C) 2017-2023 Franco Masotti (see /README.md)
+# Copyright (C) 2017-2024 Franco Masotti (see /README.md)
 #
 # This file is part of md-toc.
 #

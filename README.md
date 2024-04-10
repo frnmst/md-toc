@@ -114,7 +114,7 @@ $ cat foo.md
 
 # bye
 
-$ md_toc --in-place github --header-levels 6 foo.md        # or: md_toc -p github -l6 foo.md
+$ md_toc --in-place github --header-levels 6 foo.md        # or: md_toc -p github foo.md
 $ cat foo.md
 
 # Table of contents
@@ -174,6 +174,7 @@ program. The easiest way to build one for a markdown file is:
   - [is](#is)
   - [a](#a)
     - [foo](#foo)
+      - [boo](#boo)
     - [foo](#foo-1)
   - [file](#file)
   - [bye](#bye)
@@ -216,6 +217,7 @@ Test
   - [is](#is)
   - [a](#a)
     - [foo](#foo)
+      - [boo](#boo)
     - [foo](#foo-1)
   - [file](#file)
   - [bye](#bye)

@@ -245,7 +245,7 @@ Text
     are derived from utf8proc
     (<http://www.public-software-group.org/utf8proc>),
     (C) 2009 Public Software Group e. V., Berlin, Germany.
-    Copyright (C) 2021-2022, Franco Masotti (see /README.md) (for md-toc only)
+    Copyright (C) 2021-2024, Franco Masotti (see /README.md) (for md-toc only)
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
