@@ -169,7 +169,7 @@ program. The easiest way to build one for a markdown file is:
 ## bye
 
 # bye
->>> print(md_toc.build_toc('foo.md'), end='')
+>>> print(md_toc.api.build_toc('foo.md'), end='')
 - [this](#this)
   - [is](#is)
   - [a](#a)
@@ -204,7 +204,7 @@ Test
 ## bye
 
 # bye
->>> toc = md_toc.build_toc('foo.md')
+>>> toc = md_toc.api.build_toc('foo.md')
 >>> md_toc.write_string_on_file_between_markers('foo.md', toc, '<!--TOC-->')
 >>> f = open('foo.md')
 >>> print(f.read(), end='')
