@@ -20,6 +20,7 @@
 
 asciinema>=2,<3
 build>=1.0,<1.1
+coverage>=7.4,<8
 pre-commit>=3,<4
 pyfakefs>=5,<6
 sphinx-book-theme>=1.0,<1.1

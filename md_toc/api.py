@@ -156,7 +156,7 @@ def write_strings_on_files_between_markers(
     :rtype: bool
     :raises: an fpyutils exception or a built-in exception.
     """
-    if not len(filenames) == len(strings):
+    if len(filenames) != len(strings):
         raise ValueError
 
     file_id: int = 0
@@ -264,7 +264,7 @@ def build_toc(
     # Help the developers: override the list_marker in case
     # this function is called with the default unordered list marker,
     # for example like this:
-    # print(md_toc.build_toc('test.md', ordered=True))
+    # print(md_toc.api.build_toc('test.md', ordered=True))
     # This avoids an AssertionError later on.
     if (ordered and list_marker
             == md_parser[parser]['list']['unordered']['default_marker']):
@@ -282,10 +282,17 @@ def build_toc(
         loop: bool = True
         line_counter = 1
         while loop:
-            if line_counter > skip_lines or f.readline() == '':
-                loop = False
-            line_counter += 1
+            try:
+                if line_counter > skip_lines or f.readline() == '':
+                    loop = False
+                line_counter += 1
+            except UnicodeDecodeError:
+                return ''.join([
+                    '<!--stop reading ', filename,
+                    ': probably a binary file-->'
+                ])
 
+    # Read next line after possible skips.
     try:
         line = f.readline()
     except UnicodeDecodeError:
@@ -294,9 +301,9 @@ def build_toc(
 
     indentation_log: dict[types.IndentationLogElement] = init_indentation_log(
         parser, list_marker)
-    is_within_code_fence = False
+    is_within_code_fence: bool = False
     code_fence = None
-    is_document_end = False
+    is_document_end: bool = False
     while line:
         # Document ending detection.
         #
@@ -532,9 +539,7 @@ def increase_index_ordered_list(
     :raises: GithubOverflowOrderedListMarker or a built-in exception.
     """
     # header_type_prev might be 0 while header_type_curr can't.
-    if not header_type_prev >= 0:
-        raise ValueError
-    if not header_type_curr >= 1:
+    if not (header_type_prev >= 0 or header_type_curr >= 1):
         raise ValueError
 
     # Base cases for a new table of contents or a new index type.
@@ -624,29 +629,24 @@ def compute_toc_line_indentation_spaces(
     .. warning:: In case of ordered TOCs you must explicitly pass one of the
         supported ordered list markers.
     """
-    if not header_type_curr >= 1:
-        raise ValueError
-    if not header_type_prev >= 0:
-        raise ValueError
-    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
-        if not len(indentation_log
-                   ) == md_parser['github']['header']['max_levels']:
+    if (header_type_curr >= 1 and header_type_prev >= 0 and index >= 1):
+        if (parser
+                in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']
+                and len(indentation_log) !=
+                md_parser[parser]['header']['max_levels']):
             raise ValueError
-    if not index >= 1:
+        if (parser in [
+                'github', 'cmark', 'gitlab', 'commonmarker', 'goldmark',
+                'redcarpet'
+        ]):
+            if ordered and list_marker not in md_parser[parser]['list'][
+                    'ordered']['closing_markers']:
+                raise ValueError
+            elif not ordered and list_marker not in md_parser[parser]['list'][
+                    'unordered']['bullet_markers']:
+                raise ValueError
+    else:
         raise ValueError
-
-    if parser in [
-            'github', 'cmark', 'gitlab', 'commonmarker', 'goldmark',
-            'redcarpet'
-    ]:
-        if ordered:
-            if list_marker not in md_parser[parser]['list']['ordered'][
-                    'closing_markers']:
-                raise ValueError
-        else:
-            if list_marker not in md_parser[parser]['list']['unordered'][
-                    'bullet_markers']:
-                raise ValueError
 
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
         index_length: int
@@ -799,8 +799,7 @@ def build_toc_line(
     if not no_of_indentation_spaces >= 0:
         raise ValueError
 
-    indentation: str = no_of_indentation_spaces * ' '
-    return ''.join([indentation, toc_line_no_indent])
+    return ''.join([no_of_indentation_spaces * ' ', toc_line_no_indent])
 
 
 def remove_html_tags(line: str, parser: str = 'github') -> str:
@@ -850,10 +849,7 @@ def remove_emphasis(line: str, parser: str = 'github') -> str:
     >>> md_toc.api.remove_emphasis('__my string__ *is this* one')
     'my string is this one'
     """
-    if parser in [
-            'github', 'cmark', 'gitlab', 'commonmarker', 'goldmark',
-            'redcarpet'
-    ]:
+    if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
         mem = None
         refmap = references_h._cmarkCmarkReferenceMap()
 
@@ -1063,8 +1059,6 @@ def build_anchor_link(
                 hash)
 
         return header_text_trimmed_middle_stage_str
-
-    return None
 
 
 def replace_and_split_newlines(line: str) -> list[str]:
@@ -1434,8 +1428,6 @@ def is_valid_code_fence_indent(line: str, parser: str = 'github') -> bool:
         # TODO.
         return False
 
-    return False
-
 
 def is_opening_code_fence(line: str, parser: str = 'github') -> str | None:
     r"""Determine if the given line is possibly the opening of a fenced code block.
@@ -1510,8 +1502,6 @@ def is_opening_code_fence(line: str, parser: str = 'github') -> str | None:
         # TODO.
         return None
 
-    return None
-
 
 def is_closing_code_fence(
     line: str,
@@ -1551,20 +1541,19 @@ def is_closing_code_fence(
     False
     """
     if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
-        markers = md_parser['github']['code_fence']['marker']
-        marker_min_length = md_parser['github']['code_fence'][
-            'min_marker_characters']
-
         if not is_valid_code_fence_indent(line):
             return False
 
         # Remove opening fence indentation after it is known to be valid.
         fence = fence.lstrip(' ')
         # Check if fence uses valid characters.
-        if not fence.startswith((markers['backtick'], markers['tilde'])):
+        if not fence.startswith(
+            (md_parser[parser]['code_fence']['marker']['backtick'],
+             md_parser[parser]['code_fence']['marker']['tilde'])):
             return False
 
-        if len(fence) < marker_min_length:
+        if len(fence
+               ) < md_parser[parser]['code_fence']['min_marker_characters']:
             return False
 
         # Additional security.
@@ -1617,8 +1606,6 @@ def is_closing_code_fence(
     elif parser in ['redcarpet']:
         # TODO.
         return False
-
-    return False
 
 
 if __name__ == '__main__':

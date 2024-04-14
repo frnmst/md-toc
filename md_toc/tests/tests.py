@@ -1,7 +1,7 @@
 #
 # tests.py
 #
-# Copyright (C) 2017-2023 Franco Masotti (see /README.md)
+# Copyright (C) 2017-2024 Franco Masotti (see /README.md)
 #
 # This file is part of md-toc.
 #
@@ -842,13 +842,31 @@ class TestApi(pyfakefsTestCase):
     def test_write_strings_on_files_between_markers(self):
         r"""Test that the TOC is written correctly on the files."""
 
-    @unittest.skip('empty test')
     def test_build_toc(self):
         r"""Test that the TOC is built correctly.
 
-        TODO: tests will be needed eventually because the complexity of
-        this function is growing.
+        .. note:: Specifically test edge cases.
         """
+        # Simple.
+        with open('foo.md', 'w') as f:
+            f.write('# This\n# Is an\n## Example\n')
+        self.assertEqual(
+            api.build_toc('foo.md'),
+            '- [This](#this)\n- [Is an](#is-an)\n  - [Example](#example)\n')
+
+        with open('foo.md', 'w') as f:
+            f.write('# This\n# Is an\n## Example\n')
+        self.assertEqual(api.build_toc('foo.md', skip_lines=2),
+                         '- [Example](#example)\n')
+
+        with open('foo.md', 'w') as f:
+            f.write('# This\n')
+        with open('foo.md', 'ab') as f:
+            f.write(b'\xff')
+        with open('foo.md', 'a') as f:
+            f.write('# Is an\n## Example\n')
+        self.assertEqual(api.build_toc('foo.md', skip_lines=1),
+                         '<!--stop reading foo.md: probably a binary file-->')
 
     @unittest.skip('empty test')
     def test_build_multiple_tocs(self):
@@ -1348,6 +1366,10 @@ class TestApi(pyfakefsTestCase):
         .. note: not all tests are enabled because of a missing implementation
             and possible bugs.
         """
+        # Test not-emphasis.
+        self.assertEqual(api.remove_emphasis(''), '')
+        self.assertEqual(api.remove_emphasis(CMARK_LINE_FOO), CMARK_LINE_FOO)
+
         # Example 331 [Commonmark 0.28].
         # Example 350 [Commonmark 0.29].
         # Example 350 [Commonmark 0.30].
@@ -2122,7 +2144,8 @@ class TestApi(pyfakefsTestCase):
                          '[link](/my uri)')
         self.assertEqual(api.remove_emphasis('[link](*/my uri)*'),
                          '[link](/my uri)')
-        #        self.assertEqual(api.remove_emphasis('_[link_](/my uri)'), '[link](/my uri)')
+        self.assertEqual(api.remove_emphasis('_[link_](/my uri)'),
+                         '[link](/my uri)')
         self.assertEqual(api.remove_emphasis('[link](_/my uri)_'),
                          '[link](/my uri)')
 
@@ -2141,7 +2164,8 @@ class TestApi(pyfakefsTestCase):
                          '[link](foo\nbar)')
         self.assertEqual(api.remove_emphasis('[link](*foo\nbar)*'),
                          '[link](foo\nbar)')
-        #        self.assertEqual(api.remove_emphasis('_[link_](foo\nbar)'), '[link](foo\nbar)')
+        self.assertEqual(api.remove_emphasis('_[link_](foo\nbar)'),
+                         '[link](foo\nbar)')
         self.assertEqual(api.remove_emphasis('[link](_foo\nbar)_'),
                          '[link](foo\nbar)')
 
@@ -2150,7 +2174,8 @@ class TestApi(pyfakefsTestCase):
                          '[link](<foo\nbar>)')
         self.assertEqual(api.remove_emphasis('[link](*<foo\nbar>)*'),
                          '[link](<foo\nbar>)')
-        #        self.assertEqual(api.remove_emphasis('_[link_](<foo\nbar>)'), '[link](<foo\nbar>)')
+        self.assertEqual(api.remove_emphasis('_[link_](<foo\nbar>)'),
+                         '[link](<foo\nbar>)')
         self.assertEqual(api.remove_emphasis('[link](_<foo\nbar>)_'),
                          '[link](<foo\nbar>)')
 
@@ -2209,7 +2234,8 @@ class TestApi(pyfakefsTestCase):
                          '[link](foo(and(bar))')
         self.assertEqual(api.remove_emphasis('[link](*foo(and(bar))*'),
                          '[link](foo(and(bar))')
-        #        self.assertEqual(api.remove_emphasis('_[link_](foo(and(bar))'), '[link](foo(and(bar))')
+        self.assertEqual(api.remove_emphasis('_[link_](foo(and(bar))'),
+                         '[link](foo(and(bar))')
         self.assertEqual(api.remove_emphasis('[link](_foo(and(bar))_'),
                          '[link](foo(and(bar))')
 
@@ -2310,10 +2336,8 @@ class TestApi(pyfakefsTestCase):
         # Example 504 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'*[link*](/url "title")'),
                          r'*[link*](/url "title")')
-
         self.assertEqual(api.remove_emphasis(r"*[link*](/url 'title')"),
                          r"*[link*](/url 'title')")
-
         #        self.assertEqual(api.remove_emphasis(r'*[link*](/url (title))'), r'*[link*](/url (title))')
 
         # Example 505 [Commonmark 0.30].
@@ -2342,7 +2366,8 @@ class TestApi(pyfakefsTestCase):
                          r'[link] (uri)')
         self.assertEqual(api.remove_emphasis(r'[link] (*uri)*'),
                          r'[link] (uri)')
-        #        self.assertEqual(api.remove_emphasis(r'_[link_] (uri)'), r'[link] (uri)')
+        self.assertEqual(api.remove_emphasis(r'_[link_] (uri)'),
+                         r'[link] (uri)')
         self.assertEqual(api.remove_emphasis(r'[link] (_uri)_'),
                          r'[link] (uri)')
 
@@ -2414,6 +2439,11 @@ class TestApi(pyfakefsTestCase):
         # Extra examples.
         self.assertEqual(api.remove_emphasis(r'_j\_'),
                          '_j' + LINE_ESCAPE + '_')
+
+        # redcarpet.
+        self.assertEqual(api.remove_emphasis('', parser='redcarpet'), '')
+        self.assertEqual(api.remove_emphasis(r'__a__', parser='redcarpet'),
+                         r'__a__')
 
     def test_remove_html_tags(self):
         r"""Test remove html tags."""
@@ -2851,6 +2881,22 @@ class TestApi(pyfakefsTestCase):
                                   header_duplicate_counter,
                                   parser='gitlab'), LINE_DASH + CMARK_LINE_FOO)
 
+        # redcarpet.
+        header_duplicate_counter = dict()
+        self.assertEqual(
+            api.build_anchor_link(REDCARPET_LINE_FOO,
+                                  header_duplicate_counter,
+                                  parser='redcarpet'),
+            REDCARPET_LINE_FOO,
+        )
+        header_duplicate_counter = dict()
+        self.assertEqual(
+            api.build_anchor_link(REDCARPET_LINE_FOO + S1 + REDCARPET_LINE_FOO,
+                                  header_duplicate_counter,
+                                  parser='redcarpet'),
+            REDCARPET_LINE_FOO + LINE_DASH + REDCARPET_LINE_FOO,
+        )
+
     def test_replace_and_split_newlines(self):
         r"""Test the replacement and splitting of newlines in a string."""
         self.assertEqual(
@@ -2895,13 +2941,13 @@ class TestApi(pyfakefsTestCase):
         in the test directory of the source code.
         """
         # github
-        m_github = md_parser['github']['header']['max levels'] = 6
-
         # Example 32 [Commonmark 0.28].
         # Example 32 [Commonmark 0.29].
         # Example 62 [Commonmark 0.30].
         self.assertEqual(
-            api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO, m_github, 'github'),
+            api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'github'),
             [{
                 'header_type': 1,
                 'header_text_trimmed': CMARK_LINE_FOO,
@@ -2909,7 +2955,9 @@ class TestApi(pyfakefsTestCase):
             }],
         )
         self.assertEqual(
-            api.get_atx_heading(H1 + T1 + CMARK_LINE_FOO, m_github, 'github'),
+            api.get_atx_heading(H1 + T1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'github'),
             [{
                 'header_type': None,
                 'header_text_trimmed': None,
@@ -2917,7 +2965,9 @@ class TestApi(pyfakefsTestCase):
             }],
         )
         self.assertEqual(
-            api.get_atx_heading(H1 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
+            api.get_atx_heading(H1 + T1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'cmark'),
             [{
                 'header_type': 1,
                 'header_text_trimmed': CMARK_LINE_FOO,
@@ -2926,7 +2976,9 @@ class TestApi(pyfakefsTestCase):
         )
 
         self.assertEqual(
-            api.get_atx_heading(H2 + S1 + CMARK_LINE_FOO, m_github, 'github'),
+            api.get_atx_heading(H2 + S1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'github'),
             [{
                 'header_type': 2,
                 'header_text_trimmed': CMARK_LINE_FOO,
@@ -2934,7 +2986,9 @@ class TestApi(pyfakefsTestCase):
             }],
         )
         self.assertEqual(
-            api.get_atx_heading(H2 + T1 + CMARK_LINE_FOO, m_github, 'github'),
+            api.get_atx_heading(H2 + T1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'github'),
             [{
                 'header_type': None,
                 'header_text_trimmed': None,
@@ -2942,7 +2996,9 @@ class TestApi(pyfakefsTestCase):
             }],
         )
         self.assertEqual(
-            api.get_atx_heading(H2 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
+            api.get_atx_heading(H2 + T1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'cmark'),
             [{
                 'header_type': 2,
                 'header_text_trimmed': CMARK_LINE_FOO,
@@ -2951,7 +3007,9 @@ class TestApi(pyfakefsTestCase):
         )
 
         self.assertEqual(
-            api.get_atx_heading(H3 + S1 + CMARK_LINE_FOO, m_github, 'github'),
+            api.get_atx_heading(H3 + S1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'github'),
             [{
                 'header_type': 3,
                 'header_text_trimmed': CMARK_LINE_FOO,
@@ -2959,7 +3017,9 @@ class TestApi(pyfakefsTestCase):
             }],
         )
         self.assertEqual(
-            api.get_atx_heading(H3 + T1 + CMARK_LINE_FOO, m_github, 'github'),
+            api.get_atx_heading(H3 + T1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'github'),
             [{
                 'header_type': None,
                 'header_text_trimmed': None,
@@ -2967,7 +3027,9 @@ class TestApi(pyfakefsTestCase):
             }],
         )
         self.assertEqual(
-            api.get_atx_heading(H3 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
+            api.get_atx_heading(H3 + T1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'cmark'),
             [{
                 'header_type': 3,
                 'header_text_trimmed': CMARK_LINE_FOO,
@@ -2976,7 +3038,9 @@ class TestApi(pyfakefsTestCase):
         )
 
         self.assertEqual(
-            api.get_atx_heading(H4 + S1 + CMARK_LINE_FOO, m_github, 'github'),
+            api.get_atx_heading(H4 + S1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'github'),
             [{
                 'header_type': 4,
                 'header_text_trimmed': CMARK_LINE_FOO,
@@ -2984,7 +3048,9 @@ class TestApi(pyfakefsTestCase):
             }],
         )
         self.assertEqual(
-            api.get_atx_heading(H4 + T1 + CMARK_LINE_FOO, m_github, 'github'),
+            api.get_atx_heading(H4 + T1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'github'),
             [{
                 'header_type': None,
                 'header_text_trimmed': None,
@@ -2992,7 +3058,9 @@ class TestApi(pyfakefsTestCase):
             }],
         )
         self.assertEqual(
-            api.get_atx_heading(H4 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
+            api.get_atx_heading(H4 + T1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'cmark'),
             [{
                 'header_type': 4,
                 'header_text_trimmed': CMARK_LINE_FOO,
@@ -3001,7 +3069,9 @@ class TestApi(pyfakefsTestCase):
         )
 
         self.assertEqual(
-            api.get_atx_heading(H5 + S1 + CMARK_LINE_FOO, m_github, 'github'),
+            api.get_atx_heading(H5 + S1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'github'),
             [{
                 'header_type': 5,
                 'header_text_trimmed': CMARK_LINE_FOO,
@@ -3009,7 +3079,9 @@ class TestApi(pyfakefsTestCase):
             }],
         )
         self.assertEqual(
-            api.get_atx_heading(H5 + T1 + CMARK_LINE_FOO, m_github, 'github'),
+            api.get_atx_heading(H5 + T1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'github'),
             [{
                 'header_type': None,
                 'header_text_trimmed': None,
@@ -3017,7 +3089,9 @@ class TestApi(pyfakefsTestCase):
             }],
         )
         self.assertEqual(
-            api.get_atx_heading(H5 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
+            api.get_atx_heading(H5 + T1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'cmark'),
             [{
                 'header_type': 5,
                 'header_text_trimmed': CMARK_LINE_FOO,
@@ -3026,7 +3100,9 @@ class TestApi(pyfakefsTestCase):
         )
 
         self.assertEqual(
-            api.get_atx_heading(H6 + S1 + CMARK_LINE_FOO, m_github, 'github'),
+            api.get_atx_heading(H6 + S1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'github'),
             [{
                 'header_type': 6,
                 'header_text_trimmed': CMARK_LINE_FOO,
@@ -3034,7 +3110,9 @@ class TestApi(pyfakefsTestCase):
             }],
         )
         self.assertEqual(
-            api.get_atx_heading(H6 + T1 + CMARK_LINE_FOO, m_github, 'github'),
+            api.get_atx_heading(H6 + T1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'github'),
             [{
                 'header_type': None,
                 'header_text_trimmed': None,
@@ -3042,7 +3120,9 @@ class TestApi(pyfakefsTestCase):
             }],
         )
         self.assertEqual(
-            api.get_atx_heading(H6 + T1 + CMARK_LINE_FOO, m_github, 'cmark'),
+            api.get_atx_heading(H6 + T1 + CMARK_LINE_FOO,
+                                md_parser['github']['header']['max_levels'],
+                                'cmark'),
             [{
                 'header_type': 6,
                 'header_text_trimmed': CMARK_LINE_FOO,
@@ -3068,7 +3148,8 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H1 + CMARK_LINE_5_BOLT + LINE_LINE_FEED + LINE_LINE_FEED + H1 +
-                CMARK_LINE_HASHTAG, m_github, 'github'),
+                CMARK_LINE_HASHTAG,
+                md_parser['github']['header']['max_levels'], 'github'),
             [{
                 'header_type': None,
                 'header_text_trimmed': None,
@@ -3089,7 +3170,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 LINE_ESCAPE + H1 + S1 + CMARK_LINE_FOO,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3103,7 +3184,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 LINE_ESCAPE + H2 + S1 + CMARK_LINE_FOO,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3119,7 +3200,7 @@ class TestApi(pyfakefsTestCase):
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_FOO + S1 + '*' + CMARK_LINE_BAR + '*' +
                 S1 + LINE_ESCAPE + '*' + CMARK_LINE_BAZ + LINE_ESCAPE + '*',
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3155,7 +3236,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S18 + CMARK_LINE_FOO + S21,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3167,7 +3248,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H1 + T18 + CMARK_LINE_FOO + T21,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3179,7 +3260,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H1 + T18 + CMARK_LINE_FOO + T21,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'cmark',
             ),
             [{
@@ -3195,7 +3276,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 S1 + H3 + S1 + CMARK_LINE_FOO,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3207,7 +3288,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 S2 + H2 + S1 + CMARK_LINE_FOO,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3219,7 +3300,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 S3 + H1 + S1 + CMARK_LINE_FOO,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3235,7 +3316,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 S4 + H1 + S1 + CMARK_LINE_FOO,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3252,7 +3333,7 @@ class TestApi(pyfakefsTestCase):
             api.get_atx_heading(
                 CMARK_LINE_FOO + LINE_LINE_FEED + S4 + H1 + S1 +
                 CMARK_LINE_BAR,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3272,7 +3353,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H2 + S1 + CMARK_LINE_FOO + S1 + H2,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3284,7 +3365,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 S2 + H3 + S3 + CMARK_LINE_BAR + S4 + H3,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3300,7 +3381,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_FOO + S1 + H34,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3313,7 +3394,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H5 + S1 + CMARK_LINE_FOO + S1 + H2,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3325,7 +3406,9 @@ class TestApi(pyfakefsTestCase):
 
         # Extra test.
         self.assertEqual(
-            api.get_atx_heading(H5 * 7, m_github, 'github'),
+            api.get_atx_heading(H5 * 7,
+                                md_parser['github']['header']['max_levels'],
+                                'github'),
             [{
                 'header_type': None,
                 'header_text_trimmed': None,
@@ -3339,7 +3422,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H3 + S1 + CMARK_LINE_FOO + S1 + H3 + S5,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3351,7 +3434,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H3 + S1 + CMARK_LINE_FOO + S1 + H3 + T5,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3363,7 +3446,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H3 + S1 + CMARK_LINE_FOO + S1 + H3 + T5,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'cmark',
             ),
             [{
@@ -3379,7 +3462,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H3 + S1 + CMARK_LINE_FOO + S1 + H3 + S1 + CMARK_LINE_B,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3396,7 +3479,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_FOO + H1,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3408,7 +3491,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_FOO + S1 + H1,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3420,7 +3503,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_FOO + T1 + H1,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3432,7 +3515,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_FOO + T1 + H1,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'cmark',
             ),
             [{
@@ -3456,7 +3539,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H3 + S1 + CMARK_LINE_FOO + S1 + LINE_ESCAPE + H3,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3468,7 +3551,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H2 + S1 + CMARK_LINE_FOO + S1 + H1 + LINE_ESCAPE + H2,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3481,7 +3564,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_FOO + S1 + LINE_ESCAPE + H1,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3498,7 +3581,7 @@ class TestApi(pyfakefsTestCase):
             api.get_atx_heading(
                 '****' + LINE_LINE_FEED + H2 + S1 + CMARK_LINE_FOO +
                 LINE_LINE_FEED + '****',
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3523,7 +3606,7 @@ class TestApi(pyfakefsTestCase):
             api.get_atx_heading(
                 'Foo' + S1 + CMARK_LINE_BAR + LINE_LINE_FEED + H1 + S1 +
                 CMARK_LINE_BAZ + LINE_LINE_FEED + 'Bar' + S1 + CMARK_LINE_FOO,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3545,7 +3628,9 @@ class TestApi(pyfakefsTestCase):
         # Example 49 [Commonmark 0.29].
         # Example 79 [Commonmark 0.30].
         self.assertEqual(
-            api.get_atx_heading(H2 + S1, m_github, 'github', True),
+            api.get_atx_heading(H2 + S1,
+                                md_parser['github']['header']['max_levels'],
+                                'github', True),
             [{
                 'header_type': 2,
                 'header_text_trimmed': LINE_EMPTY,
@@ -3553,7 +3638,9 @@ class TestApi(pyfakefsTestCase):
             }],
         )
         self.assertEqual(
-            api.get_atx_heading(H1, m_github, 'github', True),
+            api.get_atx_heading(H1,
+                                md_parser['github']['header']['max_levels'],
+                                'github', True),
             [{
                 'header_type': 1,
                 'header_text_trimmed': LINE_EMPTY,
@@ -3561,7 +3648,9 @@ class TestApi(pyfakefsTestCase):
             }],
         )
         self.assertEqual(
-            api.get_atx_heading(H3 + S1 + H3, m_github, 'github', True),
+            api.get_atx_heading(H3 + S1 + H3,
+                                md_parser['github']['header']['max_levels'],
+                                'github', True),
             [{
                 'header_type': 3,
                 'header_text_trimmed': LINE_EMPTY,
@@ -3574,11 +3663,17 @@ class TestApi(pyfakefsTestCase):
         # Example 49 [Commonmark 0.29].
         # Example 79 [Commonmark 0.30].
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
-            api.get_atx_heading(H2 + S1, m_github, 'github', False)
+            api.get_atx_heading(H2 + S1,
+                                md_parser['github']['header']['max_levels'],
+                                'github', False)
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
-            api.get_atx_heading(H1, m_github, 'github', False)
+            api.get_atx_heading(H1,
+                                md_parser['github']['header']['max_levels'],
+                                'github', False)
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
-            api.get_atx_heading(H3 + S1 + H3, m_github, 'github', False)
+            api.get_atx_heading(H3 + S1 + H3,
+                                md_parser['github']['header']['max_levels'],
+                                'github', False)
 
         # Test escaping examples reported in the documentation.
         # A modified Example 302 and Example 496 (for square brackets).
@@ -3587,7 +3682,7 @@ class TestApi(pyfakefsTestCase):
                 H1 + S1 + LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO + S1 +
                 LINE_SQUARE_BRACKET_OPEN + CMARK_LINE_BAR +
                 LINE_SQUARE_BRACKET_CLOSE + LINE_SQUARE_BRACKET_CLOSE,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3606,7 +3701,7 @@ class TestApi(pyfakefsTestCase):
             api.get_atx_heading(
                 H1 + S1 + LINE_ESCAPE + LINE_ESCAPE +
                 LINE_SQUARE_BRACKET_OPEN + S1 + CMARK_LINE_FOO,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3624,7 +3719,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H2 + S1 + CMARK_LINE_FOO + LINE_ESCAPE,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3638,13 +3733,15 @@ class TestApi(pyfakefsTestCase):
         with self.assertRaises(exceptions.GithubOverflowCharsLinkLabel):
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_1000_CHARS,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             )
 
         # Test an empty line.
         self.assertEqual(
-            api.get_atx_heading(LINE_EMPTY, m_github, 'github'),
+            api.get_atx_heading(LINE_EMPTY,
+                                md_parser['github']['header']['max_levels'],
+                                'github'),
             [{
                 'header_type': None,
                 'header_text_trimmed': None,
@@ -3657,7 +3754,7 @@ class TestApi(pyfakefsTestCase):
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_FOO + LINE_LINE_FEED + LINE_LINE_FEED +
                 H1 + S1 + CMARK_LINE_FOO + LINE_LINE_FEED,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [
@@ -3681,7 +3778,9 @@ class TestApi(pyfakefsTestCase):
 
         # Test line endings.
         self.assertEqual(
-            api.get_atx_heading(H1 + LINE_LINE_FEED, m_github, 'github', True),
+            api.get_atx_heading(H1 + LINE_LINE_FEED,
+                                md_parser['github']['header']['max_levels'],
+                                'github', True),
             [{
                 'header_type': 1,
                 'header_text_trimmed': LINE_EMPTY,
@@ -3691,7 +3790,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H1 + LINE_CARRIAGE_RETURN,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
                 True,
             ),
@@ -3706,7 +3805,7 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_FOO + LINE_LINE_FEED + CMARK_LINE_FOO,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3724,7 +3823,7 @@ class TestApi(pyfakefsTestCase):
             api.get_atx_heading(
                 H1 + S1 + CMARK_LINE_FOO + LINE_CARRIAGE_RETURN +
                 CMARK_LINE_FOO,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
             ),
             [{
@@ -3740,11 +3839,13 @@ class TestApi(pyfakefsTestCase):
 
         # Test line endings with link labels.
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
-            api.get_atx_heading(H1 + LINE_LINE_FEED, m_github, 'github', False)
+            api.get_atx_heading(H1 + LINE_LINE_FEED,
+                                md_parser['github']['header']['max_levels'],
+                                'github', False)
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
             api.get_atx_heading(
                 H1 + LINE_CARRIAGE_RETURN,
-                m_github,
+                md_parser['github']['header']['max_levels'],
                 'github',
                 False,
             )
@@ -4358,8 +4459,39 @@ class TestApi(pyfakefsTestCase):
         # Example 147 [Commonmark 0.30].
         # See test_is_closing_code_fence.
 
+        # redcarpet
+        self.assertIsNone(
+            api.is_opening_code_fence(BACKTICK3, parser='redcarpet'))
+        self.assertIsNone(
+            api.is_opening_code_fence(BACKTICK4, parser='redcarpet'))
+        self.assertIsNone(
+            api.is_opening_code_fence(BACKTICK10, parser='redcarpet'))
+        self.assertIsNone(api.is_opening_code_fence(TILDE3,
+                                                    parser='redcarpet'))
+        self.assertIsNone(api.is_opening_code_fence(TILDE4,
+                                                    parser='redcarpet'))
+        self.assertIsNone(
+            api.is_opening_code_fence(TILDE10, parser='redcarpet'))
+
     def test_is_closing_code_fence(self):
         r"""Test detection of closing code fence."""
+        # Test non-closing code fences.
+        self.assertFalse(
+            api.is_closing_code_fence(CMARK_LINE_FOO, CMARK_LINE_FOO))
+        self.assertFalse(api.is_closing_code_fence(BACKTICK3, CMARK_LINE_FOO))
+        self.assertFalse(api.is_closing_code_fence(TILDE3, CMARK_LINE_FOO))
+        self.assertFalse(api.is_closing_code_fence(BACKTICK2, BACKTICK3))
+        self.assertFalse(api.is_closing_code_fence(TILDE2, TILDE3))
+
+        # len(fence) < marker_min_length
+        self.assertFalse(api.is_closing_code_fence(BACKTICK3, BACKTICK2))
+        self.assertFalse(api.is_closing_code_fence(TILDE3, TILDE2))
+
+        # fence != len(fence) * fence[0]
+        self.assertFalse(
+            api.is_closing_code_fence(BACKTICK3, BACKTICK3 + LINE_DASH))
+        self.assertFalse(api.is_closing_code_fence(TILDE3, TILDE3 + LINE_DASH))
+
         # github.
         # Example 91 [Commonmark 0.28].
         # Example 92 [Commonmark 0.29].
@@ -4477,6 +4609,13 @@ class TestApi(pyfakefsTestCase):
         self.assertTrue(
             api.is_closing_code_fence(TILDE3 + T1, TILDE3, 'cmark'), )
         self.assertFalse(api.is_closing_code_fence(TILDE3 + T4 + S4, TILDE3), )
+
+        # redcarpet
+        self.assertFalse(
+            api.is_closing_code_fence(BACKTICK3, BACKTICK3,
+                                      parser='redcarpet'))
+        self.assertFalse(
+            api.is_closing_code_fence(TILDE3, TILDE3, parser='redcarpet'))
 
 
 if __name__ == '__main__':
