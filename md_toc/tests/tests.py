@@ -21,6 +21,7 @@
 r"""The tests module."""
 
 import doctest
+import os
 import unittest
 from unittest.mock import patch
 
@@ -851,13 +852,14 @@ class TestApi(pyfakefsTestCase):
         with open('foo.md', 'w') as f:
             f.write('# This\n# Is an\n## Example\n')
         self.assertEqual(
-            api.build_toc('foo.md'),
-            '- [This](#this)\n- [Is an](#is-an)\n  - [Example](#example)\n')
-
+            api.build_toc('foo.md'), ''.join([
+                '- [This](#this)', os.linesep, '- [Is an](#is-an)', os.linesep,
+                '  - [Example](#example)', os.linesep
+            ]))
         with open('foo.md', 'w') as f:
             f.write('# This\n# Is an\n## Example\n')
         self.assertEqual(api.build_toc('foo.md', skip_lines=2),
-                         '- [Example](#example)\n')
+                         ''.join(['- [Example](#example)', os.linesep]))
 
         with open('foo.md', 'w') as f:
             f.write('# This\n')
