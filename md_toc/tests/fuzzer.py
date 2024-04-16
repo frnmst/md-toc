@@ -32,13 +32,7 @@ with atheris.instrument_imports():
 def TestBuildToc(data):
     r"""Test the md_toc.api.build_toc function."""
     with tempfile.NamedTemporaryFile() as fp:
-
-        bytez: bytes = b''.join([
-            bytes('#' * (secrets.randbelow(6) + 1), 'UTF-8'),
-            b' ',
-            data,
-        ])
-        fp.write(bytez)
+        fp.write(data)
 
         # Move pointer to the start of the file.
         fp.seek(0)
@@ -48,6 +42,19 @@ def TestBuildToc(data):
                 api.build_toc(filename=fp.name,
                               parser=parser,
                               keep_header_levels=6)
+                api.build_toc(filename=fp.name,
+                              parser=parser,
+                              keep_header_levels=6,
+                              ordered=True)
+                api.build_toc(filename=fp.name,
+                              parser=parser,
+                              keep_header_levels=6,
+                              ordered=True)
+                api.build_toc(filename=fp.name,
+                              parser=parser,
+                              keep_header_levels=6,
+                              skip_lines=secrets.randbelow(100))
+
         except (exceptions.GithubEmptyLinkLabel,
                 exceptions.TocDoesNotRenderAsCoherentList,
                 exceptions.GithubOverflowCharsLinkLabel) as e:
