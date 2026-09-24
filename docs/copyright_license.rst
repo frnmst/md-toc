@@ -1,29 +1,11 @@
-Source code
-===========
-
-- https://software.franco.net.eu.org/frnmst/md-toc
-- https://codeberg.org/frnmst/md-toc
-- https://framagit.org/frnmst/md-toc
-- https://github.com/frnmst/md-toc
-
-Workflow
---------
-
-See `Python workflow <https://docs.franco.net.eu.org/ftutorials/en/content/programming/python/workflow.html>`_
-
-Contributing
-------------
-
-See `Python contributing <https://docs.franco.net.eu.org/ftutorials/en/content/programming/python/contributing.html>`_
-
 Copyright and License
----------------------
+=====================
 
 md-toc
-``````
+------
 
 Scope
-~~~~~
+`````
 
 +-----------------------------------------+-----------------------------------------------+
 | Applies to                              | Parsers                                       |
@@ -32,7 +14,7 @@ Scope
 +-----------------------------------------+-----------------------------------------------+
 
 Files
-~~~~~
+`````
 
 - ``./md_toc/api.py``
 - ``./md_toc/cli.py``
@@ -45,11 +27,11 @@ Files
 - ``./md_toc/types.py``
 
 Text
-~~~~
+````
 
 ::
 
-    Copyright (C) 2017-2024 Franco Masotti (see /README.md)
+    Copyright (C) 2017-2026 Franco Masotti (see /README.md)
 
     md-toc is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -66,10 +48,10 @@ Text
 
 
 License A
-`````````
+---------
 
 Scope
-~~~~~
+`````
 
 +-----------------------------------------+-----------------------------------------------+
 | Applies to                              | Parsers                                       |
@@ -80,12 +62,12 @@ Scope
 +-----------------------------------------+-----------------------------------------------+
 
 Files
-~~~~~
+`````
 
 - ``./md_toc/api.py``
 
 Text
-~~~~
+````
 
 ::
 
@@ -112,10 +94,10 @@ Text
 
 
 License B
-`````````
+---------
 
 Scope
-~~~~~
+`````
 
 +-----------------------------------------+-----------------------------------------------+
 | Applies to                              | Parsers                                       |
@@ -124,12 +106,12 @@ Scope
 +-----------------------------------------+-----------------------------------------------+
 
 Files
-~~~~~
+`````
 
 - ``./md_toc/api.py``
 
 Text
-~~~~
+````
 
 ::
 
@@ -159,10 +141,10 @@ Text
 
 
 License C
-`````````
+---------
 
 Scope
-~~~~~
+`````
 
 +-----------------------------------------+-----------------------------------------------+
 | Applies to                              | Parsers                                       |
@@ -171,7 +153,7 @@ Scope
 +-----------------------------------------+-----------------------------------------------+
 
 Files
-~~~~~
+`````
 
 - ``./md_toc/constants.py``
 - ``./md_toc/cmark/cmark_ctype_c.py``
@@ -185,7 +167,7 @@ Files
 - ``./md_toc/cmark/scanners_h.py``
 
 Text
-~~~~
+````
 
 ::
 
@@ -219,10 +201,10 @@ Text
 
 
 License D
-`````````
+---------
 
 Scope
-~~~~~
+`````
 
 +-----------------------------------------+-----------------------------------------------+
 | Applies to                              | Parsers                                       |
@@ -231,7 +213,7 @@ Scope
 +-----------------------------------------+-----------------------------------------------+
 
 Files
-~~~~~
+`````
 
 - ``./md_toc/cmark/utf8_c.py``
 
@@ -267,10 +249,10 @@ Text
 
 
 License E
-`````````
+---------
 
 Scope
-~~~~~
+`````
 
 +-----------------------------------------+-----------------------------------------------+
 | Applies to                              | Parsers                                       |
@@ -279,14 +261,14 @@ Scope
 +-----------------------------------------+-----------------------------------------------+
 
 Files
-~~~~~
+`````
 
 - ``./md_toc/cmark/buffer_h.py``
 - ``./md_toc/cmark/buffer_c.py``
 - ``./md_toc/cmark/chunk_h.py``
 
 Text
-~~~~
+````
 
 ::
 
@@ -315,7 +297,7 @@ Text
 
 
 License F
-`````````
+---------
 
 +-----------------------------------------+-----------------------------------------------+
 | Applies to                              | Parsers                                       |
@@ -324,13 +306,13 @@ License F
 +-----------------------------------------+-----------------------------------------------+
 
 Files
-~~~~~
+`````
 
 - ``./md_toc/cmark/houdini_h.py``
 - ``./md_toc/cmark/houdini_html_u.c``
 
 Text
-~~~~
+````
 
 ::
 

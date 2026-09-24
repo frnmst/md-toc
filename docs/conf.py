@@ -171,7 +171,7 @@ html_theme_options = {
     'repository_provider':
     'github',
     'repository_url':
-    'https://software.franco.net.eu.org/frnmst/md-toc',
+    'https://github.com/frnmst/md-toc',
     'use_repository_button':
     True,
     'use_download_button':
