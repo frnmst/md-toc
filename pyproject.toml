@@ -1,6 +1,154 @@
 [build-system]
-requires = ["setuptools>=39.2.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling >= 1.30"]
+build-backend = "hatchling.build"
+
+[project]
+name = "md_toc"
+version = "9.0.1"
+authors = [
+    { name = "Franco Masotti", email = "franco.masotti@tutanota.com" },
+]
+maintainers = [
+    { name = "Franco Masotti", email = "franco.masotti@tutanota.com" },
+]
+description = "Automatically generate and add an accurate table of contents to markdown files"
+readme = "README.md"
+license = "GPL-3.0-or-later"
+license-files = ["LICEN[CS]ES/*.txt"]
+keywords = [
+    "markdown",
+    "toc",
+    "text",
+    "table-of-contents",
+    "documentation",
+]
+# https://iscinumpy.dev/post/bound-version-constraints/#pinning-the-python-version-is-special
+requires-python = ">=3.11"
+dependencies = [
+    "fpyutils>=4.0.1"
+]
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Topic :: Documentation",
+    "Topic :: Software Development",
+    "Topic :: Text Processing",
+    "Topic :: Text Processing :: Markup :: Markdown",
+    "Topic :: Utilities",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Information Technology",
+    "Environment :: Console",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+[project.urls]
+Homepage = "https://github.com/frnmst/md-toc"
+"Bug Tracker" = "https://github.com/frnmst/md-toc/issues"
+Documentation = "https://docs.franco.net.eu.org/md-toc/"
+"API Reference" = "https://docs.franco.net.eu.org/md-toc/api.html"
+"Source Code" = "https://github.com/frnmst/md-toc"
+Changelog = "https://github.com/frnmst/md-toc/blob/master/CHANGELOG.md"
+Funding = "https://github.com/frnmst/md-toc#support-this-project"
+
+[project.optional-dependencies]
+dev = [
+    "asciinema>=2,<3",
+    "pyfakefs>=5,<6",
+    "sphinx-book-theme>=1.0,<1.1",
+    "sphinx-copybutton>=0.5,<0.6",
+
+    # Unit tests.
+    "tox>=4,<5",
+
+    # Standard development.
+    "pre-commit>=4,<5",
+    "pip-tools",
+    "pip-audit",
+    "build",
+    "twine",
+    "hatchling",
+]
+
+[project.scripts]
+md_toc = "md_toc.__main__:main"
+
+
+# Contributing is required in the source dist. See:
+# https://www.pyopensci.org/python-package-guide/package-structure-code/python-package-distribution-files-sdist-wheel.html#what-is-a-source-distribution-sdist
+[tool.hatch.build.targets.sdist]
+reproducible = true
+include = [
+    "md_toc",
+    "README.md",
+    "CONTRIBUTING.md",
+    "CHANGELOG.md",
+    "LICENSES/*.txt"
+]
+
+[tool.hatch.build.targets.wheel]
+bypass-selection = true
+reproducible = true
+packages = ["md_toc"]
+exclude = [
+    "md_toc/tests/*.py"
+]
+
+[tool.yapf]
+based_on_style = "pep8"
+indent_width = "4"
 
 [tool.bandit]
-skips=["B404", "B506", "B410", "B603", "B324"]
+exclude_dirs=['.scripts/']
+skips=[
+    "B404",
+    "B506",
+    "B410",
+    "B603",
+    "B324",
+    "B101"
+]
+
+[tool.commitizen]
+name = "cz_gitmoji"
+
+[tool.isort]
+# See
+# https://github.com/ESMValGroup/ESMValCore/issues/777
+multi_line_output = 3
+include_trailing_comma = true
+
+[tool.tox]
+env_list = [
+    "py3.11",
+    "py3.12",
+    "py3.13",
+    "py3.14t"
+]
+
+[tool.testenv]
+description = "run the tests with unittest"
+package = "wheel"
+wheel_build_env = ".pkg"
+deps = """
+-r requirements.txt
+-r requirements-dev.txt"""
+commands = """
+python3 -m unittest discover --failfast --locals --verbose"""
+
+[tool.testenv.fuzzer]
+description = "run the fuzzer"
+package = "wheel"
+wheel_build_env = ".pkg"
+deps = """
+atheris>=2.3,<2.4
+-r requirements.txt
+-r requirements-dev.txt"""
+commands = """
+coverage run -m md_toc.tests.fuzzer -atheris_runs=100000000
+coverage html"""

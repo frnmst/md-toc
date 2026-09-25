@@ -1,23 +1,7 @@
-#
-# inlines_c.py
-#
 # Copyright (C) 2017-2023 Franco Masotti (see /README.md)
+# SPDX-FileCopyrightText: 2017-2026 Franco Masotti (See /README.md)
 #
-# This file is part of md-toc.
-#
-# md-toc is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# md-toc is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with md-toc.  If not, see <http://www.gnu.org/licenses/>.
-#
+# SPDX-License-Identifier: GPL-3.0-or-later
 r"""A cmark implementation file."""
 
 import copy
@@ -2087,8 +2071,8 @@ def _cmark_parse_inline(subj: _cmarkSubject,
     elif chr(c) in ['<']:
         new_inl = _cmark_handle_pointy_brace(subj, options)
     elif chr(c) in ['*', '_', '\'', '"']:
-        new_inl = _cmark_handle_delim(subj, chr(c),
-                                      (options & CMARK_OPT_SMART) != 0)
+        new_inl = _cmark_handle_delim(subj, chr(c), (options & CMARK_OPT_SMART)
+                                      != 0)
     elif chr(c) in ['-']:
         new_inl = _cmark_handle_hyphen(subj, (options & CMARK_OPT_SMART) != 0)
     elif chr(c) in ['.']:

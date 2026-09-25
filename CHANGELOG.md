@@ -15,56 +15,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [Changelog](#changelog)
   - [\[Unreleased\]](#unreleased)
+  - [\[9.0.1\] Unreleased](#901-unreleased)
     - [Fixed](#fixed)
     - [Added](#added)
+    - [Changed](#changed)
   - [\[9.0.0\] 2024-04-10](#900-2024-04-10)
     - [Fixed](#fixed-1)
     - [Fixed](#fixed-2)
     - [Removed](#removed)
   - [\[8.2.2\] 2023-11-09](#822-2023-11-09)
-    - [Changed](#changed)
+    - [Changed](#changed-1)
     - [Fixed](#fixed-3)
   - [\[8.2.1\] 2023-11-07](#821-2023-11-07)
-    - [Changed](#changed-1)
+    - [Changed](#changed-2)
     - [Added](#added-1)
   - [\[8.2.0\] 2023-08-08](#820-2023-08-08)
     - [Fixed](#fixed-4)
     - [Added](#added-2)
   - [\[8.1.9\] 2023-02-10](#819-2023-02-10)
-    - [Changed](#changed-2)
+    - [Changed](#changed-3)
     - [Fixed](#fixed-5)
   - [\[8.1.8\] 2023-01-06](#818-2023-01-06)
-    - [Changed](#changed-3)
+    - [Changed](#changed-4)
     - [Removed](#removed-1)
     - [Fixed](#fixed-6)
   - [\[8.1.7\] 2022-12-29](#817-2022-12-29)
     - [Added](#added-3)
     - [Fixed](#fixed-7)
-    - [Changed](#changed-4)
+    - [Changed](#changed-5)
   - [\[8.1.6\] 2022-12-08](#816-2022-12-08)
     - [Fixed](#fixed-8)
   - [\[8.1.5\] 2022-10-28](#815-2022-10-28)
     - [Added](#added-4)
     - [Fixed](#fixed-9)
   - [\[8.1.4\] 2022-06-15](#814-2022-06-15)
-    - [Changed](#changed-5)
+    - [Changed](#changed-6)
     - [Fixed](#fixed-10)
   - [\[8.1.3\] 2022-04-20](#813-2022-04-20)
     - [Deprecated](#deprecated)
     - [Fixed](#fixed-11)
   - [\[8.1.2\] 2022-04-03](#812-2022-04-03)
     - [Fixed](#fixed-12)
-    - [Changed](#changed-6)
+    - [Changed](#changed-7)
   - [\[8.1.1\] 2022-01-27](#811-2022-01-27)
     - [Fixed](#fixed-13)
   - [\[8.1.0\] 2021-11-29](#810-2021-11-29)
     - [Fixed](#fixed-14)
   - [\[8.0.1\] 2021-08-20](#801-2021-08-20)
     - [Fixed](#fixed-15)
-    - [Changed](#changed-7)
+    - [Changed](#changed-8)
     - [Added](#added-5)
   - [\[8.0.0\] 2021-05-28](#800-2021-05-28)
-    - [Changed](#changed-8)
+    - [Changed](#changed-9)
     - [Added](#added-6)
     - [Removed](#removed-2)
 
@@ -72,36 +74,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-
-- [__✓__ 5c7ddab](https://github.com/frnmst/md-toc/commit/5c7ddab)
-
-  Add missing binary file detections in `md_toc.api.build_toc`
-- [__✓__ 89e2d60](https://github.com/frnmst/md-toc/commit/89e2d60)
-
-  Fix references to `md_toc.api.build_toc` from `md_toc.build_toc`
-- [__✓__ 5c7ddab](https://github.com/frnmst/md-toc/commit/5c7ddab)
-
-  Improve test coverage
-- [__✓__ 5c7ddab](https://github.com/frnmst/md-toc/commit/5c7ddab)
-
-  Reduce some code for function input validation
-- [Issue #25: *Links not working when some styling is used in the header on GitHub*](https://github.com/frnmst/md-toc/issues/25):
-  must be completed before this version.
 - Update existing cmark code from version 0.30.0 to version
   [0.31.2](https://spec.commonmark.org/0.31.2/changes.html).
 - An `md_toc.exceptions.TocDoesNotRenderAsCoherentList` exception is raised for
   big inputs (>= 50M characters) when using the benchmark script.
   There is a jump in the detected header level, 1 then 3, not 2. This always
   happens with the last line of the dummy input file.
-- Update existing redcarpet code from version v3.5.0 to version v3.6.0.
-  See [issue #28: *Redcarpet v3.5.1 is out*](https://github.com/frnmst/md-toc/issues/28).
-
-### Added
-
-- [__✓__ 276acd6](https://github.com/frnmst/md-toc/commit/276acd6)
-
-  Add GitHub unit test action
 - Add code fence detection before writing TOC in place.
   Until version 9.0.0, given for example a file like this
 
@@ -231,6 +209,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
   ### THREE
   ````
+
+## [9.0.1] Unreleased
+
+### Fixed
+
+- [__✓__ 5c7ddab](https://github.com/frnmst/md-toc/commit/5c7ddab)
+
+  Add missing binary file detections in `md_toc.api.build_toc`.
+- [__✓__ 89e2d60](https://github.com/frnmst/md-toc/commit/89e2d60)
+
+  Fix references to `md_toc.api.build_toc` from `md_toc.build_toc`.
+- [__✓__ 5c7ddab](https://github.com/frnmst/md-toc/commit/5c7ddab)
+
+  Improve test coverage
+- [__✓__ 5c7ddab](https://github.com/frnmst/md-toc/commit/5c7ddab)
+
+  Reduce some code for function input validation.
+- Cleanup ./README.md.
+
+### Added
+
+- Add changelog in repository.
+- Add community URLs in CLI help.
+- [__✓__ 276acd6](https://github.com/frnmst/md-toc/commit/276acd6)
+
+  Add GitHub unit test action (draft).
+
+### Changed
+
+- Use modern packaging via pyproject.toml and drop setup{py,cfg}.
+- Change and update pre-commit hooks.
+- Drop support for Python <= 3.10 and add 3.14 to unit test validations.
 
 ## [9.0.0] 2024-04-10
 

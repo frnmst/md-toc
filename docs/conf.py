@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2017-2026 Franco Masotti (See /README.md)
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 #
 # md-toc documentation build configuration file, created by
 # sphinx-quickstart on Wed Dec 27 17:32:50 2017.

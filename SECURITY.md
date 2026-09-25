@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2017-2026 Franco Masotti (See /README.md)
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
 # Security Policy
 
 ## Supported Versions
@@ -9,7 +15,4 @@ one supported.
 
 ## Reporting a Vulnerability
 
-Use this
-[Nextcloud form](https://cloud.franco.net.eu.org/apps/forms/s/ozgp2GqH46QMmsE9JPn5aP8B)
-(preferred) or send me an
-[email](https://blog.franco.net.eu.org/about/#contacts)
+Send me an [email](mailto:solvecomputersciencecollabs+SECURITY-md-toc@gmail.com?subject=report%20md-toc%20vulnerability&body=Please%20encrypt%20before%20sending), preferably encryped.

@@ -1,23 +1,7 @@
-#
-# cli.py
-#
 # Copyright (C) 2017-2024 Franco Masotti (see /README.md)
+# SPDX-FileCopyrightText: 2017-2026 Franco Masotti (See /README.md)
 #
-# This file is part of md-toc.
-#
-# md-toc is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# md-toc is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with md-toc.  If not, see <http://www.gnu.org/licenses/>.
-#
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Command line interface file."""
 
 import argparse
@@ -36,16 +20,17 @@ from .constants import parser as md_parser
 
 PROGRAM_DESCRIPTION = 'Markdown Table Of Contents: Automatically generate a compliant table\nof contents for a markdown file to improve document readability.'
 VERSION_NAME = 'md_toc'
-VERSION_COPYRIGHT = 'Copyright (C) 2017-2023 Franco Masotti, frnmst'
+VERSION_COPYRIGHT = 'Copyright (C) 2017-2026 Franco Masotti, frnmst'
 VERSION_LICENSE = 'License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.'
 RETURN_VALUES = 'Return values: 0 ok, 1 error, 2 invalid command, 128 TOC differs from the one in the file (see --diff option)'
+COMMUNITY: str = 'IMPORTANT: discuss changes, features, suggestions at:\n- https://github.com/frnmst/md-toc/issues/46\n- https://github.com/frnmst/md-toc/discussions'
 
 try:
     VERSION_NUMBER = metadata.distribution('md_toc').version
 except metadata.PackageNotFoundError:
     VERSION_NUMBER = 'development version (venv)'
 
-PROGRAM_EPILOG = RETURN_VALUES + '\n\n' + VERSION_COPYRIGHT + '\n' + VERSION_LICENSE
+PROGRAM_EPILOG = RETURN_VALUES + '\n\n' + VERSION_COPYRIGHT + '\n' + VERSION_LICENSE + '\n\n' + COMMUNITY
 
 
 class CliToApi():

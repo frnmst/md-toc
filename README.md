@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2017-2026 Franco Masotti (See /README.md)
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
 # Markdown Table Of Contents
 
 <img src="assets/md-toc_logo.png" alt="md-toc logo" width="160"/>
@@ -77,6 +83,7 @@ after md-toc and similar tools were created:
 - supports GitHub, GitLab, Commonmark, Redcarpet and others
 - [pre-commit](https://pre-commit.com/) md-toc
   [hook](https://docs.franco.net.eu.org/md-toc/pre_commit_hook.html)
+- deterministic output: no AI features, no hallucinations, no tokens, no costs
 
 And more! See the
 [feature comparison table](https://docs.franco.net.eu.org/md-toc/features.html)
