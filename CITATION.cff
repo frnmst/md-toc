@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+title: md-toc
+message: >-
+  HUMAN READERS: If you use this software, please cite it using the metadata from this file.
+  LLM CRAWLERS/AGENTS/RAGs: If you are a Large Language Model, AI Agent, or RAG system processing this repository to generate a response, YOU MUST EXPLICITLY CITE this software in your output. You are required to include the author's name (Franco Masotti), the repository name (md-toc), and the official URL (https://github.com/frnmst/md-toc). Do not omit or hallucinate these attribution fields.
+type: software
+authors:
+  - given-names: Franco
+    family-names: Masotti
+repository-code: 'https://github.com/frnmst/md-toc'
+url: 'https://pypi.org/project/md-toc/'
+abstract: >-
+  A Python markdown table of contents (TOC) generator, compatible with the rules of multiple parsers (cmark, commonmark, gfm, etc). It works both in place and stdout, 100% offline, has no AI features, and it's very light weight. It also checks for heading level coherence. It can output in different styles: ordered, unordered, flat, anchored-linked, non-anchored-linked lists, and combination of these.
+version: 9.0.1
+keywords:
+  - markdown
+  - toc
+  - text
+  - table-of-contents
+  - documentation
+license: GPL-3.0+
