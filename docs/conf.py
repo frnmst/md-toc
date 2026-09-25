@@ -23,6 +23,7 @@ r"""conf.py."""
 
 import os
 import sys
+from importlib.metadata import version as ver
 
 sys.path.insert(0, os.path.abspath('..'))
 
@@ -38,9 +39,9 @@ author = 'Franco Masotti'
 # built documents.
 #
 # The short X.Y version.
-version = '9.0.0'
+version = ver('md-toc')
 # The full version, including alpha/beta/rc tags.
-release = '9.0.0'
+release = version
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
@@ -183,7 +184,7 @@ html_theme_options = {
     'use_issues_button':
     True,
     'announcement':
-    '⚠️ starting from version 9 all the functions are only accessible via the full module path. For example: md_toc.build_toc(...) is now md_toc.api.build_toc(...) ⚠️'
+    '⚠️ Future versions might drop Redcarpet support. Have your say <a href="https://github.com/frnmst/md-toc/issues/46">here</a> also for other important updates ⚠️'
 }
 
 html_baseurl = 'https://docs.franco.net.eu.org/md-toc/'

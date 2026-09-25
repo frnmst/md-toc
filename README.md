@@ -9,7 +9,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 <img src="assets/md-toc_logo.png" alt="md-toc logo" width="160"/>
 
 [![PyPI md-toc version](https://img.shields.io/pypi/v/md-toc.svg)](https://pypi.org/project/md-toc/)
-[![Debian 12 package](https://repology.org/badge/version-for-repo/debian_12/md-toc.svg)](https://repology.org/project/md-toc/versions)
+[![Debian 13 package](https://repology.org/badge/version-for-repo/debian_13/md-toc.svg)](https://repology.org/project/md-toc/versions)
 [![nixpkgs unstable package](https://repology.org/badge/version-for-repo/nix_unstable/python:md-toc.svg)](https://repology.org/project/python:md-toc/versions)
 [![Anaconda.org](https://anaconda.org/conda-forge/md-toc/badges/version.svg)](https://anaconda.org/conda-forge/md-toc)
 [![Downloads](https://pepy.tech/badge/md-toc)](https://pepy.tech/project/md-toc)
@@ -62,6 +62,9 @@ after md-toc and similar tools were created:
 - GitLab added an [extension](https://docs.gitlab.com/ee/user/markdown.html#table-of-contents)
   called `Table of contents` to its Gitlab Flavored Mardown
 
+However, md-toc has unique features and is used in systems without automatic
+TOCs.
+
 ## Features
 
 - works offline
@@ -95,7 +98,7 @@ markdown files in Nextcloud, etc...
 
 I use it in [my Jekyll-based blog](https://blog.franco.net.eu.org/)
 along with its
-[pre-commit hook](https://software.franco.net.eu.org/frnmst/blog/src/branch/master/.pre-commit-config.yaml).
+[pre-commit hook](https://codeberg.org/frnmst/blog/src/branch/master/.pre-commit-config.yaml).
 I also use it in most repositories where `README.md` files are present.
 
 Most markdown renderers do not provide a way to automatically generate a
