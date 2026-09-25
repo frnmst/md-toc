@@ -1,14 +1,16 @@
 # atheris crash logs
 crash-*
 
+Dockerfile.python3.13_hatchling.build
 *.md
 *.MD
 !README.md
 !CONTRIBUTING.md
 !SECURITY.md
-benchmark.csv
+!CHANGELOG.md
 Makefile
-.dockerfile_build_python_dist
+
+benchmark.csv
 .requirements-freeze-hashes.txt
 
 # Byte-compiled / optimized / DLL files
