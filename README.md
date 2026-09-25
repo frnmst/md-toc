@@ -26,7 +26,8 @@ Automatically generate and add an accurate table of contents to markdown files.
   - [Extras](#extras)
     - [HTML output](#html-output)
   - [License](#license)
-  - [Changelog and trusted source](#changelog-and-trusted-source)
+  - [Consulting and custom integrations](#consulting-and-custom-integrations)
+  - [Git forge mirrors](#git-forge-mirrors)
   - [Support this project](#support-this-project)
 
 <!--TOC-->
@@ -275,7 +276,7 @@ pandoc --from=commonmark --to=html -o a.html README.md
 
 ## License
 
-Copyright (C) 2017-2024 [Franco Masotti](https://blog.franco.net.eu.org/about/#contacts)
+Copyright (C) 2017-2026 [Franco Masotti](https://blog.franco.net.eu.org/about/#contacts)
 
 md-toc is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -290,18 +291,25 @@ more details.
 You should have received a copy of the GNU General Public License along
 with md-toc. If not, see <http://www.gnu.org/licenses/>.
 
-## Changelog and trusted source
+## Consulting and custom integrations
 
-You can check the authenticity of new releases using my public key.
+If you need help or custom endpoints and integrations, I'm available for
+contract-based freelance consulting and custom Python development:
 
-Changelogs, instructions, sources and keys can be found at
-[blog.franco.net.eu.org/software/#md-toc](https://blog.franco.net.eu.org/software/#md-toc).
+- Email: <solvecomputersciencecollabs+md-toc@gmail.com>
+- Freelancing: <https://blog.franco.net.eu.org/jobs/>
+
+## Git forge mirrors
+
+| URL | Type | Notes |
+|-----|------|-------|
+| https://github.com/frnmst/md-toc | RW | Official home |
+| https://codeberg.org/frnmst/md-toc | RW | Mirror |
+| https://framagit.org/frnmst/md-toc | RW | Mirror |
+| https://repos.franco.net.eu.org/frnmst/md-toc | RW | Mirror |
 
 ## Support this project
 
+- [GitHub Sponsors](https://github.com/sponsors/frnmst)
 - [Buy Me a Coffee](https://www.buymeacoffee.com/frnmst)
 - [Liberapay](https://liberapay.com/frnmst)
-- Bitcoin: `bc1qnkflazapw3hjupawj0lm39dh9xt88s7zal5mwu`
-- Monero: `84KHWDTd9hbPyGwikk33Qp5GW7o7zRwPb8kJ6u93zs4sNMpDSnM5ZTWVnUp2cudRYNT6rNqctnMQ9NbUewbj7MzCBUcrQEY`
-- Dogecoin: `DMB5h2GhHiTNW7EcmDnqkYpKs6Da2wK3zP`
-- Vertcoin: `vtc1qd8n3jvkd2vwrr6cpejkd9wavp4ld6xfu9hkhh0`
