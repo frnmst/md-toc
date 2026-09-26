@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: 2017-2026 Franco Masotti (See /README.md)
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Exclude all files.
+*
+
+!pyproject.toml
+!README.md
+!CONTRIBUTING.md
+!SECURITY.md
+!CHANGELOG.md
+!linux-py3.13-requirements.lock
+!linux-py3.13-requirements-dev.lock
+!LICENSES/*.txt
+
+# Include source files if needed (e.g. real Python package).
+!md_toc/
+!config/

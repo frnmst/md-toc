@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [Changelog](#changelog)
   - [\[Unreleased\]](#unreleased)
-  - [\[9.0.1\] Unreleased](#901-unreleased)
+  - [\[9.0.1\] 2026-09-26](#901-2026-09-26)
     - [Fixed](#fixed)
     - [Added](#added)
     - [Changed](#changed)
@@ -210,7 +210,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ### THREE
   ````
 
-## [9.0.1] Unreleased
+## [9.0.1] 2026-09-26
 
 ### Fixed
 
