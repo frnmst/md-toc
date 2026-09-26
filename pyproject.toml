@@ -87,6 +87,7 @@ include = [
     "md_toc",
     "README.md",
     "CONTRIBUTING.md",
+    "SECURITY.md",
     "CHANGELOG.md",
     "LICENSES/*.txt"
 ]

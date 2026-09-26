@@ -23,7 +23,7 @@ r"""conf.py."""
 
 import os
 import sys
-from importlib.metadata import version as ver
+from importlib import metadata
 
 sys.path.insert(0, os.path.abspath('..'))
 
@@ -31,7 +31,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # General information about the project.
 project = 'md-toc'
-copyright = '2017-2024, Franco Masotti'
+copyright = '2017-2026, Franco Masotti'
 author = 'Franco Masotti'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -39,7 +39,7 @@ author = 'Franco Masotti'
 # built documents.
 #
 # The short X.Y version.
-version = ver('md-toc')
+version = metadata.distribution('md_toc').version
 # The full version, including alpha/beta/rc tags.
 release = version
 

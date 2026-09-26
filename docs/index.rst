@@ -8,7 +8,6 @@ md-toc documentation
 .. toctree::
    :maxdepth: 2
 
-   install
    api
    features
    markdown_specification

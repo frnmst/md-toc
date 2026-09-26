@@ -27,12 +27,17 @@ Automatically generate and add an accurate table of contents to markdown files.
   - [Features](#features)
   - [Examples](#examples)
   - [API examples](#api-examples)
+  - [Quickstart](#quickstart)
+    - [Distribution packages](#distribution-packages)
+    - [One minute setup](#one-minute-setup)
+    - [Safe install](#safe-install)
   - [Documentation](#documentation)
   - [CLI Helps](#cli-helps)
   - [Extras](#extras)
     - [HTML output](#html-output)
-  - [License](#license)
+  - [Contributing](#contributing)
   - [Consulting and custom integrations](#consulting-and-custom-integrations)
+  - [License](#license)
   - [Git forge mirrors](#git-forge-mirrors)
   - [Support this project](#support-this-project)
 
@@ -251,6 +256,70 @@ Test
 # bye
 ```
 
+## Quickstart
+
+### Distribution packages
+
+Packages exist for Arch Linux, Debian, Ubuntu and Nix. See
+
+- https://tracker.debian.org/pkg/md-toc
+- https://github.com/NixOS/nixpkgs/blob/nixos-26.05/pkgs/development/python-modules/md-toc/default.nix
+- https://repology.org/project/md-toc/versions
+- https://repology.org/project/python:md-toc/versions
+
+### One minute setup
+
+> [!WARNING]
+> Although you can install md-toc normally like any other Python package
+> with pipx, pip, etc, you should use the [safer method below](#safe-install)
+> if you are worried about
+> [supply-chain attacks](https://blog.pypi.org/posts/2026-04-02-incident-report-litellm-telnyx-supply-chain-attack/).
+
+1. install [pipx](https://pipx.pypa.io/latest/how-to/install-pipx.html)
+2. install md-toc
+
+   ```shell
+   pipx install md-toc
+   ```
+
+3. run md-toc
+
+   ```shell
+   md_toc --in-place github --header-levels 6 README.md
+   ```
+
+### Safe install
+
+> [!IMPORTANT]
+> This prevents most attacks against this package. Checksums are signed with my
+> GPG key and compared to the ones stored on PyPI. Installation can complete
+> only if hashes and crypto signatures are valid. I can only make this workflow
+> available for this top level package, not for its dependencies. Read
+> [this post by Mike Gerwitz](https://mikegerwitz.com/2012/05/a-git-horror-story-repository-integrity-with-signed-commits).
+
+1. import my GPG public key:
+
+   ```shell
+   curl https://blog.franco.net.eu.org/pubkeys/pgp_pubkey_since_2019.txt | gpg --import
+   ```
+
+2. check its fingerprint and compare it with the one stored on DNS:
+
+   ```shell
+   gpg --list-keys --fingerprint
+   dig TXT franco.net.eu.org +short | grep 'public-key-git-sig-fingerprint'
+   ```
+
+   If in doubt, contact me privately to arrange a key exchange.
+
+3. run the [safe install script](./safe_install.sh) with Bash:
+
+   ```shell
+   ./safe_install.sh
+   ```
+
+4. follow the post-installation instructions from the one minute setup
+
 ## Documentation
 
 <https://docs.franco.net.eu.org/md-toc/>
@@ -284,6 +353,18 @@ like:
 pandoc --from=commonmark --to=html -o a.html README.md
 ```
 
+## Contributing
+
+See [Contributing](./CONTRIBUTING.md).
+
+## Consulting and custom integrations
+
+If you need help or custom endpoints and integrations, I'm available for
+contract-based freelance consulting and custom Python development:
+
+- Email: <solvecomputersciencecollabs+md-toc@gmail.com>
+- Freelancing: <https://blog.franco.net.eu.org/jobs/>
+
 ## License
 
 Copyright (C) 2017-2026 [Franco Masotti](https://blog.franco.net.eu.org/about/#contacts)
@@ -300,14 +381,6 @@ more details.
 
 You should have received a copy of the GNU General Public License along
 with md-toc. If not, see <http://www.gnu.org/licenses/>.
-
-## Consulting and custom integrations
-
-If you need help or custom endpoints and integrations, I'm available for
-contract-based freelance consulting and custom Python development:
-
-- Email: <solvecomputersciencecollabs+md-toc@gmail.com>
-- Freelancing: <https://blog.franco.net.eu.org/jobs/>
 
 ## Git forge mirrors
 

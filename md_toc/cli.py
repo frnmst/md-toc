@@ -235,9 +235,8 @@ class CliInterface():
             description='Use Redcarpet rules to generate an output. If no \
                          option is selected, the default output will be an \
                          unordered list with the respective default values \
-                         as listed below. Gitlab rules are the same as \
-                         Redcarpet except that conflicts are avoided with \
-                         duplicate headers.',
+                         as listed below. Important: consider Redcarpet \
+                         support as deprecated.',
         )
         self._add_filename_argument(redcarpet)
         megroup = redcarpet.add_mutually_exclusive_group()
