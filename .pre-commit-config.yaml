@@ -51,7 +51,9 @@ repos:
           ^\.project.mk|
           ^\.github/FUNDING.yml|
           ^packages/|
-          ^pyproject\.toml
+          ^pyproject\.toml|
+          ^safe_install\.sh|
+          .*\.lock
         )
 
 - repo: https://github.com/asottile/pyupgrade
