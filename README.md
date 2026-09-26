@@ -29,6 +29,9 @@ Automatically generate and add an accurate table of contents to markdown files.
   - [API examples](#api-examples)
   - [Quickstart](#quickstart)
     - [Distribution packages](#distribution-packages)
+      - [Arch Linux (AUR)](#arch-linux-aur)
+      - [Debian](#debian)
+      - [Nix](#nix)
     - [One minute setup](#one-minute-setup)
     - [Safe install](#safe-install)
   - [Documentation](#documentation)
@@ -260,12 +263,27 @@ Test
 
 ### Distribution packages
 
-Packages exist for Arch Linux, Debian, Ubuntu and Nix. See
+Distro packages exist for Arch Linux, Debian, Ubuntu and Nix. These, however
+are usually not up-to-date. See:
 
-- https://tracker.debian.org/pkg/md-toc
-- https://github.com/NixOS/nixpkgs/blob/nixos-26.05/pkgs/development/python-modules/md-toc/default.nix
 - https://repology.org/project/md-toc/versions
 - https://repology.org/project/python:md-toc/versions
+
+#### Arch Linux (AUR)
+
+- See https://aur.archlinux.org/packages/python-md_toc
+
+#### Debian
+
+- See https://tracker.debian.org/pkg/md-toc
+
+  ```shell
+  sudo apt install python3-md-toc
+  ```
+
+#### Nix
+
+- See https://github.com/NixOS/nixpkgs/blob/nixos-26.05/pkgs/development/python-modules/md-toc/default.nix
 
 ### One minute setup
 
