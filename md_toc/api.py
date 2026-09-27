@@ -79,15 +79,12 @@ def write_string_on_file_between_markers(
     # TOC that is written to the file.
     # Get rid of any CR because the call to
     # fpyutils.filelines.insert_string_at_line() will handle
-    # putting out CRLF if needed/desired.  Otherwise we potentially
+    # putting out CRLF if needed/desired. Otherwise we potentially
     # end up with CRCRLF endings!
-    nl = "\n"
-    string = string.replace("\r\n", "\n")
-
-    final_toc_string: str = ''.join([
-        marker, nl, nl,
-        string.rstrip(), nl, nl, marker, nl
-    ])
+    nl: str = '\n'
+    string = string.replace('\r\n', '\n')
+    final_toc_string: str = ''.join(
+        [marker, nl, nl, string.rstrip(), nl, nl, marker, nl])
 
     (
         old_toc,

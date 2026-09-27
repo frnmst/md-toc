@@ -15,54 +15,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [Changelog](#changelog)
   - [\[Unreleased\]](#unreleased)
-  - [\[9.0.1\] 2026-09-26](#901-2026-09-26)
+  - [\[9.0.2\] Unreleased](#902-unreleased)
     - [Fixed](#fixed)
+  - [\[9.0.1\] 2026-09-26](#901-2026-09-26)
+    - [Fixed](#fixed-1)
     - [Added](#added)
     - [Changed](#changed)
   - [\[9.0.0\] 2024-04-10](#900-2024-04-10)
-    - [Fixed](#fixed-1)
     - [Fixed](#fixed-2)
+    - [Fixed](#fixed-3)
     - [Removed](#removed)
   - [\[8.2.2\] 2023-11-09](#822-2023-11-09)
     - [Changed](#changed-1)
-    - [Fixed](#fixed-3)
+    - [Fixed](#fixed-4)
   - [\[8.2.1\] 2023-11-07](#821-2023-11-07)
     - [Changed](#changed-2)
     - [Added](#added-1)
   - [\[8.2.0\] 2023-08-08](#820-2023-08-08)
-    - [Fixed](#fixed-4)
+    - [Fixed](#fixed-5)
     - [Added](#added-2)
   - [\[8.1.9\] 2023-02-10](#819-2023-02-10)
     - [Changed](#changed-3)
-    - [Fixed](#fixed-5)
+    - [Fixed](#fixed-6)
   - [\[8.1.8\] 2023-01-06](#818-2023-01-06)
     - [Changed](#changed-4)
     - [Removed](#removed-1)
-    - [Fixed](#fixed-6)
+    - [Fixed](#fixed-7)
   - [\[8.1.7\] 2022-12-29](#817-2022-12-29)
     - [Added](#added-3)
-    - [Fixed](#fixed-7)
+    - [Fixed](#fixed-8)
     - [Changed](#changed-5)
   - [\[8.1.6\] 2022-12-08](#816-2022-12-08)
-    - [Fixed](#fixed-8)
+    - [Fixed](#fixed-9)
   - [\[8.1.5\] 2022-10-28](#815-2022-10-28)
     - [Added](#added-4)
-    - [Fixed](#fixed-9)
+    - [Fixed](#fixed-10)
   - [\[8.1.4\] 2022-06-15](#814-2022-06-15)
     - [Changed](#changed-6)
-    - [Fixed](#fixed-10)
+    - [Fixed](#fixed-11)
   - [\[8.1.3\] 2022-04-20](#813-2022-04-20)
     - [Deprecated](#deprecated)
-    - [Fixed](#fixed-11)
-  - [\[8.1.2\] 2022-04-03](#812-2022-04-03)
     - [Fixed](#fixed-12)
+  - [\[8.1.2\] 2022-04-03](#812-2022-04-03)
+    - [Fixed](#fixed-13)
     - [Changed](#changed-7)
   - [\[8.1.1\] 2022-01-27](#811-2022-01-27)
-    - [Fixed](#fixed-13)
-  - [\[8.1.0\] 2021-11-29](#810-2021-11-29)
     - [Fixed](#fixed-14)
-  - [\[8.0.1\] 2021-08-20](#801-2021-08-20)
+  - [\[8.1.0\] 2021-11-29](#810-2021-11-29)
     - [Fixed](#fixed-15)
+  - [\[8.0.1\] 2021-08-20](#801-2021-08-20)
+    - [Fixed](#fixed-16)
     - [Changed](#changed-8)
     - [Added](#added-5)
   - [\[8.0.0\] 2021-05-28](#800-2021-05-28)
@@ -209,6 +211,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
   ### THREE
   ````
+
+## [9.0.2] Unreleased
+
+### Fixed
+
+- [__✓__ 688ecb0](https://github.com/frnmst/md-toc/commit/688ecb0)
+
+  Avoid CRCRLF in the TOC section on Windows and on platforms where `\n` is not
+  the newline character. Thank you
+  [@danmcmahill](https://github.com/danmcmahill)
 
 ## [9.0.1] 2026-09-26
 
