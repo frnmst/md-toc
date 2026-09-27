@@ -4,7 +4,10 @@
 
 name: md-toc
 
-on: [push]
+# Disable auto run.
+# on: [push]
+on:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -12,8 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # 3.13 is still in alpha.
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.11', '3.12', '3.13', '3.14']
         os:  ['ubuntu-latest', 'macos-latest', 'windows-latest']
 
     steps:
