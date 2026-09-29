@@ -9,8 +9,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 <img src="assets/md-toc_logo.png" alt="md-toc logo" width="160"/>
 
 [![PyPI md-toc version](https://img.shields.io/pypi/v/md-toc.svg)](https://pypi.org/project/md-toc/)
-[![Debian 13 package](https://repology.org/badge/version-for-repo/debian_13/md-toc.svg)](https://repology.org/project/md-toc/versions)
-[![nixpkgs unstable package](https://repology.org/badge/version-for-repo/nix_unstable/python:md-toc.svg)](https://repology.org/project/python:md-toc/versions)
 [![Anaconda.org](https://anaconda.org/conda-forge/md-toc/badges/version.svg)](https://anaconda.org/conda-forge/md-toc)
 [![Downloads](https://pepy.tech/badge/md-toc)](https://pepy.tech/project/md-toc)
 [![Dependent repos (via libraries.io)](https://img.shields.io/librariesio/dependent-repos/pypi/md-toc.svg)](https://libraries.io/pypi/md-toc/dependents)
@@ -34,11 +32,13 @@ Automatically generate and add an accurate table of contents to markdown files.
       - [Nix](#nix)
     - [One minute setup](#one-minute-setup)
     - [Safe install](#safe-install)
+    - [GitHub action](#github-action)
   - [Documentation](#documentation)
   - [CLI Helps](#cli-helps)
   - [Extras](#extras)
     - [HTML output](#html-output)
-  - [Contributing](#contributing)
+  - [Who is using md-toc?](#who-is-using-md-toc)
+  - [Contributing and changelog](#contributing-and-changelog)
   - [Consulting and custom integrations](#consulting-and-custom-integrations)
   - [License](#license)
   - [Git forge mirrors](#git-forge-mirrors)
@@ -70,8 +70,8 @@ after md-toc and similar tools were created:
 - GitLab added an [extension](https://docs.gitlab.com/ee/user/markdown.html#table-of-contents)
   called `Table of contents` to its Gitlab Flavored Mardown
 
-However, md-toc has unique features and is used in systems without automatic
-TOCs.
+However, md-toc has unique features, is used in systems without automatic
+TOCs and doesn't rely on SaaS.
 
 ## Features
 
@@ -94,10 +94,12 @@ TOCs.
 - supports GitHub, GitLab, Commonmark, Redcarpet and others
 - [pre-commit](https://pre-commit.com/) md-toc
   [hook](https://docs.franco.net.eu.org/md-toc/pre_commit_hook.html)
+- [GitHub action](https://github.com/marketplace/actions/markdown-table-of-contents-md-toc-action)
 - deterministic output: no AI features, no hallucinations, no tokens, no costs
 
 And more! See the
 [feature comparison table](https://docs.franco.net.eu.org/md-toc/features.html)
+([local source](./docs/features.rst))
 
 ## Examples
 
@@ -107,7 +109,7 @@ markdown files in Nextcloud, etc...
 I use it in [my Jekyll-based blog](https://blog.franco.net.eu.org/)
 along with its
 [pre-commit hook](https://codeberg.org/frnmst/blog/src/branch/master/.pre-commit-config.yaml).
-I also use it in most repositories where `README.md` files are present.
+I also use it in most repositories where markdown files are present.
 
 Most markdown renderers do not provide a way to automatically generate a
 TOC so md-toc is useful for this purpose.
@@ -224,7 +226,7 @@ Test
 
 # bye
 >>> toc = md_toc.api.build_toc('foo.md')
->>> md_toc.write_string_on_file_between_markers('foo.md', toc, '<!--TOC-->')
+>>> md_toc.api.write_string_on_file_between_markers('foo.md', toc, '<!--TOC-->')
 >>> f = open('foo.md')
 >>> print(f.read(), end='')
 # Table of contents
@@ -338,6 +340,13 @@ are usually not up-to-date. See:
 
 4. follow the post-installation instructions from the one minute setup
 
+### GitHub action
+
+If you prefer to deploy md-toc as a cloud native solution, you can integrate
+the official
+[md-toc action](https://github.com/marketplace/actions/markdown-table-of-contents-md-toc-action)
+from the GitHub actions marketplace, and place it in your workflow.
+
 ## Documentation
 
 <https://docs.franco.net.eu.org/md-toc/>
@@ -371,14 +380,38 @@ like:
 pandoc --from=commonmark --to=html -o a.html README.md
 ```
 
-## Contributing
+## Who is using md-toc?
 
-See [Contributing](./CONTRIBUTING.md).
+md-toc is used by open-source projects and documentation workflows to keep
+tables of contents uo-to-date and accurate. Here are some examples:
+
+- [nicholas-fedor/watchtower ![stars](https://img.shields.io/github/stars/nicholas-fedor/watchtower)](https://github.com/nicholas-fedor/watchtower)
+- [flyte/mqtt-io ![stars](https://img.shields.io/github/stars/flyte/mqtt-io)](https://github.com/flyte/mqtt-io)
+- [frictionlessdata/tableschema-py ![stars](https://img.shields.io/github/stars/frictionlessdata/tableschema-py)](https://github.com/frictionlessdata/tableschema-py)
+- [mbarkhau/bumpver ![stars](https://img.shields.io/github/stars/mbarkhau/bumpver)](https://github.com/mbarkhau/bumpver)
+- [spkane/freecad-addon-robust-mcp-server ![stars](https://img.shields.io/github/stars/spkane/freecad-addon-robust-mcp-server)](https://github.com/spkane/freecad-addon-robust-mcp-server)
+- [GrammaTech/sel ![stars](https://img.shields.io/github/stars/GrammaTech/sel)](https://github.com/GrammaTech/sel)
+- [frictionlessdata/datapackage-py ![stars](https://img.shields.io/github/stars/frictionlessdata/datapackage-py)](https://github.com/frictionlessdata/datapackage-py)
+- [claranet/tfwrapper ![stars](https://img.shields.io/github/stars/claranet/tfwrapper)](https://github.com/claranet/tfwrapper)
+- [bskinn/sphobjinv ![stars](https://img.shields.io/github/stars/bskinn/sphobjinv)](https://github.com/bskinn/sphobjinv)
+- [Peco602/awesome-space-security ![stars](https://img.shields.io/github/stars/Peco602/awesome-space-security)](https://github.com/Peco602/awesome-space-security)
+- [jumanjihouse/pre-commit-hook-yamlfmt ![stars](https://img.shields.io/github/stars/jumanjihouse/pre-commit-hook-yamlfmt)](https://github.com/jumanjihouse/pre-commit-hook-yamlfmt)
+- [UBC-Thunderbots/Software ![stars](https://img.shields.io/github/stars/UBC-Thunderbots/Software)](https://github.com/UBC-Thunderbots/Software)
+- [CivicActions/ssp-toolkit ![stars](https://img.shields.io/github/stars/CivicActions/ssp-toolkit)](https://github.com/CivicActions/ssp-toolkit)
+- [arista-netdevops-community/ansible-avd-cloudvision-demo ![stars](https://img.shields.io/github/stars/arista-netdevops-community/ansible-avd-cloudvision-demo)](https://github.com/arista-netdevops-community/ansible-avd-cloudvision-demo)
+
+Are you using md-toc? Open a PR to add your project to this list.
+
+## Contributing and changelog
+
+See [CONTRIBUTING](./CONTRIBUTING.md) for project policies and
+[CHANGELOG](./CHANGELOG.md) for releases information.
 
 ## Consulting and custom integrations
 
-If you need help or custom endpoints and integrations, I'm available for
-contract-based freelance consulting and custom Python development:
+If you are an organization or an individual relying on md-toc and need help or
+custom integrations for other parsers or feature development, I'm available for
+contract-based freelance consulting:
 
 - Email: <solvecomputersciencecollabs+md-toc@gmail.com>
 - Freelancing: <https://blog.franco.net.eu.org/jobs/>

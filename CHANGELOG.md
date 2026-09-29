@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Changelog](#changelog)
   - [\[Unreleased\]](#unreleased)
   - [\[9.0.2\] Unreleased](#902-unreleased)
+    - [Deprecated](#deprecated)
     - [Fixed](#fixed)
   - [\[9.0.1\] 2026-09-26](#901-2026-09-26)
     - [Fixed](#fixed-1)
@@ -54,7 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - [Changed](#changed-6)
     - [Fixed](#fixed-11)
   - [\[8.1.3\] 2022-04-20](#813-2022-04-20)
-    - [Deprecated](#deprecated)
+    - [Deprecated](#deprecated-1)
     - [Fixed](#fixed-12)
   - [\[8.1.2\] 2022-04-03](#812-2022-04-03)
     - [Fixed](#fixed-13)
@@ -214,6 +215,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [9.0.2] Unreleased
 
+### Deprecated
+
+- Redcarpet support is still present but deprecated and will be removed in
+  future major releases.
+  [This issue](https://github.com/frnmst/md-toc/issues/46) explains the
+  rationale.
+
 ### Fixed
 
 - [__✓__ 688ecb0](https://github.com/frnmst/md-toc/commit/688ecb0)
@@ -221,6 +229,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Avoid CRCRLF in the TOC section on Windows and on platforms where `\n` is not
   the newline character. Thank you
   [@danmcmahill](https://github.com/danmcmahill)
+- Documentation expansion and cleanup.
 
 ## [9.0.1] 2026-09-26
 

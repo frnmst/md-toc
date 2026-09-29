@@ -32,13 +32,17 @@ If you want to contribute, please follow these simple policies.
 
 ## Pull requests
 
-1. add a new endpoint or fix
+1. add a new feature or fix
 2. add unit tests by mocking the files if necessary
   - valid cases
   - edge cases
   - invalid cases
 3. run the [unit tests](#unit-tests)
 3. create a pull request on the `dev` branch
+
+> [!NOTE]
+> It's not a problem if you can't add unit tests, but please show some simple
+> reproducible examples of why the fix or feature is necessary.
 
 ### Unit tests
 
@@ -108,8 +112,8 @@ if you are unsure about what they do.
 
 ## Note
 
-If these indications are not followed, your contribution cannot be merged in
-the codebase.
+If these simple indications are not followed, your contribution cannot be
+merged in the codebase.
 
 [^1]: [Codeberg](https://codeberg.org/frnmst/python-makefile),
       [Framagit](https://framagit.org/frnmst/python-makefile),
