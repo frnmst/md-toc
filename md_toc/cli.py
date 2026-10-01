@@ -20,8 +20,7 @@ from .constants import parser as md_parser
 
 PROGRAM_DESCRIPTION = 'Markdown Table Of Contents: Automatically generate a compliant table\nof contents for a markdown file to improve document readability.'
 VERSION_NAME = 'md_toc'
-VERSION_COPYRIGHT = 'Copyright (C) 2017-2026 Franco Masotti, frnmst'
-VERSION_LICENSE = 'License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.'
+VERSION_COPYRIGHT_LICENSE = 'License GPLv3+; Copyright (C) 2017-2026 Franco Masotti, frnmst'
 RETURN_VALUES = 'Return values: 0 ok, 1 error, 2 invalid command, 128 TOC differs from the one in the file (see --diff option)'
 COMMUNITY: str = 'IMPORTANT: discuss changes, features, suggestions at:\n- https://github.com/frnmst/md-toc/issues/46\n- https://github.com/frnmst/md-toc/discussions'
 
@@ -30,7 +29,7 @@ try:
 except metadata.PackageNotFoundError:
     VERSION_NUMBER = 'development version (venv)'
 
-PROGRAM_EPILOG = RETURN_VALUES + '\n\n' + VERSION_COPYRIGHT + '\n' + VERSION_LICENSE + '\n\n' + COMMUNITY
+PROGRAM_EPILOG = RETURN_VALUES + '\n\n' + VERSION_COPYRIGHT_LICENSE + '\n\n' + COMMUNITY
 
 
 class CliToApi():
@@ -74,6 +73,7 @@ class CliToApi():
                 strings=toc_struct,
                 marker=args.toc_marker,
                 newline_string=newline_string,
+                show_credits=args.show_credits,
             )
         else:
             for i, toc in enumerate(toc_struct):
@@ -314,6 +314,12 @@ class CliInterface():
             help=(
                 'returns 128 if the newly generated TOC differs from the one \
                   already existing in the file'),
+        )
+        parser.add_argument(
+            '-t',
+            '--show-credits',
+            action='store_true',
+            help='show an HTML comment of md-toc credits at the end to the TOC',
         )
         parser.add_argument(
             '-l',

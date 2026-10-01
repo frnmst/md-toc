@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "md_toc"
-version = "9.0.1"
+version = "9.1.0"
 authors = [
     { name = "Franco Masotti", email = "franco.masotti@tutanota.com" },
 ]
@@ -75,6 +75,10 @@ dev = [
     "hatchling",
 ]
 
+fuzzer = [
+    "atheris>=3,<4",
+]
+
 [project.scripts]
 md_toc = "md_toc.__main__:main"
 
@@ -132,24 +136,36 @@ env_list = [
     "py3.14t"
 ]
 
-[tool.testenv]
+[tool.tox.env_run_base]
 description = "run the tests with unittest"
 package = "wheel"
+extras = ["dev"]
 wheel_build_env = ".pkg"
-deps = """
--r requirements.txt
--r requirements-dev.txt"""
-commands = """
-python3 -m unittest discover --failfast --locals --verbose"""
+commands = [
+    [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-p",
+        "test*.py",
+        "--failfast",
+        "--locals",
+        "--verbose",
+    ],
+]
 
-[tool.testenv.fuzzer]
+[tool.tox.env.fuzzer]
+# Dropped "coverage" support for the moment.
 description = "run the fuzzer"
 package = "wheel"
+extras = ["dev", "fuzzer"]
 wheel_build_env = ".pkg"
-deps = """
-atheris>=2.3,<2.4
--r requirements.txt
--r requirements-dev.txt"""
-commands = """
-coverage run -m md_toc.tests.fuzzer -atheris_runs=100000000
-coverage html"""
+commands = [
+    [
+        "python",
+        "-m",
+        "md_toc.tests.fuzzer",
+        "-atheris_runs=1000000"
+    ]
+]

@@ -178,9 +178,15 @@ class _cmarkSubject:
         self.mem: _cmarkCmarkMem = None
         self.input: _cmarkCmarkChunk = None
         self.flags: int = 0
+
+        # 0-based relative line number of the input string. lines are defined
+        # for example as '\n' separated: 'zero\none\ntwo' has
+        # 3 lines: [0, 1, 2].
         self.line: int = 0
         self.pos: int = 0
         self.block_offset: int = 0
+
+        # columns are 1-based, not 0-based.
         self.column_offset: int = 0
         self.refmap: _cmarkCmarkReferenceMap = None
         self.last_delim: _cmarkDelimiter = None
@@ -388,6 +394,9 @@ def _cmark_peek_char(subj: _cmarkSubject) -> int:
 
 # 0.29, 0.30
 def _cmark_peek_at(subj: _cmarkSubject, pos: int) -> int:
+    if pos < 0 or pos >= len(subj.input.data):
+        # Safety.
+        return 0
     return ord(subj.input.data[pos])
 
 
@@ -497,6 +506,8 @@ def _cmark_adjust_subj_node_newlines(subj: _cmarkSubject,
         subj.line += newlines
         node.end_line += newlines
         node.end_column = since_newline
+
+        # -sub.pos moves absolute offset to 0.
         subj.column_offset = -subj.pos + since_newline + extra
 
 
@@ -964,11 +975,13 @@ def _cmark_remove_emph(subj: _cmarkSubject, opener: _cmarkDelimiter,
     opener_num_chars -= use_delims
     closer_num_chars -= use_delims
     opener_inl.length = opener_num_chars
-    opener_inl.data = opener_inl.data[:opener_num_chars]
-    #   opener_inl->data[opener_num_chars] = 0;
     closer_inl.length = closer_num_chars
-    closer_inl.data = opener_inl.data[:closer_num_chars]
+
+    #   opener_inl->data[opener_num_chars] = 0;
+    opener_inl.data = opener_inl.data[:opener_num_chars]
+
     #   closer_inl->data[closer_num_chars] = 0;
+    closer_inl.data = closer_inl.data[:closer_num_chars]
 
     # free delimiters between opener and closer
     delim = closer.previous
@@ -999,13 +1012,43 @@ def _cmark_remove_emph(subj: _cmarkSubject, opener: _cmarkDelimiter,
     emph.end_line = closer_inl.end_line
     emph.start_column = opener_inl.start_column
     emph.end_column = closer_inl.end_column
+
     #############
 
-    # Custom variables and computations.
-    opener_relative_start = opener_inl.end_column - use_delims - opener.offset
-    opener_relative_end = opener_inl.end_column - opener.offset
-    closer_relative_start = closer_inl.start_column + closer.offset - 1
-    closer_relative_end = closer_inl.start_column + use_delims + closer.offset - 1
+    def _get_absolute_column(node: _cmarkCmarkNode, column: int,
+                             subj: _cmarkSubject) -> int:
+        r"""Convert columns on the current line to absolute positions in the complete input string.
+
+        .. note:: Columns are 1-indexed and relative to their line.
+
+        .. warning:: There are still bugs in handling multiple newlines!
+                     '*a\nb*c*d\ne*' yields:
+                         '\n*c*d\ne' instead of:
+                         'a\nbcd\ne'
+        """
+        absolute_column: int
+        if node.start_line == subj.line:
+            # node.start_line can be >= 0
+            # Note that subj.column_offset is always negative here, so it's
+            # column - (- number) -> column + number
+            # See also _cmark_handle_newline() with the subj.column_offset
+            # assigning.
+            absolute_column = column - subj.column_offset
+        else:
+            absolute_column = column
+
+        # print(f'start_line = {node.start_line}, curr_line = {subj.line}, col = {column}, off = {subj.column_offset}, abs_pos = {absolute_position}')
+
+        return absolute_column
+
+    opener_end = _get_absolute_column(opener_inl, opener_inl.end_column, subj)
+    opener_relative_start = opener_end - use_delims - opener.offset
+    opener_relative_end = opener_end - opener.offset
+
+    closer_start = _get_absolute_column(closer_inl, closer_inl.start_column,
+                                        subj)
+    closer_relative_start = closer_start + closer.offset - 1
+    closer_relative_end = closer_start + use_delims + closer.offset - 1
 
     ignore.append(range(opener_relative_start, opener_relative_end))
     ignore.append(range(closer_relative_start, closer_relative_end))
@@ -1490,8 +1533,10 @@ def _cmark_handle_newline(subj: _cmarkSubject) -> _cmarkCmarkNode:
     if chr(_cmark_peek_at(subj, subj.pos)) == '\n':
         _cmark_advance(subj)
     subj.line += 1
-    # FIXME TODO: The next instruction messes up some tests!
-    #    subj.column_offset = -subj.pos
+
+    # Reset bytes offset for a new line.
+    subj.column_offset = -subj.pos
+
     # skip spaces at beginning of line
     _cmark_skip_spaces(subj)
     if (nlpos > 1 and chr(_cmark_peek_at(subj, nlpos - 1)) == ' '

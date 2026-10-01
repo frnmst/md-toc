@@ -6,6 +6,7 @@
 
 import copy
 import html
+import importlib.metadata
 import os
 import typing
 
@@ -43,9 +44,13 @@ __cmark_attribute = '(' + __cmark_spacechar + '+' + __cmark_attributename + __cm
 __cmark_opentag = __cmark_tagname + __cmark_attribute + '*' + __cmark_spacechar + '*[/]?[>]'
 __cmark_closetag = '[/]' + __cmark_tagname + __cmark_spacechar + '*[>]'
 
-common_defaults: dict = {
-    'toc_marker': '<!--TOC-->',
-    'newline_string': os.linesep,
+common_defaults: dict[str] = {
+    'toc_marker':
+    '<!--TOC-->',
+    'newline_string':
+    os.linesep,
+    'toc_by_credits':
+    f'<!-- TOC by https://github.com/frnmst/md-toc ver. {importlib.metadata.version("md-toc")} -->'
 }
 
 parser: dict = {

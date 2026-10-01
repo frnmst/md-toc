@@ -12,6 +12,7 @@ from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase as pyfakefsTestCase
 
 from .. import api, exceptions, generic
+from ..constants import common_defaults
 from ..constants import parser as md_parser
 
 # Some static generic variables.
@@ -501,6 +502,12 @@ class TestApi(pyfakefsTestCase):
                                                      LINE,
                                                      LINE,
                                                      newline_string='\n')
+        with self.assertRaises(exceptions.StdinIsNotAFileToBeWritten):
+            api.write_string_on_file_between_markers('-',
+                                                     LINE,
+                                                     LINE,
+                                                     newline_string='\n',
+                                                     show_credits=True)
 
         # 0 TOC markers.
         with open('foo.md', 'w') as f:
@@ -528,6 +535,21 @@ class TestApi(pyfakefsTestCase):
             lines,
             'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
 
+        # 1 TOC markers with credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n')
+
         # 2 consecutive TOC markers.
         with open('foo.md', 'w') as f:
             f.write('hello' + '\n' + MARKER + MARKER)
@@ -535,6 +557,19 @@ class TestApi(pyfakefsTestCase):
                                                  LINE,
                                                  MARKER,
                                                  newline_string='\n')
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(lines, 'hello' + '\n' + MARKER + MARKER)
+
+        # 2 consecutive TOC markers with credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
         with open('foo.md') as f:
             lines = f.readlines()
         lines = ''.join(lines)
@@ -555,6 +590,22 @@ class TestApi(pyfakefsTestCase):
             lines,
             'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
 
+        # 2 TOC markers, valid list, not empty, with credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n\n' + '- [hi](#hi)' + '\n\n' +
+                    MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n')
+
         # 2 TOC markers, valid list, less space, not empty.
         with open('foo.md', 'w') as f:
             f.write('hello' + '\n' + MARKER + '\n' + '- [hi](#hi)' + '\n' +
@@ -569,6 +620,23 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
             '\n' + MARKER + '\n' + '- [hi](#hi)' + '\n' + MARKER)
+
+        # 2 TOC markers, valid list, less space, not empty, with credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n' + '- [hi](#hi)' + '\n' +
+                    MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n' +
+            MARKER + '\n' + '- [hi](#hi)' + '\n' + MARKER)
 
         # 2 TOC markers, valid list, not empty, 1 leading space.
         with open('foo.md', 'w') as f:
@@ -585,6 +653,22 @@ class TestApi(pyfakefsTestCase):
             lines,
             'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
 
+        # 2 TOC markers, valid list, not empty, 1 leading space, with credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n\n' + S1 + '- [hi](#hi)' +
+                    '\n\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n')
+
         # 2 TOC markers, valid list, not empty, 2 leading space.
         with open('foo.md', 'w') as f:
             f.write('hello' + '\n' + MARKER + '\n\n' + S2 + '- [hi](#hi)' +
@@ -599,6 +683,22 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             lines,
             'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
+
+        # 2 TOC markers, valid list, not empty, 2 leading space, show credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n\n' + S2 + '- [hi](#hi)' +
+                    '\n\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n')
 
         # 2 TOC markers, valid list, not empty, 3 leading space.
         with open('foo.md', 'w') as f:
@@ -615,7 +715,23 @@ class TestApi(pyfakefsTestCase):
             lines,
             'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
 
-        # 2 TOC markers, INvalid list, not empty, 4 leading space.
+        # 2 TOC markers, valid list, not empty, 3 leading space, show credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n\n' + S3 + '- [hi](#hi)' +
+                    '\n\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n')
+
+        # 2 TOC markers, invalid list, not empty, 4 leading space.
         with open('foo.md', 'w') as f:
             f.write('hello' + '\n' + MARKER + '\n\n' + S4 + '- [hi](#hi)' +
                     '\n\n' + MARKER)
@@ -629,6 +745,23 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
             '\n' + MARKER + '\n\n' + S4 + '- [hi](#hi)' + '\n\n' + MARKER)
+
+        # 2 TOC markers, invalid list, not empty, 4 leading space, show credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n\n' + S4 + '- [hi](#hi)' +
+                    '\n\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n' +
+            MARKER + '\n\n' + S4 + '- [hi](#hi)' + '\n\n' + MARKER)
 
         # 2 TOC markers, valid list, not empty, 1 leading space, less space.
         with open('foo.md', 'w') as f:
@@ -645,6 +778,23 @@ class TestApi(pyfakefsTestCase):
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
             '\n' + MARKER + '\n' + S1 + '- [hi](#hi)' + '\n' + MARKER)
 
+        # 2 TOC markers, valid list, not empty, 1 leading space, less space, show credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n' + S1 + '- [hi](#hi)' +
+                    '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n' +
+            MARKER + '\n' + S1 + '- [hi](#hi)' + '\n' + MARKER)
+
         # 2 TOC markers, valid list, not empty, 2 leading space, less space.
         with open('foo.md', 'w') as f:
             f.write('hello' + '\n' + MARKER + '\n' + S2 + '- [hi](#hi)' +
@@ -659,6 +809,23 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
             '\n' + MARKER + '\n' + S2 + '- [hi](#hi)' + '\n' + MARKER)
+
+        # 2 TOC markers, valid list, not empty, 2 leading space, less space, show credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n' + S2 + '- [hi](#hi)' +
+                    '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n' +
+            MARKER + '\n' + S2 + '- [hi](#hi)' + '\n' + MARKER)
 
         # 2 TOC markers, valid list, not empty, 3 leading space, less space.
         with open('foo.md', 'w') as f:
@@ -675,6 +842,23 @@ class TestApi(pyfakefsTestCase):
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
             '\n' + MARKER + '\n' + S3 + '- [hi](#hi)' + '\n' + MARKER)
 
+        # 2 TOC markers, valid list, not empty, 3 leading space, less space, show credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n' + S3 + '- [hi](#hi)' +
+                    '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n' +
+            MARKER + '\n' + S3 + '- [hi](#hi)' + '\n' + MARKER)
+
         # 2 TOC markers, no list, empty.
         with open('foo.md', 'w') as f:
             f.write('hello' + '\n' + MARKER + '\n\n' + MARKER)
@@ -689,6 +873,21 @@ class TestApi(pyfakefsTestCase):
             lines,
             'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
 
+        # 2 TOC markers, no list, empty, show credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n')
+
         # 2 TOC markers, no list, empty, less space.
         with open('foo.md', 'w') as f:
             f.write('hello' + '\n' + MARKER + '\n' + MARKER)
@@ -702,6 +901,21 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             lines,
             'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER + '\n')
+
+        # 2 TOC markers, no list, empty, less space, show credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n')
 
         # More than 2 TOC markers, valid list.
         with open('foo.md', 'w') as f:
@@ -718,6 +932,23 @@ class TestApi(pyfakefsTestCase):
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
             '\n' + '- [hi](#hi)' + '\n' + MARKER)
 
+        # More than 2 TOC markers, valid list, show credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n' + MARKER + '\n' +
+                    '- [hi](#hi)' + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n' +
+            '- [hi](#hi)' + '\n' + MARKER)
+
         # More than 2 TOC markers, valid list, 1 leading space.
         with open('foo.md', 'w') as f:
             f.write('hello' + '\n' + MARKER + '\n' + MARKER + '\n' + S1 +
@@ -732,6 +963,23 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
             '\n' + S1 + '- [hi](#hi)' + '\n' + MARKER)
+
+        # More than 2 TOC markers, valid list, 1 leading space, show credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n' + MARKER + '\n' + S1 +
+                    '- [hi](#hi)' + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n' + S1 +
+            '- [hi](#hi)' + '\n' + MARKER)
 
         # More than 2 TOC markers, valid list, 2 leading space.
         with open('foo.md', 'w') as f:
@@ -748,6 +996,23 @@ class TestApi(pyfakefsTestCase):
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
             '\n' + S2 + '- [hi](#hi)' + '\n' + MARKER)
 
+        # More than 2 TOC markers, valid list, 2 leading space, show credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n' + MARKER + '\n' + S2 +
+                    '- [hi](#hi)' + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n' + S2 +
+            '- [hi](#hi)' + '\n' + MARKER)
+
         # More than 2 TOC markers, valid list, 3 leading space.
         with open('foo.md', 'w') as f:
             f.write('hello' + '\n' + MARKER + '\n' + MARKER + '\n' + S3 +
@@ -762,6 +1027,23 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
             '\n' + S3 + '- [hi](#hi)' + '\n' + MARKER)
+
+        # More than 2 TOC markers, valid list, 3 leading space, show credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n' + MARKER + '\n' + S3 +
+                    '- [hi](#hi)' + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n' + S3 +
+            '- [hi](#hi)' + '\n' + MARKER)
 
         # More than 2 TOC markers, valid list first.
         with open('foo.md', 'w') as f:
@@ -778,6 +1060,23 @@ class TestApi(pyfakefsTestCase):
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
             '\n' + MARKER)
 
+        # More than 2 TOC markers, valid list first, show credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n\n' + '- [hi](#hi)' + '\n\n' +
+                    MARKER + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n' +
+            MARKER)
+
         # More than 2 TOC markers, valid list first, 1 leading space.
         with open('foo.md', 'w') as f:
             f.write('hello' + '\n' + MARKER + '\n\n' + S1 + '- [hi](#hi)' +
@@ -792,6 +1091,23 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
             '\n' + MARKER)
+
+        # More than 2 TOC markers, valid list first, 1 leading space, show credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n\n' + S1 + '- [hi](#hi)' +
+                    '\n\n' + MARKER + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n' +
+            MARKER)
 
         # More than 2 TOC markers, valid list first, 2 leading space.
         with open('foo.md', 'w') as f:
@@ -808,6 +1124,23 @@ class TestApi(pyfakefsTestCase):
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
             '\n' + MARKER)
 
+        # More than 2 TOC markers, valid list first, 2 leading space, show credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n\n' + S2 + '- [hi](#hi)' +
+                    '\n\n' + MARKER + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n' +
+            MARKER)
+
         # More than 2 TOC markers, valid list first, 3 leading space.
         with open('foo.md', 'w') as f:
             f.write('hello' + '\n' + MARKER + '\n\n' + S3 + '- [hi](#hi)' +
@@ -822,6 +1155,23 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(
             lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n\n' + MARKER +
             '\n' + MARKER)
+
+        # More than 2 TOC markers, valid list first, 3 leading space, show credits.
+        with open('foo.md', 'w') as f:
+            f.write('hello' + '\n' + MARKER + '\n\n' + S3 + '- [hi](#hi)' +
+                    '\n\n' + MARKER + '\n' + MARKER)
+        api.write_string_on_file_between_markers('foo.md',
+                                                 LINE,
+                                                 MARKER,
+                                                 newline_string='\n',
+                                                 show_credits=True)
+        with open('foo.md') as f:
+            lines = f.readlines()
+        lines = ''.join(lines)
+        self.assertEqual(
+            lines, 'hello' + '\n' + MARKER + '\n\n' + LINE + '\n' +
+            common_defaults['toc_by_credits'] + '\n\n' + MARKER + '\n' +
+            MARKER)
 
     @unittest.skip('empty test')
     def test_write_strings_on_files_between_markers(self):
@@ -2075,8 +2425,7 @@ class TestApi(pyfakefsTestCase):
         # Example 457 [Commonmark 0.28].
         # Example 479 [Commonmark 0.29].
         # Example 479 [Commonmark 0.30].
-        #        self.assertEqual(api.remove_emphasis('**a<http://foo.bar/?q=**>'), '**a<http://foo.bar/?q=**>')
-        #
+        # self.assertEqual(api.remove_emphasis('**a<http://foo.bar/?q=**>'), '**a<http://foo.bar/?q=**>')
 
         # Example 458 [Commonmark 0.28].
         # Example 480 [Commonmark 0.29].
@@ -2174,26 +2523,26 @@ class TestApi(pyfakefsTestCase):
         # Example 492 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'*[link*](<foo\>)'),
                          r'[link](<foo\>)')
-        #        self.assertEqual(api.remove_emphasis('[link](*<foo\>)*'), '[link](<foo\>)')
+        # self.assertEqual(api.remove_emphasis(r'[link](*<foo\>)*'), '[link](<foo\>)')
         self.assertEqual(api.remove_emphasis(r'_[link_](<foo\>)'),
                          r'[link](<foo\>)')
-        #        self.assertEqual(api.remove_emphasis('[link](_<foo\>)_'), '[link](<foo\>)')
+        # self.assertEqual(api.remove_emphasis(r'[link](_<foo\>)_'), '[link](<foo\>)')
 
         # Example 493 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*[a*](<b)c'), '[a](<b)c')
-        #        self.assertEqual(api.remove_emphasis('[a](*<b)c*'), '[a](<b)c')
+        # self.assertEqual(api.remove_emphasis('[a](*<b)c*'), '[a](<b)c')
         self.assertEqual(api.remove_emphasis('_[a_](<b)c'), '[a](<b)c')
-        #        self.assertEqual(api.remove_emphasis('[a](_<b)c_'), '[a](<b)c')
+        # self.assertEqual(api.remove_emphasis('[a](_<b)c_'), '[a](<b)c')
 
         self.assertEqual(api.remove_emphasis('*[a*](<b)c>'), '[a](<b)c>')
-        #        self.assertEqual(api.remove_emphasis('[a](*<b)c>*'), '[a](<b)c>')
+        # self.assertEqual(api.remove_emphasis('[a](*<b)c>*'), '[a](<b)c>')
         self.assertEqual(api.remove_emphasis('_[a_](<b)c>'), '[a](<b)c>')
-        #        self.assertEqual(api.remove_emphasis('[a](_<b)c>_'), '[a](<b)c>')
+        # self.assertEqual(api.remove_emphasis('[a](_<b)c>_'), '[a](<b)c>')
 
         self.assertEqual(api.remove_emphasis('*[a*](<b>c)'), '[a](<b>c)')
-        #        self.assertEqual(api.remove_emphasis('[a](*<b>c)*'), '[a](<b>c)')
+        # self.assertEqual(api.remove_emphasis('[a](*<b>c)*'), '[a](<b>c)')
         self.assertEqual(api.remove_emphasis('_[a_](<b>c)'), '[a](<b>c)')
-        #        self.assertEqual(api.remove_emphasis('[a](_<b>c)_'), '[a](<b>c)')
+        # self.assertEqual(api.remove_emphasis('[a](_<b>c)_'), '[a](<b>c)')
 
         # Example 494 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'*[link*](\(foo\))'),
@@ -2238,10 +2587,10 @@ class TestApi(pyfakefsTestCase):
         # Example 498 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*[link*](<foo(and(bar)>)'),
                          '*[link*](<foo(and(bar)>)')
-        #        self.assertEqual(api.remove_emphasis('[link](*<foo(and(bar)>)*'), '[link](*<foo(and(bar)>)*')
+        # self.assertEqual(api.remove_emphasis('[link](*<foo(and(bar)>)*'), '[link](*<foo(and(bar)>)*')
         self.assertEqual(api.remove_emphasis('_[link_](<foo(and(bar)>)'),
                          '_[link_](<foo(and(bar)>)')
-        #        self.assertEqual(api.remove_emphasis('[link](_<foo(and(bar)>)_'), '[link](_<foo(and(bar)>)_')
+        # self.assertEqual(api.remove_emphasis('[link](_<foo(and(bar)>)_'), '[link](_<foo(and(bar)>)_')
 
         # Example 499 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'*[link*](foo\)\:)'),
@@ -2327,7 +2676,7 @@ class TestApi(pyfakefsTestCase):
         #        self.assertEqual(api.remove_emphasis(r'*[link*](/url (title))'), r'*[link*](/url (title))')
 
         # Example 505 [Commonmark 0.30].
-        #        self.assertEqual(api.remove_emphasis(r'*[link*](/url "title \"&quot;")'), r'*[link*](/url "title \"&quot;")')
+        # self.assertEqual(api.remove_emphasis(r'*[link*](/url "title \"&quot;")'), r'*[link*](/url "title \"&quot;")')
 
         # Example 506 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'*[link*](/url "title")'),

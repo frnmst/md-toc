@@ -55,6 +55,7 @@ def write_string_on_file_between_markers(
     string: str,
     marker: str,
     newline_string: str = common_defaults['newline_string'],
+    show_credits: bool = False,
 ) -> bool:
     r"""Write the table of contents on a single file.
 
@@ -83,8 +84,13 @@ def write_string_on_file_between_markers(
     # end up with CRCRLF endings!
     nl: str = '\n'
     string = string.replace('\r\n', '\n')
+
+    creds: str = ''.join([nl, common_defaults['toc_by_credits']
+                          ]) if show_credits else ''
+
     final_toc_string: str = ''.join(
-        [marker, nl, nl, string.rstrip(), nl, nl, marker, nl])
+        [marker, nl, nl,
+         string.rstrip(), creds, nl, nl, marker, nl])
 
     (
         old_toc,
@@ -125,6 +131,7 @@ def write_strings_on_files_between_markers(
     strings: list[str],
     marker: str,
     newline_string: str = common_defaults['newline_string'],
+    show_credits: bool = False,
 ) -> bool:
     r"""Write the table of contents on multiple files.
 
@@ -151,7 +158,8 @@ def write_strings_on_files_between_markers(
     equal: bool = True
     for f in filenames:
         equal &= write_string_on_file_between_markers(f, strings[file_id],
-                                                      marker, newline_string)
+                                                      marker, newline_string,
+                                                      show_credits)
         file_id += 1
 
     return equal
@@ -829,7 +837,7 @@ def remove_emphasis(line: str, parser: str = 'github') -> str:
     :rtype: str
     :raises: a built-in exception.
 
-    .. note:: Backslashes are preserved.
+    .. note:: Backslashes are preserved. This function is necessary to create working anchor links.
 
     :Example:
 
