@@ -13,12 +13,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
   - [Pull requests](#pull-requests)
     - [Unit tests](#unit-tests)
   - [Variable naming](#variable-naming)
-    - [Data type annotations](#data-type-annotations)
   - [AI Policy](#ai-policy)
     - [Commits](#commits)
-    - [Models](#models)
+    - [AI models](#ai-models)
     - [LLM codebase input](#llm-codebase-input)
-  - [Note](#note)
 
 <!--TOC-->
 
@@ -32,17 +30,17 @@ If you want to contribute, please follow these simple policies.
 
 ## Pull requests
 
+> [!NOTE]
+> It's not a problem if you can't add unit tests, but please show some simple
+> reproducible examples of why the fix or feature is necessary.
+
 1. add a new feature or fix
-2. add unit tests by mocking the files if necessary
+2. add unit tests by mocking the files if necessary (see note below):
   - valid cases
   - edge cases
   - invalid cases
 3. run the [unit tests](#unit-tests)
-3. create a pull request on the `dev` branch
-
-> [!NOTE]
-> It's not a problem if you can't add unit tests, but please show some simple
-> reproducible examples of why the fix or feature is necessary.
+4. create a pull request on the `dev` branch
 
 ### Unit tests
 
@@ -61,18 +59,13 @@ If you want to contribute, please follow these simple policies.
 
 ## Variable naming
 
-To keep things very uniform and simple please use snake\_case for all
-variables. In case of cmark code directly translated from C to Python, use
-these prefixes:
+To keep things uniform and simple please use snake\_case for all variables and
+type hints.
+
+In case of cmark code directly translated from C to Python, use these prefixes:
 
 - `_cmark_` for function names
 - `_cmark` for structs
-
-### Data type annotations
-
-When using type annotations with `Annotated`, follow
-[FastAPI's standard](https://fastapi.tiangolo.com/tutorial/dependencies/#share-annotated-dependencies)
-which uses Capitalized CamelCase.
 
 ## AI Policy
 
@@ -99,7 +92,7 @@ voted by Debian in 2026.
 No kind of automated AI agent can be involved, and all commits must be signed
 by real humans.
 
-### Models
+### AI models
 
 All the LLMs used by the authors must be lighter, accountless, free-to-use,
 cloud models, even better if free (libre) and self-hosted.
@@ -109,11 +102,6 @@ cloud models, even better if free (libre) and self-hosted.
 Please do not input this whole repository into an LLM and ask it to find
 vulnerabilities or to "improve the code". You may prompt specific code snippets
 if you are unsure about what they do.
-
-## Note
-
-If these simple indications are not followed, your contribution cannot be
-merged in the codebase.
 
 [^1]: [Codeberg](https://codeberg.org/frnmst/python-makefile),
       [Framagit](https://framagit.org/frnmst/python-makefile),

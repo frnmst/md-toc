@@ -383,7 +383,7 @@ pandoc --from=commonmark --to=html -o a.html README.md
 ## Who is using md-toc?
 
 md-toc is used by open-source projects and documentation workflows to keep
-tables of contents uo-to-date and accurate. Here are some examples:
+tables of contents up-to-date and accurate. Here are some examples:
 
 - [nicholas-fedor/watchtower ![stars](https://img.shields.io/github/stars/nicholas-fedor/watchtower)](https://github.com/nicholas-fedor/watchtower)
 - [flyte/mqtt-io ![stars](https://img.shields.io/github/stars/flyte/mqtt-io)](https://github.com/flyte/mqtt-io)

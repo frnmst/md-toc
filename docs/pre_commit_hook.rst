@@ -23,7 +23,7 @@ These are the default plugin settings
    :name: .pre-commit-config.yaml simple
 
     repos:
-    -   repo: https://codeberg.org/frnmst/md-toc
+    -   repo: https://github.com/frnmst/md-toc
         # Release updates (ATOM) https://codeberg.org/frnmst/md-toc/tags.atom
         rev: master # set a GIT tag
         hooks:
@@ -36,11 +36,11 @@ You can override the defaults via the ``args`` parameter, such as
    :name: .pre-commit-config.yaml args
 
     repos:
-    -   repo: https://codeberg.org/frnmst/md-toc
+    -   repo: https://github.com/frnmst/md-toc
         # Release updates (ATOM) https://codeberg.org/frnmst/md-toc/tags.atom
         rev: master # set a GIT tag
         hooks:
         -   id: md-toc
-            args: [-p, --skip-lines, '1', redcarpet]  # CLI options
+            args: [-t, -p, --skip-lines, '1', gitlab]  # CLI options
 
 Finally, run ``pre-commit install`` to enable the hook.

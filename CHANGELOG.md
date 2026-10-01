@@ -15,12 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [Changelog](#changelog)
   - [\[Unreleased\]](#unreleased)
-  - [\[9.0.2\] Unreleased](#902-unreleased)
+  - [\[9.1.0\] Unreleased](#910-unreleased)
     - [Deprecated](#deprecated)
     - [Fixed](#fixed)
+    - [Added](#added)
   - [\[9.0.1\] 2026-09-26](#901-2026-09-26)
     - [Fixed](#fixed-1)
-    - [Added](#added)
+    - [Added](#added-1)
     - [Changed](#changed)
   - [\[9.0.0\] 2024-04-10](#900-2024-04-10)
     - [Fixed](#fixed-2)
@@ -31,10 +32,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - [Fixed](#fixed-4)
   - [\[8.2.1\] 2023-11-07](#821-2023-11-07)
     - [Changed](#changed-2)
-    - [Added](#added-1)
+    - [Added](#added-2)
   - [\[8.2.0\] 2023-08-08](#820-2023-08-08)
     - [Fixed](#fixed-5)
-    - [Added](#added-2)
+    - [Added](#added-3)
   - [\[8.1.9\] 2023-02-10](#819-2023-02-10)
     - [Changed](#changed-3)
     - [Fixed](#fixed-6)
@@ -43,13 +44,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - [Removed](#removed-1)
     - [Fixed](#fixed-7)
   - [\[8.1.7\] 2022-12-29](#817-2022-12-29)
-    - [Added](#added-3)
+    - [Added](#added-4)
     - [Fixed](#fixed-8)
     - [Changed](#changed-5)
   - [\[8.1.6\] 2022-12-08](#816-2022-12-08)
     - [Fixed](#fixed-9)
   - [\[8.1.5\] 2022-10-28](#815-2022-10-28)
-    - [Added](#added-4)
+    - [Added](#added-5)
     - [Fixed](#fixed-10)
   - [\[8.1.4\] 2022-06-15](#814-2022-06-15)
     - [Changed](#changed-6)
@@ -67,10 +68,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - [\[8.0.1\] 2021-08-20](#801-2021-08-20)
     - [Fixed](#fixed-16)
     - [Changed](#changed-8)
-    - [Added](#added-5)
+    - [Added](#added-6)
   - [\[8.0.0\] 2021-05-28](#800-2021-05-28)
     - [Changed](#changed-9)
-    - [Added](#added-6)
+    - [Added](#added-7)
     - [Removed](#removed-2)
 
 <!--TOC-->
@@ -213,7 +214,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ### THREE
   ````
 
-## [9.0.2] Unreleased
+## [9.1.0] Unreleased
 
 ### Deprecated
 
@@ -228,8 +229,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
   Avoid CRCRLF in the TOC section on Windows and on platforms where `\n` is not
   the newline character. Thank you
-  [@danmcmahill](https://github.com/danmcmahill)
+  [@danmcmahill](https://github.com/danmcmahill).
+- [__✓__ 0188429](https://github.com/frnmst/md-toc/commit/0188429)
+
+  Some cases of remove emphasis between multiple lines have been fixed.
 - Documentation expansion and cleanup.
+
+### Added
+
+- [__✓__ 0188429](https://github.com/frnmst/md-toc/commit/0188429)
+
+  Optional md-toc credits printed at the end of the TOC. Disabled by default.
+  Will be enabled by default in the next major release.
 
 ## [9.0.1] 2026-09-26
 
