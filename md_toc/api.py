@@ -65,10 +65,14 @@ def write_string_on_file_between_markers(
          and the end of the string.
     :parameter newline_string: the new line separator.
          Defaults to ``os.linesep``.
+    :parameter show_credits: add
+         ``<!-- TOC by https://github.com/frnmst/md-toc ver. {version} -->``
+         at the end of the TOC. Defaults to ``False``.
     :type filename: str
     :type string: str
     :type marker: str
     :type newline_string: str
+    :type show_credits: bool
     :returns: ``True`` if new TOC is the same as the exising one, ``False`` otherwise.
     :rtype: bool
     :raises: StdinIsNotAFileToBeWritten or an fpyutils exception
@@ -142,10 +146,14 @@ def write_strings_on_files_between_markers(
          and the end of the string.
     :parameter newline_string: the new line separator.
          Defaults to ``os.linesep``.
+    :parameter show_credits: add
+         ``<!-- TOC by https://github.com/frnmst/md-toc ver. {version} -->``
+         at the end of the TOC. Defaults to ``False``.
     :type filenames: list
     :type strings: list
     :type marker: str
     :type newline_string: str
+    :type show_credits: bool
     :returns: ``True`` if all TOCs are the same as the existing ones, ``False``
          otherwise.
     :rtype: bool
