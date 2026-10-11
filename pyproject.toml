@@ -21,6 +21,16 @@ keywords = [
     "text",
     "table-of-contents",
     "documentation",
+    "cmark",
+    "cmark-gfm",
+    "commonmark",
+    "gfm",
+    "glfm",
+    "markdown-toc",
+    "markdown-toc-generator",
+    "table-of-contents-generator",
+    "toc",
+    "toc-generator"
 ]
 # https://iscinumpy.dev/post/bound-version-constraints/#pinning-the-python-version-is-special
 requires-python = ">=3.11"

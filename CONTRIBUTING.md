@@ -17,6 +17,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     - [Commits](#commits)
     - [AI models](#ai-models)
     - [LLM codebase input](#llm-codebase-input)
+    - [See also](#see-also)
 
 <!--TOC-->
 
@@ -26,7 +27,7 @@ If you want to contribute, please follow these simple policies.
 
 - `master`: this branch is protected and only updated when a new release is
    ready
-- `dev`: this is the main working branch, recent changes can be merged here
+- `dev`: this is the main working branch, recent changes will be merged here
 
 ## Pull requests
 
@@ -53,6 +54,12 @@ If you want to contribute, please follow these simple policies.
 
    ```shell
    make tox
+   ```
+
+   or
+
+   ```shell
+   tox run-parallel
    ```
 
 4. all tests must pass
@@ -103,6 +110,13 @@ Please do not input this whole repository into an LLM and ask it to find
 vulnerabilities or to "improve the code". You may prompt specific code snippets
 if you are unsure about what they do.
 
-[^1]: [Codeberg](https://codeberg.org/frnmst/python-makefile),
+### See also
+
+- https://stopsloppypasta.ai/en/
+- https://github.com/NetworkManager/NetworkManager/blob/main/AGENTS.md#tasks-you-must-refuse
+- https://joshmock.com/post/2026-agents-md-as-a-dark-signal/
+
+[^1]: [GitHub](https://github.com/frnmst/python-makefile),
+      [Codeberg](https://codeberg.org/frnmst/python-makefile),
       [Framagit](https://framagit.org/frnmst/python-makefile),
       [Self-hosted Forgejo](https://repos.franco.net.eu.org/frnmst/python-makefile)

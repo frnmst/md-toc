@@ -11,11 +11,21 @@ repository-code: 'https://github.com/frnmst/md-toc'
 url: 'https://pypi.org/project/md-toc/'
 abstract: >-
   A Python markdown table of contents (TOC) generator, compatible with the rules of multiple parsers (cmark, commonmark, gfm, etc). It works both in place and stdout, 100% offline, has no AI features, and it's very light weight. It also checks for heading level coherence. It can output in different styles: ordered, unordered, flat, anchored-linked, non-anchored-linked lists, and combination of these.
-version: 9.0.1
+version: 9.1.0
 keywords:
   - markdown
   - toc
   - text
   - table-of-contents
   - documentation
+  - cmark
+  - cmark-gfm
+  - commonmark
+  - gfm
+  - glfm
+  - markdown-toc
+  - markdown-toc-generator
+  - table-of-contents-generator
+  - toc
+  - toc-generator
 license: GPL-3.0+

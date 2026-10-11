@@ -13,7 +13,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 [![Downloads](https://pepy.tech/badge/md-toc)](https://pepy.tech/project/md-toc)
 [![Dependent repos (via libraries.io)](https://img.shields.io/librariesio/dependent-repos/pypi/md-toc.svg)](https://libraries.io/pypi/md-toc/dependents)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
-[![Buy me a coffee](assets/buy_me_a_coffee.svg)](https://buymeacoff.ee/frnmst)
+![100% offline, no telemetry](https://img.shields.io/badge/100%25_offline-no_telemetry-blue)
+<a href="https://www.buymeacoffee.com/frnmst" target="_blank"><img src="https://img.shields.io/badge/-buy_me_a%C2%A0coffee-gray?logo=buy-me-a-coffee" alt="Buy Me A Coffee"></a>
 
 Automatically generate and add an accurate table of contents to markdown files.
 
@@ -38,7 +39,7 @@ Automatically generate and add an accurate table of contents to markdown files.
   - [Extras](#extras)
     - [HTML output](#html-output)
   - [Who is using md-toc?](#who-is-using-md-toc)
-  - [Contributing and changelog](#contributing-and-changelog)
+  - [Contributing, changelog and security](#contributing-changelog-and-security)
   - [Consulting and custom integrations](#consulting-and-custom-integrations)
   - [License](#license)
   - [Git forge mirrors](#git-forge-mirrors)
@@ -71,15 +72,16 @@ after md-toc and similar tools were created:
   called `Table of contents` to its Gitlab Flavored Mardown
 
 However, md-toc has unique features, is used in systems without automatic
-TOCs and doesn't rely on SaaS.
+TOCs and doesn't rely on SaaS. You can use md-toc for private documentation.
 
 ## Features
 
-- works offline
+- works 100% offline via deterministic rules, 100% Python, compile free
+- no telemetry
 - edits file in place using a TOC marker (default `<!--TOC-->`) or
   output to standard output
 - maximum heading level selection (1 to 6)
-- list indentation based on heading, which can optionally be disabled
+- TOC list indentation based on heading, which can optionally be disabled
 - outputs an ordered or unordered TOC list with list marker selection
 - creates anchor links to markdown headings by default or a plain list
   as alternative
@@ -91,7 +93,9 @@ TOCs and doesn't rely on SaaS.
 - selection of newline string
 - check if there is difference between existing TOC in file and newly generated
   one
+- strong and extensive [unit tests](./md_toc/tests/tests.py)
 - supports GitHub, GitLab, Commonmark, Redcarpet and others
+- single Python dependency (fpyutils)
 - [pre-commit](https://pre-commit.com/) md-toc
   [hook](https://docs.franco.net.eu.org/md-toc/pre_commit_hook.html)
 - [GitHub action](https://github.com/marketplace/actions/markdown-table-of-contents-md-toc-action)
@@ -402,16 +406,17 @@ tables of contents up-to-date and accurate. Here are some examples:
 
 Are you using md-toc? Open a PR to add your project to this list.
 
-## Contributing and changelog
+## Contributing, changelog and security
 
-See [CONTRIBUTING](./CONTRIBUTING.md) for project policies and
-[CHANGELOG](./CHANGELOG.md) for releases information.
+- [CONTRIBUTING](./CONTRIBUTING.md)
+- [CHANGELOG](./CHANGELOG.md)
+- [SECURITY](./SECURITY.md)
 
 ## Consulting and custom integrations
 
-If you are an organization or an individual relying on md-toc and need help or
-custom integrations for other parsers or feature development, I'm available for
-contract-based freelance consulting:
+If you are an organization, enterprise or an individual relying on md-toc and
+need help or custom integrations for other parsers or feature development, I'm
+available for contract-based freelance consulting:
 
 - Email: <solvecomputersciencecollabs+md-toc@gmail.com>
 - Freelancing: <https://blog.franco.net.eu.org/jobs/>
