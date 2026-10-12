@@ -73,6 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - [Changed](#changed-9)
     - [Added](#added-7)
     - [Removed](#removed-2)
+<!-- TOC by https://github.com/frnmst/md-toc ver. 9.1.0 -->
 
 <!--TOC-->
 

@@ -11,7 +11,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 [![PyPI md-toc version](https://img.shields.io/pypi/v/md-toc.svg)](https://pypi.org/project/md-toc/)
 [![Anaconda.org](https://anaconda.org/conda-forge/md-toc/badges/version.svg)](https://anaconda.org/conda-forge/md-toc)
 [![Downloads](https://pepy.tech/badge/md-toc)](https://pepy.tech/project/md-toc)
-[![Dependent repos (via libraries.io)](https://img.shields.io/librariesio/dependent-repos/pypi/md-toc.svg)](https://libraries.io/pypi/md-toc/dependents)
+<a href="https://dependents.info/frnmst/md-toc"><img src="https://dependents.info/frnmst/md-toc/badge" /></a>
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 ![100% offline, no telemetry](https://img.shields.io/badge/100%25_offline-no_telemetry-blue)
 <a href="https://www.buymeacoffee.com/frnmst" target="_blank"><img src="https://img.shields.io/badge/-buy_me_a%C2%A0coffee-gray?logo=buy-me-a-coffee" alt="Buy Me A Coffee"></a>
@@ -25,6 +25,8 @@ Automatically generate and add an accurate table of contents to markdown files.
   - [Description](#description)
   - [Features](#features)
   - [Examples](#examples)
+    - [Scopes](#scopes)
+    - [Usage](#usage)
   - [API examples](#api-examples)
   - [Quickstart](#quickstart)
     - [Distribution packages](#distribution-packages)
@@ -33,6 +35,7 @@ Automatically generate and add an accurate table of contents to markdown files.
       - [Nix](#nix)
     - [One minute setup](#one-minute-setup)
     - [Safe install](#safe-install)
+    - [pre-commit hook](#pre-commit-hook)
     - [GitHub action](#github-action)
   - [Documentation](#documentation)
   - [CLI Helps](#cli-helps)
@@ -44,6 +47,7 @@ Automatically generate and add an accurate table of contents to markdown files.
   - [License](#license)
   - [Git forge mirrors](#git-forge-mirrors)
   - [Support this project](#support-this-project)
+<!-- TOC by https://github.com/frnmst/md-toc ver. 9.1.0 -->
 
 <!--TOC-->
 
@@ -72,7 +76,8 @@ after md-toc and similar tools were created:
   called `Table of contents` to its Gitlab Flavored Mardown
 
 However, md-toc has unique features, is used in systems without automatic
-TOCs and doesn't rely on SaaS. You can use md-toc for private documentation.
+TOCs and doesn't rely on SaaS. You can use md-toc for private documentation,
+for example in enterprise environments.
 
 ## Features
 
@@ -86,7 +91,8 @@ TOCs and doesn't rely on SaaS. You can use md-toc for private documentation.
 - creates anchor links to markdown headings by default or a plain list
   as alternative
 - checks if heading level is coherent: this avoid creating an
-  erroneous TOC. This feature can be disabled if needed
+  erroneous TOC. md-toc raises an error if you skip a heading level: this
+  feature can be disabled if needed
 - skip any number lines before generating the TOC
 - can read content from standard input
 - handles multiple files at once
@@ -94,8 +100,8 @@ TOCs and doesn't rely on SaaS. You can use md-toc for private documentation.
 - check if there is difference between existing TOC in file and newly generated
   one
 - strong and extensive [unit tests](./md_toc/tests/tests.py)
-- supports GitHub, GitLab, Commonmark, Redcarpet and others
-- single Python dependency (fpyutils)
+- supports GitHub, GitLab, Commonmark, ~~Redcarpet~~ and others
+- pure Python implementation and single dependency (fpyutils)
 - [pre-commit](https://pre-commit.com/) md-toc
   [hook](https://docs.franco.net.eu.org/md-toc/pre_commit_hook.html)
 - [GitHub action](https://github.com/marketplace/actions/markdown-table-of-contents-md-toc-action)
@@ -107,6 +113,8 @@ And more! See the
 
 ## Examples
 
+### Scopes
+
 You can use md-toc in your blog, documentation based on markdown, GitHub pages,
 markdown files in Nextcloud, etc...
 
@@ -116,7 +124,12 @@ along with its
 I also use it in most repositories where markdown files are present.
 
 Most markdown renderers do not provide a way to automatically generate a
-TOC so md-toc is useful for this purpose.
+TOC so md-toc is useful for this purpose. Another reason to use md-toc is that
+it runs 100% locally, offline, without telemetry: if you have sensitive
+documents the TOC can be generated in a few seconds without API calls nor
+costs.
+
+### Usage
 
 A very common use case is this:
 
@@ -175,7 +188,7 @@ $ cat foo.md
 ## API examples
 
 md-toc has a
-[public API](https://docs.franco.net.eu.org/md-toc/api.html).
+[public API](https://docs.franco.net.eu.org/md-toc/api.html)[^1].
 This means for example that you can you easily build a TOC within another Python
 program. The easiest way to build one for a markdown file is:
 
@@ -344,6 +357,22 @@ are usually not up-to-date. See:
 
 4. follow the post-installation instructions from the one minute setup
 
+### pre-commit hook
+
+Add this to your `./.pre-commit-config.yml` file in your repo. Change the `rev`
+value with an md-toc release Git tag:
+
+```yaml
+repos:
+  - repo: https://github.com/frnmst/md-toc
+    rev: master     # You should set a GIT tag here!
+    hooks:
+      - id: md-toc
+        args: ['--in-place', 'github', '-l6']
+```
+
+[More examples here](https://docs.franco.net.eu.org/md-toc/pre_commit_hook.html).
+
 ### GitHub action
 
 If you prefer to deploy md-toc as a cloud native solution, you can integrate
@@ -452,3 +481,5 @@ with md-toc. If not, see <http://www.gnu.org/licenses/>.
 - [GitHub Sponsors](https://github.com/sponsors/frnmst)
 - [Buy Me a Coffee](https://www.buymeacoffee.com/frnmst)
 - [Liberapay](https://liberapay.com/frnmst)
+
+[^1]: [See the API file](https://github.com/frnmst/md-toc/blob/dev/md_toc/api.py)

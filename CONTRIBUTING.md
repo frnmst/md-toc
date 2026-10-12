@@ -18,6 +18,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     - [AI models](#ai-models)
     - [LLM codebase input](#llm-codebase-input)
     - [See also](#see-also)
+<!-- TOC by https://github.com/frnmst/md-toc ver. 9.1.0 -->
 
 <!--TOC-->
 

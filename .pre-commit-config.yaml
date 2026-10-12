@@ -88,10 +88,10 @@ repos:
     - id: isort
 
 - repo: https://github.com/frnmst/md-toc
-  rev: '9.0.0'
+  rev: '9.1.0'
   hooks:
     - id: md-toc
-      args: ['-p', 'cmark', '-l6']
+      args: ['-t', '-p', 'cmark', '-l6']
 
 - repo: local
   hooks:
