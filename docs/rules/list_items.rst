@@ -365,7 +365,7 @@ Notes on ordered lists
 `````````````````````````````````
 
 Ordered list markers may start with any integer (except special cases).
-any following number is ignored and subsequent numeration is progressive:
+Any following number is ignored and subsequent numeration is progressive:
 
 - https://spec.commonmark.org/0.30/#start-number
 

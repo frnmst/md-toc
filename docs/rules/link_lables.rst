@@ -13,10 +13,12 @@ then link label rules will be applied.
 
 - https://spec.commonmark.org/0.30/#link-label
 
-If a line ends in 1 or more '\' characters, this disrupts the anchor
-title. For example ``- [xdmdmsdm\](#xdmdmsdm)`` becomes
-``<ul><li>[xdmdmsdm](#xdmdmsdm)</li></ul>`` instead of
+If an ATX header line ends in one or more ``\`` characters, such as ``\\n``
+this disrupts the anchor title. For example, without any changes, a generated
+list item in the TOC would become ``- [xdmdmsdm\](#xdmdmsdm)``, so literally
+rendered as ``<ul><li>[xdmdmsdm](#xdmdmsdm)</li></ul>`` instead of
 ``<ul><li><a href="xdmdmsdm">xdmdmsdm\</a></li></ul>``.
+
 The workaround used in md-toc is to add a space character at the end of the
 string, so it becomes: ``<ul><li><a href="xdmdmsdm">xdmdmsdm\ </a></li></ul>``
 
@@ -32,10 +34,9 @@ are treated with the following rules.
 - https://spec.commonmark.org/0.30/#link-text
 - https://spec.commonmark.org/0.30/#link-destination
 
-According to a function in the source code, balanced square brackets do not
-work, however they do when interpeted by the web interface. It is however
-possible that they are supported within the ``handle_close_bracket``
-function.
+According to a function in the source code, balanced square brackets inside
+link labels do not work, however they do when interpeted by the web interface.
+``handle_close_bracket()`` calls ``link_label()``.
 
 - https://github.com/github/cmark/blob/6b101e33ba1637e294076c46c69cd6a262c7539f/src/inlines.c#L881
 - https://github.com/github/cmark/blob/6b101e33ba1637e294076c46c69cd6a262c7539f/src/inlines.c#L994

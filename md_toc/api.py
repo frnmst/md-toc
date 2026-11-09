@@ -1132,7 +1132,7 @@ def get_atx_heading(
 
     for subl in replace_and_split_newlines(line):
         current_headers = None
-        final_line = None
+        final_line: str = None
 
         if parser in ['github', 'cmark', 'gitlab', 'commonmarker', 'goldmark']:
 

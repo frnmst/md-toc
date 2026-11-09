@@ -184,7 +184,7 @@ html_theme_options = {
     'use_issues_button':
     True,
     'announcement':
-    '⚠️ Future versions might drop Redcarpet support. Have your say <a href="https://github.com/frnmst/md-toc/issues/46">here</a> also for other important updates ⚠️'
+    '⚠️ The next major version of md-toc (10) will drop Redcarpet support. See <a href="https://github.com/frnmst/md-toc/issues/46">here</a> for important updates ⚠️'
 }
 
 html_baseurl = 'https://docs.franco.net.eu.org/md-toc/'

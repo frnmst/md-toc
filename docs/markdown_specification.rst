@@ -71,11 +71,9 @@ Parser                    Status                  Alias of       Supported parse
 ``gitlab``                |partial|               \-             Latest unknown version                                                                                    https://docs.gitlab.com/ee/user/markdown.html
 ``redcarpet``             |low|                   \-             `Redcarpet v3.5.0 <https://github.com/vmg/redcarpet/tree/6270d6b4ab6b46ee6bb57a6c0e4b2377c01780ae>`_      https://github.com/vmg/redcarpet
 Gogs                      |unknown|               \-             \-                                                                                                        https://gogs.io/
-NotABug Gogs fork         |unknown|               \-             \-                                                                                                        https://notabug.org/hp/gogs/
 Marked                    |unknown|               \-             \-                                                                                                        https://github.com/markedjs/marked
 kramdown                  |unknown|               \-             \-                                                                                                        https://kramdown.gettalong.org/
 GitLab Kramdown           |unknown|               \-             \-                                                                                                        https://gitlab.com/gitlab-org/gitlab_kramdown
-Notabug                   |unknown|               \-             \-                                                                                                        https://notabug.org/hp/gogs/
 =======================   =====================   ============   ========================================================================================================  =============================================
 
 md-toc version tables
@@ -486,6 +484,13 @@ Version 9
      - latest version
      - ``cmark``
      - v3.5.0
+   * - 9.1.1
+     - 0.30.0
+     - ``github``
+     - 0.29.gfm.0
+     - latest version
+     - ``cmark``
+     - v3.5.0
 
 
 .. |r1| replace:: https://github.com/vmg/redcarpet/tree/26c80f05e774b31cd01255b0fa62e883ac185bf3
@@ -568,8 +573,8 @@ For example:
   The ``user-content`` substring does not seem to affect the functionality of the TOC.
 
   Older versions of Gitea used blackfriday. See [#f11]_.
+- Forgejo: might be still very similar to Gitea.
 - Gogs uses Marked as the markdown parser. See [#f12]_ [#f13]_ [#f14]_ [#f15]_.
-- Notabug: *Notabug is powered by a liberated version of gogs*. See [#f16]_.
 - Kramdown: It is unclear if this feature is available. See [#f17]_
 - Gitlab Kramdown. See [#f18]_
 
@@ -602,6 +607,5 @@ Steps to add an unsupported markdown parser
 .. [#f13] https://github.com/chjj/marked
 .. [#f14] https://github.com/chjj/marked/issues/981
 .. [#f15] https://github.com/chjj/marked/search?q=anchor&type=Issues&utf8=%E2%9C%93
-.. [#f16] https://github.com/gettalong/kramdown/search?q=anchor&type=Issues&utf8=%E2%9C%93
 .. [#f17] https://github.com/gettalong/kramdown/search?q=anchor&type=Issues&utf8=%E2%9C%93
 .. [#f18] https://gitlab.com/gitlab-org/gitlab_kramdown/-/blob/master/lib/gitlab_kramdown/parser/header.rb

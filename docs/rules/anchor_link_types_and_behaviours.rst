@@ -79,21 +79,20 @@ Emphasis
 --------
 
 To be able to have working anchor links, emphasis must also be removed from the
-link destination.
+link destination before the anchor link is generated.
 
 ``cmark``,  ``github``, ``gitlab``
 ``````````````````````````````````
 
-At the moment the implementation of emnphasis removal is incomplete
-because of its complexity. See:
+Implementation of emphasis removal is almost complete. This is by far the most
+complex part of md-toc. See:
 
 - https://spec.commonmark.org/0.30/#emphasis-and-strong-emphasis
 
-The core functions for this feature have been ported directly
-from the original cmark source with some differences:
+Core functions for this feature have been ported directly from the original
+cmark source in C with some differences:
 
 #. things such as string manipulation, mallocs, etc are different in Python
-
 #. the ``cmark_utf8proc_charlen`` uses ``length = 1``
    instead of ``length = utf8proc_utf8class[ord(line[0])]``
    (causes list overflow).
@@ -108,11 +107,62 @@ from the original cmark source with some differences:
    - https://rosettacode.org/wiki/String_length#Python
    - https://docs.python.org/3/howto/unicode.html#comparing-strings
 
-As of the release md-toc 8.1.2, cmark-gfm is still at version 0.29. Moreover, certain
-code sections used in the emphasis processing are not the same of cmark 0.29. See
-this one for example:
+   This could cause problems so test cases are
+
+Certain code sections used in emphasis processing inside GFM are not the same
+as the ones used in cmark. See this one for example. Data types and definition
+are different. For the moment md-toc uses the original cmark source only as
+reference for emphasis processing.
+
+- ``cmark``
+
+  - ``src/inlines.c``
+
+    .. code-block:: python
+
+       delimiter *openers_bottom[9] = {stack_bottom, stack_bottom, stack_bottom,
+                                       stack_bottom, stack_bottom, stack_bottom,
+                                       stack_bottom, stack_bottom, stack_bottom};
+
+  - ``src/inlines.h``
+
+    .. code-block:: python
+
+       typedef struct delimiter {
+         struct delimiter *previous;
+         struct delimiter *next;
+         cmark_node *inl_text;
+         bufsize_t length;
+         unsigned char delim_char;
+         bool can_open;
+         bool can_close;
+       } delimiter;
+
+- ``github``
+
+  - ``src/cmark-gfm.h``
+
+    .. code-block:: python
+
+       typedef int32_t bufsize_t;
+
+  - ``src/inlines.c``
+
+    .. code-block:: python
+
+       bufsize_t openers_bottom[3][128];
+       int i;
+
+       // initialize openers_bottom:
+       memset(&openers_bottom, 0, sizeof(openers_bottom));
+       for (i=0; i < 3; i++) {
+         openers_bottom[i]['*'] = stack_bottom;
+         openers_bottom[i]['_'] = stack_bottom;
+         openers_bottom[i]['\''] = stack_bottom;
+         openers_bottom[i]['"'] = stack_bottom;
+       }
+
+See also:
 
 - https://github.com/github/cmark-gfm/blob/0.29.0.gfm.3/src/inlines.c#L639-L654
 - https://github.com/commonmark/cmark/blob/0.29.0/src/inlines.c#L615-L621
-
-For the moment md-toc uses the original cmark source only as reference for emphasis processing.
