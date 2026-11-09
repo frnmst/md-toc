@@ -1697,236 +1697,141 @@ class TestApi(pyfakefsTestCase):
                 'foo bar', [range(1, 2), range(4, 7)]), 'fo ')
 
     def test_remove_emphasis(self):
-        r"""Test that removing emphasis works correctly correctly.
-
-        .. note: not all tests are enabled because of a missing implementation
-            and possible bugs.
-        """
+        r"""Test that removing emphasis works correctly correctly."""
         # Test not-emphasis.
         self.assertEqual(api.remove_emphasis(''), '')
         self.assertEqual(api.remove_emphasis(CMARK_LINE_FOO), CMARK_LINE_FOO)
 
-        # Example 331 [Commonmark 0.28].
-        # Example 350 [Commonmark 0.29].
         # Example 350 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo bar*'), 'foo bar')
 
-        # Example 332 [Commonmark 0.28].
-        # Example 351 [Commonmark 0.29].
         # Example 351 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('a * foo bar*'), 'a * foo bar*')
 
-        # Example 333 [Commonmark 0.28].
-        # Example 352 [Commonmark 0.29].
         # Example 352 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('a*"foo"*'), 'a*"foo"*')
 
-        # Example 334 [Commonmark 0.28].
-        # Example 353 [Commonmark 0.29].
         # Example 353 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('* a *'), '* a *')
 
-        # Example 335 [Commonmark 0.28].
-        # Example 354 [Commonmark 0.29].
         # Example 354 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo*bar*'), 'foobar')
 
-        # Example 336 [Commonmark 0.28].
-        # Example 355 [Commonmark 0.29].
         # Example 355 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('5*6*78'), '5678')
 
-        # Example 337 [Commonmark 0.28].
-        # Example 356 [Commonmark 0.29].
         # Example 356 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_foo bar_'), 'foo bar')
 
-        # Example 338 [Commonmark 0.28].
-        # Example 357 [Commonmark 0.29].
         # Example 357 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_ foo bar_'), '_ foo bar_')
 
-        # Example 339 [Commonmark 0.28].
-        # Example 358 [Commonmark 0.29].
         # Example 358 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('a_"foo"_'), 'a_"foo"_')
 
-        # Example 340 [Commonmark 0.28].
-        # Example 359 [Commonmark 0.29].
         # Example 359 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo_bar_'), 'foo_bar_')
 
-        # Example 341 [Commonmark 0.28].
-        # Example 360 [Commonmark 0.29].
         # Example 360 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('5_6_78'), '5_6_78')
 
-        # Example 342 [Commonmark 0.28].
-        # Example 361 [Commonmark 0.29].
         # Example 361 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('пристаням_стремятся_'),
                          'пристаням_стремятся_')
 
-        # Example 343 [Commonmark 0.28].
-        # Example 362 [Commonmark 0.29].
         # Example 362 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('aa_"bb"_cc'), 'aa_"bb"_cc')
 
-        # Example 344 [Commonmark 0.28].
-        # Example 363 [Commonmark 0.29].
         # Example 363 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo-_(bar)_'), 'foo-(bar)')
 
-        # Example 345 [Commonmark 0.28].
-        # Example 364 [Commonmark 0.29].
         # Example 364 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_foo*'), '_foo*')
 
-        # Example 346 [Commonmark 0.28].
-        # Example 365 [Commonmark 0.29].
         # Example 365 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo bar *'), '*foo bar *')
 
-        # Example 347 [Commonmark 0.28].
-        # Example 366 [Commonmark 0.29].
         # Example 366 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo bar\n*'), '*foo bar\n*')
 
-        # Example 348 [Commonmark 0.28].
-        # Example 367 [Commonmark 0.29].
         # Example 367 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*(*foo)'), '*(*foo)')
 
-        # Example 349 [Commonmark 0.28].
-        # Example 368 [Commonmark 0.29].
         # Example 368 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*(*foo*)*'), '(foo)')
 
-        # Example 350 [Commonmark 0.28].
-        # Example 369 [Commonmark 0.29].
         # Example 369 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo*bar'), 'foobar')
 
-        # Example 351 [Commonmark 0.28].
-        # Example 370 [Commonmark 0.29].
         # Example 370 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_foo bar _'), '_foo bar _')
 
-        # Example 352 [Commonmark 0.28].
-        # Example 371 [Commonmark 0.29].
         # Example 371 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_(_foo)'), '_(_foo)')
 
-        # Example 353 [Commonmark 0.28].
-        # Example 372 [Commonmark 0.29].
         # Example 372 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_(_foo_)_'), '(foo)')
 
-        # Example 354 [Commonmark 0.28].
-        # Example 373 [Commonmark 0.29].
         # Example 373 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_foo_bar'), '_foo_bar')
 
-        # Example 355 [Commonmark 0.28].
-        # Example 374 [Commonmark 0.29].
         # Example 374 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_пристаням_стремятся'),
                          '_пристаням_стремятся')
 
-        # Example 356 [Commonmark 0.28].
-        # Example 375 [Commonmark 0.29].
         # Example 375 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_foo_bar_baz_'), 'foo_bar_baz')
 
-        # Example 357 [Commonmark 0.28].
-        # Example 376 [Commonmark 0.29].
         # Example 376 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_(bar)_.'), '(bar).')
 
-        # Example 358 [Commonmark 0.28].
-        # Example 377 [Commonmark 0.29].
         # Example 377 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**foo bar**'), 'foo bar')
 
-        # Example 359 [Commonmark 0.28].
-        # Example 378 [Commonmark 0.29].
         # Example 378 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('** foo bar**'), '** foo bar**')
 
-        # Example 360 [Commonmark 0.28].
-        # Example 379 [Commonmark 0.29].
         # Example 379 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('a**"foo"**'), 'a**"foo"**')
 
-        # Example 361 [Commonmark 0.28].
-        # Example 380 [Commonmark 0.29].
         # Example 380 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo**bar**'), 'foobar')
 
-        # Example 362 [Commonmark 0.28].
-        # Example 381 [Commonmark 0.29].
         # Example 381 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__foo bar__'), 'foo bar')
 
-        # Example 363 [Commonmark 0.28].
-        # Example 382 [Commonmark 0.29].
         # Example 382 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__ foo bar__'), '__ foo bar__')
 
-        # Example 364 [Commonmark 0.28].
-        # Example 383 [Commonmark 0.29].
         # Example 383 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__\nfoo bar__'), '__\nfoo bar__')
 
-        # Example 365 [Commonmark 0.28].
-        # Example 384 [Commonmark 0.29].
         # Example 384 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('a__"foo"__'), 'a__"foo"__')
 
-        # Example 366 [Commonmark 0.28].
-        # Example 385 [Commonmark 0.29].
         # Example 385 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo__bar__'), 'foo__bar__')
 
-        # Example 367 [Commonmark 0.28].
-        # Example 386 [Commonmark 0.29].
         # Example 386 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('5__6__78'), '5__6__78')
 
-        # Example 368 [Commonmark 0.28].
-        # Example 387 [Commonmark 0.29].
         # Example 387 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('пристаням__стремятся__'),
                          'пристаням__стремятся__')
 
-        # Example 369 [Commonmark 0.28].
-        # Example 388 [Commonmark 0.29].
         # Example 388 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__foo, __bar__, baz__'),
                          'foo, bar, baz')
 
-        # Example 370 [Commonmark 0.28].
-        # Example 389 [Commonmark 0.29].
         # Example 389 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo-__(bar)__'), 'foo-(bar)')
 
-        # Example 371 [Commonmark 0.28].
-        # Example 390 [Commonmark 0.29].
-        # Example 390 [Commonmark 0.30].
-        self.assertEqual(api.remove_emphasis('**foo bar **'), '**foo bar **')
-
-        # Example 372 [Commonmark 0.28].
-        # Example 391 [Commonmark 0.29].
         # Example 391 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**(**foo)'), '**(**foo)')
 
-        # Example 373 [Commonmark 0.28].
-        # Example 392 [Commonmark 0.29].
         # Example 392 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*(**foo**)*'), '(foo)')
 
-        # Example 374 [Commonmark 0.28].
-        # Example 393 [Commonmark 0.29].
         # Example 393 [Commonmark 0.30].
         self.assertEqual(
             api.remove_emphasis(
@@ -1935,235 +1840,153 @@ class TestApi(pyfakefsTestCase):
             'Gomphocarpus (Gomphocarpus physocarpus, syn.\nAsclepias physocarpa)'
         )
 
-        # Example 375 [Commonmark 0.28].
-        # Example 394 [Commonmark 0.29].
         # Example 394 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**foo "*bar*" foo**'),
                          'foo "bar" foo')
 
-        # Example 376 [Commonmark 0.28].
-        # Example 395 [Commonmark 0.29].
         # Example 395 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**foo**bar'), 'foobar')
 
-        # Example 377 [Commonmark 0.28].
-        # Example 396 [Commonmark 0.29].
         # Example 396 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__foo bar __'), '__foo bar __')
 
-        # Example 378 [Commonmark 0.28].
-        # Example 397 [Commonmark 0.29].
         # Example 397 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__(__foo)'), '__(__foo)')
 
-        # Example 379 [Commonmark 0.28].
-        # Example 398 [Commonmark 0.29].
         # Example 398 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_(__foo__)_'), '(foo)')
 
-        # Example 380 [Commonmark 0.28].
-        # Example 399 [Commonmark 0.29].
         # Example 399 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__foo__bar'), '__foo__bar')
 
-        # Example 381 [Commonmark 0.28].
-        # Example 400 [Commonmark 0.29].
         # Example 400 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__пристаням__стремятся'),
                          '__пристаням__стремятся')
 
-        # Example 382 [Commonmark 0.28].
-        # Example 401 [Commonmark 0.29].
         # Example 401 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__foo__bar__baz__'),
                          'foo__bar__baz')
 
-        # Example 383 [Commonmark 0.28].
-        # Example 402 [Commonmark 0.29].
         # Example 402 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__(bar)__.'), '(bar).')
 
-        # Example 384 [Commonmark 0.28].
-        # Example 403 [Commonmark 0.29].
         # Example 403 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo [bar](/url)*'),
                          'foo [bar](/url)')
 
-        # Example 385 [Commonmark 0.28].
-        # Example 404 [Commonmark 0.29].
         # Example 404 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo\nbar*'), 'foo\nbar')
 
-        # Example 386 [Commonmark 0.28].
-        # Example 405 [Commonmark 0.29].
         # Example 405 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_foo __bar__ baz_'),
                          'foo bar baz')
 
-        # Example 387 [Commonmark 0.28].
-        # Example 406 [Commonmark 0.29].
         # Example 406 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_foo _bar_ baz_'), 'foo bar baz')
 
-        # Example 388 [Commonmark 0.28].
-        # Example 407 [Commonmark 0.29].
         # Example 407 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__foo_ bar_'), 'foo bar')
 
-        # Example 389 [Commonmark 0.28].
-        # Example 408 [Commonmark 0.29].
         # Example 408 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo *bar**'), 'foo bar')
 
-        # Example 390 [Commonmark 0.28].
-        # Example 409 [Commonmark 0.29].
         # Example 409 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo **bar** baz*'),
                          'foo bar baz')
 
-        # Example 391 [Commonmark 0.28].
-        # Example 410 [Commonmark 0.29].
         # Example 410 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo**bar**baz*'), 'foobarbaz')
 
-        # Example 411 [Commonmark 0.29].
         # Example 411 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo**bar*'), 'foo**bar')
 
-        # Example 392 [Commonmark 0.28].
-        # Example 412 [Commonmark 0.29].
         # Example 412 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('***foo** bar*'), 'foo bar')
 
-        # Example 393 [Commonmark 0.28].
-        # Example 413 [Commonmark 0.29].
         # Example 413 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo **bar***'), 'foo bar')
 
-        # Example 394 [Commonmark 0.28].
-        # Example 414 [Commonmark 0.29].
         # Example 414 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo**bar***'), 'foobar')
 
-        # Example 415 [Commonmark 0.29].
         # Example 415 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo***bar***baz'), 'foobarbaz')
 
-        # Example 416 [Commonmark 0.29].
         # Example 416 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo******bar*********baz'),
                          'foobar***baz')
 
-        # Example 395 [Commonmark 0.28].
-        # Example 417 [Commonmark 0.29].
         # Example 417 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo **bar *baz* bim** bop*'),
                          'foo bar baz bim bop')
 
-        # Example 396 [Commonmark 0.28].
-        # Example 418 [Commonmark 0.29].
         # Example 418 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo [*bar*](/url)*'),
                          'foo [bar](/url)')
 
-        # Example 397 [Commonmark 0.28].
-        # Example 419 [Commonmark 0.29].
         # Example 419 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('** is not an empty emphasis'),
                          '** is not an empty emphasis')
 
-        # Example 398 [Commonmark 0.28].
-        # Example 420 [Commonmark 0.29].
         # Example 420 [Commonmark 0.30].
         self.assertEqual(
             api.remove_emphasis('**** is not an empty strong emphasis'),
             '**** is not an empty strong emphasis')
 
-        # Example 399 [Commonmark 0.28].
-        # Example 421 [Commonmark 0.29].
         # Example 421 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**foo [bar](/url)**'),
                          'foo [bar](/url)')
 
-        # Example 400 [Commonmark 0.28].
-        # Example 422 [Commonmark 0.29].
         # Example 422 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**foo\nbar**'), 'foo\nbar')
 
-        # Example 401 [Commonmark 0.28].
-        # Example 423 [Commonmark 0.29].
         # Example 423 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__foo _bar_ baz__'),
                          'foo bar baz')
 
-        # Example 402 [Commonmark 0.28].
-        # Example 424 [Commonmark 0.29].
         # Example 424 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__foo __bar__ baz__'),
                          'foo bar baz')
 
-        # Example 403 [Commonmark 0.28].
-        # Example 425 [Commonmark 0.29].
         # Example 425 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('____foo__ bar__'), 'foo bar')
 
-        # Example 404 [Commonmark 0.28].
-        # Example 426 [Commonmark 0.29].
         # Example 426 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**foo **bar****'), 'foo bar')
 
-        # Example 405 [Commonmark 0.28].
-        # Example 427 [Commonmark 0.29].
         # Example 427 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**foo *bar* baz**'),
                          'foo bar baz')
 
-        # Example 406 [Commonmark 0.28].
-        # Example 428 [Commonmark 0.29].
         # Example 428 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**foo*bar*baz**'), 'foobarbaz')
 
-        # Example 407 [Commonmark 0.28].
-        # Example 429 [Commonmark 0.29].
         # Example 429 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('***foo* bar**'), 'foo bar')
 
-        # Example 408 [Commonmark 0.28].
-        # Example 430 [Commonmark 0.29].
+        # Example 430 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**foo *bar***'), 'foo bar')
 
-        # Example 409 [Commonmark 0.28].
-        # Example 431 [Commonmark 0.29].
         # Example 431 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**foo *bar **baz**\nbim* bop**'),
                          'foo bar baz\nbim bop')
 
-        # Example 410 [Commonmark 0.28].
-        # Example 432 [Commonmark 0.29].
         # Example 432 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**foo [*bar*](/url)**'),
                          'foo [bar](/url)')
 
-        # Example 411 [Commonmark 0.28].
-        # Example 433 [Commonmark 0.29].
         # Example 433 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__ is not an empty emphasis'),
                          '__ is not an empty emphasis')
 
-        # Example 412 [Commonmark 0.28].
-        # Example 434 [Commonmark 0.29].
         # Example 434 [Commonmark 0.30].
         self.assertEqual(
             api.remove_emphasis('____ is not an empty strong emphasis'),
             '____ is not an empty strong emphasis')
 
-        # Example 413 [Commonmark 0.28].
-        # Example 435 [Commonmark 0.29].
         # Example 435 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo ***'), 'foo ***')
 
-        # Example 414 [Commonmark 0.28].
-        # Example 436 [Commonmark 0.29].
         # Example 436 [Commonmark 0.30].
         # Removing backslashes is not implemented for these cases because they are already removed
         # with a regex in the build_anchor_link function.
@@ -2173,18 +1996,12 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(api.remove_emphasis(r'foo *\**'),
                          'foo ' + LINE_ESCAPE + '*')
 
-        # Example 415 [Commonmark 0.28].
-        # Example 437 [Commonmark 0.29].
         # Example 437 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo *_*'), 'foo _')
 
-        # Example 416 [Commonmark 0.28].
-        # Example 438 [Commonmark 0.29].
         # Example 438 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo ****'), 'foo ****')
 
-        # Example 417 [Commonmark 0.28].
-        # Example 439 [Commonmark 0.29].
         # Example 439 [Commonmark 0.30].
         self.assertEqual(
             api.remove_emphasis(r'foo **\***').replace(LINE_ESCAPE, ''),
@@ -2192,48 +2009,30 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(api.remove_emphasis(r'foo **\***'),
                          'foo ' + LINE_ESCAPE + '*')
 
-        # Example 418 [Commonmark 0.28].
-        # Example 440 [Commonmark 0.29].
         # Example 440 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo **_**'), 'foo _')
 
-        # Example 419 [Commonmark 0.28].
-        # Example 441 [Commonmark 0.29].
         # Example 441 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**foo*'), '*foo')
 
-        # Example 420 [Commonmark 0.28].
-        # Example 442 [Commonmark 0.29].
         # Example 442 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo**'), 'foo*')
 
-        # Example 421 [Commonmark 0.28].
-        # Example 443 [Commonmark 0.29].
         # Example 443 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('***foo**'), '*foo')
 
-        # Example 422 [Commonmark 0.28].
-        # Example 444 [Commonmark 0.29].
         # Example 444 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('****foo*'), '***foo')
 
-        # Example 423 [Commonmark 0.28].
-        # Example 445 [Commonmark 0.29].
         # Example 445 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**foo***'), 'foo*')
 
-        # Example 424 [Commonmark 0.28].
-        # Example 446 [Commonmark 0.29].
         # Example 446 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo****'), 'foo***')
 
-        # Example 425 [Commonmark 0.28].
-        # Example 447 [Commonmark 0.29].
         # Example 447 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo ___'), 'foo ___')
 
-        # Example 426 [Commonmark 0.28].
-        # Example 448 [Commonmark 0.29].
         # Example 448 [Commonmark 0.30].
         self.assertEqual(
             api.remove_emphasis(r'foo _\__').replace(LINE_ESCAPE, ''),
@@ -2241,18 +2040,12 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(api.remove_emphasis(r'foo _\__'),
                          'foo ' + LINE_ESCAPE + '_')
 
-        # Example 427 [Commonmark 0.28].
-        # Example 449 [Commonmark 0.29].
         # Example 449 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo _*_'), 'foo *')
 
-        # Example 428 [Commonmark 0.28].
-        # Example 450 [Commonmark 0.29].
         # Example 450 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo _____'), 'foo _____')
 
-        # Example 429 [Commonmark 0.28].
-        # Example 451 [Commonmark 0.29].
         # Example 451 [Commonmark 0.30].
         self.assertEqual(
             api.remove_emphasis(r'foo __\___').replace(LINE_ESCAPE, ''),
@@ -2260,111 +2053,69 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(api.remove_emphasis(r'foo __\___'),
                          'foo ' + LINE_ESCAPE + '_')
 
-        # Example 430 [Commonmark 0.28].
-        # Example 452 [Commonmark 0.29].
         # Example 452 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('foo __*__'), 'foo *')
 
-        # Example 431 [Commonmark 0.28].
-        # Example 453 [Commonmark 0.29].
         # Example 453 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__foo_'), '_foo')
 
-        # Example 432 [Commonmark 0.28].
-        # Example 454 [Commonmark 0.29].
         # Example 454 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_foo__'), 'foo_')
 
-        # Example 433 [Commonmark 0.28].
-        # Example 455 [Commonmark 0.29].
         # Example 455 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('___foo__'), '_foo')
 
-        # Example 434 [Commonmark 0.28].
-        # Example 456 [Commonmark 0.29].
         # Example 456 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('____foo_'), '___foo')
 
-        # Example 435 [Commonmark 0.28].
-        # Example 457 [Commonmark 0.29].
         # Example 457 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__foo___'), 'foo_')
 
-        # Example 436 [Commonmark 0.28].
-        # Example 458 [Commonmark 0.29].
         # Example 458 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_foo____'), 'foo___')
 
-        # Example 437 [Commonmark 0.28].
-        # Example 459 [Commonmark 0.29].
         # Example 459 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**foo**'), 'foo')
 
-        # Example 438 [Commonmark 0.28].
-        # Example 460 [Commonmark 0.29].
         # Example 460 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*_foo_*'), 'foo')
 
-        # Example 439 [Commonmark 0.28].
-        # Example 461 [Commonmark 0.29].
         # Example 461 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__foo__'), 'foo')
 
-        # Example 440 [Commonmark 0.28].
-        # Example 462 [Commonmark 0.29].
         # Example 462 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_*foo*_'), 'foo')
 
-        # Example 441 [Commonmark 0.28].
-        # Example 463 [Commonmark 0.29].
         # Example 463 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('****foo****'), 'foo')
 
-        # Example 442 [Commonmark 0.28].
-        # Example 464 [Commonmark 0.29].
         # Example 464 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('____foo____'), 'foo')
 
-        # Example 443 [Commonmark 0.28].
-        # Example 465 [Commonmark 0.29].
         # Example 465 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('******foo******'), 'foo')
 
-        # Example 444 [Commonmark 0.28].
-        # Example 466 [Commonmark 0.29].
         # Example 466 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('***foo***'), 'foo')
 
-        # Example 445 [Commonmark 0.28].
-        # Example 467 [Commonmark 0.29].
         # Example 467 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_____foo_____'), 'foo')
 
-        # Example 446 [Commonmark 0.28].
-        # Example 468 [Commonmark 0.29].
         # Example 468 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo _bar* baz_'),
                          'foo _bar baz_')
 
-        # Example 447 [Commonmark 0.28].
-        # Example 469 [Commonmark 0.29].
         # Example 469 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo __bar *baz bim__ bam*'),
                          'foo bar *baz bim bam')
 
-        # Example 448 [Commonmark 0.28].
-        # Example 470 [Commonmark 0.29].
         # Example 470 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**foo **bar baz**'),
                          '**foo bar baz')
 
-        # Example 449 [Commonmark 0.28].
-        # Example 471 [Commonmark 0.29].
         # Example 471 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*foo *bar baz*'), '*foo bar baz')
 
-        # Example 450 [Commonmark 0.28].
-        # Example 472 [Commonmark 0.29].
         # Example 472 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*[bar*](/url)'), '*[bar*](/url)')
 
@@ -2378,32 +2129,22 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(api.remove_emphasis('[bar](/url**)**'),
                          '[bar](/url**)**')
 
-        # Example 451 [Commonmark 0.28].
-        # Example 473 [Commonmark 0.29].
         # Example 473 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_foo [bar_](/url)'),
                          '_foo [bar_](/url)')
 
-        # Example 452 [Commonmark 0.28].
-        # Example 474 [Commonmark 0.29].
         # Example 474 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*<img src="foo" title="*"/>'),
                          '*<img src="foo" title="*"/>')
 
-        # Example 453 [Commonmark 0.28].
-        # Example 475 [Commonmark 0.29].
         # Example 475 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('**<a href="**">'),
                          '**<a href="**">')
 
-        # Example 454 [Commonmark 0.28].
-        # Example 476 [Commonmark 0.29].
         # Example 476 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('__<a href="__">'),
                          '__<a href="__">')
 
-        # Example 455 [Commonmark 0.28].
-        # Example 477 [Commonmark 0.29].
         # Example 477 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*a `*`*'), 'a `*`')
 
@@ -2412,8 +2153,6 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(api.remove_emphasis('*a `** **`*'), 'a `** **`')
         self.assertEqual(api.remove_emphasis('*a `**** `*'), 'a `**** `')
 
-        # Example 456 [Commonmark 0.28].
-        # Example 478 [Commonmark 0.29].
         # Example 478 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('_a `_`_'), 'a `_`')
 
@@ -2422,15 +2161,13 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(api.remove_emphasis('_a `__ __`_'), 'a `__ __`')
         self.assertEqual(api.remove_emphasis('_a `____ `_'), 'a `____ `')
 
-        # Example 457 [Commonmark 0.28].
-        # Example 479 [Commonmark 0.29].
         # Example 479 [Commonmark 0.30].
-        # self.assertEqual(api.remove_emphasis('**a<http://foo.bar/?q=**>'), '**a<http://foo.bar/?q=**>')
+        self.assertEqual(api.remove_emphasis('**a<http://foo.bar/?q=**>'),
+                         '**a<http://foo.bar/?q=**>')
 
-        # Example 458 [Commonmark 0.28].
-        # Example 480 [Commonmark 0.29].
         # Example 480 [Commonmark 0.30].
-        #        self.assertEqual(api.remove_emphasis('__a<http://foo.bar/?q=__>'), '__a<http://foo.bar/?q=__>')
+        self.assertEqual(api.remove_emphasis('__a<http://foo.bar/?q=__>'),
+                         '__a<http://foo.bar/?q=__>')
 
         # Examples 481 -> 525 [Commonmark 0.30].
         # Note: most of these are modified examples for emphasis only.
@@ -2438,13 +2175,19 @@ class TestApi(pyfakefsTestCase):
         # Example 481 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*[bar*](/uri "title")'),
                          '*[bar*](/uri "title")')
-        #        self.assertEqual(api.remove_emphasis('[bar](/uri *"title")*'), '[bar](/uri *"title")*')
+        # This is actually transformed to <em> so emphasis needs to be removed.
+        self.assertEqual(api.remove_emphasis('[bar](/uri *"title")*'),
+                         '[bar](/uri "title")')
+
         self.assertEqual(api.remove_emphasis('_[bar_](/uri "title")'),
                          '_[bar_](/uri "title")')
-        #        self.assertEqual(api.remove_emphasis('[bar](/uri _"title")_'), '[bar](/uri _"title")_')
+        # This is actually transformed to <em> so emphasis needs to be removed.
+        self.assertEqual(api.remove_emphasis('[bar](/uri _"title")_'),
+                         '[bar](/uri "title")')
 
         # Example 482 [Commonmark 0.30].
-        # ignore
+        # Not emphasis but kept as reference.
+        self.assertEqual(api.remove_emphasis('[link](/uri)'), '[link](/uri)')
 
         # Example 483 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*[*](./target.md)'),
@@ -2523,26 +2266,26 @@ class TestApi(pyfakefsTestCase):
         # Example 492 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'*[link*](<foo\>)'),
                          r'[link](<foo\>)')
-        # self.assertEqual(api.remove_emphasis(r'[link](*<foo\>)*'), '[link](<foo\>)')
+        self.assertEqual(api.remove_emphasis(r'[link](*<foo\>)*'),
+                         r'[link](*<foo\>)*')
         self.assertEqual(api.remove_emphasis(r'_[link_](<foo\>)'),
                          r'[link](<foo\>)')
-        # self.assertEqual(api.remove_emphasis(r'[link](_<foo\>)_'), '[link](<foo\>)')
+        self.assertEqual(api.remove_emphasis(r'[link](_<foo\>)_'),
+                         r'[link](_<foo\>)_')
 
         # Example 493 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*[a*](<b)c'), '[a](<b)c')
-        # self.assertEqual(api.remove_emphasis('[a](*<b)c*'), '[a](<b)c')
+        self.assertEqual(api.remove_emphasis('[a](*<b)c*'), '[a](*<b)c*')
         self.assertEqual(api.remove_emphasis('_[a_](<b)c'), '[a](<b)c')
-        # self.assertEqual(api.remove_emphasis('[a](_<b)c_'), '[a](<b)c')
-
+        self.assertEqual(api.remove_emphasis('[a](_<b)c_'), '[a](_<b)c_')
         self.assertEqual(api.remove_emphasis('*[a*](<b)c>'), '[a](<b)c>')
-        # self.assertEqual(api.remove_emphasis('[a](*<b)c>*'), '[a](<b)c>')
+        self.assertEqual(api.remove_emphasis('[a](*<b)c>*'), '[a](*<b)c>*')
         self.assertEqual(api.remove_emphasis('_[a_](<b)c>'), '[a](<b)c>')
-        # self.assertEqual(api.remove_emphasis('[a](_<b)c>_'), '[a](<b)c>')
-
+        self.assertEqual(api.remove_emphasis('[a](_<b)c>_'), '[a](_<b)c>_')
         self.assertEqual(api.remove_emphasis('*[a*](<b>c)'), '[a](<b>c)')
-        # self.assertEqual(api.remove_emphasis('[a](*<b>c)*'), '[a](<b>c)')
+        self.assertEqual(api.remove_emphasis('[a](*<b>c)*'), '[a](*<b>c)*')
         self.assertEqual(api.remove_emphasis('_[a_](<b>c)'), '[a](<b>c)')
-        # self.assertEqual(api.remove_emphasis('[a](_<b>c)_'), '[a](<b>c)')
+        self.assertEqual(api.remove_emphasis('[a](_<b>c)_'), '[a](_<b>c)_')
 
         # Example 494 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'*[link*](\(foo\))'),
@@ -2587,10 +2330,12 @@ class TestApi(pyfakefsTestCase):
         # Example 498 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis('*[link*](<foo(and(bar)>)'),
                          '*[link*](<foo(and(bar)>)')
-        # self.assertEqual(api.remove_emphasis('[link](*<foo(and(bar)>)*'), '[link](*<foo(and(bar)>)*')
+        self.assertEqual(api.remove_emphasis('[link](*<foo(and(bar)>)*'),
+                         '[link](<foo(and(bar)>)')
         self.assertEqual(api.remove_emphasis('_[link_](<foo(and(bar)>)'),
                          '_[link_](<foo(and(bar)>)')
-        # self.assertEqual(api.remove_emphasis('[link](_<foo(and(bar)>)_'), '[link](_<foo(and(bar)>)_')
+        self.assertEqual(api.remove_emphasis('[link](_<foo(and(bar)>)_'),
+                         '[link](<foo(and(bar)>)')
 
         # Example 499 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'*[link*](foo\)\:)'),
@@ -2673,10 +2418,13 @@ class TestApi(pyfakefsTestCase):
                          r'*[link*](/url "title")')
         self.assertEqual(api.remove_emphasis(r"*[link*](/url 'title')"),
                          r"*[link*](/url 'title')")
-        #        self.assertEqual(api.remove_emphasis(r'*[link*](/url (title))'), r'*[link*](/url (title))')
+        self.assertEqual(api.remove_emphasis(r'*[link*](/url (title))'),
+                         r'*[link*](/url (title))')
 
         # Example 505 [Commonmark 0.30].
-        # self.assertEqual(api.remove_emphasis(r'*[link*](/url "title \"&quot;")'), r'*[link*](/url "title \"&quot;")')
+        self.assertEqual(
+            api.remove_emphasis(r'*[link*](/url "title \"&quot;")'),
+            r'*[link*](/url "title \"&quot;")')
 
         # Example 506 [Commonmark 0.30].
         self.assertEqual(api.remove_emphasis(r'*[link*](/url "title")'),
@@ -2769,6 +2517,24 @@ class TestApi(pyfakefsTestCase):
             api.remove_emphasis(r'[foo<http://example.com/?search=](uri)>'),
             r'[foo<http://example.com/?search=](uri)>')
 
+        # Example 529 [Commonmark 0.30].
+        self.assertEqual(
+            api.remove_emphasis(
+                '[link *foo **bar** `#`*][ref]\n\n[ref]: /uri'),
+            '[link foo bar `#`][ref]\n\n[ref]: /uri')
+
+        # Example 532 [Commonmark 0.30].
+        self.assertEqual(
+            api.remove_emphasis('[foo *bar [baz][ref]*][ref]\n\n[ref]: /uri'),
+            '[foo bar [baz][ref]][ref]\n\n[ref]: /uri')
+
+        # Example 533 [Commonmark 0.30].
+        # NOPASS self.assertEqual(api.remove_emphasis('*[foo*][ref]\n\n[ref]: /uri'), r'*[foo*][ref]\n\n[ref]: /uri')
+
+        # Example 534 [Commonmark 0.30].
+        # NOPASS self.assertEqual(api.remove_emphasis('[foo *bar][ref]*\n\n[ref]: /uri'), '[foo *bar][ref]*\n\n[ref]: /uri')
+
+        # 557, 558, 563, 572, 575, 576, 584, 588
         # Possibly all the way up to 592 [Commonmark 0.30]?
 
         # Extra examples.
@@ -2782,7 +2548,6 @@ class TestApi(pyfakefsTestCase):
 
     def test_remove_html_tags(self):
         r"""Test remove html tags."""
-        # Example 584 [Commonmark 0.28].
         # Example 609 [Commonmark 0.29].
         # Example 612 [Commonmark 0.30].
         # Example 632 [GFM 0.29.0.gfm.2].
@@ -2795,8 +2560,6 @@ class TestApi(pyfakefsTestCase):
             '',
         )
 
-        # Example 585 [Commonmark 0.28].
-        # Example 610 [Commonmark 0.29].
         # Example 613 [Commonmark 0.30].
         # Example 633 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -2808,8 +2571,6 @@ class TestApi(pyfakefsTestCase):
             '',
         )
 
-        # Example 586 [Commonmark 0.28].
-        # Example 611 [Commonmark 0.29].
         # Example 614 [Commonmark 0.30].
         # Example 634 [GFM 0.29.0.gfm.2].
         # Original example with extensions.
@@ -2865,8 +2626,6 @@ class TestApi(pyfakefsTestCase):
             '<b2\n\ndata="foo" >',
         )
 
-        # Example 587 [Commonmark 0.28].
-        # Example 612 [Commonmark 0.29].
         # Example 615 [Commonmark 0.30].
         # Example 635 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -2882,8 +2641,6 @@ class TestApi(pyfakefsTestCase):
             '',
         )
 
-        # Example 588 [Commonmark 0.28].
-        # Example 613 [Commonmark 0.29].
         # Example 616 [Commonmark 0.30].
         # Example 636 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -2897,8 +2654,6 @@ class TestApi(pyfakefsTestCase):
             'Foo ',
         )
 
-        # Example 589 [Commonmark 0.28].
-        # Example 614 [Commonmark 0.29].
         # Example 617 [Commonmark 0.30].
         # Example 637 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -2910,8 +2665,6 @@ class TestApi(pyfakefsTestCase):
             '<33> <__>',
         )
 
-        # Example 590 [Commonmark 0.28].
-        # Example 615 [Commonmark 0.29].
         # Example 618 [Commonmark 0.30].
         # Example 638 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -2923,8 +2676,6 @@ class TestApi(pyfakefsTestCase):
             '<a h*#ref="hi">',
         )
 
-        # Example 591 [Commonmark 0.28].
-        # Example 616 [Commonmark 0.29].
         # Example 619 [Commonmark 0.30].
         # Example 639 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -2936,8 +2687,6 @@ class TestApi(pyfakefsTestCase):
             '<a href="hi\'> <a href=hi\'>',
         )
 
-        # Example 592 [Commonmark 0.28].
-        # Example 617 [Commonmark 0.29].
         # Example 620 [Commonmark 0.30].
         # Example 640 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -2949,8 +2698,6 @@ class TestApi(pyfakefsTestCase):
             '< a><\nfoo><bar/ >',
         )
 
-        # Example 593 [Commonmark 0.28].
-        # Example 618 [Commonmark 0.29].
         # Example 621 [Commonmark 0.30].
         # Example 641 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -2962,8 +2709,6 @@ class TestApi(pyfakefsTestCase):
             r"<a href='bar'title=title>",
         )
 
-        # Example 594 [Commonmark 0.28].
-        # Example 619 [Commonmark 0.29].
         # Example 622 [Commonmark 0.30].
         # Example 642 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -2975,8 +2720,6 @@ class TestApi(pyfakefsTestCase):
             '',
         )
 
-        # Example 595 [Commonmark 0.28].
-        # Example 620 [Commonmark 0.29].
         # Example 623 [Commonmark 0.30].
         # Example 643 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -2988,8 +2731,6 @@ class TestApi(pyfakefsTestCase):
             '</a href="foo">',
         )
 
-        # Example 596 [Commonmark 0.28].
-        # Example 621 [Commonmark 0.29].
         # Example 624 [Commonmark 0.30].
         # Example 644 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -3003,8 +2744,6 @@ class TestApi(pyfakefsTestCase):
             'foo ',
         )
 
-        # Example 597 [Commonmark 0.28].
-        # Example 622 [Commonmark 0.29].
         # Example 625 [Commonmark 0.30].
         # Example 645 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -3018,8 +2757,6 @@ class TestApi(pyfakefsTestCase):
             'foo <!-- not a comment -- two hyphens -->',
         )
 
-        # Example 598 [Commonmark 0.28].
-        # Example 623 [Commonmark 0.29].
         # Example 626 [Commonmark 0.30].
         # Example 646 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -3039,8 +2776,6 @@ class TestApi(pyfakefsTestCase):
             'foo <!-- foo--->',
         )
 
-        # Example 599 [Commonmark 0.28].
-        # Example 624 [Commonmark 0.29].
         # Example 627 [Commonmark 0.30].
         # Example 647 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -3052,8 +2787,6 @@ class TestApi(pyfakefsTestCase):
             'foo ',
         )
 
-        # Example 600 [Commonmark 0.28].
-        # Example 625 [Commonmark 0.29].
         # Example 628 [Commonmark 0.30].
         # Example 648 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -3065,8 +2798,6 @@ class TestApi(pyfakefsTestCase):
             'foo ',
         )
 
-        # Example 601 [Commonmark 0.28].
-        # Example 626 [Commonmark 0.29].
         # Example 629 [Commonmark 0.30].
         # Example 649 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -3078,8 +2809,6 @@ class TestApi(pyfakefsTestCase):
             'foo ',
         )
 
-        # Example 602 [Commonmark 0.28].
-        # Example 627 [Commonmark 0.29].
         # Example 630 [Commonmark 0.30].
         # Example 650 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -3091,8 +2820,6 @@ class TestApi(pyfakefsTestCase):
             'foo ',
         )
 
-        # Example 603 [Commonmark 0.28].
-        # Example 628 [Commonmark 0.29].
         # Example 631 [Commonmark 0.30].
         # Example 651 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -3104,8 +2831,6 @@ class TestApi(pyfakefsTestCase):
             'foo ',
         )
 
-        # Example 604 [Commonmark 0.28].
-        # Example 629 [Commonmark 0.29].
         # Example 632 [Commonmark 0.30].
         # Example 652 [GFM 0.29.0.gfm.2].
         self.assertEqual(
@@ -3276,8 +3001,6 @@ class TestApi(pyfakefsTestCase):
         in the test directory of the source code.
         """
         # github
-        # Example 32 [Commonmark 0.28].
-        # Example 32 [Commonmark 0.29].
         # Example 62 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H1 + S1 + CMARK_LINE_FOO,
@@ -3465,8 +3188,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 33 [Commonmark 0.28].
-        # Example 33 [Commonmark 0.29].
         # Example 63 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(H7 + S1 + CMARK_LINE_FOO, 7, 'github'),
@@ -3477,8 +3198,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 34 [Commonmark 0.28].
-        # Example 34 [Commonmark 0.29].
         # Example 64 [Commonmark 0.30].
         self.assertEqual(
             api.get_atx_heading(
@@ -3500,7 +3219,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 35 [Commonmark 0.28].
         # Example 35 [Commonmark 0.29].
         self.assertEqual(
             api.get_atx_heading(
@@ -3549,7 +3267,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 36 [Commonmark 0.28].
         # Example 36 [Commonmark 0.29].
         self.assertEqual(
             api.get_atx_heading(
@@ -3565,7 +3282,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 37 [Commonmark 0.28].
         # Example 37 [Commonmark 0.29].
         # Example 67 [Commonmark 0.30].
         self.assertEqual(
@@ -3605,7 +3321,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 38 [Commonmark 0.28].
         # Example 38 [Commonmark 0.29].
         # Example 68 [Commonmark 0.30].
         self.assertEqual(
@@ -3645,7 +3360,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 39 [Commonmark 0.28].
         # Example 39 [Commonmark 0.29].
         # Example 69 [Commonmark 0.30].
         self.assertEqual(
@@ -3661,7 +3375,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 40 [Commonmark 0.28].
         # Example 40 [Commonmark 0.29].
         # Example 70 [Commonmark 0.30].
         self.assertEqual(
@@ -3682,7 +3395,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 41 [Commonmark 0.28].
         # Example 41 [Commonmark 0.29].
         # Example 71 [Commonmark 0.30].
         self.assertEqual(
@@ -3710,7 +3422,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 42 [Commonmark 0.28].
         # Example 42 [Commonmark 0.29].
         # Example 72 [Commonmark 0.30].
         self.assertEqual(
@@ -3751,7 +3462,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 43 [Commonmark 0.28].
         # Example 43 [Commonmark 0.29].
         # Example 73 [Commonmark 0.30].
         self.assertEqual(
@@ -3791,7 +3501,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 44 [Commonmark 0.28].
         # Example 44 [Commonmark 0.29].
         # Example 74 [Commonmark 0.30].
         self.assertEqual(
@@ -3808,7 +3517,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 45 [Commonmark 0.28].
         # Example 45 [Commonmark 0.29].
         # Example 75 [Commonmark 0.30].
         self.assertEqual(
@@ -3860,7 +3568,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 46 [Commonmark 0.28].
         # Example 46 [Commonmark 0.29].
         # Example 76 [Commonmark 0.30].
         # Preserve the backslashes unlike the original example so that they
@@ -3909,7 +3616,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 47 [Commonmark 0.28].
         # Example 47 [Commonmark 0.29].
         # Example 77 [Commonmark 0.30].
         self.assertEqual(
@@ -3934,7 +3640,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 48 [Commonmark 0.28].
         # Example 48 [Commonmark 0.29].
         # Example 78 [Commonmark 0.30].
         self.assertEqual(
@@ -3959,7 +3664,6 @@ class TestApi(pyfakefsTestCase):
             }],
         )
 
-        # Example 49 [Commonmark 0.28].
         # Example 49 [Commonmark 0.29].
         # Example 79 [Commonmark 0.30].
         self.assertEqual(
@@ -3994,7 +3698,6 @@ class TestApi(pyfakefsTestCase):
         )
 
         # Example 49 with link labels: link lables cannot be empty
-        # Example 49 [Commonmark 0.28].
         # Example 49 [Commonmark 0.29].
         # Example 79 [Commonmark 0.30].
         with self.assertRaises(exceptions.GithubEmptyLinkLabel):
@@ -4525,7 +4228,6 @@ class TestApi(pyfakefsTestCase):
         self.assertIsNone(api.is_opening_code_fence(H6))
         self.assertIsNone(api.is_opening_code_fence(H7))
 
-        # Example 88 [Commonmark 0.28].
         # Example 89 [Commonmark 0.29].
         # Example 119 [Commonmark 0.30].
         # Base case: no info string.
@@ -4533,14 +4235,12 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(api.is_opening_code_fence(BACKTICK4), BACKTICK4)
         self.assertEqual(api.is_opening_code_fence(BACKTICK10), BACKTICK10)
 
-        # Example 89 [Commonmark 0.28].
         # Example 90 [Commonmark 0.29].
         # Example 120 [Commonmark 0.30].
         self.assertEqual(api.is_opening_code_fence(TILDE3), TILDE3)
         self.assertEqual(api.is_opening_code_fence(TILDE4), TILDE4)
         self.assertEqual(api.is_opening_code_fence(TILDE10), TILDE10)
 
-        # Example 90 [Commonmark 0.28].
         # Example 91 [Commonmark 0.29].
         # Example 121 [Commonmark 0.30].
         # Backticks and tildes.
@@ -4558,12 +4258,10 @@ class TestApi(pyfakefsTestCase):
         self.assertIsNone(
             api.is_opening_code_fence(TILDE2 + LINE_LINE_FEED + TILDE1), )
 
-        # Example 91 -> 97 [Commonmark 0.28].
         # Example 92 -> 98 [Commonmark 0.29].
         # Example 122 -> 128 [Commonmark 0.30].
         # See test_is_closing_code_fence.
 
-        # Example 98 [Commonmark 0.28].
         # Example 99 [Commonmark 0.29].
         # Example 129 [Commonmark 0.30].
         self.assertEqual(
@@ -4578,42 +4276,35 @@ class TestApi(pyfakefsTestCase):
             TILDE3,
         )
 
-        # Example 99 [Commonmark 0.28].
         # Example 100 [Commonmark 0.29].
         # Example 130 [Commonmark 0.30].
-        # See example 88 [Commonmark 0.28].
 
         # Indentation.
-        # Example 100 [Commonmark 0.28].
         # Example 101 [Commonmark 0.29].
         # Example 131 [Commonmark 0.30].
         self.assertEqual(api.is_opening_code_fence(S1 + BACKTICK3), BACKTICK3)
 
         self.assertEqual(api.is_opening_code_fence(S1 + TILDE3), TILDE3)
 
-        # Example 101 [Commonmark 0.28].
         # Example 102 [Commonmark 0.29].
         # Example 132 [Commonmark 0.30].
         self.assertEqual(api.is_opening_code_fence(S2 + BACKTICK3), BACKTICK3)
 
         self.assertEqual(api.is_opening_code_fence(S2 + TILDE3), TILDE3)
 
-        # Example 102 [Commonmark 0.28].
         # Example 103 [Commonmark 0.29].
         # Example 133 [Commonmark 0.30].
         self.assertEqual(api.is_opening_code_fence(S3 + BACKTICK3), BACKTICK3)
 
         self.assertEqual(api.is_opening_code_fence(S3 + TILDE3), TILDE3)
 
-        # Example 103 [Commonmark 0.28].
         # Example 104 [Commonmark 0.29].
         # Example 134 [Commonmark 0.30].
         self.assertIsNone(api.is_opening_code_fence(S4 + BACKTICK3))
 
         self.assertIsNone(api.is_opening_code_fence(S4 + TILDE3))
 
-        # An extension of examples 100 -> 103 [Commonmark 0.28].
-        #                          101 -> 104 [Commonmark 0.29].
+        # An extension of examples 101 -> 104 [Commonmark 0.29].
         self.assertEqual(api.is_opening_code_fence(S3 + BACKTICK3), BACKTICK3)
         self.assertEqual(api.is_opening_code_fence(S3 + BACKTICK4), BACKTICK4)
         self.assertEqual(
@@ -4625,12 +4316,10 @@ class TestApi(pyfakefsTestCase):
         self.assertEqual(api.is_opening_code_fence(S3 + TILDE4), TILDE4)
         self.assertEqual(api.is_opening_code_fence(S3 + TILDE10), TILDE10)
 
-        # Example 104 -> 106 [Commonmark 0.28].
         # Example 105 -> 107 [Commonmark 0.29].
         # Example 135 -> 137 [Commonmark 0.30].
         # See test_is_closing_code_fence.
 
-        # Example 107 [Commonmark 0.28].
         # Example 108 [Commonmark 0.29].
         # Example 138 [Commonmark 0.30].
         self.assertIsNone(
@@ -4641,12 +4330,10 @@ class TestApi(pyfakefsTestCase):
             TILDE3,
         )
 
-        # Example 108 [Commonmark 0.28].
         # Example 109 [Commonmark 0.29].
         # Example 139 [Commonmark 0.30].
         # See test_is_closing_code_fence.
 
-        # Example 109 -> 110 [Commonmark 0.28].
         # Example 110 -> 111 [Commonmark 0.29].
         # Example 140 -> 141 [Commonmark 0.30].
         # Not relevant.
@@ -4658,7 +4345,6 @@ class TestApi(pyfakefsTestCase):
             BACKTICK3,
         )
 
-        # Example 111 [Commonmark 0.28].
         # Example 112 [Commonmark 0.29].
         # Example 142 [Commonmark 0.30].
         self.assertEqual(
@@ -4672,7 +4358,6 @@ class TestApi(pyfakefsTestCase):
         )
 
         # Expansion of
-        # example 111 [Commonmark 0.28].
         # example 112 [Commonmark 0.29].
         # example 142 [Commonmark 0.30].
         # Info string.
@@ -4738,7 +4423,6 @@ class TestApi(pyfakefsTestCase):
             TILDE3,
         )
 
-        # Example 112 [Commonmark 0.28].
         # Example 113 [Commonmark 0.29].
         # Example 143 [Commonmark 0.30].
         # Info string with garbage and foreign character.
@@ -4756,14 +4440,12 @@ class TestApi(pyfakefsTestCase):
             TILDE4,
         )
 
-        # Example 113 [Commonmark 0.28].
         # Example 114 [Commonmark 0.29].
         # Example 144 [Commonmark 0.30].
         self.assertEqual(api.is_opening_code_fence(BACKTICK4 + ';'), BACKTICK4)
 
         self.assertEqual(api.is_opening_code_fence(TILDE4 + ';'), TILDE4)
 
-        # Example 114 [Commonmark 0.28].
         # Example 115 [Commonmark 0.29].
         # Example 145 [Commonmark 0.30].
         self.assertIsNone(
@@ -4789,7 +4471,6 @@ class TestApi(pyfakefsTestCase):
             api.is_opening_code_fence(BACKTICK3 + S1 + 'aa' + S1 + TILDE3 +
                                       S1 + BACKTICK3), )
 
-        # Example 115 [Commonmark 0.28].
         # Example 117 [Commonmark 0.29].
         # Example 147 [Commonmark 0.30].
         # See test_is_closing_code_fence.
@@ -4828,34 +4509,28 @@ class TestApi(pyfakefsTestCase):
         self.assertFalse(api.is_closing_code_fence(TILDE3, TILDE3 + LINE_DASH))
 
         # github.
-        # Example 91 [Commonmark 0.28].
         # Example 92 [Commonmark 0.29].
         # Example 122 [Commonmark 0.30].
         self.assertFalse(api.is_closing_code_fence(BACKTICK3, TILDE3))
 
-        # Example 92 [Commonmark 0.28].
         # Example 93 [Commonmark 0.29].
         # Example 123 [Commonmark 0.30].
         self.assertFalse(api.is_closing_code_fence(TILDE3, BACKTICK3))
 
-        # Example 93 [Commonmark 0.28].
         # Example 94 [Commonmark 0.29].
         # Example 124 [Commonmark 0.30].
         self.assertFalse(api.is_closing_code_fence(BACKTICK3, BACKTICK4))
 
-        # Example 94 [Commonmark 0.28].
         # Example 95 [Commonmark 0.29].
         # Example 125 [Commonmark 0.30].
         self.assertFalse(api.is_closing_code_fence(TILDE3, TILDE4))
 
-        # Example 95 [Commonmark 0.28].
         # Example 96 [Commonmark 0.29].
         # Example 126 [Commonmark 0.30].
         self.assertTrue(api.is_closing_code_fence(LINE_EMPTY, BACKTICK3, True))
 
         self.assertTrue(api.is_closing_code_fence(LINE_EMPTY, TILDE3, True))
 
-        # Example 96 [Commonmark 0.28].
         # Example 97 [Commonmark 0.29].
         # Example 127 [Commonmark 0.30].
         # End of document.
@@ -4873,7 +4548,6 @@ class TestApi(pyfakefsTestCase):
                 True,
             ), )
 
-        # Example 97 [Commonmark 0.28].
         # Example 98 [Commonmark 0.29].
         # Example 128 [Commonmark 0.30].
         # Not relevant because we don't have to find headings inside blockquotes.
@@ -4881,14 +4555,12 @@ class TestApi(pyfakefsTestCase):
         # Example 129 -> 134 [Commonmark 0.30].
         # See test_is_opening_code_fence.
 
-        # Example 104 [Commonmark 0.28].
         # Example 105 [Commonmark 0.29].
         # Example 135 [Commonmark 0.30].
         self.assertTrue(api.is_closing_code_fence(S2 + BACKTICK3, BACKTICK3))
 
         self.assertTrue(api.is_closing_code_fence(S2 + TILDE3, TILDE3))
 
-        # Example 105 [Commonmark 0.28].
         # Example 106 [Commonmark 0.29].
         # Example 136 [Commonmark 0.30].
         self.assertTrue(
@@ -4896,7 +4568,6 @@ class TestApi(pyfakefsTestCase):
 
         self.assertTrue(api.is_closing_code_fence(S2 + TILDE3, S3 + TILDE3))
 
-        # Example 106 [Commonmark 0.28].
         # Example 107 [Commonmark 0.29].
         # Example 137 [Commonmark 0.30].
         self.assertFalse(api.is_closing_code_fence(S4 + BACKTICK3, BACKTICK3))
@@ -4906,7 +4577,6 @@ class TestApi(pyfakefsTestCase):
         # Example 138 [Commonmark 0.30].
         self.assertTrue(api.is_closing_code_fence(S1 + BACKTICK3, BACKTICK3))
 
-        # Example 108 [Commonmark 0.28].
         # Example 109 [Commonmark 0.29].
         # Example 139 [Commonmark 0.30].
         self.assertFalse(
@@ -4918,7 +4588,6 @@ class TestApi(pyfakefsTestCase):
         # Example 140 -> 146 [Commonmark 0.30].
         # See test_is_opening_code_fence.
 
-        # Example 115 [Commonmark 0.28].
         # Example 117 [Commonmark 0.29].
         # Example 147 [Commonmark 0.30].
         self.assertFalse(

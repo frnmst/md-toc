@@ -79,31 +79,35 @@ def _common_scan(regex: str, ptr: str, p: int) -> int:
 # in parentheses), returning number of chars matched.  Allow one
 # level of internal nesting (quotes within quotes).
 def _cmark__scan_link_title(ptr: str, p: int) -> int:
-    r1 = '["](' + md_parser['cmark']['_scanners.re'][
-        'escaped_char'] + '|[^"\u0000])*["]'
-    r2 = "['](" + md_parser['cmark']['_scanners.re'][
-        'escaped_char'] + "|[^'\u0000])*[']"
+    # Also escape `\"` for link titles.
+    r1 = r'["](' + md_parser['cmark']['_scanners.re'][
+        'escaped_char'] + r'|[^"\u0000])*["]'
+    r2 = r"['](" + md_parser['cmark']['_scanners.re'][
+        'escaped_char'] + r"|[^'\u0000])*[']"
     r3 = r'[\(](' + md_parser['cmark']['_scanners.re'][
-        'escaped_char'] + r"|[^\(\)\u0000])*[']"
-    r = '(' + r1 + '|' + r2 + '|' + r3 + ')'
+        'escaped_char'] + r'|[^\(\)\u0000])*[\)]'
+    r = f'({r1}|{r2}|{r3})'
+
     return _common_scan(r, ptr, p)
 
 
 # Match SOME space characters, including newlines.
 def _cmark__scan_spacechars(ptr: str, p: int) -> int:
-    return _common_scan(md_parser['cmark']['_scanners.re']['spacechar'] + '+',
+    return _common_scan(f'{md_parser["cmark"]["_scanners.re"]["spacechar"]}+',
                         ptr, p)
 
 
 # Try to match URI autolink after first <, returning number of chars matched.
 def _cmark__scan_autolink_uri(ptr: str, p: int) -> int:
-    return _common_scan('[:][^\x00-\x20<>]*[>]', ptr, p)
+    return _common_scan(
+        f'{md_parser["cmark"]["_scanners.re"]["scheme"]}[:][^\x00-\x20<>]*[>]',
+        ptr, p)
 
 
 # Try to match email autolink after first <, returning num of chars matched.
 def _cmark__scan_autolink_email(ptr: str, p: int) -> int:
     return _common_scan(
-        '[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+[@][a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?([.][a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*[>]',
+        r'[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+[@][a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?([.][a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*[>]',
         ptr, p)
 
 

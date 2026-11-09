@@ -43,6 +43,7 @@ __cmark_attributevaluespec = __cmark_spacechar + '*[=]' + __cmark_spacechar + '*
 __cmark_attribute = '(' + __cmark_spacechar + '+' + __cmark_attributename + __cmark_attributevaluespec + '?)'
 __cmark_opentag = __cmark_tagname + __cmark_attribute + '*' + __cmark_spacechar + '*[/]?[>]'
 __cmark_closetag = '[/]' + __cmark_tagname + __cmark_spacechar + '*[>]'
+__cmark_scheme = r'[A-Za-z][A-Za-z0-9.+-]{1,31}'
 
 common_defaults: dict[str] = {
     'toc_marker':
@@ -141,12 +142,13 @@ parser: dict = {
             # FIXME
             # Some of these expressions are a duplicate of parser['cmark']['re'] dicts.
             'spacechar': __cmark_spacechar,
-            'escaped_char': '([\\][!"#$%&\'()*+,./:;<=>?@[\\\\]^_`{|}~-])',
+            'escaped_char': r'([\\][!"#$%&\'()*+,./:;<=>?@[\\\]^_`{|}~-])',
             'cdata': r'CDATA\[([^\]\x00]+|\][^\]\x00]|\]\][^>\x00])*',
             'htmltag': '(' + __cmark_opentag + '|' + __cmark_closetag + ')',
-            'htmlcomment': '(--->|(-([-]?[^\x00>-])([-]?[^\x00-])*-->))',
+            'htmlcomment': r'(--->|(-([-]?[^\x00>-])([-]?[^\x00-])*-->))',
             'declaration': '[A-Z]+' + __cmark_spacechar + '+' + '[^>\x00]*',
-            'processinginstruction': '([^?>\x00]+|[?][^>\x00]|[>])+',
+            'processinginstruction': r'([^?>\x00]+|[?][^>\x00]|[>])+',
+            'scheme': __cmark_scheme,
         },
     },
     'redcarpet': {

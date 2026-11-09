@@ -622,6 +622,8 @@ def _cmark_handle_backticks(subj: _cmarkSubject,
 
 
 # 0.30
+# Scan ***, **, or * and return number scanned, or 0.
+# Advances position.
 def _cmark_scan_delims(subj: _cmarkSubject, c: str) -> tuple:
     numdelims: int = 0
     before_char_pos: int = 0
@@ -704,14 +706,15 @@ def _cmark_remove_delimiter(subj: _cmarkSubject, delim: _cmarkDelimiter):
         return
     if delim.next is None:
         # end of list:
-        if delim != subj.last_delim:
+        if delim is not subj.last_delim:
             raise ValueError
         subj.last_delim = delim.previous
     else:
         delim.next.previous = delim.previous
     if delim.previous is not None:
         delim.previous.next = delim.next
-    del delim
+
+    #    subj->mem->free(delim);
 
 
 # 0.30
@@ -892,14 +895,16 @@ def _cmark_process_emphasis(subj: _cmarkSubject, stack_bottom: _cmarkDelimiter,
                     openers_bottom_index += 3
                 else:
                     openers_bottom_index += 0
-                openers_bottom_index += closer.length % 3
+                openers_bottom_index += (closer.length % 3)
             else:
                 raise ValueError
 
             # Now look backwards for first matching opener:
             opener = closer.previous
+
             opener_found = False
-            while opener is not None and opener != openers_bottom[
+
+            while opener is not None and opener is not openers_bottom[
                     openers_bottom_index]:
                 if opener.can_open and opener.delim_char == closer.delim_char:
                     # interior closer of size 2 can't match opener of size 1
@@ -945,7 +950,7 @@ def _cmark_process_emphasis(subj: _cmarkSubject, stack_bottom: _cmarkDelimiter,
             closer = closer.next
 
     # free all delimiters in list until stack_bottom:
-    while subj.last_delim is not None and subj.last_delim != stack_bottom:
+    while subj.last_delim is not None and subj.last_delim is not stack_bottom:
         _cmark_remove_delimiter(subj, subj.last_delim)
 
 
@@ -977,6 +982,7 @@ def _cmark_remove_emph(subj: _cmarkSubject, opener: _cmarkDelimiter,
     opener_inl.length = opener_num_chars
     closer_inl.length = closer_num_chars
 
+    # Python virtual string terminators.
     #   opener_inl->data[opener_num_chars] = 0;
     opener_inl.data = opener_inl.data[:opener_num_chars]
 
@@ -985,7 +991,7 @@ def _cmark_remove_emph(subj: _cmarkSubject, opener: _cmarkDelimiter,
 
     # free delimiters between opener and closer
     delim = closer.previous
-    while delim is not None and delim != opener:
+    while delim is not None and delim is not opener:
         tmp_delim = delim.previous
         _cmark_remove_delimiter(subj, delim)
         delim = tmp_delim
@@ -1001,7 +1007,7 @@ def _cmark_remove_emph(subj: _cmarkSubject, opener: _cmarkDelimiter,
         emph = _cmark_make_strong(subj.mem)
 
     tmp = opener_inl.next
-    while tmp and tmp != closer_inl:
+    while tmp and tmp is not closer_inl:
         tmpnext = tmp.next
         _cmark_cmark_node_unlink(tmp)
         _cmark_append_child(emph, tmp)
@@ -1271,7 +1277,7 @@ def _cmark_link_label(subj: _cmarkSubject, raw_label: _cmarkCmarkChunk) -> int:
         # MAX_LINK_LABEL_LENGTH is defined as 1000 while
         # parser['cmark']['link']['max chars label'] is defined as 999.
         #     if (length > MAX_LINK_LABEL_LENGTH) {
-        if length > md_parser['cmark']['link']['max chars label'] + 1:
+        if length > md_parser['cmark']['link']['max_chars_label'] + 1:
             no_match = True
 
         c = chr(_cmark_peek_char(subj))
@@ -1356,6 +1362,57 @@ def _cmark_manual_scan_link_url(input: _cmarkCmarkChunk, offset: int) -> tuple:
     return i - offset, output
 
 
+def _cmark_handle_close_bracket_match(subj, is_image, opener, url, title,
+                                      ignore):
+    if is_image:
+        param = _cmarkCmarkNodeType.CMARK_NODE_IMAGE.value
+    else:
+        param = _cmarkCmarkNodeType.CMARK_NODE_LINK.value
+    inl = _cmark_make_simple(subj.mem, param)
+    inl.as_link.url = url
+    inl.as_link.title = title
+    inl.start_line = inl.end_line = subj.line
+    inl.start_column = opener.inl_text.start_column
+    inl.end_column = subj.pos + subj.column_offset + subj.block_offset
+    _cmark_cmark_node_insert_before(opener.inl_text, inl)
+    # Add link text:
+    tmp = opener.inl_text.next
+    while tmp:
+        tmpnext = tmp.next
+        _cmark_cmark_node_unlink(tmp)
+        _cmark_append_child(inl, tmp)
+        tmp = tmpnext
+
+    # Free the bracket [:
+    _cmark_cmark_node_free(opener.inl_text)
+
+    _cmark_process_emphasis(subj, opener.previous_delimiter, ignore)
+    _cmark_pop_bracket(subj)
+
+    # Now, if we have a link, we also want to deactivate earlier link
+    # delimiters. (This code can be removed if we decide to allow links
+    # inside links.)
+    if not is_image:
+        op = subj.last_bracket
+        while op is not None:
+            if not op.image:
+                if not op.active:
+                    break
+                else:
+                    op.active = False
+            op = op.previous
+
+    return None
+
+
+def _cmark_handle_close_bracket_no_match(subj, initial_pos):
+    # If we fall through to here, it means we didn't match a link:
+    _cmark_pop_bracket(subj)  # remove this opener from delimiter list
+    subj.pos = initial_pos
+    return _cmark_make_str(subj, subj.pos - 1, subj.pos - 1,
+                           _cmark_cmark_chunk_literal(']'))
+
+
 # 0.30
 # Return a link, an image, or a literal close bracket.
 def _cmark_handle_close_bracket(subj: _cmarkSubject,
@@ -1374,14 +1431,9 @@ def _cmark_handle_close_bracket(subj: _cmarkSubject,
     url: str
     title: str
     opener: _cmarkBracket
-    inl: _cmarkCmarkNode
     raw_label: _cmarkCmarkChunk
     found_label: int
-    tmp: _cmarkCmarkNode
-    tmpnext: _cmarkCmarkNode
     is_image: bool
-    match_0: bool = False
-    no_match_0: bool = False
 
     _cmark_advance(subj)  # advance past ]
     initial_pos = subj.pos
@@ -1439,87 +1491,46 @@ def _cmark_handle_close_bracket(subj: _cmarkSubject,
             _cmark_cmark_chunk_free(url_chunk)
             _cmark_cmark_chunk_free(title_chunk)
 
-            #     goto match
-            match_0 = True
+            #     goto match;
+            return _cmark_handle_close_bracket_match(subj, is_image, opener,
+                                                     url, title, ignore)
         else:
             # it could still be a shortcut reference link
             subj.pos = after_link_text_pos
 
-    if not match_0:
-        # Next, look for a following [link label] that matches in refmap.
-        # skip spaces
-        raw_label = _cmark_cmark_chunk_literal('')
-        found_label = _cmark_link_label(subj, raw_label)
-        if not found_label:
-            # If we have a shortcut reference link, back up
-            # to before the spacse we skipped.
-            subj.pos = initial_pos
-
-        if ((not found_label or raw_label.length == 0)
-                and not opener.bracket_after):
-            _cmark_cmark_chunk_free(raw_label)
-            raw_label = _cmark_cmark_chunk_dup(
-                subj.input, opener.position, initial_pos - opener.position - 1)
-            found_label = True
-
-        if found_label:
-            ref = _cmark_cmark_reference_lookup(subj.refmap, raw_label)
-            _cmark_cmark_chunk_free(raw_label)
-
-        if ref is not None:  # found
-            url = _cmark_cmark_strdup(subj.mem, ref.url)
-            title = _cmark_cmark_strdup(subj.mem, ref.title)
-            match_0 = True
-        else:
-            no_match_0 = True
-
-    if match_0:
-        if is_image:
-            param = _cmarkCmarkNodeType.CMARK_NODE_IMAGE.value
-        else:
-            param = _cmarkCmarkNodeType.CMARK_NODE_LINK.value
-        inl = _cmark_make_simple(subj.mem, param)
-        inl.as_link.url = url
-        inl.as_link.title = title
-        inl.start_line = inl.end_line = subj.line
-        inl.start_column = opener.inl_text.start_column
-        inl.end_column = subj.pos + subj.column_offset + subj.block_offset
-        _cmark_cmark_node_insert_before(opener.inl_text, inl)
-        # Add link text:
-        tmp = opener.inl_text.next
-        while tmp:
-            tmpnext = tmp.next
-            _cmark_cmark_node_unlink(tmp)
-            _cmark_append_child(inl, tmp)
-            tmp = tmpnext
-
-        # Free the bracket [:
-        _cmark_cmark_node_free(opener.inl_text)
-
-        _cmark_process_emphasis(subj, opener.previous_delimiter, ignore)
-        _cmark_pop_bracket(subj)
-
-        # Now, if we have a link, we also want to deactivate earlier link
-        # delimiters. (This code can be removed if we decide to allow links
-        # inside links.)
-        if not is_image:
-            opener = subj.last_bracket
-            while opener is not None:
-                if not opener.image:
-                    if not opener.active:
-                        break
-                    else:
-                        opener.active = False
-                opener = opener.previous
-
-        return None
-
-    elif no_match_0:
-        # If we fall through to here, it means we didn't match a link:
-        _cmark_pop_bracket(subj)  # remove this opener from delimiter list
+    # Next, look for a following [link label] that matches in refmap.
+    # skip spaces
+    raw_label = _cmark_cmark_chunk_literal('')
+    found_label = _cmark_link_label(subj, raw_label)
+    if not found_label:
+        # If we have a shortcut reference link, back up
+        # to before the spacse we skipped.
         subj.pos = initial_pos
-        return _cmark_make_str(subj, subj.pos - 1, subj.pos - 1,
-                               _cmark_cmark_chunk_literal(']'))
+
+    if ((not found_label or raw_label.length == 0)
+            and not opener.bracket_after):
+        _cmark_cmark_chunk_free(raw_label)
+        raw_label = _cmark_cmark_chunk_dup(subj.input, opener.position,
+                                           initial_pos - opener.position - 1)
+        found_label = True
+
+    if found_label:
+        ref = _cmark_cmark_reference_lookup(subj.refmap, raw_label)
+        _cmark_cmark_chunk_free(raw_label)
+
+    if ref is not None:  # found
+        url = _cmark_cmark_strdup(subj.mem, ref.url)
+        title = _cmark_cmark_strdup(subj.mem, ref.title)
+
+        #     goto match;
+        return _cmark_handle_close_bracket_match(subj, is_image, opener, url,
+                                                 title, ignore)
+    else:
+        #     goto noMatch;
+        return _cmark_handle_close_bracket_no_match(subj, initial_pos)
+
+    # noMatch:
+    return _cmark_handle_close_bracket_no_match(subj, initial_pos)
 
 
 # 0.30
@@ -2095,7 +2106,7 @@ def _cmark_subject_find_special_char(subj: _cmarkSubject, options: int) -> int:
 def _cmark_parse_inline(subj: _cmarkSubject,
                         parent: _cmarkCmarkNode,
                         options: int = 0,
-                        ignore: list = list()) -> int:
+                        ignore: list = []) -> int:
     new_inl: _cmarkCmarkNode = None
     contents: str
     c: int
@@ -2174,13 +2185,14 @@ def _cmark_cmark_parse_inlines(
                             subj, content, refmap)
     _cmark_cmark_chunk_rtrim(subj.input)
 
-    ignore = list()
+    ignore: list = []
     while not _cmark_is_eof(subj) and _cmark_parse_inline(
             subj, parent, options, ignore):
         pass
 
     # When we hit the end of the input, we call the process emphasis procedure with stack_bottom = NULL.
     _cmark_process_emphasis(subj, None, ignore)
+
     # free bracket and delim stack
     while subj.last_delim:
         _cmark_remove_delimiter(subj, subj.last_delim)

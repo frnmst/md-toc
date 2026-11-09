@@ -79,8 +79,8 @@ def _cmark_cmark_utf8proc_charlen(line: str, line_length: int) -> int:
 
 
 # 0.29, 0.30
-def _cmark_cmark_utf8proc_iterate(line: str, line_len: int) -> tuple:
-    length: int = 0
+def _cmark_cmark_utf8proc_iterate(line: str, line_len: int) -> tuple[int, int]:
+    length: int
     uc: int = -1
     dst: int = -1
 
