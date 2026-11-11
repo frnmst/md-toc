@@ -15,58 +15,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [Changelog](#changelog)
   - [\[Unreleased\]](#unreleased)
+  - [\[9.1.1\] Unreleased](#911-unreleased)
+    - [Fixed](#fixed)
   - [\[9.1.0\] 2026-10-01](#910-2026-10-01)
     - [Deprecated](#deprecated)
-    - [Fixed](#fixed)
+    - [Fixed](#fixed-1)
     - [Added](#added)
   - [\[9.0.1\] 2026-09-26](#901-2026-09-26)
-    - [Fixed](#fixed-1)
+    - [Fixed](#fixed-2)
     - [Added](#added-1)
     - [Changed](#changed)
   - [\[9.0.0\] 2024-04-10](#900-2024-04-10)
-    - [Fixed](#fixed-2)
     - [Fixed](#fixed-3)
+    - [Fixed](#fixed-4)
     - [Removed](#removed)
   - [\[8.2.2\] 2023-11-09](#822-2023-11-09)
     - [Changed](#changed-1)
-    - [Fixed](#fixed-4)
+    - [Fixed](#fixed-5)
   - [\[8.2.1\] 2023-11-07](#821-2023-11-07)
     - [Changed](#changed-2)
     - [Added](#added-2)
   - [\[8.2.0\] 2023-08-08](#820-2023-08-08)
-    - [Fixed](#fixed-5)
+    - [Fixed](#fixed-6)
     - [Added](#added-3)
   - [\[8.1.9\] 2023-02-10](#819-2023-02-10)
     - [Changed](#changed-3)
-    - [Fixed](#fixed-6)
+    - [Fixed](#fixed-7)
   - [\[8.1.8\] 2023-01-06](#818-2023-01-06)
     - [Changed](#changed-4)
     - [Removed](#removed-1)
-    - [Fixed](#fixed-7)
+    - [Fixed](#fixed-8)
   - [\[8.1.7\] 2022-12-29](#817-2022-12-29)
     - [Added](#added-4)
-    - [Fixed](#fixed-8)
+    - [Fixed](#fixed-9)
     - [Changed](#changed-5)
   - [\[8.1.6\] 2022-12-08](#816-2022-12-08)
-    - [Fixed](#fixed-9)
+    - [Fixed](#fixed-10)
   - [\[8.1.5\] 2022-10-28](#815-2022-10-28)
     - [Added](#added-5)
-    - [Fixed](#fixed-10)
+    - [Fixed](#fixed-11)
   - [\[8.1.4\] 2022-06-15](#814-2022-06-15)
     - [Changed](#changed-6)
-    - [Fixed](#fixed-11)
+    - [Fixed](#fixed-12)
   - [\[8.1.3\] 2022-04-20](#813-2022-04-20)
     - [Deprecated](#deprecated-1)
-    - [Fixed](#fixed-12)
-  - [\[8.1.2\] 2022-04-03](#812-2022-04-03)
     - [Fixed](#fixed-13)
+  - [\[8.1.2\] 2022-04-03](#812-2022-04-03)
+    - [Fixed](#fixed-14)
     - [Changed](#changed-7)
   - [\[8.1.1\] 2022-01-27](#811-2022-01-27)
-    - [Fixed](#fixed-14)
-  - [\[8.1.0\] 2021-11-29](#810-2021-11-29)
     - [Fixed](#fixed-15)
-  - [\[8.0.1\] 2021-08-20](#801-2021-08-20)
+  - [\[8.1.0\] 2021-11-29](#810-2021-11-29)
     - [Fixed](#fixed-16)
+  - [\[8.0.1\] 2021-08-20](#801-2021-08-20)
+    - [Fixed](#fixed-17)
     - [Changed](#changed-8)
     - [Added](#added-6)
   - [\[8.0.0\] 2021-05-28](#800-2021-05-28)
@@ -86,7 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   There is a jump in the detected header level, 1 then 3, not 2. This always
   happens with the last line of the dummy input file.
 - Add code fence detection before writing TOC in place.
-  Until version 9.0.0, given for example a file like this
+  Until version 9.x, given for example a file like this:
 
   ````markdown
   ```
@@ -106,13 +108,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ### THREE
   ````
 
-  running
+  running:
 
   ```shell
   md_toc --toc-marker '<!--TOC_MARKER-->' -p github file.md
   ```
 
-  results in
+  results in:
 
   ````markdown
   ```
@@ -140,7 +142,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ### THREE
   ````
 
-  instead of
+  instead of:
 
   ````markdown
   ```
@@ -214,6 +216,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
   ### THREE
   ````
+
+## [9.1.1] Unreleased
+
+### Fixed
+
+- Improve emphasis removal support for `cmark`. See [issue #25](https://github.com/frnmst/md-toc/issues/25).
+- Minor speed and memory optimizations.
+- Add and fix test cases for more coverage.
+- Update markdown rules documentation.
+- Bump dev dependencies.
 
 ## [9.1.0] 2026-10-01
 

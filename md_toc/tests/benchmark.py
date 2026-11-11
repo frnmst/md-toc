@@ -29,6 +29,8 @@ ITERATIONS = 100
 MIN_HEADER_STEP = 10
 MAX_HEADER_STEP = 50
 
+KEEP_HEADER_LEVELS: int = 4
+
 # Do not use '#' as content to avoid triggering an empty link label exception.
 alphabet: str = string.printable.replace('#', '')
 
@@ -128,7 +130,7 @@ if __name__ == '__main__':
                     start = time.time()
                     md_toc.api.build_toc(filename=fp.name,
                                          parser=p,
-                                         keep_header_levels=3)
+                                         keep_header_levels=KEEP_HEADER_LEVELS)
                     end = time.time()
                     avg.append(end - start)
                     print('total_time: ' + str(avg[-1]))

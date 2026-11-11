@@ -872,10 +872,6 @@ def remove_emphasis(line: str, parser: str = 'github') -> str:
             mem, parent, refmap, 0)
         line = filter_indices_from_line(line, ignore)
 
-    elif parser in ['redcarpet']:
-        # TODO
-        pass
-
     return line
 
 
@@ -890,13 +886,10 @@ def filter_indices_from_line(line: str, ranges: list[range]) -> str:
     :rtype: str
     :raises: a built-in exception.
     """
-    # Transform ranges into lists.
-    rng: list[typing.Sequence[int]] = [list(r) for r in ranges]
-
-    # Flatten list.
-    rng_flat: list[int] = sorted([item for e in rng for item in e])
-
-    return ''.join([line[i] for i in range(0, len(line)) if i not in rng_flat])
+    # Flatten ranges into set elements.
+    ignore_indices: set[int] = {i for r in ranges for i in r}
+    return ''.join(line[i] for i in range(0, len(line))
+                   if i not in ignore_indices)
 
 
 def anchor_link_punctuation_filter(
@@ -997,8 +990,25 @@ def build_anchor_link(
         #
         # See also
         # https://stackoverflow.com/a/6579816
-        ht_checksum = hashlib.sha1(
-            header_text_trimmed.encode('UTF-8')).hexdigest()
+        #
+        # from: https://github.com/python/cpython/blob/main/Objects/dictobject.c
+        # insert_to_emptydict() function. The key is stored in the dictionary
+        # as well.
+        #
+        # if (unicode) {
+        #     PyDictUnicodeEntry *ep = DK_UNICODE_ENTRIES(newkeys);
+        #     ep->me_key = key;
+        #     STORE_VALUE(ep, value);
+        # }
+        # else {
+        #     PyDictKeyEntry *ep = DK_ENTRIES(newkeys);
+        #     ep->me_key = key;
+        #     ep->me_hash = hash;
+        #     STORE_VALUE(ep, value);
+        # }
+        ht_checksum = hashlib.blake2b(header_text_trimmed.encode('UTF-8'),
+                                      digest_size=16).hexdigest()
+
         # Check for duplicates.
         # Set the initial value if we are examining the first occurrency.
         # The state of header_duplicate_counter is available to the caller
@@ -1049,18 +1059,19 @@ def build_anchor_link(
                 0:-1]
 
         if inserted == 0 and header_text_trimmed_len > 0:
-            hash: int = 5381
+            hash_val: int = 5381
             for i in range(0, header_text_trimmed_len):
                 # Get the unicode representation with ord.
                 # Unicode should be equal to ASCII in ASCII's range of
                 # characters.
-                hash = ((hash << 5) + hash) + ord(header_text_trimmed[i])
+                hash_val = (
+                    (hash_val << 5) + hash_val) + ord(header_text_trimmed[i])
 
             # This is equivalent to %x in C. In Python we don't have
             # the length problem so %x is equal to %lx in this case.
             # Apparently there is no %l in Python...
             header_text_trimmed_middle_stage_str = 'part-' + '{:x}'.format(
-                hash)
+                hash_val)
 
         return header_text_trimmed_middle_stage_str
 
@@ -1146,7 +1157,7 @@ def get_atx_heading(
             if len(subl) == 0 or subl[0] == '\u005c':
                 continue
 
-            # Preceding.
+            # Leading whitespaces.
             i: int = 0
             while i < len(subl) and subl[i] == ' ' and i <= md_parser[
                     'github']['header']['max_space_indentation']:
@@ -1172,7 +1183,7 @@ def get_atx_heading(
             current_headers = i - offset
 
             # At this moment GFM is still at version 0.29
-            # while cmark is at 0.30. There are subtle differences
+            # while cmark > 0.29. There are subtle differences
             # such as this one. Assume gitlab is on par with 0.30.
             if parser in ['github', 'commonmarker']:
                 # GFM 0.29 and cmark 0.29.
@@ -1345,10 +1356,6 @@ def get_atx_heading(
                 'visible': line_visible
             }
 
-        # TODO: escape or remove '[', ']', '(', ')' in inline links for redcarpet,
-        # TODO: check link label rules for redcarpet.
-        # TODO: check live_visible
-
     # endfor
 
     return struct
@@ -1364,7 +1371,7 @@ def get_md_header(
     r"""Build a data structure with the elements needed to create a TOC line.
 
     :parameter header_text_line: a single markdown line that needs to be
-        transformed into a TOC line. This line may include nmultiple newline
+        transformed into a TOC line. This line may include multiple newline
         characters in between.
     :parameter header_duplicate_counter: a data structure that contains the
          number of occurrencies of each header anchor link. This is used to
@@ -1429,7 +1436,6 @@ def is_valid_code_fence_indent(line: str, parser: str = 'github') -> bool:
         return len(line) - len(line.lstrip(
             ' ')) <= md_parser['github']['code_fence']['min_marker_characters']
     elif parser in ['redcarpet']:
-        # TODO.
         return False
 
 
@@ -1503,7 +1509,6 @@ def is_opening_code_fence(line: str, parser: str = 'github') -> str | None:
 
         return line[0:info_string_start]
     elif parser in ['redcarpet']:
-        # TODO.
         return None
 
 
@@ -1608,7 +1613,6 @@ def is_closing_code_fence(
 
         return True
     elif parser in ['redcarpet']:
-        # TODO.
         return False
 
 
