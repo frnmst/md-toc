@@ -29,9 +29,10 @@ ITERATIONS = 100
 MIN_HEADER_STEP = 10
 MAX_HEADER_STEP = 50
 
-KEEP_HEADER_LEVELS: int = 4
+KEEP_HEADER_LEVELS: int = 6
 
 # Do not use '#' as content to avoid triggering an empty link label exception.
+# Includes space and space-like characters.
 alphabet: str = string.printable.replace('#', '')
 
 
@@ -50,6 +51,8 @@ def _generate_random_characters(size: int,
     print('generating random file...')
 
     secret_gen: random.SystemRandom = secrets.SystemRandom()
+
+    # Character right after the heading symbols.
     alphanumerics: str = ''.join([string.ascii_letters, string.digits])
 
     # Batch size at 1% of total size.
@@ -84,8 +87,10 @@ def _generate_random_characters(size: int,
         # link label exception.
         ctypes.memmove(ctypes.byref(string_buf, i + 2 + j), random_char, 1)
 
-        # Reset header level.
-        j = (j % 6) + 1
+        prev = j
+        j = secrets.randbelow(j + 1) + 1
+        assert j == prev + 1 or j == prev - 1 or j == prev or j < prev
+
         i += secret_gen.randrange(min_header_step, max_header_step)
 
     return string_buf.value
@@ -130,7 +135,8 @@ if __name__ == '__main__':
                     start = time.time()
                     md_toc.api.build_toc(filename=fp.name,
                                          parser=p,
-                                         keep_header_levels=KEEP_HEADER_LEVELS)
+                                         keep_header_levels=KEEP_HEADER_LEVELS,
+                                         no_list_coherence=True)
                     end = time.time()
                     avg.append(end - start)
                     print('total_time: ' + str(avg[-1]))

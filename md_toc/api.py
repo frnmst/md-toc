@@ -306,8 +306,9 @@ def build_toc(
     indentation_log: dict[types.IndentationLogElement] = init_indentation_log(
         parser, list_marker)
     is_within_code_fence: bool = False
-    code_fence = None
+    code_fence: str | None = None
     is_document_end: bool = False
+
     while line:
         # Document ending detection.
         #
@@ -346,7 +347,6 @@ def build_toc(
                 is_within_code_fence = True
 
         if not is_within_code_fence or code_fence is None:
-
             # Header detection and gathering.
             headers: list[types.Header] = get_md_header(
                 line,

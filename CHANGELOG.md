@@ -83,10 +83,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update existing cmark code from version 0.30.0 to version
   [0.31.2](https://spec.commonmark.org/0.31.2/changes.html).
-- An `md_toc.exceptions.TocDoesNotRenderAsCoherentList` exception is raised for
-  big inputs (>= 50M characters) when using the benchmark script.
-  There is a jump in the detected header level, 1 then 3, not 2. This always
-  happens with the last line of the dummy input file.
 - Add code fence detection before writing TOC in place.
   Until version 9.x, given for example a file like this:
 
@@ -221,11 +217,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Improve emphasis removal support for `cmark`. See [issue #25](https://github.com/frnmst/md-toc/issues/25).
+- Improve emphasis removal support for `cmark`.
+  See [issue #25](https://github.com/frnmst/md-toc/issues/25).
 - Minor speed and memory optimizations.
 - Add and fix test cases for more coverage.
 - Update markdown rules documentation.
-- Bump dev dependencies.
+- Bump development dependencies.
+- An `md_toc.exceptions.TocDoesNotRenderAsCoherentList` exception is sometimes
+  raised for big inputs (>= 50M characters) when using the benchmark script.
+  There is a jump in the detected header level, eg: 1 then 3, not 1 then 2.
+
+  The bechmark script can, in fact, randomly generate code fences followed by,
+  for example, `\r` characters, triggering a valid code fence intervals.
+  Anything after that and in between that interval is not shown in the TOC and
+  if there's not header level coherence, the exception is raised. Thus, the
+  simplest solution is to disable list coherence check in the script.
+
+  > [!NOTE]
+  > GitHub, via the web UI editor, rewrites `\r` into `\n` implicitly
+  > when editing a file.
 
 ## [9.1.0] 2026-10-01
 
